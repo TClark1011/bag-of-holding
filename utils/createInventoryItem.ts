@@ -47,7 +47,7 @@ export const generateRandomInventoryItem = (
 		name: faker.commerce.productName(),
 		quantity: faker.random.number({ min: 1, max: 12 }),
 		value: faker.random.float({ min: 1, max: 300 }),
-		type: faker.commerce.productAdjective(),
+		category: faker.commerce.productAdjective(),
 		description: faker.commerce.productDescription(),
 		weight: faker.random.number({ min: 1, max: 200 }),
 		...randomCarriedBy,
