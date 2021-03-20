@@ -1,9 +1,20 @@
-import { Box, Heading, List, ListItem, Text } from "@chakra-ui/layout";
+import { Box, Heading, HStack, List, ListItem, Text } from "@chakra-ui/layout";
+import { Table, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/table";
+import { Tag } from "@chakra-ui/tag";
 import { GetStaticPaths, GetStaticProps } from "next";
 import Head from "next/head";
 import { getRandomInventoryItems } from "../fixtures/itemFixtures";
 import { averageMembersFixture } from "../fixtures/membersFixtures";
 import InventorySheetFields from "../types/InventorySheetFields";
+
+const numericTableCellProps = {
+	paddingX: 2,
+	sx: { textAlign: "center" },
+};
+
+const tableHeaderProps = {
+	color: "gray.50",
+};
 
 /**
  * The page for a specific sheet
@@ -11,7 +22,7 @@ import InventorySheetFields from "../types/InventorySheetFields";
  * @param {object} props The component props
  * @param {string} props.name The name of the sheet
  * @param {string[]} props.items The items in the sheet
- * @param props.members
+ * @param {string[]} props.members Members
  * @returns {React.ReactElement} Sheet component
  */
 const Sheet: React.FC<InventorySheetFields> = ({ name, items, members }) => {
@@ -22,21 +33,47 @@ const Sheet: React.FC<InventorySheetFields> = ({ name, items, members }) => {
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
 			<main>
-				<Heading>{name}</Heading>
-				<Text fontWeight="bold">PartyMembers:</Text>
-				<List>
-					{members.map((item) => (
-						<ListItem key={item}>{item}</ListItem>
-					))}
-				</List>
-				<Text fontWeight="bold">Items:</Text>
+				<Box padding={2}>
+					<Heading paddingBottom="group">{name}</Heading>
+					<HStack spacing="group">
+						{members.map((item) => (
+							<Tag key={item}>{item}</Tag>
+						))}
+					</HStack>
+				</Box>
+				{/* <Text fontWeight="bold">Items:</Text>
+				
 				<List>
 					{items.length ? (
 						items.map((item) => <ListItem key={item._id}>{item.name}</ListItem>)
 					) : (
 						<ListItem>The inventory is currently empty</ListItem>
 					)}
-				</List>
+				</List> */}
+				<Table colorScheme="gray">
+					<Thead>
+						<Tr backgroundColor="main.500">
+							<Th {...tableHeaderProps}>Name</Th>
+							<Th {...numericTableCellProps} {...tableHeaderProps}>
+								Quantity
+							</Th>
+							<Th {...numericTableCellProps} {...tableHeaderProps}>
+								Weight*
+							</Th>
+						</Tr>
+					</Thead>
+					<Tbody>
+						{items.map((item) => (
+							<Tr key={item._id}>
+								<Td>{item.name}</Td>
+								<Td {...numericTableCellProps}>{item.quantity}</Td>
+								<Td {...numericTableCellProps}>
+									{item.weight * item.quantity}
+								</Td>
+							</Tr>
+						))}
+					</Tbody>
+				</Table>
 			</main>
 		</Box>
 	);
