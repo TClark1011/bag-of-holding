@@ -14,7 +14,7 @@ const Home: React.FC = () => (
 		</Head>
 
 		<main>
-			<Heading>Chakra is now Installed</Heading>
+			<Heading>This is the homepage</Heading>
 		</main>
 	</div>
 );
