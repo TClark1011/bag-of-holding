@@ -74,13 +74,11 @@ const Sheet: React.FC<InventorySheetFields> = ({ name, items, members }) => {
 						</Tr>
 					</Thead>
 					<Tbody>
-						{inventoryState.map((item) => (
-							<Tr key={item._id}>
-								<Td>{item.name}</Td>
-								<Td {...numericTableCellProps}>{item.quantity}</Td>
-								<Td {...numericTableCellProps}>
-									{item.weight * item.quantity}
-								</Td>
+						{inventoryState.map(({ _id, name, quantity, weight }) => (
+							<Tr key={_id}>
+								<Td>{name}</Td>
+								<Td {...numericTableCellProps}>{quantity}</Td>
+								<Td {...numericTableCellProps}>{weight * quantity}</Td>
 							</Tr>
 						))}
 					</Tbody>
