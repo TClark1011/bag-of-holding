@@ -1,6 +1,8 @@
 import { Box, Heading, List, ListItem, Text } from "@chakra-ui/layout";
 import { GetStaticPaths, GetStaticProps } from "next";
 import Head from "next/head";
+import { getRandomInventoryItems } from "../fixtures/itemFixtures";
+import { averageMembersFixture } from "../fixtures/membersFixtures";
 import InventorySheetFields from "../types/InventorySheetFields";
 
 /**
@@ -48,8 +50,8 @@ const Sheet: React.FC<InventorySheetFields> = ({ name, items, members }) => {
 export const getStaticProps: GetStaticProps<InventorySheetFields> = async () => ({
 	props: {
 		name: "Test Sheet",
-		items: [],
-		members: ["Vincent", "Archie", "Sen", "Seath"],
+		items: getRandomInventoryItems(),
+		members: averageMembersFixture,
 	},
 });
 
