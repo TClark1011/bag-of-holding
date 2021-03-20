@@ -1,4 +1,4 @@
-import { Box, Heading, HStack, List, ListItem, Text } from "@chakra-ui/layout";
+import { Box, Heading, HStack } from "@chakra-ui/layout";
 import { Table, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/table";
 import { Tag } from "@chakra-ui/tag";
 import { GetStaticPaths, GetStaticProps } from "next";
@@ -41,15 +41,6 @@ const Sheet: React.FC<InventorySheetFields> = ({ name, items, members }) => {
 						))}
 					</HStack>
 				</Box>
-				{/* <Text fontWeight="bold">Items:</Text>
-				
-				<List>
-					{items.length ? (
-						items.map((item) => <ListItem key={item._id}>{item.name}</ListItem>)
-					) : (
-						<ListItem>The inventory is currently empty</ListItem>
-					)}
-				</List> */}
 				<Table colorScheme="gray">
 					<Thead>
 						<Tr backgroundColor="main.500">
