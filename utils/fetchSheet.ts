@@ -12,7 +12,7 @@ const premadeRandomSheet = {
  * Fetch sheet from MongoDB
  *
  * @param {string} _id The '_id' of the sheet to fetch
- * @returns {InventPromise<InventorySheetFields>orySheetFields} Fetched inventory sheet field
+ * @returns {Promise<InventorySheetFields>} Fetched inventory sheet field
  */
 export const fetchSheetFromMongo = async (
 	_id: string

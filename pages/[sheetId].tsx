@@ -14,6 +14,7 @@ import InventorySheetFields from "../types/InventorySheetFields";
 import InventoryStateAction from "../types/InventoryStateAction";
 import inventoryStateReducer from "../utils/inventoryStateReducer";
 import { fetchSheetFromMongo } from "../utils/fetchSheet";
+import getUrlParam from "../utils/getUrlParam";
 
 /**
  * The page for a specific sheet
@@ -70,12 +71,8 @@ const Sheet: React.FC<InventorySheetFields> = ({ name, items, members }) => {
 export const getStaticProps: GetStaticProps<InventorySheetFields> = async (
 	context
 ) => {
-	const sheetIdParam: string =
-		typeof context.params.sheetId === "string"
-			? context.params.sheetId
-			: context.params.sheetId[0];
 	return {
-		props: await fetchSheetFromMongo(sheetIdParam),
+		props: await fetchSheetFromMongo(getUrlParam(context.params.sheetId)),
 	};
 };
 
