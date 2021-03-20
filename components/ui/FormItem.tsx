@@ -7,7 +7,7 @@ import {
 	HelpTextProps,
 } from "@chakra-ui/form-control";
 
-interface FormMetaElements extends FormControlProps {
+interface FormItemProps extends FormControlProps {
 	label?: string;
 	labelProps?: FormLabelProps;
 	helperText?: string;
@@ -29,7 +29,7 @@ interface FormMetaElements extends FormControlProps {
  * @param {HelpTextProps} [props.helperTextProps] Props passed to 'FormHelperText' element
  * @returns {React.ReactElement} Rendered elements
  */
-const FormMetaElements: React.FC<FormMetaElements> = ({
+const FormItem: React.FC<FormItemProps> = ({
 	children,
 	label,
 	labelProps = {},
@@ -46,4 +46,4 @@ const FormMetaElements: React.FC<FormMetaElements> = ({
 	</FormControl>
 );
 
-export default FormMetaElements;
+export default FormItem;
