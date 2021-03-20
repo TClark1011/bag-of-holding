@@ -1,4 +1,4 @@
-import InventoryItemFields from "./InventoryItemFields";
+import { InventoryItemCreationFields } from "./InventoryItemFields";
 interface InventoryStateActionTemplate<T extends string, D> {
 	readonly type: T;
 	readonly data: D;
@@ -6,7 +6,7 @@ interface InventoryStateActionTemplate<T extends string, D> {
 
 type InventoryStateAddItemAction = InventoryStateActionTemplate<
 	"item_add",
-	InventoryItemFields
+	InventoryItemCreationFields
 >;
 type InventoryStateRemoveItemAction = InventoryStateActionTemplate<
 	"item_remove",

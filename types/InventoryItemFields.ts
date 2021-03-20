@@ -1,3 +1,5 @@
+import OmitId from "../utils/OmitId";
+
 /**
  * @typedef {object} InventoryItemFields The fields for an inventory item
  * @property {string} _id The unique identifier
@@ -14,12 +16,25 @@ interface InventoryItemFields {
 	_id: string;
 	name: string;
 	quantity: number;
+	weight: number;
 	type?: string;
 	description?: string;
 	carriedBy?: string;
-	weight?: number;
 	value?: number;
 	infoLink?: string;
 }
+
+export type InventoryItemCreationFields = Omit<
+	OmitId<InventoryItemFields>,
+	"quantity" | "weight"
+> &
+	Partial<Pick<InventoryItemFields, "quantity" | "weight">>;
+/**
+ * The fields that are required to be input when creating a new inventory item.
+ * We need this type because the fields 'quantity' and 'weight' are required fields,
+ * however when producing a new item, we want these fields to be optional for the user
+ * because we can apply defaults if values are not provided. For more information about
+ * the defaults, see the 'createInventoryItem' function.
+ */
 
 export default InventoryItemFields;

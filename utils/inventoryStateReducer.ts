@@ -1,6 +1,7 @@
 import produce from "immer";
 import InventoryItemFields from "../types/InventoryItemFields";
 import InventoryStateAction from "../types/InventoryStateAction";
+import createInventoryItem from "./createInventoryItem";
 
 /**
  * The reducer for a sheet's inventory state
@@ -19,7 +20,7 @@ const inventoryStateReducer = (
 	switch (type) {
 		case "item_add":
 			return produce(state, (draftState) => {
-				draftState.push(data as InventoryItemFields);
+				draftState.push(createInventoryItem(data as InventoryItemFields));
 			});
 		case "item_remove":
 			return state.filter((item) => item._id !== data);

@@ -31,7 +31,7 @@ const tableHeaderProps = {
  * @returns {React.ReactElement} Sheet component
  */
 const Sheet: React.FC<InventorySheetFields> = ({ name, items, members }) => {
-	const [inventoryState, dispatchInventoryaction] = useReducer<
+	const [inventoryState, dispatchInventoryAction] = useReducer<
 		Reducer<InventoryItemFields[], InventoryStateAction>
 	>(inventoryStateReducer, items);
 
@@ -50,7 +50,17 @@ const Sheet: React.FC<InventorySheetFields> = ({ name, items, members }) => {
 						))}
 					</HStack>
 				</Box>
-				<Button colorScheme="secondary">Add Item</Button>
+				<Button
+					colorScheme="secondary"
+					onClick={() =>
+						dispatchInventoryAction({
+							type: "item_add",
+							data: { name: "Newly added item" },
+						})
+					}
+				>
+					Add Item
+				</Button>
 				<Table colorScheme="gray">
 					<Thead>
 						<Tr backgroundColor="primary.500">
@@ -64,7 +74,7 @@ const Sheet: React.FC<InventorySheetFields> = ({ name, items, members }) => {
 						</Tr>
 					</Thead>
 					<Tbody>
-						{items.map((item) => (
+						{inventoryState.map((item) => (
 							<Tr key={item._id}>
 								<Td>{item.name}</Td>
 								<Td {...numericTableCellProps}>{item.quantity}</Td>

@@ -1,6 +1,7 @@
-import InventoryItemFields from "../types/InventoryItemFields";
+import InventoryItemFields, {
+	InventoryItemCreationFields,
+} from "../types/InventoryItemFields";
 import faker from "faker";
-import OmitId from "./OmitId";
 import randomItem from "random-item";
 
 /**
@@ -8,19 +9,20 @@ import randomItem from "random-item";
  * Takes all the required files, excluding "_id"
  * Creates new object with randomly generated "_id" along with the provided fields
  *
- * @param {Omit<OmitId<InventoryItemFields>, "quantity"> & { quantity?: number }} fields The fields to pass to the object
- * The confusing type is to remove the required "_id" and "quantity" fields so that they do not need to be passed in the
- * paramter. We use a union to add the quantity field back in as an optional field. If quantity is not provided, it
- * defaults to 1.
+ * @param {InventoryItemCreationFields} fields The data used to generate the new item
  * @returns {InventoryItemFields} A newly generated item
  */
 const createInventoryItem = (
-	fields: Omit<OmitId<InventoryItemFields>, "quantity"> & { quantity?: number }
+	fields: InventoryItemCreationFields
 ): InventoryItemFields => {
 	return {
 		_id: faker.random.uuid(),
-		quantity: fields.quantity | 1,
+		quantity: 1,
+		//? quantity defaults to 1
+		weight: 0,
+		//? Weight defaults to 0
 		...fields,
+		//? Default 'quantity' and 'weight' values are overridden if they are present in fields
 	};
 };
 
