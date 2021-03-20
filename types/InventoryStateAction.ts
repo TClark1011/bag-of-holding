@@ -11,11 +11,11 @@ export type InventoryStateActionType = "item_add";
  * be the all the data for that item.
  * - string - When deleting an item, the '_id' of the item to delete
  */
-export type InventoryStateActionValidData = InventoryItemFields | string;
+// export type InventoryStateActionValidData = InventoryItemFields | string;
 
 interface InventoryStateAction {
 	type: InventoryStateActionType;
-	data: InventoryStateActionValidData;
+	data: InventoryItemFields;
 }
 
 export default InventoryStateAction;

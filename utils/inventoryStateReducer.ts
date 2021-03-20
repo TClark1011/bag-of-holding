@@ -19,7 +19,7 @@ const inventoryStateReducer = (
 	switch (type) {
 		case "item_add":
 			return produce(state, (draftState) => {
-				draftState.push(data as InventoryItemFields);
+				draftState.push(data);
 			});
 	}
 };
