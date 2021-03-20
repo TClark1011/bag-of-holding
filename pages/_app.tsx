@@ -1,6 +1,7 @@
 import { ChakraProvider } from "@chakra-ui/react";
 import { AppProps } from "next/dist/next-server/lib/router/router";
 import React from "react";
+import theme from "../config/theme";
 
 /**
  * Core app component
@@ -11,7 +12,7 @@ import React from "react";
  * @returns {React.ReactElement} The application
  */
 const MyApp = ({ Component, pageProps }: AppProps): React.ReactElement => (
-	<ChakraProvider>
+	<ChakraProvider theme={theme}>
 		<Component {...pageProps} />
 	</ChakraProvider>
 );
