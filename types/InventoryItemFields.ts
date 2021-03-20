@@ -21,7 +21,7 @@ interface InventoryItemFields {
 	description?: string;
 	carriedBy?: string;
 	value?: number;
-	infoLink?: string;
+	reference?: string;
 }
 
 export type InventoryItemCreationFields = Omit<

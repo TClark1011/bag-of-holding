@@ -28,8 +28,9 @@ const handleGET: NextApiHandler = async (req, res) => {
  * @param {NextApiRequest} req The HTTP request object
  * @param {NextApiResponse} res The HTTP response object
  */
-const handleUPDATE: NextApiHandler = (req, res) => {
-	sheetState.items = inventoryStateReducer(sheetState.items, req.body);
+const handlePATCH: NextApiHandler = (req, res) => {
+	const action = JSON.parse(req.body);
+	sheetState.items = inventoryStateReducer(sheetState.items, action);
 	res.status(200).json(sheetState);
 };
 
@@ -41,8 +42,8 @@ const handleUPDATE: NextApiHandler = (req, res) => {
  */
 const routeHandler: NextApiHandler = (req, res) => {
 	switch (req.method) {
-		case "UPDATE":
-			handleUPDATE(req, res);
+		case "PATCH":
+			handlePATCH(req, res);
 			break;
 		case "GET":
 		default:
