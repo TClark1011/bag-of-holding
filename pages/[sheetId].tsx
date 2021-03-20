@@ -4,9 +4,13 @@ import { Table, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/table";
 import { Tag } from "@chakra-ui/tag";
 import { GetStaticPaths, GetStaticProps } from "next";
 import Head from "next/head";
+import { Reducer, useReducer } from "react";
 import { getRandomInventoryItems } from "../fixtures/itemFixtures";
 import { averageMembersFixture } from "../fixtures/membersFixtures";
+import InventoryItemFields from "../types/InventoryItemFields";
 import InventorySheetFields from "../types/InventorySheetFields";
+import InventoryStateAction from "../types/InventoryStateAction";
+import inventoryStateReducer from "../utils/inventoryStateReducer";
 
 const numericTableCellProps = {
 	paddingX: 2,
@@ -27,6 +31,10 @@ const tableHeaderProps = {
  * @returns {React.ReactElement} Sheet component
  */
 const Sheet: React.FC<InventorySheetFields> = ({ name, items, members }) => {
+	const [inventoryState, dispatchInventoryaction] = useReducer<
+		Reducer<InventoryItemFields[], InventoryStateAction>
+	>(inventoryStateReducer, items);
+
 	return (
 		<Box>
 			<Head>
