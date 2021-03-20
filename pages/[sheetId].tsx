@@ -1,25 +1,17 @@
 import { Button } from "@chakra-ui/button";
+import { useDisclosure } from "@chakra-ui/hooks";
 import { Box, Heading, HStack } from "@chakra-ui/layout";
-import { Table, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/table";
 import { Tag } from "@chakra-ui/tag";
 import { GetStaticPaths, GetStaticProps } from "next";
 import Head from "next/head";
 import { Reducer, useReducer } from "react";
+import SheetInventoryTable from "../components/domain/SheetInventoryTable";
 import { getRandomInventoryItems } from "../fixtures/itemFixtures";
 import { averageMembersFixture } from "../fixtures/membersFixtures";
 import InventoryItemFields from "../types/InventoryItemFields";
 import InventorySheetFields from "../types/InventorySheetFields";
 import InventoryStateAction from "../types/InventoryStateAction";
 import inventoryStateReducer from "../utils/inventoryStateReducer";
-
-const numericTableCellProps = {
-	paddingX: 2,
-	sx: { textAlign: "center" },
-};
-
-const tableHeaderProps = {
-	color: "gray.50",
-};
 
 /**
  * The page for a specific sheet
@@ -34,6 +26,8 @@ const Sheet: React.FC<InventorySheetFields> = ({ name, items, members }) => {
 	const [inventoryState, dispatchInventoryAction] = useReducer<
 		Reducer<InventoryItemFields[], InventoryStateAction>
 	>(inventoryStateReducer, items);
+
+	const newItemDialogController = useDisclosure();
 
 	return (
 		<Box>
@@ -61,28 +55,7 @@ const Sheet: React.FC<InventorySheetFields> = ({ name, items, members }) => {
 				>
 					Add Item
 				</Button>
-				<Table colorScheme="gray">
-					<Thead>
-						<Tr backgroundColor="primary.500">
-							<Th {...tableHeaderProps}>Name</Th>
-							<Th {...numericTableCellProps} {...tableHeaderProps}>
-								Quantity
-							</Th>
-							<Th {...numericTableCellProps} {...tableHeaderProps}>
-								Weight*
-							</Th>
-						</Tr>
-					</Thead>
-					<Tbody>
-						{inventoryState.map(({ _id, name, quantity, weight }) => (
-							<Tr key={_id}>
-								<Td>{name}</Td>
-								<Td {...numericTableCellProps}>{quantity}</Td>
-								<Td {...numericTableCellProps}>{weight * quantity}</Td>
-							</Tr>
-						))}
-					</Tbody>
-				</Table>
+				<SheetInventoryTable items={inventoryState} compactMode={true} />
 			</main>
 		</Box>
 	);
