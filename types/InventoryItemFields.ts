@@ -5,10 +5,10 @@ import OmitId from "../utils/OmitId";
  * @property {string} _id The unique identifier
  * @property {string} name The name of the item (max length: 24 chars)
  * @property {number} quantity The quantity of the item
- * @property {string} [type] The type (essentially a category) of the item
+ * @property {number} weight How much the item weights (assumed to be in 'lb')
+ * @property {string} [category] The type (essentially a category) of the item
  * @property {string} [description] Description of the item
  * @property {string} [carriedBy] The party member that is carrying the item
- * @property {number} [weight] How much the item weights (in 'lb')
  * @property {number} [value] The monetary value of the item
  * @property {string} [infoLink] A link to a document that contains more information about the item
  */
@@ -17,7 +17,7 @@ interface InventoryItemFields {
 	name: string;
 	quantity: number;
 	weight: number;
-	type?: string;
+	category?: string;
 	description?: string;
 	carriedBy?: string;
 	value?: number;
