@@ -16,8 +16,11 @@ export interface SheetInventoryTableProps {
 }
 
 /**
- * @param root0
- * @param root0.items
+ * Table that shows items in a sheet inventory
+ *
+ * @param {object} props Component props
+ * @param {InventoryItemFields[]} props.items The items in the inventory
+ * @returns {React.ReactElement} The rendered htmk components
  */
 const SheetInventoryTable: React.FC<SheetInventoryTableProps> = ({ items }) => (
 	<Table colorScheme="gray">
