@@ -3,7 +3,7 @@ import OmitId from "../utils/OmitId";
 /**
  * @typedef {object} InventoryItemFields The fields for an inventory item
  * @property {string} _id The unique identifier
- * @property {string} name The name of the item
+ * @property {string} name The name of the item (max length: 24 chars)
  * @property {number} quantity The quantity of the item
  * @property {string} [type] The type (essentially a category) of the item
  * @property {string} [description] Description of the item
