@@ -1,27 +1,27 @@
 {
-  "name": "rpg-party-inventory",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start"
-  },
-  "dependencies": {
-    "eslint-config-thomas-clark": "^1.0.0",
-    "next": "10.0.9",
-    "react": "17.0.1",
-    "react-dom": "17.0.1"
-  },
-  "devDependencies": {
-    "@types/node": "^14.14.35",
-    "@types/react": "^17.0.3",
-    "@typescript-eslint/eslint-plugin": "^4.18.0",
-    "@typescript-eslint/parser": "^4.18.0",
-    "eslint": "^7.22.0",
-    "eslint-plugin-react": "^7.22.0",
-    "prettier": "^2.2.1",
-    "prettier-eslint": "^12.0.0",
-    "typescript": "^4.2.3"
-  }
+	"name": "rpg-party-inventory",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"dev": "next dev",
+		"build": "next build",
+		"start": "next start"
+	},
+	"dependencies": {
+		"next": "10.0.9",
+		"react": "17.0.1",
+		"react-dom": "17.0.1"
+	},
+	"devDependencies": {
+		"eslint-config-thomas-clark": "^1.0.0",
+		"@types/node": "^14.14.35",
+		"@types/react": "^17.0.3",
+		"@typescript-eslint/eslint-plugin": "^4.18.0",
+		"@typescript-eslint/parser": "^4.18.0",
+		"eslint": "^7.22.0",
+		"eslint-plugin-react": "^7.22.0",
+		"prettier": "^2.2.1",
+		"prettier-eslint": "^12.0.0",
+		"typescript": "^4.2.3"
+	}
 }
