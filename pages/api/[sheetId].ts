@@ -16,9 +16,6 @@ const sheetState = {
  * @param {NextApiResponse} res The HTTP response object
  */
 const handleGET: NextApiHandler = async (req, res) => {
-	// res
-	// 	.status(200)
-	// 	.json(await fetchSheetFromMongo(getUrlParam(req.query.sheetId)));
 	res.status(200).json(sheetState);
 };
 

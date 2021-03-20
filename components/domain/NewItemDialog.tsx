@@ -55,7 +55,9 @@ const NewItemDialog: React.FC<DialogControlProps> = ({
 		fetch("http://localhost:3000/api/1", {
 			method: "PATCH",
 			body: JSON.stringify(action),
-		}).then(() => console.log("finished submitting data"));
+		}).then(() => {
+			onClose();
+		});
 	};
 	return (
 		<Modal isOpen={isOpen} onClose={onClose}>
@@ -86,7 +88,7 @@ const NewItemDialog: React.FC<DialogControlProps> = ({
 								</Field>
 								<Field name="description">
 									{({ field }) => (
-										<FormItem label="Category">
+										<FormItem label="Description">
 											<Textarea placeholder="Item description" {...field} />
 										</FormItem>
 									)}

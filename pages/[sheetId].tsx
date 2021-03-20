@@ -1,10 +1,10 @@
 import { Button } from "@chakra-ui/button";
-import { useDisclosure } from "@chakra-ui/hooks";
+import { useDisclosure, useInterval } from "@chakra-ui/hooks";
 import { Box, Heading, HStack } from "@chakra-ui/layout";
 import { Tag } from "@chakra-ui/tag";
 import { GetStaticPaths, GetStaticProps } from "next";
 import Head from "next/head";
-import { Reducer, useReducer } from "react";
+import { Reducer, useReducer, useState } from "react";
 import NewItemDialog from "../components/domain/NewItemDialog";
 import InventoryTableSheet from "../components/domain/InventorySheetTable";
 import { getRandomInventoryItems } from "../fixtures/itemFixtures";
@@ -15,6 +15,7 @@ import InventoryStateAction from "../types/InventoryStateAction";
 import inventoryStateReducer from "../utils/inventoryStateReducer";
 import { fetchSheetFromMongo } from "../utils/fetchSheet";
 import getUrlParam from "../utils/getUrlParam";
+import deepEqual from "deep-equal";
 
 /**
  * The page for a specific sheet
@@ -26,9 +27,23 @@ import getUrlParam from "../utils/getUrlParam";
  * @returns {React.ReactElement} Sheet component
  */
 const Sheet: React.FC<InventorySheetFields> = ({ name, items, members }) => {
-	const [inventoryState, dispatchInventoryAction] = useReducer<
-		Reducer<InventoryItemFields[], InventoryStateAction>
-	>(inventoryStateReducer, items);
+	// const [inventoryState, dispatchInventoryAction] = useReducer<
+	// 	Reducer<InventoryItemFields[], InventoryStateAction>
+	// >(inventoryStateReducer, items);
+
+	const [inventoryState, setInventoryState] = useState(items);
+
+	useInterval(
+		() =>
+			fetch("http://localhost:3000/api/1")
+				.then((res) => res.json())
+				.then((data) => {
+					if (!deepEqual(data.items, inventoryState)) {
+						setInventoryState(data.items as InventoryItemFields[]);
+					}
+				}),
+		3000
+	);
 
 	const newItemDialogController = useDisclosure();
 
