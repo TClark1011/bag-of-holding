@@ -5,6 +5,7 @@ import { Tag } from "@chakra-ui/tag";
 import { GetStaticPaths, GetStaticProps } from "next";
 import Head from "next/head";
 import { Reducer, useReducer } from "react";
+import NewItemDialog from "../components/domain/NewItemDialog";
 import SheetInventoryTable from "../components/domain/SheetInventoryTable";
 import { getRandomInventoryItems } from "../fixtures/itemFixtures";
 import { averageMembersFixture } from "../fixtures/membersFixtures";
@@ -46,15 +47,11 @@ const Sheet: React.FC<InventorySheetFields> = ({ name, items, members }) => {
 				</Box>
 				<Button
 					colorScheme="secondary"
-					onClick={() =>
-						dispatchInventoryAction({
-							type: "item_add",
-							data: { name: "Newly added item" },
-						})
-					}
+					onClick={newItemDialogController.onOpen}
 				>
 					Add Item
 				</Button>
+				<NewItemDialog controller={newItemDialogController} />
 				<SheetInventoryTable items={inventoryState} compactMode={true} />
 			</main>
 		</Box>
