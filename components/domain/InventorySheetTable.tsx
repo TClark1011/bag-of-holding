@@ -10,7 +10,7 @@ const tableHeaderProps = {
 	color: "gray.50",
 };
 
-export interface SheetInventoryTableProps {
+export interface InventorySheetTableProps {
 	items: InventoryItemFields[];
 	compactMode: boolean;
 }
@@ -22,7 +22,7 @@ export interface SheetInventoryTableProps {
  * @param {InventoryItemFields[]} props.items The items in the inventory
  * @returns {React.ReactElement} The rendered htmk components
  */
-const SheetInventoryTable: React.FC<SheetInventoryTableProps> = ({ items }) => (
+const InventorySheetTable: React.FC<InventorySheetTableProps> = ({ items }) => (
 	<Table colorScheme="gray">
 		<Thead>
 			<Tr backgroundColor="primary.500">
@@ -47,4 +47,4 @@ const SheetInventoryTable: React.FC<SheetInventoryTableProps> = ({ items }) => (
 	</Table>
 );
 
-export default SheetInventoryTable;
+export default InventorySheetTable;

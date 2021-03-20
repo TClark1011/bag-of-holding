@@ -6,13 +6,14 @@ import { GetStaticPaths, GetStaticProps } from "next";
 import Head from "next/head";
 import { Reducer, useReducer } from "react";
 import NewItemDialog from "../components/domain/NewItemDialog";
-import SheetInventoryTable from "../components/domain/SheetInventoryTable";
+import InventoryTableSheet from "../components/domain/InventorySheetTable";
 import { getRandomInventoryItems } from "../fixtures/itemFixtures";
 import { averageMembersFixture } from "../fixtures/membersFixtures";
 import InventoryItemFields from "../types/InventoryItemFields";
 import InventorySheetFields from "../types/InventorySheetFields";
 import InventoryStateAction from "../types/InventoryStateAction";
 import inventoryStateReducer from "../utils/inventoryStateReducer";
+import { fetchSheetFromMongo } from "../utils/fetchSheet";
 
 /**
  * The page for a specific sheet
@@ -52,7 +53,7 @@ const Sheet: React.FC<InventorySheetFields> = ({ name, items, members }) => {
 					Add New Item
 				</Button>
 				<NewItemDialog controller={newItemDialogController} />
-				<SheetInventoryTable items={inventoryState} compactMode={true} />
+				<InventoryTableSheet items={inventoryState} compactMode={true} />
 			</main>
 		</Box>
 	);
@@ -61,15 +62,22 @@ const Sheet: React.FC<InventorySheetFields> = ({ name, items, members }) => {
 /**
  * Get the static props
  *
+ * @param {object} context Path context data
+ * @param {object} context.params Path url parameters
+ * @param {string | string[]} context.params.sheetId The sheet id in the ur;
  * @returns {GetStaticPropsResult<InventorySheetFields>} The props for the sheet
  */
-export const getStaticProps: GetStaticProps<InventorySheetFields> = async () => ({
-	props: {
-		name: "Test Sheet",
-		items: getRandomInventoryItems(),
-		members: averageMembersFixture,
-	},
-});
+export const getStaticProps: GetStaticProps<InventorySheetFields> = async (
+	context
+) => {
+	const sheetIdParam: string =
+		typeof context.params.sheetId === "string"
+			? context.params.sheetId
+			: context.params.sheetId[0];
+	return {
+		props: await fetchSheetFromMongo(sheetIdParam),
+	};
+};
 
 /**
  * Determine static paths to pre render
