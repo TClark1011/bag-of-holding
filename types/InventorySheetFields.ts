@@ -1,6 +1,9 @@
+import InventoryItemFields from "./InventoryItemFields";
+
 interface InventorySheetFields {
 	name: string;
-	items: string[];
+	items: InventoryItemFields[];
+	members: string[];
 }
 
 export default InventorySheetFields;
