@@ -43,11 +43,11 @@ export const generateRandomInventoryItem = (
 	//? If 'members' array is not provided, 'carriedBy' is undefined
 	const generatedItem = createInventoryItem({
 		name: faker.commerce.productName(),
-		quantity: faker.random.number({ min: 1, max: 12, precision: 0 }),
-		value: faker.random.number({ min: 1, max: 300, precision: 3 }),
+		quantity: faker.random.number({ min: 1, max: 12 }),
+		value: faker.random.float({ min: 1, max: 300 }),
 		type: faker.commerce.productAdjective(),
 		description: faker.commerce.productDescription(),
-		weight: faker.random.number({ min: 1, max: 200, precision: 0 }),
+		weight: faker.random.number({ min: 1, max: 200 }),
 		...randomCarriedBy,
 		...fields,
 		//? All provided values from field will override randomly generated values
