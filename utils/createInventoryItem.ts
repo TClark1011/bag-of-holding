@@ -55,4 +55,6 @@ export const generateRandomInventoryItem = (
 	return { ...generatedItem, _id: _id || generatedItem._id };
 };
 
+//TODO: When generating random item, have random chance of optional fields being undefined
+
 export default createInventoryItem;

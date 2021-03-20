@@ -1,3 +1,4 @@
+import { Button } from "@chakra-ui/button";
 import { Box, Heading, HStack } from "@chakra-ui/layout";
 import { Table, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/table";
 import { Tag } from "@chakra-ui/tag";
@@ -41,9 +42,10 @@ const Sheet: React.FC<InventorySheetFields> = ({ name, items, members }) => {
 						))}
 					</HStack>
 				</Box>
+				<Button colorScheme="secondary">Add Item</Button>
 				<Table colorScheme="gray">
 					<Thead>
-						<Tr backgroundColor="main.500">
+						<Tr backgroundColor="primary.500">
 							<Th {...tableHeaderProps}>Name</Th>
 							<Th {...numericTableCellProps} {...tableHeaderProps}>
 								Quantity
