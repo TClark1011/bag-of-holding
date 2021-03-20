@@ -1,3 +1,4 @@
+import { ChakraProvider } from "@chakra-ui/react";
 import { AppProps } from "next/dist/next-server/lib/router/router";
 import React from "react";
 
@@ -9,8 +10,10 @@ import React from "react";
  * @param {object} props.pageProps The props to pass to the page component
  * @returns {React.ReactElement} The application
  */
-const MyApp = ({ Component, pageProps }: AppProps): React.ReactElement => {
-	return <Component {...pageProps} />;
-};
+const MyApp = ({ Component, pageProps }: AppProps): React.ReactElement => (
+	<ChakraProvider>
+		<Component {...pageProps} />
+	</ChakraProvider>
+);
 
 export default MyApp;

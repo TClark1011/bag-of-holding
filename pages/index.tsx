@@ -1,3 +1,4 @@
+import { Heading } from "@chakra-ui/layout";
 import Head from "next/head";
 
 /**
@@ -13,7 +14,7 @@ const Home: React.FC = () => (
 		</Head>
 
 		<main>
-			<h1>Hello CRA</h1>
+			<Heading>Chakra is now Installed</Heading>
 		</main>
 	</div>
 );
