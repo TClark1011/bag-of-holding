@@ -8,14 +8,15 @@ import {
 	ModalHeader,
 	ModalOverlay,
 } from "@chakra-ui/modal";
-import DialogControlProps from "../../types/DialogProps";
+import DialogControlProps from "../../types/DialogControlProps";
 
 /**
- * @param root0
- * @param root0.controller
- * @param root0.controller.onOpen
- * @param root0.controller.onClose
- * @param root0.controller.isOpen
+ * Modal dialog for creating a new item
+ *
+ * @param {object} props props
+ * @param {UseDisclosureReturn} props.controller Object with methods for controlling
+ * the state of the dialog
+ * @returns {React.ReactElement} The rendered HTML
  */
 const NewItemDialog: React.FC<DialogControlProps> = ({
 	controller: { onClose, isOpen },
