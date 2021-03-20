@@ -49,7 +49,7 @@ const Sheet: React.FC<InventorySheetFields> = ({ name, items, members }) => {
 					colorScheme="secondary"
 					onClick={newItemDialogController.onOpen}
 				>
-					Add Item
+					Add New Item
 				</Button>
 				<NewItemDialog controller={newItemDialogController} />
 				<SheetInventoryTable items={inventoryState} compactMode={true} />

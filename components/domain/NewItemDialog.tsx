@@ -24,7 +24,7 @@ const NewItemDialog: React.FC<DialogControlProps> = ({
 	<Modal isOpen={isOpen} onClose={onClose}>
 		<ModalOverlay />
 		<ModalContent>
-			<ModalHeader>New Item</ModalHeader>
+			<ModalHeader>Add New Item</ModalHeader>
 			<ModalCloseButton />
 			<ModalBody>stuff will go here</ModalBody>
 
