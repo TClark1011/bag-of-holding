@@ -87,7 +87,6 @@ const inventoryStateReducer = (
 				...(data as InventorySheetFields),
 			}));
 		case "sheet_setIsAhead":
-			// eslint-disable-next-line @typescript-eslint/no-empty-function
 			return produceNewState((draftState) => {
 				draftState.isAhead = data as boolean;
 			});
