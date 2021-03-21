@@ -1,6 +1,7 @@
 import { chakra } from "@chakra-ui/system";
-import { Table, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/table";
+import { Table, TableProps, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/table";
 import InventoryItemFields from "../../types/InventoryItemFields";
+import { useSheetState } from "../contexts/SheetStateContext";
 
 const numericTableCellProps = {
 	paddingX: 2,
@@ -19,8 +20,7 @@ const InventorySheetTableHeaders = chakra(Th, {
 	baseStyle: { color: "gray.50" },
 });
 
-export interface InventorySheetTableProps {
-	items: InventoryItemFields[];
+export interface InventorySheetTableProps extends TableProps {
 	compactMode: boolean;
 	onRowClick: (item?: InventoryItemFields) => void;
 }
@@ -35,12 +35,13 @@ export interface InventorySheetTableProps {
  * @returns {React.ReactElement} The rendered html components
  */
 const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
-	items,
 	onRowClick,
+	...props
 }) => {
 	// TODO: Add type column
+	const { items } = useSheetState();
 	return (
-		<Table colorScheme="gray">
+		<Table colorScheme="gray" {...props}>
 			<Thead>
 				<Tr backgroundColor="primary.500">
 					<InventorySheetTableHeaders>Name</InventorySheetTableHeaders>

@@ -76,7 +76,7 @@ const SheetDialog: React.FC<DialogControlProps> = ({ controller }) => {
 			<Formik onSubmit={onSubmit} initialValues={{ name, members }}>
 				{({ handleSubmit, isSubmitting, values }) => (
 					<ModalContent>
-						<ModalHeader>SheetOptions</ModalHeader>
+						<ModalHeader>Sheet Options</ModalHeader>
 						<ModalCloseButton />
 						<ModalBody>
 							<InputControl

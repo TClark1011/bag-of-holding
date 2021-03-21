@@ -20,6 +20,7 @@ import { REFETCH_INTERVAL } from "../config/publicEnv";
 import { GetServerSideProps } from "next";
 import SheetDialog from "../components/domain/SheetDialog";
 import { SettingsOutlineIcon } from "chakra-ui-ionicons";
+import MemberCarryWeightTable from "../components/domain/MemberCarryWeightTable";
 
 /**
  * The page for a specific sheet
@@ -125,10 +126,13 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 					</Box>
 
 					<InventoryTableSheet
-						items={items}
 						compactMode={true}
 						onRowClick={openEditItemDialog}
+						marginBottom="break"
 					/>
+
+					<Heading as="h2">Member Inventories</Heading>
+					<MemberCarryWeightTable />
 
 					{/* Dialogs */}
 					<ItemDialog
