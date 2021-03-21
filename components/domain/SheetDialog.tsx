@@ -1,5 +1,7 @@
 import { Button } from "@chakra-ui/button";
-import { Flex, VStack } from "@chakra-ui/layout";
+import { FormControl, FormLabel } from "@chakra-ui/form-control";
+import { Input } from "@chakra-ui/input";
+import { Divider, Flex, SimpleGrid, Text, VStack } from "@chakra-ui/layout";
 import {
 	Modal,
 	ModalBody,
@@ -9,8 +11,10 @@ import {
 	ModalHeader,
 	ModalOverlay,
 } from "@chakra-ui/modal";
-import { Formik, FormikHelpers } from "formik";
+import { Field, FieldArray, Formik, FormikHelpers } from "formik";
 import { InputControl } from "formik-chakra-ui";
+import produce from "immer";
+import { useState } from "react";
 import DialogControlProps from "../../types/DialogControlProps";
 import InventorySheetFields from "../../types/InventorySheetFields";
 import {
@@ -23,18 +27,23 @@ import {
  * @param root0.controller
  */
 const SheetDialog: React.FC<DialogControlProps> = ({ controller }) => {
-	const { name } = useSheetState();
+	const { name, members } = useSheetState();
 	const dispatch = useSheetStateDispatch();
+
 	/**
-	 * @param root0
-	 * @param root0.setSubmitting
-	 * @param data
-	 * @param root0.setSubmitting.setSubmitting
-	 * @param data.setSubmitting
-	 */
+	 * Handle submission of formik form
+	 *
+	 * @param {object} data The form data
+	 * @param {object} formikHelpers Object with functions for
+	 * controlling formik
+	 * @param {Function} formikHelpers.setSubmitting  Set whether
+	 * or not the form is currently submitting
+	 * */
 	const onSubmit = (
 		data,
-		{ setSubmitting }: FormikHelpers<Pick<InventorySheetFields, "name">>
+		{
+			setSubmitting,
+		}: FormikHelpers<Pick<InventorySheetFields, "name" | "members">>
 	) => {
 		setSubmitting(true);
 		console.log("(SheetDialog) data: ", data);
@@ -61,14 +70,61 @@ const SheetDialog: React.FC<DialogControlProps> = ({ controller }) => {
 	return (
 		<Modal {...controller}>
 			<ModalOverlay />
-			<Formik onSubmit={onSubmit} initialValues={{ name }}>
-				{({ handleSubmit, isSubmitting }) => (
+			<Formik onSubmit={onSubmit} initialValues={{ name, members }}>
+				{({ handleSubmit, isSubmitting, values }) => (
 					<ModalContent>
 						<ModalHeader>SheetOptions</ModalHeader>
 						<ModalCloseButton />
 						<ModalBody>
+							<InputControl
+								name="name"
+								label="Name"
+								inputProps={{ marginBottom: "break" }}
+							/>
+							<Text fontWeight="bold" textAlign="center">
+								Members
+							</Text>
+							<Divider />
 							<VStack spacing="group">
-								<InputControl name="name" label="Name" />
+								<FieldArray name="members">
+									{(helpers) => (
+										<>
+											{values.members.map((item, index) => (
+												<Flex key={index} width="full" alignItems="flex-end">
+													<Field name={"members." + index}>
+														{({ field }) => (
+															<>
+																<FormControl
+																	name={"members." + index}
+																	paddingRight="group"
+																>
+																	<FormLabel>Member {index + 1}</FormLabel>
+																	<Input {...field} />
+																</FormControl>
+															</>
+														)}
+													</Field>
+													<Button
+														colorScheme="error"
+														onClick={() => helpers.remove(index)}
+													>
+														-
+													</Button>
+												</Flex>
+											))}
+											<Button
+												width="full"
+												size="sm"
+												colorScheme="primary"
+												onClick={() => {
+													helpers.push("");
+												}}
+											>
+												Add Party Member
+											</Button>
+										</>
+									)}
+								</FieldArray>
 							</VStack>
 						</ModalBody>
 						<ModalFooter>
