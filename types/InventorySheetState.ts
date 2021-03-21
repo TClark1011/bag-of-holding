@@ -4,6 +4,10 @@ import InventorySheetFields from "./InventorySheetFields";
 interface InventorySheetStateActionTemplate<T extends string, D> {
 	readonly type: T;
 	readonly data: D;
+	readonly sendToServer?: boolean;
+	readonly onFinally?: () => void;
+	readonly onCatch?: (err?: Error) => void;
+	readonly onThen?: () => void;
 }
 
 type AddItemAction = InventorySheetStateActionTemplate<
@@ -14,8 +18,15 @@ type RemoveItemAction = InventorySheetStateActionTemplate<
 	"item_remove",
 	string
 >;
+type UpdateSheetAction = InventorySheetStateActionTemplate<
+	"sheet_update",
+	InventorySheetFields
+>;
 
-export type InventorySheetStateAction = AddItemAction | RemoveItemAction;
+export type InventorySheetStateAction =
+	| AddItemAction
+	| RemoveItemAction
+	| UpdateSheetAction;
 
 /**
  * @typedef {object} InventorySheetState Holds the local state of an inventory sheet

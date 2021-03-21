@@ -16,6 +16,7 @@ import { Field, Formik } from "formik";
 import DialogControlProps from "../../types/DialogControlProps";
 import { InventoryItemCreationFields } from "../../types/InventoryItemFields";
 import { InventorySheetStateAction } from "../../types/InventorySheetState";
+import { useSheetStateDispatch } from "../contexts/SheetStateContext";
 import FormItem from "../ui/FormItem";
 import NumberField from "../ui/NumberField";
 
@@ -40,6 +41,8 @@ const NewItemDialog: React.FC<DialogControlProps> = ({
 		reference: "",
 	};
 
+	const dispatch = useSheetStateDispatch();
+
 	/**
 	 * Handle the submitting of the new item form
 	 * Sends data in a 'PATCH' http request to the api.
@@ -56,16 +59,21 @@ const NewItemDialog: React.FC<DialogControlProps> = ({
 		const action: InventorySheetStateAction = {
 			type: "item_add",
 			data,
-		};
-		setSubmitting(true);
-		fetch("http://localhost:3000/api/1", {
-			method: "PATCH",
-			body: JSON.stringify(action),
-		})
-			.then(() => {
+			sendToServer: true,
+			/**
+			 *
+			 */
+			onFinally: () => {
+				setSubmitting(false);
+			},
+			/**
+			 *
+			 */
+			onThen: () => {
 				onClose();
-			})
-			.finally(() => setSubmitting(false));
+			},
+		};
+		dispatch(action);
 	};
 	//TODO Handle form validation errors
 	return (
