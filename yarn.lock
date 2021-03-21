@@ -1401,6 +1401,11 @@ caniuse-lite@^1.0.30001173, caniuse-lite@^1.0.30001179:
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001203.tgz#a7a34df21a387d9deffcd56c000b8cf5ab540580"
   integrity sha512-/I9tvnzU/PHMH7wBPrfDMSuecDeUKerjCPX7D0xBbaJZPxoT9m+yYxt0zCTkcijCkjTdim3H56Zm0i5Adxch4w==
 
+chakra-ui-ionicons@^0.3.3:
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/chakra-ui-ionicons/-/chakra-ui-ionicons-0.3.3.tgz#51187237701985d48cae9e5cd2d9bfa238a7adcb"
+  integrity sha512-1SRV11HKmwJyWk9y8mlFgs3jTLnk9GIlZG0ipIp2VejSlaeiNx1mnbB/Rvzcbs7Z8PdT3vYo+j4bwiW1V38RDg==
+
 chalk@2.4.2, chalk@^2.0.0, chalk@^2.4.2:
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/chalk/-/chalk-2.4.2.tgz#cd42541677a54333cf541a49108c1432b44c9424"
