@@ -25,7 +25,9 @@ const inventoryStateReducer = (
 			});
 		case "item_remove":
 			return produce(state, (draftState) => {
-				draftState.items = draftState.items.filter(item._id !== data);
+				draftState.items = draftState.items.filter(
+					(item) => item._id !== (data as string)
+				);
 			});
 	}
 };
