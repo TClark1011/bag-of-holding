@@ -96,7 +96,7 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 					</Td>
 					<Td {...numericTableCellProps}>
 						{items.reduce<number>(
-							(accumulator, item) => accumulator + item.value * item.quantity,
+							(accumulator, item) => accumulator + item.weight * item.quantity,
 							0
 						)}
 					</Td>
