@@ -13,7 +13,7 @@ import OmitId from "../utils/OmitId";
  * @property {string} [infoLink] A link to a document that contains more information about the item
  */
 interface InventoryItemFields {
-	_id: string;
+	readonly _id: string;
 	name: string;
 	quantity: number;
 	weight: number;
