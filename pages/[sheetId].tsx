@@ -37,14 +37,11 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 
 	useInterval(
 		() =>
+			//? Regularly refetch data
 			fetch("/api/1")
 				.then((res) => res.json())
 				.then((data) => {
 					if (!deepEqual(data, { items, name, members })) {
-						console.log(
-							"data was fetched and difference was found, applying updates"
-						);
-						// setInventoryState(data.items as InventoryItemFields[]);
 						dispatch({ type: "sheet_update", data });
 					}
 				}),
