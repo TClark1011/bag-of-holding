@@ -72,11 +72,15 @@ const inventoryStateReducer = (
 				);
 			}, true);
 		case "item_update":
-			return produceNewState((draftState) => {
-				draftState.items.forEach((item) =>
-					item._id === (data as InventoryItemFields)._id ? data : item
-				);
-			});
+			return {
+				...state,
+				items: state.items.map((item) => {
+					if (item._id === (data as InventoryItemFields)._id) {
+						return data as InventoryItemFields;
+					}
+					return item;
+				}),
+			};
 		case "sheet_update":
 			return produceNewState((draftState) => ({
 				...draftState,

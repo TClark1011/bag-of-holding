@@ -83,7 +83,7 @@ const ItemDialog: React.FC<Props> = ({
 		console.log("Submitting Data");
 		console.log("(ItemDialog) data: ", data);
 		const action: InventorySheetStateAction = {
-			type: "item_add",
+			type: inEditMode ? "item_update" : "item_add",
 			data,
 			sendToServer: true,
 			/**
