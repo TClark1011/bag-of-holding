@@ -12,10 +12,10 @@ import InventorySheetState, {
 	InventorySheetStateAction,
 } from "../types/InventorySheetState";
 import inventorySheetStateReducer from "../utils/inventorySheetStateReducer";
-import { fetchSheetFromMongo } from "../utils/fetchSheet";
 import getUrlParam from "../utils/getUrlParam";
 import deepEqual from "deep-equal";
 import SheetStateProvider from "../components/contexts/SheetStateContext";
+import { fetchAllSheets, fetchSheet } from "../db/sheetServices";
 
 /**
  * The page for a specific sheet
@@ -95,7 +95,7 @@ export const getStaticProps: GetStaticProps<InventorySheetFields> = async (
 	context
 ) => {
 	return {
-		props: await fetchSheetFromMongo(getUrlParam(context.params.sheetId)),
+		props: await fetchSheet(getUrlParam(context.params.sheetId)),
 	};
 };
 
@@ -105,11 +105,14 @@ export const getStaticProps: GetStaticProps<InventorySheetFields> = async (
  * @returns {GetStaticPathsResult} Data for pre rendering paths
  */
 export const getStaticPaths: GetStaticPaths = async () => {
-	const paths = [
-		{
-			params: { sheetId: "1" },
-		},
-	]; //This will replaced with a map function that returns an array with all the sheets that exist in the database
+	// const paths = [
+	// 	{
+	// 		params: { sheetId: "1" },
+	// 	},
+	// ]; //This will replaced with a map function that returns an array with all the sheets that exist in the database
+	const paths = await (await fetchAllSheets()).map((item) => ({
+		params: { sheetId: item._id },
+	}));
 	return {
 		paths,
 		fallback: true,
