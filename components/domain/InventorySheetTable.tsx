@@ -13,6 +13,7 @@ const tableHeaderProps = {
 export interface InventorySheetTableProps {
 	items: InventoryItemFields[];
 	compactMode: boolean;
+	onRowClick: (item?: InventoryItemFields) => void;
 }
 
 /**
@@ -20,9 +21,13 @@ export interface InventorySheetTableProps {
  *
  * @param {object} props Component props
  * @param {InventoryItemFields[]} props.items The items in the inventory
+ * @param props.onRowClick
  * @returns {React.ReactElement} The rendered htmk components
  */
-const InventorySheetTable: React.FC<InventorySheetTableProps> = ({ items }) => (
+const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
+	items,
+	onRowClick,
+}) => (
 	<Table colorScheme="gray">
 		<Thead>
 			<Tr backgroundColor="primary.500">
@@ -36,8 +41,11 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({ items }) => (
 			</Tr>
 		</Thead>
 		<Tbody>
-			{items.map(({ _id, name, quantity, weight }) => (
-				<Tr key={_id}>
+			{items.map(({ _id, name, quantity, weight, ...item }) => (
+				<Tr
+					key={_id}
+					onClick={() => onRowClick({ _id, name, quantity, weight, ...item })}
+				>
 					<Td>{name}</Td>
 					<Td {...numericTableCellProps}>{quantity}</Td>
 					<Td {...numericTableCellProps}>{weight * quantity}</Td>

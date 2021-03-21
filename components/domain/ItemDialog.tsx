@@ -1,6 +1,6 @@
 import { Button } from "@chakra-ui/button";
 import { Input } from "@chakra-ui/input";
-import { SimpleGrid, VStack } from "@chakra-ui/layout";
+import { Flex, SimpleGrid, VStack } from "@chakra-ui/layout";
 import {
 	Modal,
 	ModalBody,
@@ -13,6 +13,7 @@ import {
 import { Select } from "@chakra-ui/select";
 import { Textarea } from "@chakra-ui/textarea";
 import { Field, Formik } from "formik";
+import { useState } from "react";
 import DialogControlProps from "../../types/DialogControlProps";
 import { InventoryItemCreationFields } from "../../types/InventoryItemFields";
 import { InventorySheetStateAction } from "../../types/InventorySheetState";
@@ -20,26 +21,42 @@ import { useSheetStateDispatch } from "../contexts/SheetStateContext";
 import FormItem from "../ui/FormItem";
 import NumberField from "../ui/NumberField";
 
+export type ItemDialogMode = "edit" | "new";
+
+interface Props extends DialogControlProps {
+	mode: ItemDialogMode;
+	item?: InventoryItemCreationFields;
+}
+
 /**
  * Modal dialog for creating a new item
  *
  * @param {object} props props
  * @param {UseDisclosureReturn} props.controller Object with methods for controlling
  * the state of the dialog
+ * @param props.mode
+ * @param props.item
  * @returns {React.ReactElement} The rendered HTML
  */
-const NewItemDialog: React.FC<DialogControlProps> = ({
+const ItemDialog: React.FC<Props> = ({
 	controller: { onClose, isOpen },
+	mode,
+	item,
 }) => {
-	const initialFormValues: InventoryItemCreationFields = {
-		name: "",
-		quantity: 1,
-		value: 0,
-		weight: 0,
-		description: "",
-		category: "",
-		reference: "",
-	};
+	const inEditMode = mode === "edit";
+
+	const initialFormValues: InventoryItemCreationFields =
+		inEditMode && item
+			? item
+			: {
+				name: "",
+				quantity: 1,
+				value: 0,
+				weight: 0,
+				description: "",
+				category: "",
+				reference: "",
+			  };
 
 	const dispatch = useSheetStateDispatch();
 
@@ -55,7 +72,7 @@ const NewItemDialog: React.FC<DialogControlProps> = ({
 	 */
 	const onSubmit = (data: InventoryItemCreationFields, { setSubmitting }) => {
 		console.log("Submitting Data");
-		console.log("(NewItemDialog) data: ", data);
+		console.log("(ItemDialog) data: ", data);
 		const action: InventorySheetStateAction = {
 			type: "item_add",
 			data,
@@ -75,6 +92,35 @@ const NewItemDialog: React.FC<DialogControlProps> = ({
 		};
 		dispatch(action);
 	};
+
+	const [isDeleting, setIsDeleting] = useState<boolean>(false);
+
+	/**
+	 * @param item
+	 * @param itemId
+	 * @param setSubmitting
+	 */
+	const getOnDeleteClick = (): void => {
+		setIsDeleting(true);
+		dispatch({
+			type: "item_remove",
+			data: item._id,
+			sendToServer: true,
+			/**
+			 * Regardless of result, mark submission as complete at end of query
+			 */
+			onFinally: () => {
+				setIsDeleting(false);
+			},
+			/**
+			 * Close Dialog if delete request was successful
+			 */
+			onThen: () => {
+				onClose();
+			},
+		});
+	};
+
 	//TODO Handle form validation errors
 	return (
 		<Modal isOpen={isOpen} onClose={onClose}>
@@ -148,13 +194,27 @@ const NewItemDialog: React.FC<DialogControlProps> = ({
 							</VStack>
 						</ModalBody>
 						<ModalFooter>
-							<Button
-								colorScheme="secondary"
-								onClick={() => handleSubmit()}
-								isLoading={isSubmitting}
+							<Flex
+								justify={inEditMode ? "space-between" : "flex-end"}
+								width="full"
 							>
-								Create Item
-							</Button>
+								{inEditMode && (
+									<Button
+										colorScheme="error"
+										onClick={getOnDeleteClick}
+										isLoading={isDeleting}
+									>
+										Delete
+									</Button>
+								)}
+								<Button
+									colorScheme="secondary"
+									onClick={() => handleSubmit()}
+									isLoading={isSubmitting}
+								>
+									Create Item
+								</Button>
+							</Flex>
 						</ModalFooter>
 					</ModalContent>
 				)}
@@ -163,4 +223,4 @@ const NewItemDialog: React.FC<DialogControlProps> = ({
 	);
 };
 
-export default NewItemDialog;
+export default ItemDialog;

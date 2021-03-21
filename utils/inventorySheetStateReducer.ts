@@ -1,4 +1,5 @@
 import produce from "immer";
+import { DRAFT_STATE } from "immer/dist/internal";
 import InventoryItemFields from "../types/InventoryItemFields";
 import InventorySheetFields from "../types/InventorySheetFields";
 import InventorySheetState, {
@@ -48,12 +49,17 @@ const inventoryStateReducer = (
 				draftState.items = draftState.items.filter(
 					(item) => item._id !== (data as string)
 				);
+				draftState.isAhead = true;
 			});
 		case "sheet_update":
 			return produce(state, (draftState) => ({
 				...draftState,
 				...(data as InventorySheetFields),
 			}));
+		case "sheet_setIsAhead":
+			return produce(state, (draftState) => {
+				draftState.isAhead = data as boolean;
+			});
 	}
 };
 

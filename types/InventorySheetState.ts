@@ -58,12 +58,21 @@ type UpdateSheetAction = InventorySheetStateActionTemplate<
 >;
 
 /**
+ * Action for setting whether or not sheet state is ahead of server state
+ */
+type SetStateIsAheadAction = InventorySheetStateActionTemplate<
+	"sheet_setIsAhead",
+	boolean
+>;
+
+/**
  * Type for all valid actions
  */
 export type InventorySheetStateAction =
 	| AddItemAction
 	| RemoveItemAction
-	| UpdateSheetAction;
+	| UpdateSheetAction
+	| SetStateIsAheadAction;
 
 /**
  * @typedef {object} InventorySheetState Holds the local state of an inventory sheet

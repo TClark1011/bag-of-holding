@@ -4,8 +4,8 @@ import { Box, Heading, HStack } from "@chakra-ui/layout";
 import { Tag } from "@chakra-ui/tag";
 import { GetStaticPaths, GetStaticProps } from "next";
 import Head from "next/head";
-import { Reducer, useEffect, useReducer } from "react";
-import NewItemDialog from "../components/domain/NewItemDialog";
+import { Reducer, useEffect, useReducer, useState } from "react";
+import ItemDialog, { ItemDialogMode } from "../components/domain/ItemDialog";
 import InventoryTableSheet from "../components/domain/InventorySheetTable";
 import InventorySheetFields from "../types/InventorySheetFields";
 import InventorySheetState, {
@@ -17,6 +17,8 @@ import deepEqual from "deep-equal";
 import SheetStateProvider from "../components/contexts/SheetStateContext";
 import { fetchAllSheets, fetchSheet } from "../db/sheetServices";
 import { useRouter } from "next/router";
+import InventoryItemFields from "../types/InventoryItemFields";
+import { REFETCH_INTERVAL } from "../config/publicEnv";
 
 /**
  * The page for a specific sheet
@@ -28,7 +30,7 @@ import { useRouter } from "next/router";
  * @returns {React.ReactElement} Sheet component
  */
 const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
-	const [{ items, name, members, _id }, dispatch] = useReducer<
+	const [{ items, name, members, _id, isAhead }, dispatch] = useReducer<
 		Reducer<InventorySheetState, InventorySheetStateAction>
 	>(inventorySheetStateReducer, {
 		...sheetFields,
@@ -44,11 +46,36 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 	const router = useRouter();
 
 	useInterval(() => {
-		//? We refresh the props
-		router.replace(router.asPath, "", { scroll: false });
-	}, 3000);
+		if (isAhead) {
+			//? If local state is ahead of server, we ignore the next refetch give the server time to update
+			dispatch({ type: "sheet_setIsAhead", data: false });
+		} else {
+			//? We refresh the props from the server every 3 seconds
+			router.replace(router.asPath, "", { scroll: false });
+		}
+	}, REFETCH_INTERVAL);
 
 	const newItemDialogController = useDisclosure();
+
+	const [itemDialogMode, setItemDialogMode] = useState<ItemDialogMode>("edit");
+	const [activeItem, setActiveItem] = useState<InventoryItemFields>(items[0]);
+
+	/**
+	 *
+	 */
+	const openNewItemDialog = () => {
+		setItemDialogMode("new");
+		newItemDialogController.onOpen();
+	};
+
+	/**
+	 * @param item
+	 */
+	const openEditItemDialog = (item) => {
+		setActiveItem(item);
+		setItemDialogMode("edit");
+		newItemDialogController.onOpen();
+	};
 
 	return (
 		<SheetStateProvider
@@ -69,15 +96,20 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 							))}
 						</HStack>
 					</Box>
-					<Button
-						colorScheme="secondary"
-						onClick={newItemDialogController.onOpen}
-					>
+					<Button colorScheme="secondary" onClick={openNewItemDialog}>
 						Add New Item
 					</Button>
-					<NewItemDialog controller={newItemDialogController} />
+					<ItemDialog
+						controller={newItemDialogController}
+						mode={itemDialogMode}
+						item={activeItem}
+					/>
 					{/* <InventoryTableSheet items={items} compactMode={true} /> */}
-					<InventoryTableSheet items={items} compactMode={true} />
+					<InventoryTableSheet
+						items={items}
+						compactMode={true}
+						onRowClick={openEditItemDialog}
+					/>
 				</main>
 			</Box>
 		</SheetStateProvider>

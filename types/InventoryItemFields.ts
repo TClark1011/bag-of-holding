@@ -28,7 +28,7 @@ export type InventoryItemCreationFields = Omit<
 	OmitId<InventoryItemFields>,
 	"quantity" | "weight"
 > &
-	Partial<Pick<InventoryItemFields, "quantity" | "weight">>;
+	Partial<Pick<InventoryItemFields, "quantity" | "weight" | "_id">>;
 /**
  * The fields that are required to be input when creating a new inventory item.
  * We need this type because the fields 'quantity' and 'weight' are required fields,
