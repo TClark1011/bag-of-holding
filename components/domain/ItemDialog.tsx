@@ -34,8 +34,9 @@ interface Props extends DialogControlProps {
  * @param {object} props props
  * @param {UseDisclosureReturn} props.controller Object with methods for controlling
  * the state of the dialog
- * @param props.mode
- * @param props.item
+ * @param {ItemDialogMode} props.mode The mode the dialog is in. Eg; "new" if being used to
+ * create a new item or "edit" if being used to edit an existing item.
+ * @param {InventoryItemFields} [props.item] The item data used to fill in initial values.
  * @returns {React.ReactElement} The rendered HTML
  */
 const ItemDialog: React.FC<Props> = ({
@@ -96,11 +97,9 @@ const ItemDialog: React.FC<Props> = ({
 	const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
 	/**
-	 * @param item
-	 * @param itemId
-	 * @param setSubmitting
+	 * Function to execute when delete button is clicked
 	 */
-	const getOnDeleteClick = (): void => {
+	const onDelete = (): void => {
 		setIsDeleting(true);
 		dispatch({
 			type: "item_remove",
@@ -201,7 +200,7 @@ const ItemDialog: React.FC<Props> = ({
 								{inEditMode && (
 									<Button
 										colorScheme="error"
-										onClick={getOnDeleteClick}
+										onClick={onDelete}
 										isLoading={isDeleting}
 									>
 										Delete

@@ -21,8 +21,9 @@ export interface InventorySheetTableProps {
  *
  * @param {object} props Component props
  * @param {InventoryItemFields[]} props.items The items in the inventory
- * @param props.onRowClick
- * @returns {React.ReactElement} The rendered htmk components
+ * @param {Function} props.onRowClick Callback to execute when an item row is clicked.
+ * The item's fields are passed as a parameter
+ * @returns {React.ReactElement} The rendered html components
  */
 const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 	items,

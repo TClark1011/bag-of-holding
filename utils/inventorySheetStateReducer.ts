@@ -1,5 +1,4 @@
 import produce from "immer";
-import { DRAFT_STATE } from "immer/dist/internal";
 import InventoryItemFields from "../types/InventoryItemFields";
 import InventorySheetFields from "../types/InventorySheetFields";
 import InventorySheetState, {
@@ -39,27 +38,47 @@ const inventoryStateReducer = (
 			.catch((err) => onCatch && onCatch(err))
 			.finally(() => onFinally && onFinally());
 	}
+
+	/**
+	 * Shorthand for calling the immer 'produce' function,
+	 * passing the state as the first parameter
+	 *
+	 * @param {Function} mutation The function to execute
+	 * to produce the next state via mutation
+	 * @param {boolean} [setIsAhead=false] If true, mark the
+	 * state as being ahead of the server state.
+	 * @returns {InventorySheetState} The next state
+	 */
+	const produceNewState = (
+		mutation: (p: typeof state) => void,
+		setIsAhead = false
+	) =>
+		produce(state, (draftState) => {
+			if (setIsAhead) {
+				draftState.isAhead = true;
+			}
+			mutation(draftState);
+		});
+
 	switch (type) {
 		case "item_add":
-			return produce(state, (draftState) => {
+			return produceNewState((draftState) => {
 				draftState.items.push(createInventoryItem(data as InventoryItemFields));
-			});
+			}, true);
 		case "item_remove":
-			return produce(state, (draftState) => {
+			return produceNewState((draftState) => {
 				draftState.items = draftState.items.filter(
 					(item) => item._id !== (data as string)
 				);
-				draftState.isAhead = true;
-			});
+			}, true);
 		case "sheet_update":
-			return produce(state, (draftState) => ({
+			return produceNewState((draftState) => ({
 				...draftState,
 				...(data as InventorySheetFields),
 			}));
 		case "sheet_setIsAhead":
-			return produce(state, (draftState) => {
-				draftState.isAhead = data as boolean;
-			});
+			// eslint-disable-next-line @typescript-eslint/no-empty-function
+			return produceNewState(() => {}, true);
 	}
 };
 

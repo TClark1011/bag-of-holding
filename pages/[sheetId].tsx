@@ -2,7 +2,6 @@ import { Button } from "@chakra-ui/button";
 import { useDisclosure, useInterval } from "@chakra-ui/hooks";
 import { Box, Heading, HStack } from "@chakra-ui/layout";
 import { Tag } from "@chakra-ui/tag";
-import { GetStaticPaths, GetStaticProps } from "next";
 import Head from "next/head";
 import { Reducer, useEffect, useReducer, useState } from "react";
 import ItemDialog, { ItemDialogMode } from "../components/domain/ItemDialog";
@@ -13,12 +12,12 @@ import InventorySheetState, {
 } from "../types/InventorySheetState";
 import inventorySheetStateReducer from "../utils/inventorySheetStateReducer";
 import getUrlParam from "../utils/getUrlParam";
-import deepEqual from "deep-equal";
 import SheetStateProvider from "../components/contexts/SheetStateContext";
-import { fetchAllSheets, fetchSheet } from "../db/sheetServices";
+import { fetchSheet } from "../db/sheetServices";
 import { useRouter } from "next/router";
 import InventoryItemFields from "../types/InventoryItemFields";
 import { REFETCH_INTERVAL } from "../config/publicEnv";
+import { GetServerSideProps } from "next";
 
 /**
  * The page for a specific sheet
@@ -61,7 +60,7 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 	const [activeItem, setActiveItem] = useState<InventoryItemFields>(items[0]);
 
 	/**
-	 *
+	 * Open the 'New Item' dialog
 	 */
 	const openNewItemDialog = () => {
 		setItemDialogMode("new");
@@ -69,7 +68,9 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 	};
 
 	/**
-	 * @param item
+	 * Open the 'Edit Item' dialog
+	 *
+	 * @param {InventoryItemFields} item The item to edit
 	 */
 	const openEditItemDialog = (item) => {
 		setActiveItem(item);
@@ -124,7 +125,7 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
  * @param {string | string[]} context.params.sheetId The sheet id in the ur;
  * @returns {GetStaticPropsResult<InventorySheetFields>} The props for the sheet
  */
-export const getServerSideProps: GetStaticProps<InventorySheetFields> = async (
+export const getServerSideProps: GetServerSideProps<InventorySheetFields> = async (
 	context
 ) => {
 	return {
