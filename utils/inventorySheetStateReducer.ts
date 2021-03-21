@@ -40,6 +40,7 @@ const inventoryStateReducer = (
 	}: InventorySheetStateAction
 ): InventorySheetFields => {
 	if (sendToServer) {
+		//? If send to server is true, we send the action to the server
 		fetch("/api/" + 1, {
 			method: "PATCH",
 			body: JSON.stringify({ type, data, sendToServer: false }),

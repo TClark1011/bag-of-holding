@@ -1,6 +1,29 @@
 import { InventoryItemCreationFields } from "./InventoryItemFields";
 import InventorySheetFields from "./InventorySheetFields";
 
+/**
+ * @typedef {object} InventorySheetStateActionTemplate A template interface
+ * for defining actions upon a sheet's state
+ * @template T The string of the type of action
+ * @template D The type of data the action will contain in its payload
+ * @readonly
+ * @property {T} type The name of the type of action
+ * @readonly
+ * @property {D} data The action's payload data
+ * @readonly
+ * @property {boolean} [sendToServer] Whether or not the action should be
+ * sent to the server
+ * @readonly
+ * @property {Function} [onFinally] Callback executed in the '.finally'
+ * callback of the request sending the action to the server
+ * @readonly
+ * @property {Function} [onCatch] Callback executed in the '.catch'
+ * callback of the request sending the action to the server. Is passed
+ * the error object that triggers the catch
+ * @readonly
+ * @property {Function} [onThen] Callback executed in the '.then'
+ * callback of the request sending the action to the server
+ */
 interface InventorySheetStateActionTemplate<T extends string, D> {
 	readonly type: T;
 	readonly data: D;
@@ -10,19 +33,33 @@ interface InventorySheetStateActionTemplate<T extends string, D> {
 	readonly onThen?: () => void;
 }
 
+/**
+ * Action for adding an item to sheet inventory
+ */
 type AddItemAction = InventorySheetStateActionTemplate<
 	"item_add",
 	InventoryItemCreationFields
 >;
+
+/**
+ * Action for removing an item from sheet inventory
+ */
 type RemoveItemAction = InventorySheetStateActionTemplate<
 	"item_remove",
 	string
 >;
+
+/**
+ * Action for completely updating a sheet's state
+ */
 type UpdateSheetAction = InventorySheetStateActionTemplate<
 	"sheet_update",
 	InventorySheetFields
 >;
 
+/**
+ * Type for all valid actions
+ */
 export type InventorySheetStateAction =
 	| AddItemAction
 	| RemoveItemAction
