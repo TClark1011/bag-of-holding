@@ -8,11 +8,11 @@ const numericTableCellProps = {
 	sx: { textAlign: "center" },
 };
 
-const col3Props = {
+const col4Props = {
 	display: ["none", "table-cell"],
 };
 
-const col4Props = {
+const col5Props = {
 	display: ["none", "none", "table-cell"],
 };
 
@@ -54,14 +54,14 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 					<InventorySheetTableHeaders
 						display={["none", "table-cell"]}
 						{...numericTableCellProps}
-						{...col3Props}
+						{...col4Props}
 					>
 						Value
 					</InventorySheetTableHeaders>
 					<InventorySheetTableHeaders
 						display={["none", "table-cell"]}
 						{...numericTableCellProps}
-						{...col4Props}
+						{...col5Props}
 					>
 						Carried By
 					</InventorySheetTableHeaders>
@@ -78,21 +78,22 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 						<Td>{item.name}</Td>
 						<Td {...numericTableCellProps}>{item.quantity}</Td>
 						<Td {...numericTableCellProps}>{item.weight * item.quantity}</Td>
-						<Td {...numericTableCellProps} {...col3Props}>
+						<Td {...numericTableCellProps} {...col4Props}>
 							{item.value}
 						</Td>
-						<Td {...numericTableCellProps} {...col4Props}>
+						<Td {...numericTableCellProps} {...col5Props}>
 							{item.carriedBy || "Nobody"}
 						</Td>
 					</Tr>
 				))}
 				<Tr>
 					<Td
-						colSpan={totalWeightLabelColSpan}
+						// colSpan={totalWeightLabelColSpan}
+						colSpan={2}
 						fontWeight="bold"
 						textAlign="right"
 					>
-						Total Weight
+						Total
 					</Td>
 					<Td {...numericTableCellProps}>
 						{items.reduce<number>(
@@ -100,6 +101,13 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 							0
 						)}
 					</Td>
+					<Td {...numericTableCellProps} {...col4Props}>
+						{items.reduce<number>(
+							(accumulator, item) => accumulator + item.value * item.quantity,
+							0
+						)}
+					</Td>
+					<Td {...col5Props} />
 				</Tr>
 			</Tbody>
 		</Table>
