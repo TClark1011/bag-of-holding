@@ -15,7 +15,7 @@ import { Textarea } from "@chakra-ui/textarea";
 import { Field, Formik } from "formik";
 import DialogControlProps from "../../types/DialogControlProps";
 import { InventoryItemCreationFields } from "../../types/InventoryItemFields";
-import InventoryStateAction from "../../types/InventorySheetStateAction";
+import { InventorySheetStateAction } from "../../types/InventorySheetState";
 import FormItem from "../ui/FormItem";
 import NumberField from "../ui/NumberField";
 
@@ -53,7 +53,7 @@ const NewItemDialog: React.FC<DialogControlProps> = ({
 	const onSubmit = (data: InventoryItemCreationFields, { setSubmitting }) => {
 		console.log("Submitting Data");
 		console.log("(NewItemDialog) data: ", data);
-		const action: InventoryStateAction = {
+		const action: InventorySheetStateAction = {
 			type: "item_add",
 			data,
 		};

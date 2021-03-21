@@ -14,6 +14,4 @@ type RemoveItemAction = InventorySheetStateActionTemplate<
 	string
 >;
 
-type InventorySheetStateAction = AddItemAction | RemoveItemAction;
-
-export default InventorySheetStateAction;
+export type InventorySheetStateAction = AddItemAction | RemoveItemAction;

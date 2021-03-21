@@ -11,7 +11,7 @@ import { getRandomInventoryItems } from "../fixtures/itemFixtures";
 import { averageMembersFixture } from "../fixtures/membersFixtures";
 import InventoryItemFields from "../types/InventoryItemFields";
 import InventorySheetFields from "../types/InventorySheetFields";
-import InventorySheetStateAction from "../types/InventorySheetStateAction";
+import { InventorySheetStateAction } from "../types/InventorySheetState";
 import inventorySheetStateReducer from "../utils/inventorySheetStateReducer";
 import { fetchSheetFromMongo } from "../utils/fetchSheet";
 import getUrlParam from "../utils/getUrlParam";
