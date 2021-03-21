@@ -82,4 +82,13 @@ const inventoryStateReducer = (
 	}
 };
 
+/**
+ * //TODO: Actions
+ * Update Item
+ * Rename Sheet
+ * Add member
+ * Remove member
+ * Update member
+ */
+
 export default inventoryStateReducer;
