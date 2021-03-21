@@ -27,7 +27,7 @@ import SheetStateProvider from "../components/contexts/SheetStateContext";
  * @returns {React.ReactElement} Sheet component
  */
 const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
-	const [{ items, name, members }, dispatch] = useReducer<
+	const [{ items, name, members, _id }, dispatch] = useReducer<
 		Reducer<InventorySheetState, InventorySheetStateAction>
 	>(inventorySheetStateReducer, {
 		...sheetFields,
@@ -51,7 +51,10 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 	const newItemDialogController = useDisclosure();
 
 	return (
-		<SheetStateProvider dispatch={dispatch} state={{ items, members, name }}>
+		<SheetStateProvider
+			dispatch={dispatch}
+			state={{ items, members, name, _id }}
+		>
 			<Box>
 				<Head>
 					<title>A Sheet</title>

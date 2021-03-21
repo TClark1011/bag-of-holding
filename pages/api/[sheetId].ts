@@ -4,8 +4,10 @@ import { averageMembersFixture } from "../../fixtures/membersFixtures";
 import inventoryStateReducer from "../../utils/inventorySheetStateReducer";
 import InventorySheetFields from "../../types/InventorySheetFields";
 import "../../db/sheetServices";
+import faker from "faker";
 
 let sheetState: InventorySheetFields = {
+	_id: faker.random.uuid(),
 	name: "Test Sheet",
 	items: getRandomInventoryItems(),
 	members: averageMembersFixture,
