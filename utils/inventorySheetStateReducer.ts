@@ -71,6 +71,12 @@ const inventoryStateReducer = (
 					(item) => item._id !== (data as string)
 				);
 			}, true);
+		case "item_update":
+			return produceNewState((draftState) => {
+				draftState.items.forEach((item) =>
+					item._id === (data as InventoryItemFields)._id ? data : item
+				);
+			});
 		case "sheet_update":
 			return produceNewState((draftState) => ({
 				...draftState,
@@ -78,7 +84,9 @@ const inventoryStateReducer = (
 			}));
 		case "sheet_setIsAhead":
 			// eslint-disable-next-line @typescript-eslint/no-empty-function
-			return produceNewState(() => {}, true);
+			return produceNewState((draftState) => {
+				draftState.isAhead = data as boolean;
+			});
 	}
 };
 

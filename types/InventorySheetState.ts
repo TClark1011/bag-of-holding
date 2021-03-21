@@ -48,6 +48,13 @@ type RemoveItemAction = InventorySheetStateActionTemplate<
 	"item_remove",
 	string
 >;
+/**
+ * Action for setting whether or not sheet state is ahead of server state
+ */
+type UpdateItemAction = InventorySheetStateActionTemplate<
+	"item_update",
+	InventoryItemCreationFields
+>;
 
 /**
  * Action for completely updating a sheet's state
@@ -72,7 +79,8 @@ export type InventorySheetStateAction =
 	| AddItemAction
 	| RemoveItemAction
 	| UpdateSheetAction
-	| SetStateIsAheadAction;
+	| SetStateIsAheadAction
+	| UpdateItemAction;
 
 /**
  * @typedef {object} InventorySheetState Holds the local state of an inventory sheet
