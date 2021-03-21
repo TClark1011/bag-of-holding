@@ -78,8 +78,6 @@ const ItemDialog: React.FC<Props> = ({
 	 * currently submitting
 	 */
 	const onSubmit = (data: InventoryItemCreationFields, { setSubmitting }) => {
-		console.log("Submitting Data");
-		console.log("(ItemDialog) data: ", data);
 		const action: InventorySheetStateAction = {
 			type: inEditMode ? "item_update" : "item_add",
 			data,
