@@ -61,13 +61,13 @@ const NewItemDialog: React.FC<DialogControlProps> = ({
 			data,
 			sendToServer: true,
 			/**
-			 *
+			 * Set submitting to false when the server responds
 			 */
 			onFinally: () => {
 				setSubmitting(false);
 			},
 			/**
-			 *
+			 * Close the dialog if the server responded positively
 			 */
 			onThen: () => {
 				onClose();
