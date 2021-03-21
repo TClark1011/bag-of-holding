@@ -1,4 +1,3 @@
-import { useBreakpointValue } from "@chakra-ui/media-query";
 import { chakra } from "@chakra-ui/system";
 import { Table, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/table";
 import InventoryItemFields from "../../types/InventoryItemFields";
@@ -39,7 +38,7 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 	items,
 	onRowClick,
 }) => {
-	const totalWeightLabelColSpan = useBreakpointValue([2, 3, 4]);
+	// TODO: Add type column
 	return (
 		<Table colorScheme="gray">
 			<Thead>
