@@ -25,3 +25,10 @@ export const fetchAllSheets = async (): Promise<InventorySheetFields[]> => {
  */
 export const fetchSheet = async (_id: string): Promise<InventorySheetFields> =>
 	stringifyCopy<InventorySheetFields>(await SheetModel.findById(_id));
+
+export const updateSheet = async ({
+	_id,
+	...data
+}: InventorySheetFields): Promise<void> => {
+	await SheetModel.findByIdAndUpdate(_id, data);
+};

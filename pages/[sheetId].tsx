@@ -38,7 +38,7 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 	useInterval(
 		() =>
 			//? Regularly refetch data
-			fetch("/api/1")
+			fetch("/api/" + _id)
 				.then((res) => res.json())
 				.then((data) => {
 					if (!deepEqual(data, { items, name, members })) {

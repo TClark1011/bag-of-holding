@@ -29,7 +29,7 @@ const inventoryStateReducer = (
 ): InventorySheetFields => {
 	if (sendToServer) {
 		//? If send to server is true, we send the action to the server
-		fetch("/api/" + 1, {
+		fetch("/api/" + state._id, {
 			method: "PATCH",
 			body: JSON.stringify({ type, data, sendToServer: false }),
 			//? We set 'sendToServer' to false when sending the action to the server to prevent an infinite loop

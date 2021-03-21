@@ -1,17 +1,21 @@
-import { getRandomInventoryItems } from "./../../fixtures/itemFixtures";
-import { NextApiHandler } from "next";
-import { averageMembersFixture } from "../../fixtures/membersFixtures";
+import { NextApiHandler, NextApiRequest } from "next";
 import inventoryStateReducer from "../../utils/inventorySheetStateReducer";
-import InventorySheetFields from "../../types/InventorySheetFields";
 import "../../db/sheetServices";
-import faker from "faker";
+import { fetchSheet, updateSheet } from "../../db/sheetServices";
 
-let sheetState: InventorySheetFields = {
-	_id: faker.random.uuid(),
-	name: "Test Sheet",
-	items: getRandomInventoryItems(),
-	members: averageMembersFixture,
-};
+/**
+ * Pull the sheetId url parameter for a requests url
+ * @param {NextApiRequest} req The request object
+ * @returns {string} The sheetId url parameter
+ */
+const getSheetId = (req: NextApiRequest): string => req.query.sheetId as string;
+
+// let sheetState: InventorySheetFields = {
+// 	_id: faker.random.uuid(),
+// 	name: "Test Sheet",
+// 	items: getRandomInventoryItems(),
+// 	members: averageMembersFixture,
+// };
 
 /**
  * handle GET request
@@ -20,7 +24,9 @@ let sheetState: InventorySheetFields = {
  * @param {NextApiResponse} res The HTTP response object
  */
 const handleGET: NextApiHandler = async (req, res) => {
-	res.status(200).json(sheetState);
+	// console.log("([sheetId]) req.query: ", req.query);
+	const data = await fetchSheet(getSheetId(req));
+	res.status(200).json(data);
 };
 
 /**
@@ -29,10 +35,15 @@ const handleGET: NextApiHandler = async (req, res) => {
  * @param {NextApiRequest} req The HTTP request object
  * @param {NextApiResponse} res The HTTP response object
  */
-const handlePATCH: NextApiHandler = (req, res) => {
+const handlePATCH: NextApiHandler = async (req, res) => {
 	const action = JSON.parse(req.body);
-	sheetState = inventoryStateReducer(sheetState, action);
-	res.status(200).json(sheetState);
+	const currentState = await fetchSheet(getSheetId(req));
+	console.log("([sheetId]) currentState: ", currentState);
+	const newState = inventoryStateReducer(currentState, action);
+	console.log("([sheetId]) newState: ", newState);
+
+	updateSheet(newState);
+	res.status(200).json(newState);
 };
 
 /**
