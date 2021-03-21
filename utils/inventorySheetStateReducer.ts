@@ -1,4 +1,5 @@
 import produce from "immer";
+import { merge } from "merge-anything";
 import InventoryItemFields from "../types/InventoryItemFields";
 import InventorySheetFields from "../types/InventorySheetFields";
 import InventorySheetState, {
@@ -82,10 +83,8 @@ const inventoryStateReducer = (
 				}),
 			};
 		case "sheet_update":
-			return produceNewState((draftState) => ({
-				...draftState,
-				...(data as InventorySheetFields),
-			}));
+			//TODO: If a party member is deleted, set items that were being carried by them to being carried by nobody
+			return merge(state, data as InventorySheetFields);
 		case "sheet_setIsAhead":
 			return produceNewState((draftState) => {
 				draftState.isAhead = data as boolean;
@@ -95,7 +94,6 @@ const inventoryStateReducer = (
 
 /**
  * //TODO: Actions
- * Rename Sheet
  * Add member
  * Remove member
  * Update member

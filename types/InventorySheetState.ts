@@ -61,7 +61,7 @@ type UpdateItemAction = InventorySheetStateActionTemplate<
  */
 type UpdateSheetAction = InventorySheetStateActionTemplate<
 	"sheet_update",
-	InventorySheetFields
+	Partial<InventorySheetFields>
 >;
 
 /**

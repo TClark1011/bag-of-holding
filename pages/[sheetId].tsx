@@ -1,6 +1,6 @@
 import { Button } from "@chakra-ui/button";
 import { useDisclosure, useInterval } from "@chakra-ui/hooks";
-import { Box, Heading, HStack } from "@chakra-ui/layout";
+import { Box, Flex, Heading, HStack } from "@chakra-ui/layout";
 import { Tag } from "@chakra-ui/tag";
 import Head from "next/head";
 import { Reducer, useEffect, useReducer, useState } from "react";
@@ -18,6 +18,7 @@ import { useRouter } from "next/router";
 import InventoryItemFields from "../types/InventoryItemFields";
 import { REFETCH_INTERVAL } from "../config/publicEnv";
 import { GetServerSideProps } from "next";
+import SheetDialog from "../components/domain/SheetDialog";
 
 /**
  * The page for a specific sheet
@@ -59,6 +60,8 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 	const [itemDialogMode, setItemDialogMode] = useState<ItemDialogMode>("edit");
 	const [activeItem, setActiveItem] = useState<InventoryItemFields>(items[0]);
 
+	const sheetDialogController = useDisclosure();
+
 	/**
 	 * Open the 'New Item' dialog
 	 */
@@ -85,13 +88,19 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 		>
 			<Box>
 				<Head>
-					<title>A Sheet</title>
+					<title>{name}</title>
 					<link rel="icon" href="/favicon.ico" />
 				</Head>
 				<main>
 					<Box padding={2}>
-						<Heading paddingBottom="group">{name}</Heading>
+						<Flex justify="space-between">
+							{/* Sheet Title */}
+							<Heading paddingBottom="group">{name}</Heading>
+							{/* Sheet settings button */}
+							<Button onClick={sheetDialogController.onOpen}>G</Button>
+						</Flex>
 						<HStack spacing="group">
+							{/* Party Members Tags */}
 							{members.map((item) => (
 								<Tag key={item}>{item}</Tag>
 							))}
@@ -100,17 +109,20 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 					<Button colorScheme="secondary" onClick={openNewItemDialog}>
 						Add New Item
 					</Button>
-					<ItemDialog
-						controller={newItemDialogController}
-						mode={itemDialogMode}
-						item={activeItem}
-					/>
 					{/* <InventoryTableSheet items={items} compactMode={true} /> */}
 					<InventoryTableSheet
 						items={items}
 						compactMode={true}
 						onRowClick={openEditItemDialog}
 					/>
+
+					{/* Dialogs */}
+					<ItemDialog
+						controller={newItemDialogController}
+						mode={itemDialogMode}
+						item={activeItem}
+					/>
+					<SheetDialog controller={sheetDialogController} />
 				</main>
 			</Box>
 		</SheetStateProvider>
