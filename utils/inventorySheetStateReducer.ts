@@ -1,6 +1,6 @@
 import produce from "immer";
 import InventoryItemFields from "../types/InventoryItemFields";
-import InventoryStateAction from "../types/InventoryStateAction";
+import InventoryStateAction from "../types/InventorySheetStateAction";
 import createInventoryItem from "./createInventoryItem";
 
 /**
