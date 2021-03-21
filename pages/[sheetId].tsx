@@ -38,15 +38,17 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 		isLoading: false,
 	});
 
-	const [inventoryState, setInventoryState] = useState(items);
-
 	useInterval(
 		() =>
-			fetch("http://localhost:3000/api/1")
+			fetch("/api/1")
 				.then((res) => res.json())
 				.then((data) => {
-					if (!deepEqual(data.items, inventoryState)) {
-						setInventoryState(data.items as InventoryItemFields[]);
+					if (!deepEqual(data, { items, name, members })) {
+						console.log(
+							"data was fetched and difference was found, applying updates"
+						);
+						// setInventoryState(data.items as InventoryItemFields[]);
+						dispatch({ type: "sheet_update", data });
 					}
 				}),
 		3000
@@ -76,7 +78,7 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 					Add New Item
 				</Button>
 				<NewItemDialog controller={newItemDialogController} />
-				<InventoryTableSheet items={inventoryState} compactMode={true} />
+				<InventoryTableSheet items={items} compactMode={true} />
 			</main>
 		</Box>
 	);
