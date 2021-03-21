@@ -4,7 +4,7 @@ import { Box, Heading, HStack } from "@chakra-ui/layout";
 import { Tag } from "@chakra-ui/tag";
 import { GetStaticPaths, GetStaticProps } from "next";
 import Head from "next/head";
-import { Reducer, useReducer } from "react";
+import { Reducer, useEffect, useReducer } from "react";
 import NewItemDialog from "../components/domain/NewItemDialog";
 import InventoryTableSheet from "../components/domain/InventorySheetTable";
 import InventorySheetFields from "../types/InventorySheetFields";
@@ -16,6 +16,7 @@ import getUrlParam from "../utils/getUrlParam";
 import deepEqual from "deep-equal";
 import SheetStateProvider from "../components/contexts/SheetStateContext";
 import { fetchAllSheets, fetchSheet } from "../db/sheetServices";
+import { useRouter } from "next/router";
 
 /**
  * The page for a specific sheet
@@ -35,18 +36,17 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 		isLoading: false,
 	});
 
-	useInterval(
-		() =>
-			//? Regularly refetch data
-			fetch("/api/" + _id)
-				.then((res) => res.json())
-				.then((data) => {
-					if (!deepEqual(data, { items, name, members })) {
-						dispatch({ type: "sheet_update", data });
-					}
-				}),
-		3000
-	);
+	useEffect(() => {
+		dispatch({ type: "sheet_update", data: { ...sheetFields } });
+		//? When the sheet's props are updated via refetching, load the new values into state
+	}, [sheetFields]);
+
+	const router = useRouter();
+
+	useInterval(() => {
+		//? We refresh the props
+		router.replace(router.asPath, "", { scroll: false });
+	}, 3000);
 
 	const newItemDialogController = useDisclosure();
 
@@ -76,6 +76,7 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 						Add New Item
 					</Button>
 					<NewItemDialog controller={newItemDialogController} />
+					{/* <InventoryTableSheet items={items} compactMode={true} /> */}
 					<InventoryTableSheet items={items} compactMode={true} />
 				</main>
 			</Box>
@@ -84,7 +85,7 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 };
 
 /**
- * Get the static props
+ * Get the props rendered by the server
  *
  * @param {object} context Path context data
  * @param {object} context.params Path url parameters

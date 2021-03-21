@@ -5,7 +5,11 @@ import stringifyCopy from "../utils/stringifyCopy";
 import SheetModel from "./SheetModel";
 
 mongoose
-	.connect(MONGO_URL, { useUnifiedTopology: true, useNewUrlParser: true })
+	.connect(MONGO_URL, {
+		useUnifiedTopology: true,
+		useNewUrlParser: true,
+		useFindAndModify: false,
+	})
 	.then(() => console.log("connected to mongoose"));
 
 /**
@@ -23,9 +27,23 @@ export const fetchAllSheets = async (): Promise<InventorySheetFields[]> => {
  * @param {string} _id The id of the sheet to fetch
  * @returns {Promise<InventorySheetFields>} The sheet fetched from MongoDB
  */
-export const fetchSheet = async (_id: string): Promise<InventorySheetFields> =>
-	stringifyCopy<InventorySheetFields>(await SheetModel.findById(_id));
+export const fetchSheet = async (
+	_id: string
+): Promise<InventorySheetFields> => {
+	/**
+	 * //FIXME: This is throwing an error about "resolving without sending a response"
+	 * Moving this code out of this function and simply executing it inline still produces the problem
+	 * I think it might be a problem with using mongoose in NextJS. It doesn't seem to be actually affecting
+	 * application.
+	 */
+	return stringifyCopy<InventorySheetFields>(await SheetModel.findById(_id));
+};
 
+/**
+ * Update a sheet
+ *
+ * @param {InventorySheetFields} data The data to update the sheet with
+ */
 export const updateSheet = async ({
 	_id,
 	...data

@@ -1,5 +1,4 @@
 import InventoryItemFields from "./InventoryItemFields";
-import { Document } from "mongoose";
 
 interface InventorySheetFields {
 	readonly _id: string;

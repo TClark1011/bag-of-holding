@@ -5,17 +5,11 @@ import { fetchSheet, updateSheet } from "../../db/sheetServices";
 
 /**
  * Pull the sheetId url parameter for a requests url
+ *
  * @param {NextApiRequest} req The request object
  * @returns {string} The sheetId url parameter
  */
 const getSheetId = (req: NextApiRequest): string => req.query.sheetId as string;
-
-// let sheetState: InventorySheetFields = {
-// 	_id: faker.random.uuid(),
-// 	name: "Test Sheet",
-// 	items: getRandomInventoryItems(),
-// 	members: averageMembersFixture,
-// };
 
 /**
  * handle GET request
@@ -24,7 +18,6 @@ const getSheetId = (req: NextApiRequest): string => req.query.sheetId as string;
  * @param {NextApiResponse} res The HTTP response object
  */
 const handleGET: NextApiHandler = async (req, res) => {
-	// console.log("([sheetId]) req.query: ", req.query);
 	const data = await fetchSheet(getSheetId(req));
 	res.status(200).json(data);
 };
@@ -38,10 +31,7 @@ const handleGET: NextApiHandler = async (req, res) => {
 const handlePATCH: NextApiHandler = async (req, res) => {
 	const action = JSON.parse(req.body);
 	const currentState = await fetchSheet(getSheetId(req));
-	console.log("([sheetId]) currentState: ", currentState);
 	const newState = inventoryStateReducer(currentState, action);
-	console.log("([sheetId]) newState: ", newState);
-
 	updateSheet(newState);
 	res.status(200).json(newState);
 };
