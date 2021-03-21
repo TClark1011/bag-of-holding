@@ -70,6 +70,7 @@ const SheetDialog: React.FC<DialogControlProps> = ({ controller }) => {
 	};
 
 	//TODO: Field Validation
+	///TODO: Confirmation when deleting a member
 	return (
 		<Modal {...controller}>
 			<ModalOverlay />
@@ -113,6 +114,7 @@ const SheetDialog: React.FC<DialogControlProps> = ({ controller }) => {
 														aria-label={"delete member " + (index + 1)}
 														icon={<RemoveIcon />}
 														borderRadius="full"
+														variant="outline"
 													/>
 												</Flex>
 											))}
