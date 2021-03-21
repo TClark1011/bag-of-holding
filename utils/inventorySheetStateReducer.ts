@@ -1,6 +1,7 @@
 import produce from "immer";
 import InventoryItemFields from "../types/InventoryItemFields";
-import InventoryStateAction from "../types/InventorySheetStateAction";
+import InventorySheetFields from "../types/InventorySheetFields";
+import InventorySheetStateAction from "../types/InventorySheetStateAction";
 import createInventoryItem from "./createInventoryItem";
 
 /**
@@ -14,16 +15,18 @@ import createInventoryItem from "./createInventoryItem";
  * @returns {InventoryItemFields[]} The state updated by the passed action
  */
 const inventoryStateReducer = (
-	state: InventoryItemFields[],
-	{ type, data }: InventoryStateAction
-): InventoryItemFields[] => {
+	state: InventorySheetFields,
+	{ type, data }: InventorySheetStateAction
+): InventorySheetFields => {
 	switch (type) {
 		case "item_add":
 			return produce(state, (draftState) => {
-				draftState.push(createInventoryItem(data as InventoryItemFields));
+				draftState.items.push(createInventoryItem(data as InventoryItemFields));
 			});
 		case "item_remove":
-			return state.filter((item) => item._id !== data);
+			return produce(state, (draftState) => {
+				draftState.items = draftState.items.filter(item._id !== data);
+			});
 	}
 };
 

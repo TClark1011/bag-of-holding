@@ -1,9 +1,9 @@
 import { getRandomInventoryItems } from "./../../fixtures/itemFixtures";
 import { NextApiHandler } from "next";
 import { averageMembersFixture } from "../../fixtures/membersFixtures";
-import inventoryStateReducer from "../../utils/inventoryStateReducer";
+import inventoryStateReducer from "../../utils/inventorySheetStateReducer";
 
-const sheetState = {
+let sheetState = {
 	name: "Test Sheet",
 	items: getRandomInventoryItems(),
 	members: averageMembersFixture,
@@ -27,7 +27,7 @@ const handleGET: NextApiHandler = async (req, res) => {
  */
 const handlePATCH: NextApiHandler = (req, res) => {
 	const action = JSON.parse(req.body);
-	sheetState.items = inventoryStateReducer(sheetState.items, action);
+	sheetState = inventoryStateReducer(sheetState, action);
 	res.status(200).json(sheetState);
 };
 

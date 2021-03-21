@@ -14,10 +14,8 @@ import { Select } from "@chakra-ui/select";
 import { Textarea } from "@chakra-ui/textarea";
 import { Field, Formik } from "formik";
 import DialogControlProps from "../../types/DialogControlProps";
-import InventoryItemFields, {
-	InventoryItemCreationFields,
-} from "../../types/InventoryItemFields";
-import InventoryStateAction from "../../types/InventoryStateAction";
+import { InventoryItemCreationFields } from "../../types/InventoryItemFields";
+import InventoryStateAction from "../../types/InventorySheetStateAction";
 import FormItem from "../ui/FormItem";
 import NumberField from "../ui/NumberField";
 
@@ -43,27 +41,38 @@ const NewItemDialog: React.FC<DialogControlProps> = ({
 	};
 
 	/**
-	 * @param data
+	 * Handle the submitting of the new item form
+	 * Sends data in a 'PATCH' http request to the api.
+	 *
+	 * @param {InventoryItemCreationFields} data The form data
+	 * @param {object} formFunctions Object containing functions for controlling
+	 * formik behaviour
+	 * @param {Function} formFunctions.setSubmitting Set whether or not the form is
+	 * currently submitting
 	 */
-	const onSubmit = (data: InventoryItemCreationFields) => {
+	const onSubmit = (data: InventoryItemCreationFields, { setSubmitting }) => {
 		console.log("Submitting Data");
 		console.log("(NewItemDialog) data: ", data);
 		const action: InventoryStateAction = {
 			type: "item_add",
 			data,
 		};
+		setSubmitting(true);
 		fetch("http://localhost:3000/api/1", {
 			method: "PATCH",
 			body: JSON.stringify(action),
-		}).then(() => {
-			onClose();
-		});
+		})
+			.then(() => {
+				onClose();
+			})
+			.finally(() => setSubmitting(false));
 	};
+	//TODO Handle form validation errors
 	return (
 		<Modal isOpen={isOpen} onClose={onClose}>
 			<ModalOverlay />
 			<Formik initialValues={initialFormValues} onSubmit={onSubmit}>
-				{({ handleSubmit }) => (
+				{({ handleSubmit, isSubmitting }) => (
 					<ModalContent>
 						<ModalHeader>Add New Item</ModalHeader>
 						<ModalCloseButton />
@@ -131,7 +140,11 @@ const NewItemDialog: React.FC<DialogControlProps> = ({
 							</VStack>
 						</ModalBody>
 						<ModalFooter>
-							<Button colorScheme="secondary" onClick={() => handleSubmit()}>
+							<Button
+								colorScheme="secondary"
+								onClick={() => handleSubmit()}
+								isDisabled={isSubmitting}
+							>
 								Create Item
 							</Button>
 						</ModalFooter>

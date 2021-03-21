@@ -5,17 +5,15 @@ interface InventorySheetStateActionTemplate<T extends string, D> {
 	readonly data: D;
 }
 
-type InventorySheetStateAddItemAction = InventorySheetStateActionTemplate<
+type AddItemAction = InventorySheetStateActionTemplate<
 	"item_add",
 	InventoryItemCreationFields
 >;
-type InventorySheetStateRemoveItemAction = InventorySheetStateActionTemplate<
+type RemoveItemAction = InventorySheetStateActionTemplate<
 	"item_remove",
 	string
 >;
 
-type InventorySheetStateAction =
-	| InventorySheetStateAddItemAction
-	| InventorySheetStateRemoveItemAction;
+type InventorySheetStateAction = AddItemAction | RemoveItemAction;
 
 export default InventorySheetStateAction;
