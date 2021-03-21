@@ -91,31 +91,11 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
  * @param {string | string[]} context.params.sheetId The sheet id in the ur;
  * @returns {GetStaticPropsResult<InventorySheetFields>} The props for the sheet
  */
-export const getStaticProps: GetStaticProps<InventorySheetFields> = async (
+export const getServerSideProps: GetStaticProps<InventorySheetFields> = async (
 	context
 ) => {
 	return {
 		props: await fetchSheet(getUrlParam(context.params.sheetId)),
-	};
-};
-
-/**
- * Determine static paths to pre render
- *
- * @returns {GetStaticPathsResult} Data for pre rendering paths
- */
-export const getStaticPaths: GetStaticPaths = async () => {
-	// const paths = [
-	// 	{
-	// 		params: { sheetId: "1" },
-	// 	},
-	// ]; //This will replaced with a map function that returns an array with all the sheets that exist in the database
-	const paths = await (await fetchAllSheets()).map((item) => ({
-		params: { sheetId: item._id },
-	}));
-	return {
-		paths,
-		fallback: true,
 	};
 };
 
