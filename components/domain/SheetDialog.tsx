@@ -1,7 +1,7 @@
 import { Button } from "@chakra-ui/button";
 import { FormControl, FormLabel } from "@chakra-ui/form-control";
 import { Input } from "@chakra-ui/input";
-import { Divider, Flex, SimpleGrid, Text, VStack } from "@chakra-ui/layout";
+import { Divider, Flex, Text, VStack } from "@chakra-ui/layout";
 import {
 	Modal,
 	ModalBody,
@@ -13,8 +13,6 @@ import {
 } from "@chakra-ui/modal";
 import { Field, FieldArray, Formik, FormikHelpers } from "formik";
 import { InputControl } from "formik-chakra-ui";
-import produce from "immer";
-import { useState } from "react";
 import DialogControlProps from "../../types/DialogControlProps";
 import InventorySheetFields from "../../types/InventorySheetFields";
 import {
@@ -23,8 +21,12 @@ import {
 } from "../contexts/SheetStateContext";
 
 /**
- * @param root0
- * @param root0.controller
+ * Component for sheet settings dialog
+ *
+ * @param {object} props The props
+ * @param {object} props.controller Controller for manipulating
+ * dialog state
+ * @returns {React.ReactElement} The rendered component
  */
 const SheetDialog: React.FC<DialogControlProps> = ({ controller }) => {
 	const { name, members } = useSheetState();
