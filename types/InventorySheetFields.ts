@@ -1,6 +1,7 @@
 import InventoryItemFields from "./InventoryItemFields";
+import { Document } from "mongoose";
 
-interface InventorySheetFields {
+interface InventorySheetFields extends Document {
 	name: string;
 	items: InventoryItemFields[];
 	members: string[];
