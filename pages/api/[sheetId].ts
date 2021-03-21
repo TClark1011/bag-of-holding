@@ -3,6 +3,7 @@ import { NextApiHandler } from "next";
 import { averageMembersFixture } from "../../fixtures/membersFixtures";
 import inventoryStateReducer from "../../utils/inventorySheetStateReducer";
 import InventorySheetFields from "../../types/InventorySheetFields";
+import "../../utils/sheetServices";
 
 let sheetState: InventorySheetFields = {
 	name: "Test Sheet",
