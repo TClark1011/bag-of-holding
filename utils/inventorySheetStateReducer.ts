@@ -44,6 +44,7 @@ const inventoryStateReducer = (
 		fetch("/api/" + 1, {
 			method: "PATCH",
 			body: JSON.stringify({ type, data, sendToServer: false }),
+			//? We set 'sendToServer' to false when sending the action to the server to prevent an infinite loop
 		})
 			.then(() => onThen && onThen())
 			.catch((err) => onCatch && onCatch(err))
