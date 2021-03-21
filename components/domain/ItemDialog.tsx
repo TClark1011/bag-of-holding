@@ -1,5 +1,4 @@
 import { Button } from "@chakra-ui/button";
-import { Input } from "@chakra-ui/input";
 import { Flex, SimpleGrid, VStack } from "@chakra-ui/layout";
 import {
 	Modal,
@@ -10,7 +9,7 @@ import {
 	ModalHeader,
 	ModalOverlay,
 } from "@chakra-ui/modal";
-import { Field, Formik } from "formik";
+import { Formik } from "formik";
 import {
 	InputControl,
 	NumberInputControl,
@@ -25,7 +24,6 @@ import {
 	useSheetState,
 	useSheetStateDispatch,
 } from "../contexts/SheetStateContext";
-import FormItem from "../ui/FormItem";
 
 export type ItemDialogMode = "edit" | "new";
 

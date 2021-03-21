@@ -96,7 +96,6 @@ const inventoryStateReducer = (
 
 /**
  * //TODO: Actions
- * Update Item
  * Rename Sheet
  * Add member
  * Remove member

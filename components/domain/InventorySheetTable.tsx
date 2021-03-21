@@ -8,10 +8,6 @@ const numericTableCellProps = {
 	sx: { textAlign: "center" },
 };
 
-const tableHeaderProps = {
-	color: "gray.50",
-};
-
 const col3Props = {
 	display: ["none", "table-cell"],
 };
