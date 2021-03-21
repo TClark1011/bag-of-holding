@@ -2,8 +2,9 @@ import { getRandomInventoryItems } from "./../../fixtures/itemFixtures";
 import { NextApiHandler } from "next";
 import { averageMembersFixture } from "../../fixtures/membersFixtures";
 import inventoryStateReducer from "../../utils/inventorySheetStateReducer";
+import InventorySheetFields from "../../types/InventorySheetFields";
 
-let sheetState = {
+let sheetState: InventorySheetFields = {
 	name: "Test Sheet",
 	items: getRandomInventoryItems(),
 	members: averageMembersFixture,

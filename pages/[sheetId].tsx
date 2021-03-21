@@ -11,7 +11,9 @@ import { getRandomInventoryItems } from "../fixtures/itemFixtures";
 import { averageMembersFixture } from "../fixtures/membersFixtures";
 import InventoryItemFields from "../types/InventoryItemFields";
 import InventorySheetFields from "../types/InventorySheetFields";
-import { InventorySheetStateAction } from "../types/InventorySheetState";
+import InventorySheetState, {
+	InventorySheetStateAction,
+} from "../types/InventorySheetState";
 import inventorySheetStateReducer from "../utils/inventorySheetStateReducer";
 import { fetchSheetFromMongo } from "../utils/fetchSheet";
 import getUrlParam from "../utils/getUrlParam";
@@ -24,12 +26,17 @@ import deepEqual from "deep-equal";
  * @param {string} props.name The name of the sheet
  * @param {string[]} props.items The items in the sheet
  * @param {string[]} props.members Members
+ * @param sheetFields
  * @returns {React.ReactElement} Sheet component
  */
-const Sheet: React.FC<InventorySheetFields> = ({ name, items, members }) => {
-	// const [inventoryState, dispatchInventoryAction] = useReducer<
-	// 	Reducer<InventoryItemFields[], InventoryStateAction>
-	// >(inventoryStateReducer, items);
+const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
+	const [{ items, name, members }, dispatch] = useReducer<
+		Reducer<InventorySheetState, InventorySheetStateAction>
+	>(inventorySheetStateReducer, {
+		...sheetFields,
+		isAhead: false,
+		isLoading: false,
+	});
 
 	const [inventoryState, setInventoryState] = useState(items);
 

@@ -1,7 +1,9 @@
 import produce from "immer";
 import InventoryItemFields from "../types/InventoryItemFields";
 import InventorySheetFields from "../types/InventorySheetFields";
-import { InventorySheetStateAction } from "../types/InventorySheetState";
+import InventorySheetState, {
+	InventorySheetStateAction,
+} from "../types/InventorySheetState";
 import createInventoryItem from "./createInventoryItem";
 
 /**
@@ -15,7 +17,7 @@ import createInventoryItem from "./createInventoryItem";
  * @returns {InventoryItemFields[]} The state updated by the passed action
  */
 const inventoryStateReducer = (
-	state: InventorySheetFields,
+	state: InventorySheetState,
 	{ type, data }: InventorySheetStateAction
 ): InventorySheetFields => {
 	switch (type) {
