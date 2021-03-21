@@ -106,10 +106,17 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 							))}
 						</HStack>
 					</Box>
-					<Button colorScheme="secondary" onClick={openNewItemDialog}>
-						Add New Item
-					</Button>
-					{/* <InventoryTableSheet items={items} compactMode={true} /> */}
+					{/* Add New Item Button */}
+					<Box padding={2}>
+						<Button
+							colorScheme="secondary"
+							onClick={openNewItemDialog}
+							width="full"
+						>
+							Add New Item
+						</Button>
+					</Box>
+
 					<InventoryTableSheet
 						items={items}
 						compactMode={true}
