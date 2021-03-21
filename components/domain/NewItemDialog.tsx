@@ -151,7 +151,7 @@ const NewItemDialog: React.FC<DialogControlProps> = ({
 							<Button
 								colorScheme="secondary"
 								onClick={() => handleSubmit()}
-								isDisabled={isSubmitting}
+								isLoading={isSubmitting}
 							>
 								Create Item
 							</Button>
