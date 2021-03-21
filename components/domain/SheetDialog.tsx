@@ -1,4 +1,4 @@
-import { Button } from "@chakra-ui/button";
+import { Button, IconButton } from "@chakra-ui/button";
 import { FormControl, FormLabel } from "@chakra-ui/form-control";
 import { Input } from "@chakra-ui/input";
 import { Divider, Flex, Text, VStack } from "@chakra-ui/layout";
@@ -19,6 +19,7 @@ import {
 	useSheetState,
 	useSheetStateDispatch,
 } from "../contexts/SheetStateContext";
+import { RemoveIcon } from "chakra-ui-ionicons";
 
 /**
  * Component for sheet settings dialog
@@ -106,12 +107,13 @@ const SheetDialog: React.FC<DialogControlProps> = ({ controller }) => {
 															</>
 														)}
 													</Field>
-													<Button
+													<IconButton
 														colorScheme="error"
 														onClick={() => helpers.remove(index)}
-													>
-														-
-													</Button>
+														aria-label={"delete member " + (index + 1)}
+														icon={<RemoveIcon />}
+														borderRadius="full"
+													/>
 												</Flex>
 											))}
 											<Button

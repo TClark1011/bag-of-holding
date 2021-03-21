@@ -6,7 +6,7 @@ const theme = extendTheme({
 		secondary: defaultTheme.colors.cyan,
 		error: defaultTheme.colors.red,
 		warning: defaultTheme.colors.yellow,
-		success: defaultTheme.colors.yellow,
+		success: defaultTheme.colors.green,
 	},
 	space: {
 		...defaultTheme.space,

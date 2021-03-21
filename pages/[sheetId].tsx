@@ -1,4 +1,4 @@
-import { Button } from "@chakra-ui/button";
+import { Button, IconButton } from "@chakra-ui/button";
 import { useDisclosure, useInterval } from "@chakra-ui/hooks";
 import { Box, Flex, Heading, HStack } from "@chakra-ui/layout";
 import { Tag } from "@chakra-ui/tag";
@@ -19,6 +19,7 @@ import InventoryItemFields from "../types/InventoryItemFields";
 import { REFETCH_INTERVAL } from "../config/publicEnv";
 import { GetServerSideProps } from "next";
 import SheetDialog from "../components/domain/SheetDialog";
+import { SettingsOutlineIcon } from "chakra-ui-ionicons";
 
 /**
  * The page for a specific sheet
@@ -97,7 +98,13 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 							{/* Sheet Title */}
 							<Heading paddingBottom="group">{name}</Heading>
 							{/* Sheet settings button */}
-							<Button onClick={sheetDialogController.onOpen}>G</Button>
+							<IconButton
+								aria-label="open sheet settings"
+								icon={<SettingsOutlineIcon boxSize={6} />}
+								onClick={sheetDialogController.onOpen}
+								borderRadius="full"
+								colorScheme="secondary"
+							/>
 						</Flex>
 						<HStack spacing="group">
 							{/* Party Members Tags */}
