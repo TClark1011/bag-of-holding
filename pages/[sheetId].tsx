@@ -117,7 +117,7 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 					{/* Add New Item Button */}
 					<Box padding={2}>
 						<Button
-							colorScheme="secondary"
+							colorScheme="primary"
 							onClick={openNewItemDialog}
 							width="full"
 						>
@@ -126,7 +126,6 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 					</Box>
 
 					<InventoryTableSheet
-						compactMode={true}
 						onRowClick={openEditItemDialog}
 						marginBottom="break"
 					/>

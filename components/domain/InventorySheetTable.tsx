@@ -15,13 +15,11 @@ const col4Props = {
 const col5Props = {
 	display: ["none", "none", "table-cell"],
 };
-
-const InventorySheetTableHeaders = chakra(Th, {
-	baseStyle: { color: "gray.50" },
-});
+const col6Props = {
+	display: ["none", "none", "none", "table-cell"],
+};
 
 export interface InventorySheetTableProps extends TableProps {
-	compactMode: boolean;
 	onRowClick: (item?: InventoryItemFields) => void;
 }
 
@@ -43,28 +41,19 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 	return (
 		<Table colorScheme="gray" {...props}>
 			<Thead>
-				<Tr backgroundColor="primary.500">
-					<InventorySheetTableHeaders>Name</InventorySheetTableHeaders>
-					<InventorySheetTableHeaders {...numericTableCellProps}>
-						Quantity
-					</InventorySheetTableHeaders>
-					<InventorySheetTableHeaders {...numericTableCellProps}>
-						Weight*
-					</InventorySheetTableHeaders>
-					<InventorySheetTableHeaders
-						display={["none", "table-cell"]}
-						{...numericTableCellProps}
-						{...col4Props}
-					>
+				<Tr>
+					<Th>Name</Th>
+					<Th {...numericTableCellProps}>Quantity</Th>
+					<Th {...numericTableCellProps}>Weight*</Th>
+					<Th {...numericTableCellProps} {...col4Props}>
 						Value
-					</InventorySheetTableHeaders>
-					<InventorySheetTableHeaders
-						display={["none", "table-cell"]}
-						{...numericTableCellProps}
-						{...col5Props}
-					>
+					</Th>
+					<Th {...numericTableCellProps} {...col5Props}>
 						Carried By
-					</InventorySheetTableHeaders>
+					</Th>
+					<Th {...numericTableCellProps} {...col6Props}>
+						Category
+					</Th>
 				</Tr>
 			</Thead>
 			<Tbody>
@@ -84,15 +73,14 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 						<Td {...numericTableCellProps} {...col5Props}>
 							{item.carriedBy || "Nobody"}
 						</Td>
+						<Td {...numericTableCellProps} {...col6Props}>
+							{item.category || "None"}
+						</Td>
 					</Tr>
 				))}
+				{/* Bottom Row */}
 				<Tr>
-					<Td
-						// colSpan={totalWeightLabelColSpan}
-						colSpan={2}
-						fontWeight="bold"
-						textAlign="right"
-					>
+					<Td colSpan={2} fontWeight="bold" textAlign="right">
 						Total
 					</Td>
 					<Td {...numericTableCellProps}>
