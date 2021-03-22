@@ -19,8 +19,9 @@ import InventoryItemFields from "../types/InventoryItemFields";
 import { REFETCH_INTERVAL } from "../config/publicEnv";
 import { GetServerSideProps } from "next";
 import SheetDialog from "../components/domain/SheetDialog";
-import { SettingsOutlineIcon } from "chakra-ui-ionicons";
+import { SettingsOutlineIcon, CreateOutlineIcon } from "chakra-ui-ionicons";
 import MemberCarryWeightTable from "../components/domain/MemberCarryWeightTable";
+import ColorModeSwitch from "../components/domain/ColorModeSwitch";
 
 /**
  * The page for a specific sheet
@@ -96,15 +97,32 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 					<Box padding={2}>
 						<Flex justify="space-between">
 							{/* Sheet Title */}
-							<Heading paddingBottom="group">{name}</Heading>
+							<Flex>
+								<Heading paddingBottom="group" marginRight={1}>
+									{name}
+								</Heading>
+								<IconButton
+									aria-label="edit sheet settings"
+									icon={<CreateOutlineIcon boxSize={6} />}
+									onClick={sheetDialogController.onOpen}
+									variant="ghost"
+									isRound
+								/>
+							</Flex>
+							{/* <Flex
+								flexGrow={1}
+								paddingLeft="break"
+								paddingRight="group"
+								justify={["flex-end", "flex-start"]}
+							>
+								<IconButton
+									aria-label="open sheet settings"
+									icon={<SettingsOutlineIcon boxSize={6} />}
+									onClick={sheetDialogController.onOpen}
+								/>
+							</Flex> */}
 							{/* Sheet settings button */}
-							<IconButton
-								aria-label="open sheet settings"
-								icon={<SettingsOutlineIcon boxSize={6} />}
-								onClick={sheetDialogController.onOpen}
-								borderRadius="full"
-								colorScheme="secondary"
-							/>
+							<ColorModeSwitch />
 						</Flex>
 						<HStack spacing="group">
 							{/* Party Members Tags */}
