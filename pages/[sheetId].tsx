@@ -37,7 +37,6 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 	>(inventorySheetStateReducer, {
 		...sheetFields,
 		isAhead: false,
-		isLoading: false,
 	});
 
 	useEffect(() => {

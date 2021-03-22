@@ -95,7 +95,6 @@ export type InventorySheetStateAction =
  */
 interface InventorySheetState extends InventorySheetFields {
 	isAhead?: boolean;
-	isLoading?: boolean;
 }
 
 export default InventorySheetState;
