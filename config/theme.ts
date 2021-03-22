@@ -50,7 +50,23 @@ const theme = extendTheme({
 		group: defaultTheme.space[2],
 		break: defaultTheme.space[6],
 	},
-	components: {},
+	components: {
+		IconButton: {
+			defaultProps: {
+				isRound: true,
+			},
+		},
+		Th: {
+			baseStyle: {
+				textAlign: "center",
+			},
+		},
+		Td: {
+			baseStyle: {
+				textAlign: "center",
+			},
+		},
+	},
 });
 
 export default theme;
