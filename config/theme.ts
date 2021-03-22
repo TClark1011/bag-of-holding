@@ -56,16 +56,6 @@ const theme = extendTheme({
 				isRound: true,
 			},
 		},
-		Th: {
-			baseStyle: {
-				textAlign: "center",
-			},
-		},
-		Td: {
-			baseStyle: {
-				textAlign: "center",
-			},
-		},
 	},
 });
 
