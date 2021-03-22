@@ -5,7 +5,7 @@ import { useSheetState } from "../contexts/SheetStateContext";
 
 const numericTableCellProps = {
 	paddingX: 2,
-	sx: { textAlign: "center" },
+	// sx: { textAlign: "center" },
 };
 
 const col4Props = {
