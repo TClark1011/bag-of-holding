@@ -1,4 +1,4 @@
-import { chakra } from "@chakra-ui/system";
+import { useColorModeValue } from "@chakra-ui/system";
 import { Table, TableProps, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/table";
 import InventoryItemFields from "../../types/InventoryItemFields";
 import { useSheetState } from "../contexts/SheetStateContext";
@@ -36,8 +36,8 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 	onRowClick,
 	...props
 }) => {
-	// TODO: Add type column
 	const { items } = useSheetState();
+	const rowHoverBg = useColorModeValue("gray.100", "gray.700");
 	return (
 		<Table colorScheme="gray" {...props}>
 			<Thead>
@@ -62,7 +62,7 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 						key={item._id}
 						onClick={() => onRowClick(item)}
 						cursor="pointer"
-						_hover={{ backgroundColor: "gray.100" }}
+						_hover={{ backgroundColor: rowHoverBg }}
 					>
 						<Td>{item.name}</Td>
 						<Td {...numericTableCellProps}>{item.quantity}</Td>

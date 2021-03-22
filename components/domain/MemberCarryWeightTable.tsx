@@ -2,12 +2,18 @@ import { Table, TableProps, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/table";
 import { useSheetState } from "../contexts/SheetStateContext";
 
 /**
- * @param root0
+ * Component for showing the total carry weight/value of each party member's inventory
+ *
+ * @param {chakra.TableProps} props The props to pass to the table
+ * @returns {React.ReactElement} The rendered stuff
  */
 const MemberCarryWeightTable: React.FC<TableProps> = ({ ...props }) => {
 	const { members, items } = useSheetState();
 	/**
-	 * @param member
+	 * Fetch the items carried by a certain member
+	 *
+	 * @param {string} member The name of the member to fetch the items of
+	 * @returns {InventoryItemFields[]} The items carried by te specified character
 	 */
 	const getCarriedItems = (member: string) =>
 		items.filter((item) => item.carriedBy === member);
