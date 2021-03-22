@@ -96,6 +96,7 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 						)}
 					</Td>
 					<Td {...col5Props} />
+					<Td {...col6Props} />
 				</Tr>
 			</Tbody>
 		</Table>
