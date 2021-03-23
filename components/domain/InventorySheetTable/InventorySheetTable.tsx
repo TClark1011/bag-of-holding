@@ -8,11 +8,12 @@ import {
 	Thead,
 	Tr,
 } from "@chakra-ui/table";
-import { useState } from "react";
+import { useReducer, useState } from "react";
 import InventoryItemFields from "../../../types/InventoryItemFields";
-import sort from "fast-sort";
+import sort, { ISortByFunction } from "fast-sort";
 import { ArrowDownIcon, ArrowUpIcon } from "chakra-ui-ionicons";
 import TableCell from "../../ui/TableCell";
+import inventorySheetTableReducer from "./InventorySheetTable.reducer";
 
 const col4Display = ["none", "table-cell"];
 const col5Display = ["none", "none", "table-cell"];
@@ -37,42 +38,14 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 	items,
 	...props
 }) => {
-	const hoverBg = useColorModeValue("gray.100", "gray.700");
-
-	/**
-	 * @typedef {object} SortState The state of the table's sorting
-	 * @property {boolean} ascending If the sort mode is currently ascending. If
-	 * false then sort mode must be descending
-	 * @property {keyof InventoryItemFields} property the Property that is currently being sorted by
-	 */
-	interface SortState {
-		ascending: boolean;
-		property: keyof InventoryItemFields;
-	}
-
-	/**
-	 * The state of the table's sorting
-	 */
-	const [sortingBy, setSortingBy] = useState<SortState>({
-		ascending: true,
-		property: "name",
+	const [{ sorting }, dispatch] = useReducer(inventorySheetTableReducer, {
+		sorting: {
+			property: "name",
+			direction: "ascending",
+		},
 	});
 
-	/**
-	 * Update the 'sortingBy' status
-	 *
-	 * @param {keyof InventoryItemFields} property The property that
-	 * should now be sorted by. If that property is already being sorted
-	 * by, toggle the sorting direction. Otherwise, set the sorting
-	 * property to the passed property and sets the sorting direction to
-	 * ascending.
-	 */
-	const updateSortingBy = (property: keyof InventoryItemFields) => {
-		const ascending =
-			property === sortingBy.property ? !sortingBy.ascending : true;
-		//? True if the property was not already being sorted by. Inverse of current direction if it was
-		setSortingBy({ ascending, property });
-	};
+	const hoverBg = useColorModeValue("gray.100", "gray.700");
 
 	/**
 	 * Fetch the sort status of a sorting property
@@ -84,11 +57,7 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 	 * property is being sorted .
 	 */
 	const getPropertySortingStatus = (property: keyof InventoryItemFields) =>
-		sortingBy.property === property
-			? sortingBy.ascending
-				? "asc"
-				: "desc"
-			: "none";
+		sorting.property === property ? sorting.direction : "none";
 
 	/**
 	 * Fetch the items with all active filters/sorting applied
@@ -96,12 +65,26 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 	 * @returns {InventoryItemFields[]} The list of items
 	 */
 	const getProcessedItems = () => {
-		const sortFn = sortingBy.ascending ? sort(items).asc : sort(items).desc;
-		return sortFn((item) =>
-			sortingBy.property === "name" || sortingBy.property === "weight"
-				? (item[sortingBy.property] as number) * item.quantity
-				: item[sortingBy.property]
-		);
+		// /**
+		//  *
+		//  * @param sort
+		//  * @returns
+		//  */
+		// const sortFn = (sort: ISortByFunction<InventoryItemFields[]>) =>
+		// 	sorting.direction === "ascending"
+		// 		? sort(items).asc(sort)
+		// 		: sort(items).desc(sort);
+
+		const sortFn =
+			sorting.direction === "ascending" ? sort(items).asc : sort(items).desc;
+
+		return sortFn([
+			(item) =>
+				sorting.property === "quantity" || sorting.property === "weight"
+					? (item[sorting.property] as number) * item.quantity
+					: item[sorting.property],
+			(item) => item.name,
+		]);
 	};
 
 	/**
@@ -119,13 +102,14 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 		<TableCell
 			{...props}
 			as={Th}
-			onClick={() => updateSortingBy(property)}
+			// onClick={() => updateSortingBy(property)}
+			onClick={() => dispatch({ type: "table_sort", data: property })}
 			_hover={{ backgroundColor: hoverBg }}
 			cursor="pointer"
 		>
 			{children}{" "}
 			{getPropertySortingStatus(property) ===
-			"none" ? null : getPropertySortingStatus(property) === "asc" ? (
+			"none" ? null : getPropertySortingStatus(property) === "ascending" ? (
 				<ArrowUpIcon />
 			) : (
 				<ArrowDownIcon />
