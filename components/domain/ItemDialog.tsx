@@ -171,7 +171,7 @@ const ItemDialog: React.FC<Props> = ({
 									/>
 								</SimpleGrid>
 								<SelectControl name="carriedBy" label="Carried By">
-									<option>Select Item</option>
+									<option value="Nobody">Nobody</option>
 									{members.map((item, index) => (
 										<option value={item} key={index}>
 											{item}

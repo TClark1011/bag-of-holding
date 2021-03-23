@@ -47,6 +47,7 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 
 	const router = useRouter();
 
+	//TODO: Switch back to manual fetches
 	useInterval(() => {
 		if (isAhead) {
 			//? If local state is ahead of server, we ignore the next refetch give the server time to update
@@ -144,6 +145,7 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 
 					<InventoryTableSheet
 						onRowClick={openEditItemDialog}
+						items={items}
 						marginBottom="break"
 					/>
 
