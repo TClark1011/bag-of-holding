@@ -63,6 +63,8 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 	const { sorting } = state;
 	//? Destructure after initializer so that full state object can be easily passed to selectors
 
+	const processedItems = selectProcessedItems(state, items);
+
 	/**
 	 * Fetch the sort status of a sorting property
 	 *
@@ -74,8 +76,6 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 	 */
 	const getPropertySortingStatus = (property: keyof InventoryItemFields) =>
 		sorting.property === property ? sorting.direction : "none";
-
-	const processedItems = selectProcessedItems(state, items);
 
 	/**
 	 * A component to be used as the column headers
