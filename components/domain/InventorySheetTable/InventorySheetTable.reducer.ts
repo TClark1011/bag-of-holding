@@ -13,7 +13,7 @@ export interface InventorySheetTableState {
 
 interface SortAction {
 	type: "table_sort";
-	data: SortState;
+	data: keyof InventoryItemFields;
 }
 
 export type InventorySheetTableStateAction = SortAction;
@@ -35,7 +35,7 @@ const inventorySheetTableReducer: Reducer<
 > = (state, action) => {
 	return produce(state, (draftState) => {
 		if (action.type === "table_sort") {
-			if (draftState.sorting.property === action.data.property) {
+			if (draftState.sorting.property === action.data) {
 				draftState.sorting.direction =
 					draftState.sorting.direction === "ascending"
 						? "descending"
@@ -43,7 +43,7 @@ const inventorySheetTableReducer: Reducer<
 				//? Just flip the sorting direction if the action property is already the sorted property
 			} else {
 				draftState.sorting.direction = "ascending";
-				draftState.sorting.property = action.data.property;
+				draftState.sorting.property = action.data;
 				//? If sorting by a new property, set direction to ascending and set new property;
 			}
 		}

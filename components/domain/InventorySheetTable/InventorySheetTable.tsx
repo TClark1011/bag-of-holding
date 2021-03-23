@@ -65,16 +65,6 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 	 * @returns {InventoryItemFields[]} The list of items
 	 */
 	const getProcessedItems = () => {
-		// /**
-		//  *
-		//  * @param sort
-		//  * @returns
-		//  */
-		// const sortFn = (sort: ISortByFunction<InventoryItemFields[]>) =>
-		// 	sorting.direction === "ascending"
-		// 		? sort(items).asc(sort)
-		// 		: sort(items).desc(sort);
-
 		const sortFn =
 			sorting.direction === "ascending" ? sort(items).asc : sort(items).desc;
 
