@@ -24,6 +24,7 @@ import inventorySheetTableReducer, {
 	selectProcessedItems,
 } from "./InventorySheetTable.reducer";
 import { IconButton } from "@chakra-ui/button";
+import TableFilter from "../TableFilter";
 
 const col4Display = ["none", "table-cell"];
 const col5Display = ["none", "none", "table-cell"];
@@ -71,7 +72,7 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 		},
 	});
 
-	const { sorting } = state;
+	const { sorting, filters } = state;
 	//? Destructure after initializer so that full state object can be easily passed to selectors
 
 	const processedItems = selectProcessedItems(state, items);
@@ -114,12 +115,19 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 			) : (
 				<ArrowDownIcon />
 			)}
-			<IconButton
-				aria-label="filter"
-				icon={<FilterOutlineIcon />}
-				onClick={() => dispatch({ type: "ui_openFilter", data: property })}
-			/>
-			{selectFilterUiIsOpen(state, property) && "!"}
+			<TableFilter
+				isOpen={selectFilterUiIsOpen(state, property)}
+				onClose={() => dispatch({ type: "ui_closeFilter" })}
+				property={property}
+				items={items}
+				filter={filters[property]}
+			>
+				<IconButton
+					aria-label="filter"
+					icon={<FilterOutlineIcon />}
+					onClick={() => dispatch({ type: "ui_openFilter", data: property })}
+				/>
+			</TableFilter>
 		</TableCell>
 	);
 

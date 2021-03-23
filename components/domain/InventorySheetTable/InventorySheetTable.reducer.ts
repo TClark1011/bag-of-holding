@@ -36,7 +36,6 @@ interface OpenFilterAction {
 }
 interface CloseFilterAction {
 	type: "ui_closeFilter";
-	data: never;
 }
 
 export type InventorySheetTableStateAction =
