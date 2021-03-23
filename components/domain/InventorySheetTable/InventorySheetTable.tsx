@@ -48,6 +48,16 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 			property: "name",
 			direction: "ascending",
 		},
+		filters: {
+			name: [],
+			carriedBy: [],
+			category: [],
+			description: [],
+			weight: [],
+			quantity: [],
+			reference: [],
+			value: [],
+		},
 	});
 
 	const { sorting } = state;
