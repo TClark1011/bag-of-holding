@@ -13,11 +13,17 @@ import InventoryItemFields, {
 	ProcessableItemProperty,
 } from "../../../types/InventoryItemFields";
 import sort, { ISortByFunction } from "fast-sort";
-import { ArrowDownIcon, ArrowUpIcon } from "chakra-ui-ionicons";
+import {
+	ArrowDownIcon,
+	ArrowUpIcon,
+	FilterOutlineIcon,
+} from "chakra-ui-ionicons";
 import TableCell from "../../ui/TableCell";
 import inventorySheetTableReducer, {
+	selectFilterUiIsOpen,
 	selectProcessedItems,
 } from "./InventorySheetTable.reducer";
+import { IconButton } from "@chakra-ui/button";
 
 const col4Display = ["none", "table-cell"];
 const col5Display = ["none", "none", "table-cell"];
@@ -97,7 +103,6 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 		<TableCell
 			{...props}
 			as={Th}
-			// onClick={() => updateSortingBy(property)}
 			onClick={() => dispatch({ type: "table_sort", data: property })}
 			_hover={{ backgroundColor: hoverBg }}
 			cursor="pointer"
@@ -109,6 +114,12 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 			) : (
 				<ArrowDownIcon />
 			)}
+			<IconButton
+				aria-label="filter"
+				icon={<FilterOutlineIcon />}
+				onClick={() => dispatch({ type: "ui_openFilter", data: property })}
+			/>
+			{selectFilterUiIsOpen(state, property) && "!"}
 		</TableCell>
 	);
 

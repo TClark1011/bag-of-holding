@@ -30,7 +30,20 @@ interface FilterAction {
 	};
 }
 
-export type InventorySheetTableStateAction = SortAction | FilterAction;
+interface OpenFilterAction {
+	type: "ui_openFilter";
+	data: ProcessableItemProperty;
+}
+interface CloseFilterAction {
+	type: "ui_closeFilter";
+	data: never;
+}
+
+export type InventorySheetTableStateAction =
+	| SortAction
+	| FilterAction
+	| OpenFilterAction
+	| CloseFilterAction;
 
 /**
  * The reducer for the state of the 'InventorySheetTable'
@@ -74,6 +87,10 @@ const inventorySheetTableReducer: Reducer<
 					action.data.property
 				].filter((item) => item !== action.data.value);
 			}
+		} else if (action.type === "ui_openFilter") {
+			draftState.ui.openFilter = action.data;
+		} else if (action.type === "ui_closeFilter") {
+			draftState.ui.openFilter = false;
 		}
 	});
 };
