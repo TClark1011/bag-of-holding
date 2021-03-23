@@ -3,13 +3,11 @@ import { Reducer } from "react";
 import InventoryItemFields from "../../../types/InventoryItemFields";
 import sort from "fast-sort";
 
-interface SortState {
-	property: keyof InventoryItemFields;
-	direction: "ascending" | "descending";
-}
-
 export interface InventorySheetTableState {
-	sorting: SortState;
+	sorting: {
+		property: keyof InventoryItemFields;
+		direction: "ascending" | "descending";
+	};
 }
 
 interface SortAction {
