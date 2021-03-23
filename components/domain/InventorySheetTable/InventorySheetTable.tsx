@@ -13,7 +13,9 @@ import InventoryItemFields from "../../../types/InventoryItemFields";
 import sort, { ISortByFunction } from "fast-sort";
 import { ArrowDownIcon, ArrowUpIcon } from "chakra-ui-ionicons";
 import TableCell from "../../ui/TableCell";
-import inventorySheetTableReducer from "./InventorySheetTable.reducer";
+import inventorySheetTableReducer, {
+	selectProcessedItems,
+} from "./InventorySheetTable.reducer";
 
 const col4Display = ["none", "table-cell"];
 const col5Display = ["none", "none", "table-cell"];
@@ -38,14 +40,18 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 	items,
 	...props
 }) => {
-	const [{ sorting }, dispatch] = useReducer(inventorySheetTableReducer, {
+	const hoverBg = useColorModeValue("gray.100", "gray.700");
+	//? Color to use for background of row items that are hovered
+
+	const [state, dispatch] = useReducer(inventorySheetTableReducer, {
 		sorting: {
 			property: "name",
 			direction: "ascending",
 		},
 	});
 
-	const hoverBg = useColorModeValue("gray.100", "gray.700");
+	const { sorting } = state;
+	//? Destructure after initializer so that full state object can be easily passed to selectors
 
 	/**
 	 * Fetch the sort status of a sorting property
@@ -59,23 +65,7 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 	const getPropertySortingStatus = (property: keyof InventoryItemFields) =>
 		sorting.property === property ? sorting.direction : "none";
 
-	/**
-	 * Fetch the items with all active filters/sorting applied
-	 *
-	 * @returns {InventoryItemFields[]} The list of items
-	 */
-	const getProcessedItems = () => {
-		const sortFn =
-			sorting.direction === "ascending" ? sort(items).asc : sort(items).desc;
-
-		return sortFn([
-			(item) =>
-				sorting.property === "quantity" || sorting.property === "weight"
-					? (item[sorting.property] as number) * item.quantity
-					: item[sorting.property],
-			(item) => item.name,
-		]);
-	};
+	const processedItems = selectProcessedItems(state, items);
 
 	/**
 	 * A component to be used as the column headers
@@ -133,7 +123,7 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 				</Tr>
 			</Thead>
 			<Tbody>
-				{getProcessedItems().map((item) => (
+				{processedItems.map((item) => (
 					<Tr
 						key={item._id}
 						onClick={() => onRowClick(item)}

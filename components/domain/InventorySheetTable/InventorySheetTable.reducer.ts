@@ -1,6 +1,7 @@
 import produce from "immer";
 import { Reducer } from "react";
 import InventoryItemFields from "../../../types/InventoryItemFields";
+import sort from "fast-sort";
 
 interface SortState {
 	property: keyof InventoryItemFields;
@@ -48,6 +49,29 @@ const inventorySheetTableReducer: Reducer<
 			}
 		}
 	});
+};
+
+/**
+ * Return item inventory with all sorts/filters applied
+ *
+ * @param {InventorySheetTableState} state The current state
+ * @param {InventoryItemFields[]} items The items in the sheet
+ * @returns {InventoryItemFields[]} The list of items
+ */
+export const selectProcessedItems = (
+	{ sorting }: InventorySheetTableState,
+	items: InventoryItemFields[]
+): InventoryItemFields[] => {
+	const sortFn =
+		sorting.direction === "ascending" ? sort(items).asc : sort(items).desc;
+
+	return sortFn([
+		(item) =>
+			sorting.property === "quantity" || sorting.property === "weight"
+				? (item[sorting.property] as number) * item.quantity
+				: item[sorting.property],
+		(item) => item.name,
+	]);
 };
 
 export default inventorySheetTableReducer;
