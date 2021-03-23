@@ -4,34 +4,19 @@ import {
 	TableCellProps,
 	TableProps,
 	Tbody,
-	Td,
 	Th,
 	Thead,
 	Tr,
 } from "@chakra-ui/table";
-import compareFunc from "compare-func";
 import { useState } from "react";
 import InventoryItemFields from "../../types/InventoryItemFields";
-import { useSheetState } from "../contexts/SheetStateContext";
 import sort from "fast-sort";
 import { ArrowDownIcon, ArrowUpIcon } from "chakra-ui-ionicons";
 import TableCell from "../ui/TableCell";
 
-// const numericTableCellProps = {
-// 	paddingX: 2,
-// 	sx: { textAlign: "center" },
-// };
-
-const col4Props = {
-	display: ["none", "table-cell"],
-};
-
-const col5Props = {
-	display: ["none", "none", "table-cell"],
-};
-const col6Props = {
-	display: ["none", "none", "none", "table-cell"],
-};
+const col4Display = ["none", "table-cell"];
+const col5Display = ["none", "none", "table-cell"];
+const col6Display = ["none", "none", "none", "table-cell"];
 
 export interface InventorySheetTableProps extends TableProps {
 	onRowClick: (item?: InventoryItemFields) => void;
@@ -74,6 +59,22 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 	});
 
 	/**
+	 * Update the 'sortingBy' status
+	 *
+	 * @param {keyof InventoryItemFields} property The property that
+	 * should now be sorted by. If that property is already being sorted
+	 * by, toggle the sorting direction. Otherwise, set the sorting
+	 * property to the passed property and sets the sorting direction to
+	 * ascending.
+	 */
+	const updateSortingBy = (property: keyof InventoryItemFields) => {
+		const ascending =
+			property === sortingBy.property ? !sortingBy.ascending : true;
+		//? True if the property was not already being sorted by. Inverse of current direction if it was
+		setSortingBy({ ascending, property });
+	};
+
+	/**
 	 * Fetch the sort status of a sorting property
 	 *
 	 * @param {keyof InventoryItemFields} property The property
@@ -104,22 +105,6 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 	};
 
 	/**
-	 * Update the 'sortingBy' status
-	 *
-	 * @param {keyof InventoryItemFields} property The property that
-	 * should now be sorted by. If that property is already being sorted
-	 * by, toggle the sorting direction. Otherwise, set the sorting
-	 * property to the passed property and sets the sorting direction to
-	 * ascending.
-	 */
-	const updateSortingBy = (property: keyof InventoryItemFields) => {
-		const ascending =
-			property === sortingBy.property ? !sortingBy.ascending : true;
-		//? True if the property was not already being sorted by. Inverse of current direction if it was
-		setSortingBy({ ascending, property });
-	};
-
-	/**
 	 * A component to be used as the column headers
 	 *
 	 * @param {object} props The props
@@ -147,8 +132,14 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 			)}
 		</TableCell>
 	);
+
 	return (
-		<Table colorScheme="gray" {...props}>
+		<Table
+			colorScheme="gray"
+			{...props}
+			borderTopWidth={1}
+			borderTopColor={hoverBg}
+		>
 			<Thead>
 				<Tr>
 					<TableHeader property="name" textAlign="left">
@@ -156,13 +147,13 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 					</TableHeader>
 					<TableHeader property="quantity">Quantity</TableHeader>
 					<TableHeader property="weight">Weight</TableHeader>
-					<TableHeader property="value" {...col4Props}>
+					<TableHeader property="value" display={col4Display}>
 						Value
 					</TableHeader>
-					<TableHeader property="carriedBy" {...col5Props}>
+					<TableHeader property="carriedBy" display={col5Display}>
 						Carried By
 					</TableHeader>
-					<TableHeader property="category" {...col6Props}>
+					<TableHeader property="category" display={col6Display}>
 						Category
 					</TableHeader>
 				</Tr>
@@ -178,30 +169,34 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 						<TableCell textAlign="left">{item.name}</TableCell>
 						<TableCell>{item.quantity}</TableCell>
 						<TableCell>{item.weight * item.quantity}</TableCell>
-						<TableCell {...col4Props}>{item.value}</TableCell>
-						<TableCell {...col5Props}>{item.carriedBy || "Nobody"}</TableCell>
-						<TableCell {...col6Props}>{item.category || "None"}</TableCell>
+						<TableCell display={col4Display}>{item.value}</TableCell>
+						<TableCell display={col5Display}>
+							{item.carriedBy || "Nobody"}
+						</TableCell>
+						<TableCell display={col6Display}>
+							{item.category || "None"}
+						</TableCell>
 					</Tr>
 				))}
 				<Tr>
 					{/* Bottom Row */}
-					<Td colSpan={2} fontWeight="bold" textAlign="right">
+					<TableCell colSpan={2} fontWeight="bold" textAlign="right">
 						Total
-					</Td>
-					<Td>
+					</TableCell>
+					<TableCell>
 						{items.reduce<number>(
 							(accumulator, item) => accumulator + item.weight * item.quantity,
 							0
 						)}
-					</Td>
-					<Td {...col4Props}>
+					</TableCell>
+					<TableCell display={col4Display}>
 						{items.reduce<number>(
 							(accumulator, item) => accumulator + item.value * item.quantity,
 							0
 						)}
-					</Td>
-					<Td {...col5Props} />
-					<Td {...col6Props} />
+					</TableCell>
+					<TableCell display={col5Display} />
+					<TableCell display={col6Display} />
 				</Tr>
 			</Tbody>
 		</Table>
