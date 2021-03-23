@@ -3,7 +3,7 @@ import { useDisclosure, useInterval } from "@chakra-ui/hooks";
 import { Box, Flex, Heading, HStack } from "@chakra-ui/layout";
 import { Tag } from "@chakra-ui/tag";
 import Head from "next/head";
-import { Reducer, useEffect, useReducer, useState } from "react";
+import { Reducer, useReducer, useState } from "react";
 import ItemDialog, { ItemDialogMode } from "../components/domain/ItemDialog";
 import InventoryTableSheet from "../components/domain/InventorySheetTable";
 import InventorySheetFields from "../types/InventorySheetFields";
@@ -40,18 +40,18 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 	});
 
 	//TODO: Switch back to manual fetches
-	// useInterval(() => {
-	// 	if (isAhead) {
-	// 		//? If local state is ahead of server, we ignore the next refetch give the server time to update
-	// 		dispatch({ type: "sheet_setIsAhead", data: false });
-	// 	} else {
-	// 		//? We refresh the props from the server every 3 seconds
-	// 		// router.replace(router.asPath, "", { scroll: false });
-	// 		fetch("/api/" + sheetFields._id)
-	// 			.then((res) => res.json())
-	// 			.then((data) => dispatch({ type: "sheet_update", data }));
-	// 	}
-	// }, REFETCH_INTERVAL);
+	useInterval(() => {
+		if (isAhead) {
+			//? If local state is ahead of server, we ignore the next refetch give the server time to update
+			dispatch({ type: "sheet_setIsAhead", data: false });
+		} else {
+			//? We refresh the props from the server every 3 seconds
+			// router.replace(router.asPath, "", { scroll: false });
+			fetch("/api/" + sheetFields._id)
+				.then((res) => res.json())
+				.then((data) => dispatch({ type: "sheet_update", data }));
+		}
+	}, REFETCH_INTERVAL);
 
 	const newItemDialogController = useDisclosure();
 
