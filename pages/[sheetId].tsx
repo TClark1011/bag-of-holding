@@ -14,12 +14,11 @@ import inventorySheetStateReducer from "../utils/inventorySheetStateReducer";
 import getUrlParam from "../utils/getUrlParam";
 import SheetStateProvider from "../components/contexts/SheetStateContext";
 import { fetchSheet } from "../db/sheetServices";
-import { useRouter } from "next/router";
 import InventoryItemFields from "../types/InventoryItemFields";
 import { REFETCH_INTERVAL } from "../config/publicEnv";
 import { GetServerSideProps } from "next";
 import SheetDialog from "../components/domain/SheetDialog";
-import { SettingsOutlineIcon, CreateOutlineIcon } from "chakra-ui-ionicons";
+import { CreateOutlineIcon } from "chakra-ui-ionicons";
 import MemberCarryWeightTable from "../components/domain/MemberCarryWeightTable";
 import ColorModeSwitch from "../components/domain/ColorModeSwitch";
 
@@ -40,23 +39,19 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 		isAhead: false,
 	});
 
-	useEffect(() => {
-		dispatch({ type: "sheet_update", data: { ...sheetFields } });
-		//? When the sheet's props are updated via refetching, load the new values into state
-	}, [sheetFields]);
-
-	const router = useRouter();
-
 	//TODO: Switch back to manual fetches
-	useInterval(() => {
-		if (isAhead) {
-			//? If local state is ahead of server, we ignore the next refetch give the server time to update
-			dispatch({ type: "sheet_setIsAhead", data: false });
-		} else {
-			//? We refresh the props from the server every 3 seconds
-			router.replace(router.asPath, "", { scroll: false });
-		}
-	}, REFETCH_INTERVAL);
+	// useInterval(() => {
+	// 	if (isAhead) {
+	// 		//? If local state is ahead of server, we ignore the next refetch give the server time to update
+	// 		dispatch({ type: "sheet_setIsAhead", data: false });
+	// 	} else {
+	// 		//? We refresh the props from the server every 3 seconds
+	// 		// router.replace(router.asPath, "", { scroll: false });
+	// 		fetch("/api/" + sheetFields._id)
+	// 			.then((res) => res.json())
+	// 			.then((data) => dispatch({ type: "sheet_update", data }));
+	// 	}
+	// }, REFETCH_INTERVAL);
 
 	const newItemDialogController = useDisclosure();
 
