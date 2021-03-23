@@ -9,10 +9,10 @@ import {
 	Tr,
 } from "@chakra-ui/table";
 import { useState } from "react";
-import InventoryItemFields from "../../types/InventoryItemFields";
+import InventoryItemFields from "../../../types/InventoryItemFields";
 import sort from "fast-sort";
 import { ArrowDownIcon, ArrowUpIcon } from "chakra-ui-ionicons";
-import TableCell from "../ui/TableCell";
+import TableCell from "../../ui/TableCell";
 
 const col4Display = ["none", "table-cell"];
 const col5Display = ["none", "none", "table-cell"];
