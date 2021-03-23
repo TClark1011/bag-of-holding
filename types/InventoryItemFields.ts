@@ -24,6 +24,9 @@ interface InventoryItemFields {
 	reference?: string;
 }
 
+export type ProcessableItemProperty = keyof OmitId<InventoryItemFields>;
+//? Represents a property of an item that can be filtered/sorted;
+
 export type InventoryItemCreationFields = Omit<
 	OmitId<InventoryItemFields>,
 	"quantity" | "weight"

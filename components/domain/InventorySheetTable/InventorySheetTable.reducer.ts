@@ -1,27 +1,30 @@
 import produce from "immer";
 import { Reducer } from "react";
-import InventoryItemFields from "../../../types/InventoryItemFields";
+import InventoryItemFields, {
+	ProcessableItemProperty,
+} from "../../../types/InventoryItemFields";
 import sort from "fast-sort";
-import OmitId from "../../../utils/OmitId";
-import { AccessibilityIcon } from "chakra-ui-ionicons";
 
 export interface InventorySheetTableState {
 	sorting: {
-		property: keyof InventoryItemFields;
+		property: ProcessableItemProperty;
 		direction: "ascending" | "descending";
 	};
-	filters: Record<keyof OmitId<InventoryItemFields>, string[]>;
+	filters: Record<ProcessableItemProperty, string[]>;
+	ui: {
+		openFilter: ProcessableItemProperty | false;
+	};
 }
 //? Values included in filter arrays are omitted from item table
 interface SortAction {
 	type: "table_sort";
-	data: keyof InventoryItemFields;
+	data: ProcessableItemProperty;
 }
 
 interface FilterAction {
 	type: "table_filter";
 	data: {
-		property: keyof InventoryItemFields;
+		property: ProcessableItemProperty;
 		value: string;
 		filterOut: boolean;
 	};
@@ -75,6 +78,8 @@ const inventorySheetTableReducer: Reducer<
 	});
 };
 
+type Selector<T, R> = (state: InventorySheetTableState, data: T) => R;
+
 /**
  * Return item inventory with all sorts/filters applied
  *
@@ -82,10 +87,10 @@ const inventorySheetTableReducer: Reducer<
  * @param {InventoryItemFields[]} items The items in the sheet
  * @returns {InventoryItemFields[]} The list of items
  */
-export const selectProcessedItems = (
-	{ sorting, filters }: InventorySheetTableState,
-	items: InventoryItemFields[]
-): InventoryItemFields[] => {
+export const selectProcessedItems: Selector<
+	InventoryItemFields[],
+	InventoryItemFields[]
+> = ({ sorting, filters }, items) => {
 	const sortFn =
 		sorting.direction === "ascending" ? sort(items).asc : sort(items).desc;
 
@@ -101,7 +106,20 @@ export const selectProcessedItems = (
 		result = result.filter((item) => !filter.includes(item[property]));
 	}
 	return result;
-	// return sorted;
 };
 
+/**
+ * Find out whether or not the filter interface for a specified property
+ * is currently open.
+ *
+ * @param {InventorySheetTableState} state The current state
+ * @param {ProcessableItemProperty} property The property to check the
+ * ui interface state for.
+ * @returns {boolean} Whether or not the filter interface for the specified property
+ * is currently open.
+ */
+export const selectFilterUiIsOpen: Selector<
+	ProcessableItemProperty,
+	boolean
+> = (state, property) => state.ui.openFilter === property;
 export default inventorySheetTableReducer;

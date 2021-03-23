@@ -9,7 +9,9 @@ import {
 	Tr,
 } from "@chakra-ui/table";
 import { useReducer, useState } from "react";
-import InventoryItemFields from "../../../types/InventoryItemFields";
+import InventoryItemFields, {
+	ProcessableItemProperty,
+} from "../../../types/InventoryItemFields";
 import sort, { ISortByFunction } from "fast-sort";
 import { ArrowDownIcon, ArrowUpIcon } from "chakra-ui-ionicons";
 import TableCell from "../../ui/TableCell";
@@ -58,6 +60,9 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 			reference: [],
 			value: [],
 		},
+		ui: {
+			openFilter: false,
+		},
 	});
 
 	const { sorting } = state;
@@ -87,7 +92,7 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 	 * @returns {React.ReactElement} The rendered stuff
 	 */
 	const TableHeader: React.FC<
-		TableCellProps & { property: keyof InventoryItemFields }
+		TableCellProps & { property: ProcessableItemProperty }
 	> = ({ property, children, ...props }) => (
 		<TableCell
 			{...props}
