@@ -3,6 +3,9 @@ import inventoryStateReducer from "../../utils/inventorySheetStateReducer";
 import "../../db/sheetServices";
 import { fetchSheet, updateSheet } from "../../db/sheetServices";
 
+//NOTE: Apparently the NextJS 'API resolved without sending a response for..." errors are false positives and can be ignored.
+// As seen here "https://github.com/vercel/next.js/issues/10439" it is a known issue with NextJS/Mongoose compatibility
+
 /**
  * Pull the sheetId url parameter for a requests url
  *
@@ -19,7 +22,6 @@ const getSheetId = (req: NextApiRequest): string => req.query.sheetId as string;
  */
 const handleGET: NextApiHandler = async (req, res) => {
 	const data = await fetchSheet(getSheetId(req));
-	res.status(200).json(data);
 };
 
 /**
