@@ -22,6 +22,7 @@ const getSheetId = (req: NextApiRequest): string => req.query.sheetId as string;
  */
 const handleGET: NextApiHandler = async (req, res) => {
 	const data = await fetchSheet(getSheetId(req));
+	res.status(200).json(data);
 };
 
 /**
