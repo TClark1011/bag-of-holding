@@ -105,19 +105,6 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 									isRound
 								/>
 							</Flex>
-							{/* <Flex
-								flexGrow={1}
-								paddingLeft="break"
-								paddingRight="group"
-								justify={["flex-end", "flex-start"]}
-							>
-								<IconButton
-									aria-label="open sheet settings"
-									icon={<SettingsOutlineIcon boxSize={6} />}
-									onClick={sheetDialogController.onOpen}
-								/>
-							</Flex> */}
-							{/* Sheet settings button */}
 							<ColorModeSwitch />
 						</Flex>
 						<HStack spacing="group">
