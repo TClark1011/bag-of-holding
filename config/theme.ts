@@ -6,18 +6,7 @@ const theme = extendTheme({
 		useSystemColorMode: true,
 	},
 	colors: {
-		primary: {
-			"50": "#f5e1e1",
-			"100": "#f5baba",
-			"200": "#f08d8d",
-			"300": "#e65c5e",
-			"400": "#db373c",
-			"500": "#cf2525",
-			"600": "#bd1923",
-			"700": "#ad1522",
-			"800": "#9c111d",
-			"900": "#8a0f1b",
-		},
+		primary: defaultTheme.colors.blue,
 		secondary: {
 			"50": "#e6f2f2",
 			"100": "#cef2f1",

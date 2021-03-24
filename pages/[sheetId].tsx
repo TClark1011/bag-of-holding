@@ -102,10 +102,11 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 					<link rel="icon" href="/favicon.ico" />
 				</Head>
 				<main>
-					<Box padding={2}>
+					{/* Top Bar */}
+					<Box padding={2} backgroundColor="primary.600">
 						<Flex justify="space-between">
-							{/* Sheet Title */}
 							<Flex>
+								{/* Sheet Title */}
 								<Heading paddingBottom="group" marginRight={1}>
 									{name}
 								</Heading>
@@ -141,7 +142,7 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 						<Box>
 							{/* Add new Item Button */}
 							<Button
-								colorScheme="secondary"
+								colorScheme="primary"
 								onClick={openNewItemDialog}
 								width="full"
 							>
