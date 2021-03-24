@@ -19,6 +19,7 @@ const createInventoryItem = (
 		_id: faker.random.uuid(),
 		carriedBy: "Nobody",
 		category: "None",
+		//FIXME Default category of "none" is not applied when creating item via 'create item' dialog
 		quantity: 1,
 		//? quantity defaults to 1
 		weight: 0,

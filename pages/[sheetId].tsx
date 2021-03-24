@@ -1,6 +1,6 @@
 import { Button, IconButton } from "@chakra-ui/button";
 import { useDisclosure, useInterval } from "@chakra-ui/hooks";
-import { Box, Flex, Heading, HStack } from "@chakra-ui/layout";
+import { Box, Flex, Heading, HStack, SimpleGrid } from "@chakra-ui/layout";
 import { Tag } from "@chakra-ui/tag";
 import Head from "next/head";
 import { Reducer, useReducer, useState } from "react";
@@ -21,6 +21,8 @@ import SheetDialog from "../components/domain/SheetDialog";
 import { CreateOutlineIcon } from "chakra-ui-ionicons";
 import MemberCarryWeightTable from "../components/domain/MemberCarryWeightTable";
 import ColorModeSwitch from "../components/domain/ColorModeSwitch";
+import { Input } from "@chakra-ui/input";
+import deepEqual from "deep-equal";
 
 /**
  * The page for a specific sheet
@@ -49,7 +51,10 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 			// router.replace(router.asPath, "", { scroll: false });
 			fetch("/api/" + sheetFields._id)
 				.then((res) => res.json())
-				.then((data) => dispatch({ type: "sheet_update", data }));
+				.then((data) => {
+					if (!deepEqual({ items, name, members, _id, isAhead }, data))
+						dispatch({ type: "sheet_update", data });
+				});
 		}
 	}, REFETCH_INTERVAL);
 
@@ -114,17 +119,29 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 							))}
 						</HStack>
 					</Box>
-					{/* Add New Item Button */}
-					<Box padding={2}>
-						<Button
-							colorScheme="primary"
-							onClick={openNewItemDialog}
-							width="full"
-						>
-							Add New Item
-						</Button>
-					</Box>
 
+					{/* Include in search bar:
+						- Reset filters button
+						- Add new Item button
+					*/}
+					<HStack height={16} columns={3} padding="group">
+						<Box>
+							{/* Add new Item Button */}
+							<Button
+								colorScheme="secondary"
+								onClick={openNewItemDialog}
+								width="full"
+							>
+								Add New Item
+							</Button>
+						</Box>
+						<Box flexGrow={2}>
+							<Input width="full" placeholder="Search" />
+						</Box>
+						<Box>
+							<Button width="full">Reset Filters</Button>
+						</Box>
+					</HStack>
 					<InventoryTableSheet
 						onRowClick={openEditItemDialog}
 						items={items}
