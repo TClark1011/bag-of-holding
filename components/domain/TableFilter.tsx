@@ -19,6 +19,7 @@ interface TableFilterProps extends PopoverProps {
 	property: ProcessableItemProperty;
 	items: InventoryItemFields[];
 	filter: string[];
+	onChange: (item: string) => void;
 }
 
 /**
@@ -28,12 +29,15 @@ const TableFilter: React.FC<TableFilterProps> = ({
 	property,
 	items,
 	children,
+	onChange,
+	filter,
 	...props
 }) => {
 	const values = items.map((item) => item[property] + "");
 	const uniqueValues = values
 		.filter((item, index) => values.indexOf(item) === index)
 		.sort();
+
 	return (
 		<Popover {...props}>
 			<PopoverTrigger>{children}</PopoverTrigger>
@@ -43,7 +47,10 @@ const TableFilter: React.FC<TableFilterProps> = ({
 				<PopoverBody>
 					{uniqueValues.map((item) => (
 						<Flex key={item}>
-							<Checkbox />
+							<Checkbox
+								isChecked={!filter.includes(item)}
+								onChange={() => onChange(item)}
+							/>
 							<Text>{item}</Text>
 						</Flex>
 					))}

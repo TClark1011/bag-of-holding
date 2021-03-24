@@ -26,7 +26,6 @@ interface FilterAction {
 	data: {
 		property: ProcessableItemProperty;
 		value: string;
-		filterOut: boolean;
 	};
 }
 
@@ -75,12 +74,10 @@ const inventorySheetTableReducer: Reducer<
 			}
 		} else if (action.type === "table_filter") {
 			//# Execute Table Filter Action
-			if (action.data.filterOut) {
-				if (
-					!draftState.filters[action.data.property].includes(action.data.value)
-				) {
-					draftState.filters[action.data.property].push(action.data.value);
-				}
+			if (
+				!draftState.filters[action.data.property].includes(action.data.value)
+			) {
+				draftState.filters[action.data.property].push(action.data.value);
 			} else {
 				draftState.filters[action.data.property] = draftState.filters[
 					action.data.property

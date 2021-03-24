@@ -23,7 +23,7 @@ import inventorySheetTableReducer, {
 	selectFilterUiIsOpen,
 	selectProcessedItems,
 } from "./InventorySheetTable.reducer";
-import { IconButton } from "@chakra-ui/button";
+import { Button, IconButton } from "@chakra-ui/button";
 import TableFilter from "../TableFilter";
 
 const col4Display = ["none", "table-cell"];
@@ -89,26 +89,34 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 	const TableHeader: React.FC<
 		TableCellProps & { property: ProcessableItemProperty }
 	> = ({ property, children, ...props }) => (
-		<TableCell
-			{...props}
-			as={Th}
-			onClick={() => dispatch({ type: "table_sort", data: property })}
-			_hover={{ backgroundColor: hoverBg }}
-			cursor="pointer"
-		>
-			{children}{" "}
-			{sorting.property === property &&
-				(sorting.direction === "ascending" ? (
-					<ArrowUpIcon />
-				) : (
-					<ArrowDownIcon />
-				))}
+		<TableCell {...props} as={Th}>
+			<Button
+				variant="ghost"
+				onClick={() => dispatch({ type: "table_sort", data: property })}
+			>
+				{children}{" "}
+				{sorting.property === property &&
+					(sorting.direction === "ascending" ? (
+						<ArrowUpIcon />
+					) : (
+						<ArrowDownIcon />
+					))}
+			</Button>
 			<TableFilter
 				isOpen={selectFilterUiIsOpen(state, property)}
 				onClose={() => dispatch({ type: "ui_closeFilter" })}
 				property={property}
 				items={items}
 				filter={filters[property]}
+				onChange={(value: string) =>
+					dispatch({
+						type: "table_filter",
+						data: {
+							property,
+							value,
+						},
+					})
+				}
 			>
 				<IconButton
 					aria-label="filter"
