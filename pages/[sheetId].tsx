@@ -1,6 +1,13 @@
 import { Button, IconButton } from "@chakra-ui/button";
 import { useDisclosure, useInterval } from "@chakra-ui/hooks";
-import { Box, Flex, Heading, HStack, SimpleGrid } from "@chakra-ui/layout";
+import {
+	Box,
+	Flex,
+	Heading,
+	HStack,
+	SimpleGrid,
+	Stack,
+} from "@chakra-ui/layout";
 import { Tag } from "@chakra-ui/tag";
 import Head from "next/head";
 import { Reducer, useReducer, useState } from "react";
@@ -91,7 +98,7 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 		>
 			<Box>
 				<Head>
-					<title>{name}</title>
+					<title>Flex Loot - {name}</title>
 					<link rel="icon" href="/favicon.ico" />
 				</Head>
 				<main>
@@ -124,7 +131,13 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 						- Reset filters button
 						- Add new Item button
 					*/}
-					<HStack height={16} columns={3} padding="group">
+					<Stack
+						minHeight={16}
+						columns={3}
+						padding="group"
+						direction={["column-reverse", "column-reverse", "row"]}
+						// direction={{ xs: "column-reverse", md: "row" }}
+					>
 						<Box>
 							{/* Add new Item Button */}
 							<Button
@@ -136,12 +149,17 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 							</Button>
 						</Box>
 						<Box flexGrow={2}>
+							{/* Search Bar */}
 							<Input width="full" placeholder="Search" />
 						</Box>
 						<Box>
-							<Button width="full">Reset Filters</Button>
+							{/* Reset Filters Button */}
+							<SimpleGrid columns={2} gap="group">
+								<Button width="full">Reset Filters</Button>{" "}
+								<Button width="full">Filter Options</Button>
+							</SimpleGrid>
 						</Box>
-					</HStack>
+					</Stack>
 					<InventoryTableSheet
 						onRowClick={openEditItemDialog}
 						items={items}
