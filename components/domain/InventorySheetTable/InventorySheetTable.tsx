@@ -8,11 +8,10 @@ import {
 	Thead,
 	Tr,
 } from "@chakra-ui/table";
-import { useReducer, useState } from "react";
+import { useReducer } from "react";
 import InventoryItemFields, {
 	ProcessableItemProperty,
 } from "../../../types/InventoryItemFields";
-import sort, { ISortByFunction } from "fast-sort";
 import {
 	ArrowDownIcon,
 	ArrowUpIcon,
@@ -82,8 +81,11 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 	 * A component to be used as the column headers
 	 *
 	 * @param {object} props The props
-	 * @param {keyof InventoryItemFields} props.property The property that
+	 * @param {ProcessableItemProperty} props.property The property that
 	 * the column represents
+	 * @param {boolean} [props.allowFilter] Whether or not to show a button
+	 * to open the filter interface for the column. If not specified, defaults
+	 * to not showing the filter button.
 	 * @param {React.ReactElement} props.children The children
 	 * @returns {React.ReactElement} The rendered stuff
 	 */
