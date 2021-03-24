@@ -17,6 +17,8 @@ const createInventoryItem = (
 ): InventoryItemFields => {
 	return {
 		_id: faker.random.uuid(),
+		carriedBy: "Nobody",
+		category: "None",
 		quantity: 1,
 		//? quantity defaults to 1
 		weight: 0,
