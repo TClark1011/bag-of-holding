@@ -78,18 +78,6 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 	const processedItems = selectProcessedItems(state, items);
 
 	/**
-	 * Fetch the sort status of a sorting property
-	 *
-	 * @param {keyof InventoryItemFields} property The property
-	 * to check the sorting status of
-	 * @returns {string} "none" if the property is not being sorted by.
-	 * Otherwise returns "asc" or "desc" depending on the direction the
-	 * property is being sorted .
-	 */
-	const getPropertySortingStatus = (property: keyof InventoryItemFields) =>
-		sorting.property === property ? sorting.direction : "none";
-
-	/**
 	 * A component to be used as the column headers
 	 *
 	 * @param {object} props The props
@@ -109,12 +97,12 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 			cursor="pointer"
 		>
 			{children}{" "}
-			{getPropertySortingStatus(property) ===
-			"none" ? null : getPropertySortingStatus(property) === "ascending" ? (
-				<ArrowUpIcon />
-			) : (
-				<ArrowDownIcon />
-			)}
+			{sorting.property === property &&
+				(sorting.direction === "ascending" ? (
+					<ArrowUpIcon />
+				) : (
+					<ArrowDownIcon />
+				))}
 			<TableFilter
 				isOpen={selectFilterUiIsOpen(state, property)}
 				onClose={() => dispatch({ type: "ui_closeFilter" })}
