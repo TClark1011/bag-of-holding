@@ -105,8 +105,12 @@ export const selectProcessedItems: Selector<
 	InventoryItemFields[]
 > = ({ sorting, filters }, items) => {
 	const sortFn =
-		sorting.direction === "ascending" ? sort(items).asc : sort(items).desc;
+		sorting.direction === "ascending"
+			? sort([...items]).asc
+			: sort([...items]).desc;
+	//? have to use spread syntax because the sort function mutates and causes crash if passed values pulled straight from state
 
+	//* Sort Items
 	const sorted = sortFn([
 		(item) =>
 			sorting.property === "quantity" || sorting.property === "weight"
@@ -114,7 +118,9 @@ export const selectProcessedItems: Selector<
 				: item[sorting.property],
 		(item) => item.name,
 	]);
-	let result = sorted;
+
+	//* Filter items
+	let result = [...sorted];
 	for (const [property, filter] of Object.entries(filters)) {
 		result = result.filter((item) => !filter.includes(item[property]));
 	}
