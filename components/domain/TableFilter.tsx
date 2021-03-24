@@ -39,7 +39,7 @@ const TableFilter: React.FC<TableFilterProps> = ({
 		.sort();
 
 	return (
-		<Popover {...props}>
+		<Popover {...props} returnFocusOnClose>
 			<PopoverTrigger>{children}</PopoverTrigger>
 			<PopoverContent>
 				<PopoverArrow />
@@ -50,6 +50,7 @@ const TableFilter: React.FC<TableFilterProps> = ({
 							<Checkbox
 								isChecked={!filter.includes(item)}
 								onChange={() => onChange(item)}
+								marginRight="group"
 							/>
 							<Text>{item}</Text>
 						</Flex>

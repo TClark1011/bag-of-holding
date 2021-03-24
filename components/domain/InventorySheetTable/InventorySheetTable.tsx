@@ -25,6 +25,7 @@ import inventorySheetTableReducer, {
 } from "./InventorySheetTable.reducer";
 import { Button, IconButton } from "@chakra-ui/button";
 import TableFilter from "../TableFilter";
+import { Text } from "@chakra-ui/layout";
 
 const col4Display = ["none", "table-cell"];
 const col5Display = ["none", "none", "table-cell"];
@@ -87,14 +88,17 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 	 * @returns {React.ReactElement} The rendered stuff
 	 */
 	const TableHeader: React.FC<
-		TableCellProps & { property: ProcessableItemProperty }
-	> = ({ property, children, ...props }) => (
+		TableCellProps & {
+			property: ProcessableItemProperty;
+			allowFilter?: boolean;
+		}
+	> = ({ property, children, allowFilter, ...props }) => (
 		<TableCell {...props} as={Th}>
 			<Button
 				variant="ghost"
 				onClick={() => dispatch({ type: "table_sort", data: property })}
 			>
-				{children}{" "}
+				<Text marginRight="group">{children}</Text>
 				{sorting.property === property &&
 					(sorting.direction === "ascending" ? (
 						<ArrowUpIcon />
@@ -102,28 +106,33 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 						<ArrowDownIcon />
 					))}
 			</Button>
-			<TableFilter
-				isOpen={selectFilterUiIsOpen(state, property)}
-				onClose={() => dispatch({ type: "ui_closeFilter" })}
-				property={property}
-				items={items}
-				filter={filters[property]}
-				onChange={(value: string) =>
-					dispatch({
-						type: "table_filter",
-						data: {
-							property,
-							value,
-						},
-					})
-				}
-			>
-				<IconButton
-					aria-label="filter"
-					icon={<FilterOutlineIcon />}
-					onClick={() => dispatch({ type: "ui_openFilter", data: property })}
-				/>
-			</TableFilter>
+			{allowFilter && (
+				<TableFilter
+					isOpen={selectFilterUiIsOpen(state, property)}
+					onClose={() => dispatch({ type: "ui_closeFilter" })}
+					property={property}
+					items={items}
+					filter={filters[property]}
+					onChange={(value: string) =>
+						dispatch({
+							type: "table_filter",
+							data: {
+								property,
+								value,
+							},
+						})
+					}
+				>
+					<IconButton
+						aria-label="filter"
+						icon={<FilterOutlineIcon />}
+						onClick={() => dispatch({ type: "ui_openFilter", data: property })}
+						variant="ghost"
+						isRound
+						marginLeft="group"
+					/>
+				</TableFilter>
+			)}
 		</TableCell>
 	);
 
@@ -144,10 +153,10 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 					<TableHeader property="value" display={col4Display}>
 						Value
 					</TableHeader>
-					<TableHeader property="carriedBy" display={col5Display}>
+					<TableHeader property="carriedBy" allowFilter display={col5Display}>
 						Carried By
 					</TableHeader>
-					<TableHeader property="category" display={col6Display}>
+					<TableHeader property="category" allowFilter display={col6Display}>
 						Category
 					</TableHeader>
 				</Tr>

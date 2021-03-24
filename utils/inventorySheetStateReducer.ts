@@ -7,6 +7,8 @@ import InventorySheetState, {
 } from "../types/InventorySheetState";
 import createInventoryItem from "./createInventoryItem";
 
+//TODO: Create separate 'server' reducer that processes how to update mongo state
+
 /**
  * The reducer for a sheet's inventory state
  *
