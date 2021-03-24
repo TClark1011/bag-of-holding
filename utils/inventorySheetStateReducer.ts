@@ -10,6 +10,13 @@ import createInventoryItem from "./createInventoryItem";
 //TODO: Create separate 'server' reducer that processes how to update mongo state
 
 /**
+ * //FIXME: Creating a new item crashes the (frontend) app
+ * It occurs purely in the frontends, I tried debugging by
+ * having it not send to server and it still crashed.
+ * It does not occur when only updating an item
+ */
+
+/**
  * The reducer for a sheet's inventory state
  *
  * @param {InventoryItemFields[]} state The current  ate of the inventory
@@ -65,9 +72,10 @@ const inventoryStateReducer = (
 
 	switch (type) {
 		case "item_add":
-			return produceNewState((draftState) => {
-				draftState.items.push(createInventoryItem(data as InventoryItemFields));
-			}, true);
+			// return produceNewState((draftState) => {
+			// 	draftState.items.push(createInventoryItem(data as InventoryItemFields));
+			// }, true);
+			return { ...state, items: [...state.items, data as InventoryItemFields] };
 		case "item_remove":
 			return produceNewState((draftState) => {
 				draftState.items = draftState.items.filter(

@@ -1,5 +1,6 @@
+import { Button } from "@chakra-ui/button";
 import { Checkbox } from "@chakra-ui/checkbox";
-import { Flex, Text } from "@chakra-ui/layout";
+import { Flex, HStack, Text } from "@chakra-ui/layout";
 import {
 	Popover,
 	PopoverArrow,
@@ -9,9 +10,11 @@ import {
 	PopoverProps,
 	PopoverTrigger,
 } from "@chakra-ui/popover";
+import { FilterSharpIcon } from "chakra-ui-ionicons";
 import InventoryItemFields, {
 	ProcessableItemProperty,
 } from "../../types/InventoryItemFields";
+import sort from "fast-sort";
 
 interface TableFilterProps extends PopoverProps {
 	property: ProcessableItemProperty;
@@ -49,10 +52,47 @@ const TableFilter: React.FC<TableFilterProps> = ({
 	children,
 	...props
 }) => {
-	const values = items.map((item) => item[property] + "");
-	const uniqueValues = values
-		.filter((item, index) => values.indexOf(item) === index)
-		.sort();
+	const propertyValues = items.map((item) => item[property] + "");
+	const uniquePropertyValues = sort(
+		propertyValues.filter(
+			(item, index) => propertyValues.indexOf(item) === index
+		)
+	).asc();
+
+	/**
+	 * Remove all items from filter
+	 * Iterates through all unique property values that are
+	 * currently being filtered out and executes 'onChange'
+	 * on them. It is assumed that 'onChange' toggles the
+	 * filtering of the passed string.
+	 */
+	const resetFilter = () => {
+		uniquePropertyValues
+			.filter((item) => filter.includes(item))
+			.forEach((item) => {
+				onChange(item);
+			});
+	};
+
+	/**
+	 * Filter out all values
+	 */
+	const filterAll = () => {
+		uniquePropertyValues
+			.filter((item) => !filter.includes(item))
+			.forEach((item) => {
+				onChange(item);
+			});
+	};
+
+	/**
+	 * Invert current filter
+	 */
+	const invertFilter = () => {
+		uniquePropertyValues.forEach((item) => {
+			onChange(item);
+		});
+	};
 
 	//TODO: "none" and "all" buttons
 
@@ -63,7 +103,20 @@ const TableFilter: React.FC<TableFilterProps> = ({
 				<PopoverArrow />
 				<PopoverCloseButton />
 				<PopoverBody>
-					{uniqueValues.map((item) => (
+					<Flex justify="flex-end" paddingRight="break">
+						<HStack spacing="group">
+							<Button size="xs" onClick={filterAll}>
+								Uncheck All
+							</Button>
+							<Button size="xs" onClick={resetFilter}>
+								Check All
+							</Button>
+							<Button size="xs" onClick={invertFilter}>
+								Invert
+							</Button>
+						</HStack>
+					</Flex>
+					{uniquePropertyValues.map((item) => (
 						<Flex key={item}>
 							<Checkbox
 								isChecked={!filter.includes(item)}
