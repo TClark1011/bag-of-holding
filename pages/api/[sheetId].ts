@@ -1,5 +1,5 @@
 import { NextApiHandler, NextApiRequest } from "next";
-import inventoryStateReducer from "../../utils/inventorySheetStateReducer";
+import inventoryStateReducer from "../../reducers/inventoryReducer";
 import "../../db/sheetServices";
 import { fetchSheet, updateSheet } from "../../db/sheetServices";
 

@@ -1,4 +1,4 @@
-import { InventoryItemCreationFields } from "./../types/InventoryItemFields";
+import { InventoryItemCreationFields } from "../types/InventoryItemFields";
 import produce from "immer";
 import { merge } from "merge-anything";
 import InventoryItemFields from "../types/InventoryItemFields";
@@ -6,7 +6,7 @@ import InventorySheetFields from "../types/InventorySheetFields";
 import InventorySheetState, {
 	InventorySheetStateAction,
 } from "../types/InventorySheetState";
-import createInventoryItem from "./createInventoryItem";
+import createInventoryItem from "../utils/createInventoryItem";
 
 //TODO: Create separate 'server' reducer that processes how to update mongo state
 
