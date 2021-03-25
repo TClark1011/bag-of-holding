@@ -16,9 +16,9 @@ import { InputControl } from "formik-chakra-ui";
 import DialogControlProps from "../../types/DialogControlProps";
 import InventorySheetFields from "../../types/InventorySheetFields";
 import {
-	useSheetState,
-	useSheetStateDispatch,
-} from "../contexts/SheetStateContext";
+	useInventoryState,
+	useInventoryStateDispatch,
+} from "../contexts/InventoryStateContext";
 import { RemoveIcon } from "chakra-ui-ionicons";
 
 /**
@@ -30,8 +30,8 @@ import { RemoveIcon } from "chakra-ui-ionicons";
  * @returns {React.ReactElement} The rendered component
  */
 const SheetDialog: React.FC<DialogControlProps> = ({ ...props }) => {
-	const { name, members } = useSheetState();
-	const dispatch = useSheetStateDispatch();
+	const { name, members } = useInventoryState();
+	const dispatch = useInventoryStateDispatch();
 
 	/**
 	 * Handle submission of formik form

@@ -2,7 +2,7 @@ import produce from "immer";
 import { Reducer } from "react";
 import InventoryItemFields, {
 	ProcessableItemProperty,
-} from "../../../types/InventoryItemFields";
+} from "../types/InventoryItemFields";
 import sort from "fast-sort";
 
 export interface InventorySheetTableState {

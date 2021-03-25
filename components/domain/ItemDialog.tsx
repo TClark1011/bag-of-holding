@@ -21,9 +21,9 @@ import DialogControlProps from "../../types/DialogControlProps";
 import { InventoryItemCreationFields } from "../../types/InventoryItemFields";
 import { InventorySheetStateAction } from "../../types/InventorySheetState";
 import {
-	useSheetState,
-	useSheetStateDispatch,
-} from "../contexts/SheetStateContext";
+	useInventoryState,
+	useInventoryStateDispatch,
+} from "../contexts/InventoryStateContext";
 
 export type ItemDialogMode = "edit" | "new";
 
@@ -61,9 +61,9 @@ const ItemDialog: React.FC<Props> = ({ mode, item, onClose, isOpen }) => {
 				reference: "",
 			  };
 
-	const dispatch = useSheetStateDispatch();
+	const dispatch = useInventoryStateDispatch();
 
-	const { members } = useSheetState();
+	const { members } = useInventoryState();
 
 	/**
 	 * Handle the submitting of the new item form

@@ -1,5 +1,5 @@
 import { Button, IconButton } from "@chakra-ui/button";
-import { useDisclosure, useInterval } from "@chakra-ui/hooks";
+import { useInterval } from "@chakra-ui/hooks";
 import {
 	Box,
 	Flex,
@@ -10,8 +10,8 @@ import {
 } from "@chakra-ui/layout";
 import { Tag } from "@chakra-ui/tag";
 import Head from "next/head";
-import { Reducer, useReducer, useState } from "react";
-import ItemDialog, { ItemDialogMode } from "../components/domain/ItemDialog";
+import { Reducer, useReducer } from "react";
+import ItemDialog from "../components/domain/ItemDialog";
 import InventoryTableSheet from "../components/domain/InventorySheetTable";
 import InventorySheetFields from "../types/InventorySheetFields";
 import InventorySheetState, {
@@ -19,9 +19,8 @@ import InventorySheetState, {
 } from "../types/InventorySheetState";
 import inventorySheetStateReducer from "../utils/inventorySheetStateReducer";
 import getUrlParam from "../utils/getUrlParam";
-import SheetStateProvider from "../components/contexts/SheetStateContext";
+import SheetStateProvider from "../components/contexts/InventoryStateContext";
 import { fetchSheet } from "../db/sheetServices";
-import InventoryItemFields from "../types/InventoryItemFields";
 import { REFETCH_INTERVAL } from "../config/publicEnv";
 import { GetServerSideProps } from "next";
 import SheetDialog from "../components/domain/SheetDialog";
@@ -33,7 +32,6 @@ import deepEqual from "deep-equal";
 import { appName } from "../constants/branding";
 import sheetPageReducer, {
 	selectDialogIsOpen,
-	SheetDialogType,
 	SheetPageState,
 	SheetPageStateAction,
 } from "../reducers/sheetPageReducer";

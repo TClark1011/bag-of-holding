@@ -11,19 +11,19 @@ import {
 import { useReducer } from "react";
 import InventoryItemFields, {
 	ProcessableItemProperty,
-} from "../../../types/InventoryItemFields";
+} from "../../types/InventoryItemFields";
 import {
 	ArrowDownIcon,
 	ArrowUpIcon,
 	FilterOutlineIcon,
 } from "chakra-ui-ionicons";
-import TableCell from "../../ui/TableCell";
+import TableCell from "../ui/TableCell";
 import inventorySheetTableReducer, {
 	selectFilterUiIsOpen,
 	selectProcessedItems,
-} from "./InventorySheetTable.reducer";
+} from "../../reducers/inventorySheetTableReducer";
 import { Button, IconButton } from "@chakra-ui/button";
-import TableFilter from "../TableFilter";
+import TableFilter from "./TableFilter";
 import { Text } from "@chakra-ui/layout";
 
 const col4Display = ["none", "table-cell"];
