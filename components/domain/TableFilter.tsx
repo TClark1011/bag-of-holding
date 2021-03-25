@@ -10,7 +10,6 @@ import {
 	PopoverProps,
 	PopoverTrigger,
 } from "@chakra-ui/popover";
-import { FilterSharpIcon } from "chakra-ui-ionicons";
 import InventoryItemFields, {
 	ProcessableItemProperty,
 } from "../../types/InventoryItemFields";

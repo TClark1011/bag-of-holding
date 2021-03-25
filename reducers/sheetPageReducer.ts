@@ -6,7 +6,9 @@ import InventoryItemFields, {
 
 export type SheetDialogType = "item.new" | "item.edit" | "sheetOptions";
 
-export const emptyFilters: Record<ProcessableItemProperty, string[]> = {
+export type InventoryFilters = Record<ProcessableItemProperty, string[]>;
+
+export const emptyFilters: InventoryFilters = {
 	name: [],
 	category: [],
 	carriedBy: [],
@@ -23,7 +25,7 @@ export interface SheetPageState {
 		isOpen: boolean;
 		activeItem: InventoryItemFields;
 	};
-	filters: Record<ProcessableItemProperty, string[]>;
+	filters: InventoryFilters;
 }
 
 interface OpenDialogAction {

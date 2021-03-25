@@ -1,3 +1,4 @@
+import { InventoryFilters } from "./sheetPageReducer";
 import produce from "immer";
 import { Reducer } from "react";
 import InventoryItemFields, {
@@ -10,7 +11,6 @@ export interface InventorySheetTableState {
 		property: ProcessableItemProperty;
 		direction: "ascending" | "descending";
 	};
-	filters: Record<ProcessableItemProperty, string[]>;
 	ui: {
 		openFilter: ProcessableItemProperty | false;
 	};
@@ -20,15 +20,6 @@ interface SortAction {
 	type: "table_sort";
 	data: ProcessableItemProperty;
 }
-
-interface FilterAction {
-	type: "table_filter";
-	data: {
-		property: ProcessableItemProperty;
-		value: string;
-	};
-}
-
 interface OpenFilterAction {
 	type: "ui_openFilter";
 	data: ProcessableItemProperty;
@@ -39,7 +30,6 @@ interface CloseFilterAction {
 
 export type InventorySheetTableStateAction =
 	| SortAction
-	| FilterAction
 	| OpenFilterAction
 	| CloseFilterAction;
 
@@ -72,17 +62,6 @@ const inventorySheetTableReducer: Reducer<
 				draftState.sorting.property = action.data;
 				//? If sorting by a new property, set direction to ascending and set new property;
 			}
-		} else if (action.type === "table_filter") {
-			//# Execute Table Filter Action
-			if (
-				!draftState.filters[action.data.property].includes(action.data.value)
-			) {
-				draftState.filters[action.data.property].push(action.data.value);
-			} else {
-				draftState.filters[action.data.property] = draftState.filters[
-					action.data.property
-				].filter((item) => item !== action.data.value);
-			}
 		} else if (action.type === "ui_openFilter") {
 			draftState.ui.openFilter = action.data;
 		} else if (action.type === "ui_closeFilter") {
@@ -101,9 +80,9 @@ type Selector<T, R> = (state: InventorySheetTableState, data: T) => R;
  * @returns {InventoryItemFields[]} The list of items
  */
 export const selectProcessedItems: Selector<
-	InventoryItemFields[],
+	{ items: InventoryItemFields[]; filters: InventoryFilters },
 	InventoryItemFields[]
-> = ({ sorting, filters }, items) => {
+> = ({ sorting }, { items, filters }) => {
 	const sortFn =
 		sorting.direction === "ascending"
 			? sort([...items]).asc

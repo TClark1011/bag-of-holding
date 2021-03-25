@@ -25,6 +25,7 @@ import inventorySheetTableReducer, {
 import { Button, IconButton } from "@chakra-ui/button";
 import TableFilter from "./TableFilter";
 import { Text } from "@chakra-ui/layout";
+import { InventoryFilters } from "../../reducers/sheetPageReducer";
 
 const col4Display = ["none", "table-cell"];
 const col5Display = ["none", "none", "table-cell"];
@@ -33,6 +34,8 @@ const col6Display = ["none", "none", "none", "table-cell"];
 export interface InventorySheetTableProps extends TableProps {
 	onRowClick: (item?: InventoryItemFields) => void;
 	items: InventoryItemFields[];
+	filters: InventoryFilters;
+	onFilterChange: (property: ProcessableItemProperty, item: string) => void;
 }
 
 /**
@@ -42,11 +45,15 @@ export interface InventorySheetTableProps extends TableProps {
  * @param {InventoryItemFields[]} props.items The items in the inventory
  * @param {Function} props.onRowClick Callback to execute when an item row is clicked.
  * The item's fields are passed as a parameter
+ * @param {InventoryFilters} props.filters The currently active filters
+ * @param {Function} props.onFilterChange Callback to execute when a filter is edited
  * @returns {React.ReactElement} The rendered html components
  */
 const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 	onRowClick,
 	items,
+	filters,
+	onFilterChange,
 	...props
 }) => {
 	const hoverBg = useColorModeValue("gray.100", "gray.700");
@@ -57,25 +64,14 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 			property: "name",
 			direction: "ascending",
 		},
-		filters: {
-			name: [],
-			carriedBy: [],
-			category: [],
-			description: [],
-			weight: [],
-			quantity: [],
-			reference: [],
-			value: [],
-		},
 		ui: {
 			openFilter: false,
 		},
 	});
-
-	const { sorting, filters } = state;
+	const { sorting } = state;
 	//? Destructure after initializer so that full state object can be easily passed to selectors
 
-	const processedItems = selectProcessedItems(state, items);
+	const processedItems = selectProcessedItems(state, { items, filters });
 
 	/**
 	 * A component to be used as the column headers
@@ -115,15 +111,7 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 					property={property}
 					items={items}
 					filter={filters[property]}
-					onChange={(value: string) =>
-						dispatch({
-							type: "table_filter",
-							data: {
-								property,
-								value,
-							},
-						})
-					}
+					onChange={(value: string) => onFilterChange(property, value)}
 				>
 					<IconButton
 						aria-label="filter"

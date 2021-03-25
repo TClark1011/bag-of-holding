@@ -66,7 +66,7 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 			isOpen: false,
 			activeItem: items[0],
 		},
-		filters:emptyFilters
+		filters: emptyFilters,
 	});
 
 	/**
@@ -185,6 +185,16 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 								data: {
 									type: "item.edit",
 									item,
+								},
+							})
+						}
+						filters={sheetState.filters}
+						onFilterChange={(property, value) =>
+							sheetDispatch({
+								type: "filter",
+								data: {
+									property,
+									value,
 								},
 							})
 						}
