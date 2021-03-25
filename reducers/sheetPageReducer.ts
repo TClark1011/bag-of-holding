@@ -1,8 +1,21 @@
 import produce from "immer";
 import { Reducer } from "react";
-import InventoryItemFields from "../types/InventoryItemFields";
+import InventoryItemFields, {
+	ProcessableItemProperty,
+} from "../types/InventoryItemFields";
 
 export type SheetDialogType = "item.new" | "item.edit" | "sheetOptions";
+
+export const emptyFilters: Record<ProcessableItemProperty, string[]> = {
+	name: [],
+	category: [],
+	carriedBy: [],
+	description: [],
+	quantity: [],
+	reference: [],
+	value: [],
+	weight: [],
+};
 
 export interface SheetPageState {
 	dialog: {
@@ -10,6 +23,7 @@ export interface SheetPageState {
 		isOpen: boolean;
 		activeItem: InventoryItemFields;
 	};
+	filters: Record<ProcessableItemProperty, string[]>;
 }
 
 interface OpenDialogAction {
@@ -27,7 +41,18 @@ interface CloseDialogAction {
 	type: "dialog_close";
 }
 
-export type SheetPageStateAction = OpenDialogAction | CloseDialogAction;
+interface FilterAction {
+	type: "filter";
+	data: {
+		property: ProcessableItemProperty;
+		value: string;
+	};
+}
+
+export type SheetPageStateAction =
+	| OpenDialogAction
+	| CloseDialogAction
+	| FilterAction;
 
 /**
  * Reducer for the state of the sheet page
@@ -52,6 +77,17 @@ const sheetPageReducer: Reducer<SheetPageState, SheetPageStateAction> = (
 			draftState.dialog.isOpen = true;
 		} else if (action.type === "dialog_close") {
 			draftState.dialog.isOpen = false;
+		} else if (action.type === "filter") {
+			//# Execute Table Filter Action
+			if (
+				!draftState.filters[action.data.property].includes(action.data.value)
+			) {
+				draftState.filters[action.data.property].push(action.data.value);
+			} else {
+				draftState.filters[action.data.property] = draftState.filters[
+					action.data.property
+				].filter((item) => item !== action.data.value);
+			}
 		}
 	});
 };

@@ -31,6 +31,7 @@ import { Input } from "@chakra-ui/input";
 import deepEqual from "deep-equal";
 import { appName } from "../constants/branding";
 import sheetPageReducer, {
+	emptyFilters,
 	selectDialogIsOpen,
 	SheetPageState,
 	SheetPageStateAction,
@@ -65,6 +66,7 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 			isOpen: false,
 			activeItem: items[0],
 		},
+		filters:emptyFilters
 	});
 
 	/**
