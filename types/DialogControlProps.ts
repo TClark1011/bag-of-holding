@@ -1,7 +1,6 @@
-import { UseDisclosureReturn } from "@chakra-ui/hooks";
-
 interface DialogControlProps {
-	controller: UseDisclosureReturn;
+	isOpen: boolean;
+	onClose: () => void;
 }
 
 export default DialogControlProps;

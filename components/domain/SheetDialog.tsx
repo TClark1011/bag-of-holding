@@ -29,7 +29,7 @@ import { RemoveIcon } from "chakra-ui-ionicons";
  * dialog state
  * @returns {React.ReactElement} The rendered component
  */
-const SheetDialog: React.FC<DialogControlProps> = ({ controller }) => {
+const SheetDialog: React.FC<DialogControlProps> = ({ ...props }) => {
 	const { name, members } = useSheetState();
 	const dispatch = useSheetStateDispatch();
 
@@ -72,7 +72,7 @@ const SheetDialog: React.FC<DialogControlProps> = ({ controller }) => {
 	//TODO: Field Validation
 	///TODO: Confirmation when deleting a member
 	return (
-		<Modal {...controller}>
+		<Modal {...props}>
 			<ModalOverlay />
 			<Formik onSubmit={onSubmit} initialValues={{ name, members }}>
 				{({ handleSubmit, isSubmitting, values }) => (

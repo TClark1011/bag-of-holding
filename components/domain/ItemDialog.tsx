@@ -41,13 +41,11 @@ interface Props extends DialogControlProps {
  * @param {ItemDialogMode} props.mode The mode the dialog is in. Eg; "new" if being used to
  * create a new item or "edit" if being used to edit an existing item.
  * @param {InventoryItemFields} [props.item] The item data used to fill in initial values.
+ * @param props.onClose
+ * @param props.isOpen
  * @returns {React.ReactElement} The rendered HTML
  */
-const ItemDialog: React.FC<Props> = ({
-	controller: { onClose, isOpen },
-	mode,
-	item,
-}) => {
+const ItemDialog: React.FC<Props> = ({ mode, item, onClose, isOpen }) => {
 	const inEditMode = mode === "edit";
 
 	const initialFormValues: InventoryItemCreationFields =

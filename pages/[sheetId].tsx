@@ -31,6 +31,12 @@ import ColorModeSwitch from "../components/domain/ColorModeSwitch";
 import { Input } from "@chakra-ui/input";
 import deepEqual from "deep-equal";
 import { appName } from "../constants/branding";
+import sheetPageReducer, {
+	selectDialogIsOpen,
+	SheetDialogType,
+	SheetPageState,
+	SheetPageStateAction,
+} from "../reducers/sheetPageReducer";
 
 /**
  * The page for a specific sheet
@@ -42,18 +48,39 @@ import { appName } from "../constants/branding";
  * @returns {React.ReactElement} Sheet component
  */
 const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
-	const [{ items, name, members, _id, isAhead }, dispatch] = useReducer<
-		Reducer<InventorySheetState, InventorySheetStateAction>
-	>(inventorySheetStateReducer, {
-		...sheetFields,
-		isAhead: false,
+	const [
+		{ items, name, members, _id, isAhead },
+		inventoryDispatch,
+	] = useReducer<Reducer<InventorySheetState, InventorySheetStateAction>>(
+		inventorySheetStateReducer,
+		{
+			...sheetFields,
+			isAhead: false,
+		}
+	);
+
+	const [sheetState, sheetDispatch] = useReducer<
+		Reducer<SheetPageState, SheetPageStateAction>
+	>(sheetPageReducer, {
+		dialog: {
+			type: "item.new",
+			isOpen: false,
+			activeItem: items[0],
+		},
 	});
+
+	/**
+	 * Close dialog message
+	 */
+	const dialogOnClose = () => {
+		sheetDispatch({ type: "dialog_close" });
+	};
 
 	//TODO: Switch back to manual fetches
 	useInterval(() => {
 		if (isAhead) {
 			//? If local state is ahead of server, we ignore the next refetch give the server time to update
-			dispatch({ type: "sheet_setIsAhead", data: false });
+			inventoryDispatch({ type: "sheet_setIsAhead", data: false });
 		} else {
 			//? We refresh the props from the server every 3 seconds
 			// router.replace(router.asPath, "", { scroll: false });
@@ -61,40 +88,14 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 				.then((res) => res.json())
 				.then((data) => {
 					if (!deepEqual({ items, name, members, _id, isAhead }, data))
-						dispatch({ type: "sheet_update", data });
+						inventoryDispatch({ type: "sheet_update", data });
 				});
 		}
 	}, REFETCH_INTERVAL);
 
-	const newItemDialogController = useDisclosure();
-
-	const [itemDialogMode, setItemDialogMode] = useState<ItemDialogMode>("edit");
-	const [activeItem, setActiveItem] = useState<InventoryItemFields>(items[0]);
-
-	const sheetDialogController = useDisclosure();
-
-	/**
-	 * Open the 'New Item' dialog
-	 */
-	const openNewItemDialog = () => {
-		setItemDialogMode("new");
-		newItemDialogController.onOpen();
-	};
-
-	/**
-	 * Open the 'Edit Item' dialog
-	 *
-	 * @param {InventoryItemFields} item The item to edit
-	 */
-	const openEditItemDialog = (item) => {
-		setActiveItem(item);
-		setItemDialogMode("edit");
-		newItemDialogController.onOpen();
-	};
-
 	return (
 		<SheetStateProvider
-			dispatch={dispatch}
+			dispatch={inventoryDispatch}
 			state={{ items, members, name, _id }}
 		>
 			<Box>
@@ -116,7 +117,9 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 								<IconButton
 									aria-label="edit sheet settings"
 									icon={<CreateOutlineIcon boxSize={6} />}
-									onClick={sheetDialogController.onOpen}
+									onClick={() =>
+										sheetDispatch({ type: "dialog_open", data: "sheetOptions" })
+									}
 									variant="ghost"
 									isRound
 								/>
@@ -145,7 +148,9 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 							{/* Add new Item Button */}
 							<Button
 								colorScheme="secondary"
-								onClick={openNewItemDialog}
+								onClick={() =>
+									sheetDispatch({ type: "dialog_open", data: "item.new" })
+								}
 								width="full"
 							>
 								Add New Item
@@ -174,7 +179,15 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 						</Box>
 					</Stack>
 					<InventoryTableSheet
-						onRowClick={openEditItemDialog}
+						onRowClick={(item) =>
+							sheetDispatch({
+								type: "dialog_open",
+								data: {
+									type: "item.edit",
+									item,
+								},
+							})
+						}
 						items={items}
 						marginBottom="break"
 					/>
@@ -184,11 +197,21 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 
 					{/* Dialogs */}
 					<ItemDialog
-						controller={newItemDialogController}
-						mode={itemDialogMode}
-						item={activeItem}
+						isOpen={selectDialogIsOpen(sheetState, "item.new")}
+						onClose={dialogOnClose}
+						mode={"new"}
+						item={sheetState.dialog.activeItem}
 					/>
-					<SheetDialog controller={sheetDialogController} />
+					<ItemDialog
+						isOpen={selectDialogIsOpen(sheetState, "item.edit")}
+						onClose={dialogOnClose}
+						mode={"edit"}
+						item={sheetState.dialog.activeItem}
+					/>
+					<SheetDialog
+						isOpen={selectDialogIsOpen(sheetState, "sheetOptions")}
+						onClose={dialogOnClose}
+					/>
 				</main>
 			</Box>
 		</SheetStateProvider>
