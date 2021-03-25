@@ -200,7 +200,7 @@ const ItemDialog: React.FC<Props> = ({
 									</Button>
 								)}
 								<Button
-									colorScheme="secondary"
+									colorScheme="primary"
 									onClick={() => handleSubmit()}
 									isLoading={isSubmitting}
 								>

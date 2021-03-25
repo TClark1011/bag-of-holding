@@ -121,7 +121,7 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 									isRound
 								/>
 							</Flex>
-							<ColorModeSwitch />
+							<ColorModeSwitch variant="ghost" />
 						</Flex>
 						<HStack spacing="group">
 							{/* Party Members Tags */}
@@ -144,7 +144,7 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 						<Box>
 							{/* Add new Item Button */}
 							<Button
-								colorScheme="primary"
+								colorScheme="secondary"
 								onClick={openNewItemDialog}
 								width="full"
 							>
@@ -157,9 +157,19 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 						</Box>
 						<Box>
 							{/* Reset Filters Button */}
-							<SimpleGrid columns={2} gap="group">
+							<SimpleGrid columns={[2, 2, 2, 1]} gap="group">
 								<Button width="full">Reset Filters</Button>{" "}
-								<Button width="full">Filter Options</Button>
+								<Button
+									width="full"
+									display={[
+										"inline-flex",
+										"inline-flex",
+										"inline-flex",
+										"none",
+									]}
+								>
+									Filter Options
+								</Button>
 							</SimpleGrid>
 						</Box>
 					</Stack>
