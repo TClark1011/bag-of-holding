@@ -30,6 +30,7 @@ import MemberCarryWeightTable from "../components/domain/MemberCarryWeightTable"
 import ColorModeSwitch from "../components/domain/ColorModeSwitch";
 import { Input } from "@chakra-ui/input";
 import deepEqual from "deep-equal";
+import { appName } from "../constants/branding";
 
 /**
  * The page for a specific sheet
@@ -98,12 +99,14 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 		>
 			<Box>
 				<Head>
-					<title>Flex Loot - {name}</title>
+					<title>
+						{appName} - {name}
+					</title>
 					<link rel="icon" href="/favicon.ico" />
 				</Head>
 				<main>
 					{/* Top Bar */}
-					<Box padding={2} backgroundColor="primary.600">
+					<Box padding={2} backgroundColor="primary.600" color="white">
 						<Flex justify="space-between">
 							<Flex>
 								{/* Sheet Title */}
@@ -137,7 +140,6 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 						columns={3}
 						padding="group"
 						direction={["column-reverse", "column-reverse", "row"]}
-						// direction={{ xs: "column-reverse", md: "row" }}
 					>
 						<Box>
 							{/* Add new Item Button */}
