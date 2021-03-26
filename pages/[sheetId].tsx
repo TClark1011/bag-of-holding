@@ -163,7 +163,13 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 						<Box>
 							{/* Reset Filters Button */}
 							<SimpleGrid columns={[2, 2, 2, 1]} gap="group">
-								<Button width="full">Reset Filters</Button>{" "}
+								{/* Reset Filters Button */}
+								<Button
+									width="full"
+									onClick={() => sheetDispatch({ type: "filter_reset" })}
+								>
+									Reset Filters
+								</Button>{" "}
 								<Button
 									width="full"
 									display={[

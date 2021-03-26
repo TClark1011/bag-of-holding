@@ -51,10 +51,15 @@ interface FilterAction {
 	};
 }
 
+interface ResetFilterAction {
+	type: "filter_reset";
+}
+
 export type SheetPageStateAction =
 	| OpenDialogAction
 	| CloseDialogAction
-	| FilterAction;
+	| FilterAction
+	| ResetFilterAction;
 
 /**
  * Reducer for the state of the sheet page
@@ -90,6 +95,8 @@ const sheetPageReducer: Reducer<SheetPageState, SheetPageStateAction> = (
 					action.data.property
 				].filter((item) => item !== action.data.value);
 			}
+		} else if (action.type === "filter_reset") {
+			draftState.filters = emptyFilters;
 		}
 	});
 };
