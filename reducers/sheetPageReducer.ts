@@ -26,6 +26,7 @@ export interface SheetPageState {
 		activeItem: InventoryItemFields;
 	};
 	filters: InventoryFilters;
+	search: string;
 }
 
 interface OpenDialogAction {
@@ -55,11 +56,17 @@ interface ResetFilterAction {
 	type: "filter_reset";
 }
 
+interface SearchAction {
+	type: "search";
+	data: string;
+}
+
 export type SheetPageStateAction =
 	| OpenDialogAction
 	| CloseDialogAction
 	| FilterAction
-	| ResetFilterAction;
+	| ResetFilterAction
+	| SearchAction;
 
 /**
  * Reducer for the state of the sheet page
@@ -97,6 +104,8 @@ const sheetPageReducer: Reducer<SheetPageState, SheetPageStateAction> = (
 			}
 		} else if (action.type === "filter_reset") {
 			draftState.filters = emptyFilters;
+		} else if (action.type === "search") {
+			draftState.search = action.data;
 		}
 	});
 };

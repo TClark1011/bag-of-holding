@@ -36,6 +36,7 @@ export interface InventorySheetTableProps extends TableProps {
 	items: InventoryItemFields[];
 	filters: InventoryFilters;
 	onFilterChange: (property: ProcessableItemProperty, item: string) => void;
+	search: string;
 }
 
 /**
@@ -47,6 +48,7 @@ export interface InventorySheetTableProps extends TableProps {
  * The item's fields are passed as a parameter
  * @param {InventoryFilters} props.filters The currently active filters
  * @param {Function} props.onFilterChange Callback to execute when a filter is edited
+ * @param {string} props.search The active search query
  * @returns {React.ReactElement} The rendered html components
  */
 const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
@@ -54,6 +56,7 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 	items,
 	filters,
 	onFilterChange,
+	search,
 	...props
 }) => {
 	const hoverBg = useColorModeValue("gray.100", "gray.700");
@@ -71,7 +74,11 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 	const { sorting } = state;
 	//? Destructure after initializer so that full state object can be easily passed to selectors
 
-	const processedItems = selectProcessedItems(state, { items, filters });
+	const processedItems = selectProcessedItems(state, {
+		items,
+		filters,
+		search,
+	});
 
 	/**
 	 * A component to be used as the column headers

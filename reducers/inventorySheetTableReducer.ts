@@ -80,9 +80,9 @@ type Selector<T, R> = (state: InventorySheetTableState, data: T) => R;
  * @returns {InventoryItemFields[]} The list of items
  */
 export const selectProcessedItems: Selector<
-	{ items: InventoryItemFields[]; filters: InventoryFilters },
+	{ items: InventoryItemFields[]; filters: InventoryFilters; search: string },
 	InventoryItemFields[]
-> = ({ sorting }, { items, filters }) => {
+> = ({ sorting }, { items, filters, search }) => {
 	const sortFn =
 		sorting.direction === "ascending"
 			? sort([...items]).asc
@@ -99,7 +99,7 @@ export const selectProcessedItems: Selector<
 	]);
 
 	//* Filter items
-	let result = [...sorted];
+	let result = [...sorted].filter((item) => item.name.includes(search));
 	for (const [property, filter] of Object.entries(filters)) {
 		result = result.filter((item) => !filter.includes(item[property]));
 	}

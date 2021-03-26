@@ -67,6 +67,7 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 			activeItem: items[0],
 		},
 		filters: emptyFilters,
+		search: "",
 	});
 
 	/**
@@ -158,7 +159,14 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 						</Box>
 						<Box flexGrow={2}>
 							{/* Search Bar */}
-							<Input width="full" placeholder="Search" />
+							<Input
+								width="full"
+								placeholder="Search"
+								value={sheetState.search}
+								onChange={(e) =>
+									sheetDispatch({ type: "search", data: e.target.value })
+								}
+							/>
 						</Box>
 						<Box>
 							{/* Reset Filters Button */}
@@ -206,6 +214,7 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 						}
 						items={items}
 						marginBottom="break"
+						search={sheetState.search}
 					/>
 
 					<Heading as="h2">Member Inventories</Heading>
