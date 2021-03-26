@@ -72,6 +72,14 @@ type SetStateIsAheadAction = InventorySheetStateActionTemplate<
 	boolean
 >;
 
+type UpdateSheetMetaDataAction = InventorySheetStateActionTemplate<
+	"sheet_metadataUpdate",
+	{
+		members: string[];
+		name: string;
+	}
+>;
+
 /**
  * Type for all valid actions
  */
@@ -80,7 +88,8 @@ export type InventorySheetStateAction =
 	| RemoveItemAction
 	| UpdateSheetAction
 	| SetStateIsAheadAction
-	| UpdateItemAction;
+	| UpdateItemAction
+	| UpdateSheetMetaDataAction;
 
 /**
  * @typedef {object} InventorySheetState Holds the local state of an inventory sheet
