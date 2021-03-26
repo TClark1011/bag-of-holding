@@ -32,6 +32,10 @@ const dbReducer = async (
 			{ _id: sheetId, "items._id": action.data._id } as any,
 			{ $set: update } as any
 		).exec();
+	} else if (action.type === "sheet_metadataUpdate") {
+		SheetModel.findByIdAndUpdate(sheetId, {
+			$set: { name: action.data.name, members: action.data.members },
+		}).exec();
 	}
 };
 

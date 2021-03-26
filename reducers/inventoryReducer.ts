@@ -94,6 +94,11 @@ const inventoryStateReducer = (
 			return produceNewState((draftState) => {
 				draftState.isAhead = data as boolean;
 			});
+		case "sheet_metadataUpdate":
+			return produceNewState((draftState) => {
+				draftState.name = (data as { name: string }).name;
+				draftState.members = (data as { members: string[] }).members;
+			});
 	}
 };
 

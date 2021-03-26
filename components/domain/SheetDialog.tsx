@@ -29,7 +29,11 @@ import { RemoveIcon } from "chakra-ui-ionicons";
  * dialog state
  * @returns {React.ReactElement} The rendered component
  */
-const SheetDialog: React.FC<DialogControlProps> = ({ ...props }) => {
+const SheetDialog: React.FC<DialogControlProps> = ({
+	onClose,
+	isOpen,
+	...props
+}) => {
 	const { name, members } = useInventoryState();
 	const dispatch = useInventoryStateDispatch();
 
@@ -51,14 +55,14 @@ const SheetDialog: React.FC<DialogControlProps> = ({ ...props }) => {
 		setSubmitting(true);
 		console.log("(SheetDialog) data: ", data);
 		dispatch({
-			type: "sheet_update",
+			type: "sheet_metadataUpdate",
 			data,
 			sendToServer: true,
 			/**
 			 * Close dialog on success
 			 */
 			onThen: () => {
-				controller.onClose();
+				onClose();
 			},
 			/**
 			 *	Set submitting to false at end of request regardless of results
@@ -72,7 +76,7 @@ const SheetDialog: React.FC<DialogControlProps> = ({ ...props }) => {
 	//TODO: Field Validation
 	///TODO: Confirmation when deleting a member
 	return (
-		<Modal {...props}>
+		<Modal isOpen={isOpen} onClose={onClose}>
 			<ModalOverlay />
 			<Formik onSubmit={onSubmit} initialValues={{ name, members }}>
 				{({ handleSubmit, isSubmitting, values }) => (
