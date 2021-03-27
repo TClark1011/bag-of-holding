@@ -95,9 +95,8 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 	const TableHeader: React.FC<
 		TableCellProps & {
 			property: ProcessableItemProperty;
-			allowFilter?: boolean;
 		}
-	> = ({ property, children, allowFilter, ...props }) => (
+	> = ({ property, children, ...props }) => (
 		<TableCell {...props} as={Th}>
 			<Button
 				variant="ghost"
@@ -149,10 +148,10 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 					<TableHeader property="value" display={col4Display}>
 						Value
 					</TableHeader>
-					<TableHeader property="carriedBy" allowFilter display={col5Display}>
+					<TableHeader property="carriedBy" display={col5Display}>
 						Carried By
 					</TableHeader>
-					<TableHeader property="category" allowFilter display={col6Display}>
+					<TableHeader property="category" display={col6Display}>
 						Category
 					</TableHeader>
 				</Tr>

@@ -1,4 +1,3 @@
-import { InventoryItemCreationFields } from "./../../types/InventoryItemFields";
 import { NextApiHandler } from "next";
 import SheetModel from "../../db/SheetModel";
 import OmitId from "../../utils/OmitId";
@@ -18,7 +17,8 @@ const routeHandler: NextApiHandler = async (req, res) => {
 			items: [],
 		};
 		const item = await new SheetModel(fields).save();
-		return res.status(200).send(item._id);
+		res.status(200).send(item._id);
+		return;
 	}
 	res.status(500);
 };
