@@ -36,13 +36,11 @@ interface Props extends DialogControlProps {
  * Modal dialog for creating a new item
  *
  * @param {object} props props
- * @param {UseDisclosureReturn} props.controller Object with methods for controlling
- * the state of the dialog
  * @param {ItemDialogMode} props.mode The mode the dialog is in. Eg; "new" if being used to
  * create a new item or "edit" if being used to edit an existing item.
  * @param {InventoryItemFields} [props.item] The item data used to fill in initial values.
- * @param props.onClose
- * @param props.isOpen
+ * @param {Function} props.onClose Function to execute to close the popover
+ * @param {boolean} props.isOpen Whether or not the popover should be open
  * @returns {React.ReactElement} The rendered HTML
  */
 const ItemDialog: React.FC<Props> = ({ mode, item, onClose, isOpen }) => {

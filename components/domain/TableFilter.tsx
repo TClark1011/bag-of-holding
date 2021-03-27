@@ -1,23 +1,16 @@
-import { Button } from "@chakra-ui/button";
-import { Checkbox } from "@chakra-ui/checkbox";
-import { Flex, HStack, Text } from "@chakra-ui/layout";
 import {
 	Popover,
 	PopoverArrow,
 	PopoverBody,
-	PopoverCloseButton,
 	PopoverContent,
 	PopoverProps,
 	PopoverTrigger,
 } from "@chakra-ui/popover";
-import InventoryItemFields, {
-	ProcessableItemProperty,
-} from "../../types/InventoryItemFields";
-import sort from "fast-sort";
+import { FilterableItemProperty } from "../../types/InventoryItemFields";
+import FilterInterface from "../templates/FilterInterface";
 
 interface TableFilterProps extends PopoverProps {
-	property: ProcessableItemProperty;
-	items: InventoryItemFields[];
+	property: FilterableItemProperty;
 	filter: string[];
 	onChange: (item: string) => void;
 }
@@ -45,86 +38,22 @@ interface TableFilterProps extends PopoverProps {
  */
 const TableFilter: React.FC<TableFilterProps> = ({
 	property,
-	items,
 	onChange,
 	filter,
 	children,
 	...props
 }) => {
-	const propertyValues = items.map((item) => item[property] + "");
-	const uniquePropertyValues = sort(
-		propertyValues.filter(
-			(item, index) => propertyValues.indexOf(item) === index
-		)
-	).asc();
-
-	/**
-	 * Remove all items from filter
-	 * Iterates through all unique property values that are
-	 * currently being filtered out and executes 'onChange'
-	 * on them. It is assumed that 'onChange' toggles the
-	 * filtering of the passed string.
-	 */
-	const resetFilter = () => {
-		uniquePropertyValues
-			.filter((item) => filter.includes(item))
-			.forEach((item) => {
-				onChange(item);
-			});
-	};
-
-	/**
-	 * Filter out all values
-	 */
-	const filterAll = () => {
-		uniquePropertyValues
-			.filter((item) => !filter.includes(item))
-			.forEach((item) => {
-				onChange(item);
-			});
-	};
-
-	/**
-	 * Invert current filter
-	 */
-	const invertFilter = () => {
-		uniquePropertyValues.forEach((item) => {
-			onChange(item);
-		});
-	};
-
-	//TODO: "none" and "all" buttons
-
 	return (
 		<Popover {...props} returnFocusOnClose>
 			<PopoverTrigger>{children}</PopoverTrigger>
 			<PopoverContent>
 				<PopoverArrow />
-				<PopoverCloseButton />
 				<PopoverBody>
-					<Flex justify="flex-end" paddingRight="break">
-						<HStack spacing="group">
-							<Button size="xs" onClick={filterAll}>
-								Uncheck All
-							</Button>
-							<Button size="xs" onClick={resetFilter}>
-								Check All
-							</Button>
-							<Button size="xs" onClick={invertFilter}>
-								Invert
-							</Button>
-						</HStack>
-					</Flex>
-					{uniquePropertyValues.map((item) => (
-						<Flex key={item}>
-							<Checkbox
-								isChecked={!filter.includes(item)}
-								onChange={() => onChange(item)}
-								marginRight="group"
-							/>
-							<Text>{item}</Text>
-						</Flex>
-					))}
+					<FilterInterface
+						property={property}
+						filter={filter}
+						onChange={onChange}
+					/>
 				</PopoverBody>
 			</PopoverContent>
 		</Popover>

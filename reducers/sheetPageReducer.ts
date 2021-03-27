@@ -1,3 +1,4 @@
+import { FilterableItemProperty } from "./../types/InventoryItemFields";
 import produce from "immer";
 import { Reducer } from "react";
 import InventoryItemFields, {
@@ -6,17 +7,11 @@ import InventoryItemFields, {
 
 export type SheetDialogType = "item.new" | "item.edit" | "sheetOptions";
 
-export type InventoryFilters = Record<ProcessableItemProperty, string[]>;
+export type InventoryFilters = Record<FilterableItemProperty, string[]>;
 
 export const emptyFilters: InventoryFilters = {
-	name: [],
 	category: [],
 	carriedBy: [],
-	description: [],
-	quantity: [],
-	reference: [],
-	value: [],
-	weight: [],
 };
 
 export interface SheetPageState {
