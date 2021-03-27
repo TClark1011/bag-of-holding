@@ -55,8 +55,9 @@ const ItemDialog: React.FC<Props> = ({ mode, item, onClose, isOpen }) => {
 				value: 0,
 				weight: 0,
 				description: "",
-				category: "",
+				category: "None",
 				reference: "",
+				carriedBy: "Nobody",
 			  };
 
 	const dispatch = useInventoryStateDispatch();
