@@ -272,8 +272,9 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 export const getServerSideProps: GetServerSideProps<InventorySheetFields> = async (
 	context
 ) => {
+	const sheetData = await fetchSheet(getUrlParam(context.params.sheetId));
 	return {
-		props: await fetchSheet(getUrlParam(context.params.sheetId)),
+		props: sheetData,
 	};
 };
 
