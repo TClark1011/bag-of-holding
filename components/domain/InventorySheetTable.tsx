@@ -111,12 +111,11 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 						<ArrowDownIcon />
 					))}
 			</Button>
-			{allowFilter && (
+			{(property === "carriedBy" || property === "category") && (
 				<TableFilter
 					isOpen={selectFilterUiIsOpen(state, property)}
 					onClose={() => dispatch({ type: "ui_closeFilter" })}
 					property={property}
-					items={items}
 					filter={filters[property]}
 					onChange={(value: string) => onFilterChange(property, value)}
 				>
