@@ -5,7 +5,11 @@ import InventoryItemFields, {
 	ProcessableItemProperty,
 } from "../types/InventoryItemFields";
 
-export type SheetDialogType = "item.new" | "item.edit" | "sheetOptions";
+export type SheetDialogType =
+	| "item.new"
+	| "item.edit"
+	| "sheetOptions"
+	| "filter";
 
 export type InventoryFilters = Record<FilterableItemProperty, string[]>;
 
@@ -27,8 +31,7 @@ export interface SheetPageState {
 interface OpenDialogAction {
 	type: "dialog_open";
 	data:
-		| "item.new"
-		| "sheetOptions"
+		| Exclude<SheetDialogType, "item.edit">
 		| {
 				type: "item.edit";
 				item: InventoryItemFields;

@@ -5,6 +5,7 @@ import sort from "fast-sort";
 import codeToTitle from "code-to-title";
 import { Checkbox } from "@chakra-ui/checkbox";
 import { Button, ButtonGroup } from "@chakra-ui/button";
+import { useColorModeValue } from "@chakra-ui/color-mode";
 
 interface Props extends Omit<BoxProps, "onChange"> {
 	property: FilterableItemProperty;
@@ -75,16 +76,19 @@ const FilterInterface: React.FC<Props> = ({
 		});
 	};
 
+	const headingColor = useColorModeValue("gray.700", "white");
+
 	return (
 		<Box {...props}>
 			<Flex
-				borderBottom="1px solid white"
+				borderBottom="1px"
+				borderColor={headingColor}
 				marginBottom="group"
 				justify="space-between"
 				alignItems="center"
 				paddingBottom={1}
 			>
-				<Text color="white" fontWeight="bold">
+				<Text color={headingColor} fontWeight="bold">
 					{heading}
 				</Text>
 				<ButtonGroup size="xs" isAttached>
@@ -95,7 +99,7 @@ const FilterInterface: React.FC<Props> = ({
 			</Flex>
 			<List textAlign="left">
 				{uniquePropertyValues.map((item) => (
-					<ListItem key={item}>
+					<ListItem key={item} display="flex" alignItems="center">
 						<Checkbox
 							marginRight="group"
 							isChecked={!filter.includes(item)}

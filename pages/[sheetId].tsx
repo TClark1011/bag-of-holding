@@ -36,6 +36,7 @@ import sheetPageReducer, {
 	SheetPageState,
 	SheetPageStateAction,
 } from "../reducers/sheetPageReducer";
+import FilterDialog from "../components/domain/FilterDialog";
 
 /**
  * The page for a specific sheet
@@ -186,6 +187,9 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 										"inline-flex",
 										"none",
 									]}
+									onClick={() =>
+										sheetDispatch({ type: "dialog_open", data: "filter" })
+									}
 								>
 									Filter Options
 								</Button>
@@ -232,6 +236,20 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 						onClose={dialogOnClose}
 						mode={"edit"}
 						item={sheetState.dialog.activeItem}
+					/>
+					<FilterDialog
+						isOpen={selectDialogIsOpen(sheetState, "filter")}
+						onClose={dialogOnClose}
+						filters={sheetState.filters}
+						getOnChange={(property) => (value) => {
+							sheetDispatch({
+								type: "filter",
+								data: {
+									property,
+									value,
+								},
+							});
+						}}
 					/>
 					<SheetDialog
 						isOpen={selectDialogIsOpen(sheetState, "sheetOptions")}
