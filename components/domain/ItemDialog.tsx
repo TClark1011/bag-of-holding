@@ -9,7 +9,6 @@ import {
 	SelectControl,
 	TextareaControl,
 } from "formik-chakra-ui";
-import { useState } from "react";
 import { SheetDialogType, useSheetPageState } from "../../state/sheetPageState";
 import { InventoryItemCreationFields } from "../../types/InventoryItemFields";
 import { InventorySheetStateAction } from "../../types/InventorySheetState";
