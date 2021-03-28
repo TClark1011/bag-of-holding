@@ -24,12 +24,14 @@ import { RemoveIcon } from "chakra-ui-ionicons";
 /**
  * Component for sheet settings dialog
  *
+ * @param props.onClose
  * @param {object} props The props
  * @param {object} props.controller Controller for manipulating
  * dialog state
+ * @param props.isOpen
  * @returns {React.ReactElement} The rendered component
  */
-const SheetDialog: React.FC<DialogControlProps> = ({
+const SheetOptionsDialog: React.FC<DialogControlProps> = ({
 	onClose,
 	isOpen,
 	...props
@@ -155,4 +157,4 @@ const SheetDialog: React.FC<DialogControlProps> = ({
 	);
 };
 
-export default SheetDialog;
+export default SheetOptionsDialog;
