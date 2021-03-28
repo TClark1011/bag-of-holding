@@ -10,6 +10,7 @@ import {
 } from "@chakra-ui/table";
 import { useReducer } from "react";
 import InventoryItemFields, {
+	FilterableItemProperty,
 	ProcessableItemProperty,
 } from "../../types/InventoryItemFields";
 import {
@@ -35,7 +36,7 @@ export interface InventorySheetTableProps extends TableProps {
 	onRowClick: (item?: InventoryItemFields) => void;
 	items: InventoryItemFields[];
 	filters: InventoryFilters;
-	onFilterChange: (property: ProcessableItemProperty, item: string) => void;
+	onFilterChange: (property: FilterableItemProperty, item: string) => void;
 	search: string;
 }
 
@@ -157,9 +158,9 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 				</Tr>
 			</Thead>
 			<Tbody>
-				{processedItems.map((item) => (
+				{processedItems.map((item, index) => (
 					<Tr
-						key={item._id}
+						key={index}
 						onClick={() => onRowClick(item)}
 						cursor="pointer"
 						_hover={{ backgroundColor: hoverBg }}
