@@ -114,8 +114,10 @@ export const useSheetPageState = () => {
 
 	return {
 		//# SELECTORS
+		filters: { ...state.filters.value },
+		sorting: { ...state.sorting.value },
 		searchbarValue: state.ui.searchbarValue.value,
-		activeItem: { ...state.value.dialog.activeItem },
+		activeItem: { ...state.dialog.activeItem.value },
 
 		/**
 		 * Check if a specific dialog is open
@@ -123,8 +125,19 @@ export const useSheetPageState = () => {
 		 * @param {SheetDialogType} dialog The dialog to check the status of
 		 * @returns {boolean} If the specified dialog is currently open
 		 */
-		isDialogOpen: (dialog: SheetDialogType) =>
+		isDialogOpen: (dialog: SheetDialogType): boolean =>
 			state.value.dialog.type === dialog && state.value.dialog.isOpen,
+
+		/**
+		 * Check whether or not the filter Popover interface for a specific
+		 * property is currently open
+		 *
+		 * @param {FilterableItemProperty} filter The property to check the
+		 * filter of
+		 * @returns {boolean} If the specified filter popover is currently open
+		 */
+		isFilterPopoverOpen: (filter: FilterableItemProperty): boolean =>
+			state.ui.openFilter.value === filter,
 
 		/**
 		 * Fetch the sorted/filtered items
@@ -149,9 +162,9 @@ export const useSheetPageState = () => {
 				value: 0,
 			};
 
-			getProcessedItems(items).forEach((item) => {
-				result.value += item.value;
-				result.weight += item.weight;
+			getProcessedItems(items).forEach(({ value, weight, quantity }) => {
+				result.value += value * quantity;
+				result.weight += weight * quantity;
 			});
 
 			return result;
@@ -204,6 +217,16 @@ export const useSheetPageState = () => {
 		},
 
 		/**
+		 * Reset the filter for an individual property
+		 *
+		 * @param {FilterableItemProperty} property The property of which
+		 * to reset the filter.
+		 */
+		resetPropertyFilter: (property: FilterableItemProperty) => {
+			state.filters[property].set([]);
+		},
+
+		/**
 		 * The 'onChange' handler for the search bar. Updates
 		 * the state's 'searchBarValue' ui field with new
 		 * value
@@ -233,12 +256,12 @@ export const useSheetPageState = () => {
 		},
 
 		/**
-		 * Sort the table
+		 * Sort the inventory
 		 *
 		 * @param {ProcessableItemProperty} column The column
 		 * to sort.
 		 */
-		sortTable: (column: ProcessableItemProperty) => {
+		sortInventory: (column: ProcessableItemProperty) => {
 			if (state.sorting.property.value === column) {
 				state.sorting.direction.set(
 					state.sorting.direction.value === "ascending"

@@ -9,35 +9,21 @@ import {
 	ModalHeader,
 	ModalOverlay,
 } from "@chakra-ui/modal";
-import { InventoryFilters } from "../../reducers/sheetPageReducer";
+import { useSheetPageState } from "../../state/sheetPageState";
 import DialogControlProps from "../../types/DialogControlProps";
 import { FilterableItemProperty } from "../../types/InventoryItemFields";
 import FilterInterface from "../templates/FilterInterface";
-
-interface Props extends DialogControlProps {
-	filters: InventoryFilters;
-	getOnChange: (item: FilterableItemProperty) => (item: string) => void;
-}
 
 /**
  * Dialog for filtering the table on mobile devices
  *
  * @param {object} props The props
- * @param {InventoryFilters} props.filters The filters
- * being applied to the item
  * @param {boolean} props.isOpen If the dialog is open
  * @param {Function} props.onClose Callback to execute to
- * close the dialog
- * @param {Function} props.getOnChange Generate the
- * 'onChange' props for each filter interface
  * @returns {React.ReactElement} Component stuff
  */
-const FilterDialog: React.FC<Props> = ({
-	filters,
-	isOpen,
-	onClose,
-	getOnChange,
-}) => {
+const FilterDialog: React.FC<DialogControlProps> = ({ isOpen, onClose }) => {
+	const { filters } = useSheetPageState();
 	return (
 		<Modal isOpen={isOpen} onClose={onClose}>
 			<ModalOverlay />
@@ -52,7 +38,6 @@ const FilterDialog: React.FC<Props> = ({
 								// Type casting is guaranteed to be safe here, its only required due to limitation with auto type recognition
 								filter={filter}
 								key={index}
-								onChange={getOnChange(property as FilterableItemProperty)}
 							/>
 						))}
 					</VStack>

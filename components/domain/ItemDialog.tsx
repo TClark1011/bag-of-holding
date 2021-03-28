@@ -38,13 +38,11 @@ interface Props extends DialogControlProps {
  * @param {object} props props
  * @param {ItemDialogMode} props.mode The mode the dialog is in. Eg; "new" if being used to
  * create a new item or "edit" if being used to edit an existing item.
- * @param {InventoryItemFields} [props.item] The item data used to fill in initial values.
  * @param {Function} props.onClose Function to execute to close the popover
  * @param {boolean} props.isOpen Whether or not the popover should be open
  * @returns {React.ReactElement} The rendered HTML
  */
 const ItemDialog: React.FC<Props> = ({ mode, onClose, isOpen }) => {
-	//FIXME: When opening new item dialog, crashes with "Maximum call stack size exceeded"
 	const inEditMode = mode === "edit";
 
 	const { activeItem } = useSheetPageState();
@@ -61,8 +59,6 @@ const ItemDialog: React.FC<Props> = ({ mode, onClose, isOpen }) => {
 			reference: "",
 			carriedBy: "Nobody",
 		  };
-
-	//FIXME: Callstack crash not caused by this
 
 	const dispatch = useInventoryStateDispatch();
 
@@ -125,7 +121,6 @@ const ItemDialog: React.FC<Props> = ({ mode, onClose, isOpen }) => {
 		});
 	};
 
-	//FIXME: Callstack crash not caused by an JSX code
 	//TODO Handle form validation errors
 	return (
 		<Modal isOpen={isOpen} onClose={onClose}>

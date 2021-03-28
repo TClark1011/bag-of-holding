@@ -10,9 +10,8 @@ import {
 } from "@chakra-ui/layout";
 import { Tag } from "@chakra-ui/tag";
 import Head from "next/head";
-import { Reducer, useReducer, useState } from "react";
+import { Reducer, useReducer } from "react";
 import ItemDialog from "../components/domain/ItemDialog";
-import InventoryTableSheet from "../components/domain/InventorySheetTable";
 import InventorySheetFields from "../types/InventorySheetFields";
 import InventorySheetState, {
 	InventorySheetStateAction,
@@ -30,14 +29,9 @@ import ColorModeSwitch from "../components/domain/ColorModeSwitch";
 import { Input } from "@chakra-ui/input";
 import deepEqual from "deep-equal";
 import { appName } from "../constants/branding";
-import sheetPageReducer, {
-	emptyFilters,
-	SheetPageState,
-	SheetPageStateAction,
-} from "../reducers/sheetPageReducer";
 import FilterDialog from "../components/domain/FilterDialog";
 import { useSheetPageState } from "../state/sheetPageState";
-import { useDebounce } from "use-debounce/lib";
+import InventorySheetTable from "../components/domain/InventorySheetTable";
 
 /**
  * The page for a specific sheet
@@ -60,23 +54,10 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 		}
 	);
 
-	const [sheetState] = useReducer<
-		Reducer<SheetPageState, SheetPageStateAction>
-	>(sheetPageReducer, {
-		dialog: {
-			type: "item.new",
-			isOpen: false,
-			activeItem: items[0],
-		},
-		filters: emptyFilters,
-		search: "",
-	});
-
 	const {
 		closeDialog,
 		openDialog,
 		isDialogOpen,
-		updateFilter,
 		searchbarValue,
 		searchbarOnChange,
 		resetFilters,
@@ -194,13 +175,9 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 							</SimpleGrid>
 						</Box>
 					</Stack>
-					<InventoryTableSheet
+					<InventorySheetTable
 						onRowClick={(item) => openDialog("item.edit", item)}
-						filters={sheetState.filters}
-						onFilterChange={(property, value) => updateFilter(property, value)}
-						items={items}
 						marginBottom="break"
-						search={sheetState.search}
 					/>
 
 					<Heading as="h2">Member Inventories</Heading>
@@ -217,12 +194,7 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 						onClose={closeDialog}
 						mode={"edit"}
 					/>
-					<FilterDialog
-						isOpen={isDialogOpen("filter")}
-						onClose={closeDialog}
-						filters={sheetState.filters}
-						getOnChange={(property) => (value) => updateFilter(property, value)}
-					/>
+					<FilterDialog isOpen={isDialogOpen("filter")} onClose={closeDialog} />
 					<SheetDialog
 						isOpen={isDialogOpen("sheetOptions")}
 						onClose={closeDialog}

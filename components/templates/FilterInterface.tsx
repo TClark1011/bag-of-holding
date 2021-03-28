@@ -6,16 +6,16 @@ import codeToTitle from "code-to-title";
 import { Checkbox } from "@chakra-ui/checkbox";
 import { Button, ButtonGroup } from "@chakra-ui/button";
 import { useColorModeValue } from "@chakra-ui/color-mode";
+import { useSheetPageState } from "../../state/sheetPageState";
 
 interface Props extends Omit<BoxProps, "onChange"> {
 	property: FilterableItemProperty;
-	filter: string[];
-	onChange: (item: string) => void;
 	heading?: string;
 }
 
 /**
- * The interface for a filter
+ * The interface for a filter, containing the checkboxes for
+ * all unique values and a header.
  *
  * @param {object} props The props
  * @param {FilterableItemProperty} props.property The property to filter
@@ -26,12 +26,11 @@ interface Props extends Omit<BoxProps, "onChange"> {
  * @returns {React.ReactElement} Component stuff
  */
 const FilterInterface: React.FC<Props> = ({
-	filter,
 	property,
-	onChange,
 	heading = codeToTitle(property),
 	...props
 }) => {
+	//FIXME: Opening a filter popover, changing some values, then clicking the 'Filters' button exceeds maximum callstack.
 	const { items } = useInventoryState();
 
 	const propertyValues = items.map((item) => item[property] + "");
@@ -41,21 +40,27 @@ const FilterInterface: React.FC<Props> = ({
 		)
 	).asc();
 
+	const { updateFilter, resetPropertyFilter, filters } = useSheetPageState();
+
+	const filter = filters[property];
+
 	/**
-	 * Remove all items from filter
-	 * Iterates through all unique property values that are
-	 * currently being filtered out and executes 'onChange'
-	 * on them. It is assumed that 'onChange' toggles the
-	 * filtering of the passed string.
+	 * Callback to be executed when a filter is changed.
+	 * Executes 'updateFilter', providing the property
+	 *
+	 * @param {string} value The value to pass to the filter
 	 */
-	const resetFilter = () => {
-		uniquePropertyValues
-			.filter((item) => filter.includes(item))
-			.forEach((item) => {
-				onChange(item);
-			});
+	const onChange = (value: string) => {
+		updateFilter(property, value);
 	};
 
+	/**
+	 * Reset filter. Runs the 'resetPropertyFilter' method for
+	 * sheetPageState, providing the property
+	 */
+	const resetFilter = () => {
+		resetPropertyFilter(property);
+	};
 	/**
 	 * Filter out all values
 	 */

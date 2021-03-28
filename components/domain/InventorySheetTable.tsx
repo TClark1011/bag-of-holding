@@ -8,9 +8,7 @@ import {
 	Thead,
 	Tr,
 } from "@chakra-ui/table";
-import { useReducer } from "react";
 import InventoryItemFields, {
-	FilterableItemProperty,
 	ProcessableItemProperty,
 } from "../../types/InventoryItemFields";
 import {
@@ -19,14 +17,11 @@ import {
 	FilterOutlineIcon,
 } from "chakra-ui-ionicons";
 import TableCell from "../ui/TableCell";
-import inventorySheetTableReducer, {
-	selectFilterUiIsOpen,
-	selectProcessedItems,
-} from "../../reducers/inventorySheetTableReducer";
 import { Button, IconButton } from "@chakra-ui/button";
 import TableFilter from "./TableFilter";
 import { Text } from "@chakra-ui/layout";
-import { InventoryFilters } from "../../reducers/sheetPageReducer";
+import { useSheetPageState } from "../../state/sheetPageState";
+import { useInventoryState } from "../contexts/InventoryStateContext";
 
 const col4Display = ["none", "table-cell"];
 const col5Display = ["none", "none", "table-cell"];
@@ -34,10 +29,6 @@ const col6Display = ["none", "none", "none", "table-cell"];
 
 export interface InventorySheetTableProps extends TableProps {
 	onRowClick: (item?: InventoryItemFields) => void;
-	items: InventoryItemFields[];
-	filters: InventoryFilters;
-	onFilterChange: (property: FilterableItemProperty, item: string) => void;
-	search: string;
 }
 
 /**
@@ -54,32 +45,26 @@ export interface InventorySheetTableProps extends TableProps {
  */
 const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 	onRowClick,
-	items,
-	filters,
-	onFilterChange,
-	search,
 	...props
 }) => {
 	const hoverBg = useColorModeValue("gray.100", "gray.700");
 	//? Color to use for background of row items that are hovered
 
-	const [state, dispatch] = useReducer(inventorySheetTableReducer, {
-		sorting: {
-			property: "name",
-			direction: "ascending",
-		},
-		ui: {
-			openFilter: false,
-		},
-	});
-	const { sorting } = state;
 	//? Destructure after initializer so that full state object can be easily passed to selectors
 
-	const processedItems = selectProcessedItems(state, {
-		items,
-		filters,
-		search,
-	});
+	const {
+		getProcessedItems,
+		sorting,
+		sortInventory,
+		closeFilterPopover,
+		openFilterPopover,
+		isFilterPopoverOpen,
+		getColumnSums,
+	} = useSheetPageState();
+
+	const { items } = useInventoryState();
+	const processedItems = getProcessedItems(items);
+	const columnSums = getColumnSums(items);
 
 	/**
 	 * A component to be used as the column headers
@@ -99,10 +84,7 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 		}
 	> = ({ property, children, ...props }) => (
 		<TableCell {...props} as={Th}>
-			<Button
-				variant="ghost"
-				onClick={() => dispatch({ type: "table_sort", data: property })}
-			>
+			<Button variant="ghost" onClick={() => sortInventory(property)}>
 				<Text marginRight="group">{children}</Text>
 				{sorting.property === property &&
 					(sorting.direction === "ascending" ? (
@@ -113,16 +95,14 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 			</Button>
 			{(property === "carriedBy" || property === "category") && (
 				<TableFilter
-					isOpen={selectFilterUiIsOpen(state, property)}
-					onClose={() => dispatch({ type: "ui_closeFilter" })}
+					isOpen={isFilterPopoverOpen(property)}
+					onClose={closeFilterPopover}
 					property={property}
-					filter={filters[property]}
-					onChange={(value: string) => onFilterChange(property, value)}
 				>
 					<IconButton
 						aria-label="filter"
 						icon={<FilterOutlineIcon />}
-						onClick={() => dispatch({ type: "ui_openFilter", data: property })}
+						onClick={() => openFilterPopover(property)}
 						variant="ghost"
 						isRound
 						marginLeft="group"
@@ -179,16 +159,12 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 						Total
 					</TableCell>
 					<TableCell>
-						{items.reduce<number>(
-							(accumulator, item) => accumulator + item.weight * item.quantity,
-							0
-						)}
+						{/* Sum of item Weights */}
+						{columnSums.weight}
 					</TableCell>
 					<TableCell display={col4Display}>
-						{items.reduce<number>(
-							(accumulator, item) => accumulator + item.value * item.quantity,
-							0
-						)}
+						{/* Sum of item values */}
+						{columnSums.value}
 					</TableCell>
 					<TableCell display={col5Display} />
 					<TableCell display={col6Display} />

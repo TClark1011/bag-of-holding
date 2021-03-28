@@ -11,8 +11,6 @@ import FilterInterface from "../templates/FilterInterface";
 
 interface TableFilterProps extends PopoverProps {
 	property: FilterableItemProperty;
-	filter: string[];
-	onChange: (item: string) => void;
 }
 
 /**
@@ -38,8 +36,6 @@ interface TableFilterProps extends PopoverProps {
  */
 const TableFilter: React.FC<TableFilterProps> = ({
 	property,
-	onChange,
-	filter,
 	children,
 	...props
 }) => {
@@ -49,11 +45,7 @@ const TableFilter: React.FC<TableFilterProps> = ({
 			<PopoverContent>
 				<PopoverArrow />
 				<PopoverBody>
-					<FilterInterface
-						property={property}
-						filter={filter}
-						onChange={onChange}
-					/>
+					<FilterInterface property={property} />
 				</PopoverBody>
 			</PopoverContent>
 		</Popover>
