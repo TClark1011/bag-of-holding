@@ -165,7 +165,9 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 						<TableCell textAlign="left">{item.name}</TableCell>
 						<TableCell>{item.quantity}</TableCell>
 						<TableCell>{item.weight * item.quantity}</TableCell>
-						<TableCell display={col4Display}>{item.value}</TableCell>
+						<TableCell display={col4Display}>
+							{item.value * item.quantity}
+						</TableCell>
 						<TableCell display={col5Display}>{item.carriedBy}</TableCell>
 						<TableCell display={col6Display}>{item.category}</TableCell>
 					</Tr>
