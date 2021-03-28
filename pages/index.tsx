@@ -3,6 +3,7 @@ import { Box, Center, Flex, Heading } from "@chakra-ui/layout";
 import Head from "next/head";
 import { useState } from "react";
 import { useRouter } from "next/router";
+import { appName } from "../constants/branding";
 
 /**
  * Home component
@@ -21,12 +22,13 @@ const Home: React.FC = () => {
 			.then((res) => res.json())
 			.then((data) => {
 				router.push("/" + data);
-			});
+			})
+			.finally(() => setNewSheetIsLoading(false));
 	};
 	return (
 		<Box>
 			<Head>
-				<title>Create Next App</title>
+				<title>{appName}</title>
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
 

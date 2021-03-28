@@ -1,1 +1,1 @@
-export const appName = "Flex Loot";
+export const appName = "Bag of Holding";
