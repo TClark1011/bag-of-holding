@@ -18,6 +18,7 @@ import {
 	useInventoryStateDispatch,
 } from "../contexts/InventoryStateContext";
 import SheetDialog from "../templates/SheetDialog";
+import faker from "faker";
 
 export type ItemDialogMode = "edit" | "new";
 
@@ -41,6 +42,7 @@ const ItemDialog: React.FC<Props> = ({ mode }) => {
 	const initialFormValues: InventoryItemCreationFields = inEditMode
 		? activeItem
 		: {
+			_id: faker.random.uuid(),
 			name: "",
 			quantity: 1,
 			value: 0,
