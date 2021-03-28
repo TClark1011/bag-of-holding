@@ -30,6 +30,9 @@ export type ProcessableItemProperty = keyof OmitId<InventoryItemFields>;
 export type FilterableItemProperty = keyof InventoryItemFields &
 	("carriedBy" | "category");
 
+export type SummableItemProperty = keyof InventoryItemFields &
+	("weight" | "value");
+
 export type InventoryItemCreationFields = Omit<
 	OmitId<InventoryItemFields>,
 	"quantity" | "weight"
