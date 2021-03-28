@@ -8,7 +8,7 @@ import {
 } from "@chakra-ui/modal";
 
 export interface DialogProps extends ModalProps {
-	header?: React.ReactChildren;
+	header?: React.ReactChild;
 	noOverlay?: boolean;
 	noCloseButton?: boolean;
 }
@@ -18,7 +18,7 @@ export interface DialogProps extends ModalProps {
  * 'Modal' component
  *
  * @param {object} props The props
- * @param {React.ReactChildren} [props.header] The element to use
+ * @param {React.ReactChild} [props.header] The element to use
  * as the header
  * @param {boolean} [props.noOverlay=false] If true, a
  * 'ModalOverlay' is not used
