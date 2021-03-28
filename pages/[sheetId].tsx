@@ -16,7 +16,7 @@ import InventorySheetFields from "../types/InventorySheetFields";
 import InventorySheetState, {
 	InventorySheetStateAction,
 } from "../types/InventorySheetState";
-import inventorySheetStateReducer from "../reducers/inventoryReducer";
+import inventorySheetStateReducer from "../state/inventoryReducer";
 import getUrlParam from "../utils/getUrlParam";
 import SheetStateProvider from "../components/contexts/InventoryStateContext";
 import { fetchSheet } from "../db/sheetServices";
