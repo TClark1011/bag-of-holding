@@ -1,6 +1,4 @@
-import InventorySheetFields, {
-	InventorySheetMenuItemFields,
-} from "../types/InventorySheetFields";
+import { InventorySheetMenuItemFields } from "../types/InventorySheetFields";
 
 const sheetMemoryKey = "previously-visited-sheets";
 
@@ -37,12 +35,24 @@ export const addToRememberedSheets = ({
 	_id,
 	name,
 	members,
-}: InventorySheetFields): void => {
-	const result = fetchRememberedSheets();
+}: InventorySheetMenuItemFields): void => {
+	const sheets = fetchRememberedSheets();
 
-	const sheet = { _id, name, members };
-	if (!result.includes(sheet)) {
-		result.push(sheet);
-		saveRememberedSheets(result);
+	const newSheet = { _id, name, members };
+
+	const idsOnly = sheets.map((item) => item._id);
+
+	if (!idsOnly.includes(_id)) {
+		sheets.push(newSheet);
+		//? If sheets does not include the sheet being added, added to the sheets list
+	} else {
+		sheets.forEach((item) => {
+			if (item._id === _id) {
+				item.name = name;
+				item.members = members;
+			}
+		});
+		//? If sheet list already contains the 'new' sheet, update the sheet entry
 	}
+	saveRememberedSheets(sheets);
 };

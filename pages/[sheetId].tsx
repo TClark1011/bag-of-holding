@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/layout";
 import { Tag } from "@chakra-ui/tag";
 import Head from "next/head";
-import { Reducer, useReducer } from "react";
+import { Reducer, useEffect, useReducer } from "react";
 import ItemDialog from "../components/domain/ItemDialog";
 import InventorySheetFields from "../types/InventorySheetFields";
 import InventorySheetState, {
@@ -32,6 +32,7 @@ import { appName } from "../constants/branding";
 import FilterDialog from "../components/domain/FilterDialog";
 import { useSheetPageState } from "../state/sheetPageState";
 import InventorySheetTable from "../components/domain/InventorySheetTable";
+import { addToRememberedSheets } from "../utils/rememberSheets";
 
 /**
  * The page for a specific sheet
@@ -53,6 +54,11 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 			isAhead: false,
 		}
 	);
+
+	useEffect(() => {
+		addToRememberedSheets({ _id, name, members });
+		//? Store the sheet to the list of 'remembered' sheets
+	}, [_id, name, members]);
 
 	const {
 		openDialog,
