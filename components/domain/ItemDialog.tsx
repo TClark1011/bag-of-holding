@@ -35,7 +35,7 @@ interface Props {
  * @returns {React.ReactElement} The rendered HTML
  */
 const ItemDialog: React.FC<Props> = ({ mode }) => {
-	//FIXME: Trying to open the edit interface after just having deleted an item crashes the app
+	//FIXME: Trying to open the edit interface after having previously either deleted or created an item crashes the app
 	const inEditMode = mode === "edit";
 
 	const { activeItem, closeDialog } = useSheetPageState();
