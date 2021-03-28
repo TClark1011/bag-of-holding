@@ -16,6 +16,8 @@ import { fetchRememberedSheets } from "../utils/rememberSheets";
 import { InventorySheetMenuItemFields } from "../types/InventorySheetFields";
 import { useColorModeValue } from "@chakra-ui/color-mode";
 import { Tag } from "@chakra-ui/tag";
+import sort from "fast-sort";
+import { useBreakpointValue } from "@chakra-ui/media-query";
 
 /**
  * Home component
@@ -47,6 +49,18 @@ const Home: React.FC = () => {
 
 	const rememberedSheetCardBgColor = useColorModeValue("gray.100", "gray.700");
 
+	/**
+	 * @param columns
+	 */
+	const getRememberedSheetCardColumns = (columns: number) =>
+		Math.min(rememberedSheets.length, columns);
+
+	const rememberedSheetCardColumns = useBreakpointValue([
+		getRememberedSheetCardColumns(2),
+		getRememberedSheetCardColumns(3),
+		getRememberedSheetCardColumns(4),
+	]);
+
 	return (
 		<Box>
 			<Head>
@@ -56,43 +70,50 @@ const Home: React.FC = () => {
 
 			<main>
 				<Center width="full" minHeight="100vh">
-					<Box maxWidth="400px">
-						<Heading textAlign="center" marginBottom={10}>
-							Take the hassle out of your inventory
-						</Heading>
-						<Flex justify="center" marginBottom="break">
-							<Button
-								onClick={getNewSheet}
-								isLoading={newSheetIsLoading}
-								colorScheme="primary"
-							>
-								Get Started
-							</Button>
-						</Flex>
-						<SimpleGrid columns={[2, 3, 4, 5]}>
-							{rememberedSheets.map(({ _id, name, members }, index) => (
-								<Box
-									key={index}
-									padding="break"
-									boxShadow="lg"
-									backgroundColor={rememberedSheetCardBgColor}
-									borderRadius="xl"
-									variant="ghost"
-									width={52}
-									height="100%"
-								>
-									<Link href={_id}>
-										<Button width="full" variant="ghost" marginBottom="group">
-											{name}
-										</Button>
-									</Link>
-									<HStack>
-										{members.map((item, index) => (
-											<Tag key={index}>{item}</Tag>
-										))}
-									</HStack>
-								</Box>
-							))}
+					<Box>
+						<Center>
+							<Box maxWidth="400px">
+								<Heading textAlign="center" marginBottom={10}>
+									Take the hassle out of your inventory
+								</Heading>
+								<Flex justify="center" marginBottom="break">
+									<Button
+										onClick={getNewSheet}
+										isLoading={newSheetIsLoading}
+										colorScheme="primary"
+									>
+										Get Started
+									</Button>
+								</Flex>
+							</Box>
+						</Center>
+						<SimpleGrid columns={rememberedSheetCardColumns} spacing="break">
+							{sort(rememberedSheets)
+								.asc("lastAccessedAt")
+								.map(({ _id, name, members }, index) => (
+									<Box
+										key={index}
+										padding="break"
+										boxShadow="lg"
+										backgroundColor={rememberedSheetCardBgColor}
+										borderRadius="xl"
+										variant="ghost"
+										width="100%"
+										height="100%"
+										minWidth={40}
+									>
+										<Link href={_id}>
+											<Button width="full" variant="ghost" marginBottom="group">
+												{name}
+											</Button>
+										</Link>
+										<HStack>
+											{members.map((item, index) => (
+												<Tag key={index}>{item}</Tag>
+											))}
+										</HStack>
+									</Box>
+								))}
 						</SimpleGrid>
 					</Box>
 				</Center>

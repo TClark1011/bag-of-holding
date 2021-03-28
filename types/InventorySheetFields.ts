@@ -8,6 +8,9 @@ interface InventorySheetFields {
 }
 //? name max length (max length: 24 chars)
 
-export type InventorySheetMenuItemFields = Omit<InventorySheetFields, "items">;
+export interface InventorySheetMenuItemFields
+	extends Omit<InventorySheetFields, "items"> {
+	lastAccessedAt: Date;
+}
 
 export default InventorySheetFields;

@@ -35,7 +35,7 @@ export const addToRememberedSheets = ({
 	_id,
 	name,
 	members,
-}: InventorySheetMenuItemFields): void => {
+}: Omit<InventorySheetMenuItemFields, "lastAccessedAt">): void => {
 	const sheets = fetchRememberedSheets();
 
 	const newSheet = { _id, name, members };
@@ -43,13 +43,14 @@ export const addToRememberedSheets = ({
 	const idsOnly = sheets.map((item) => item._id);
 
 	if (!idsOnly.includes(_id)) {
-		sheets.push(newSheet);
+		sheets.push({ ...newSheet, lastAccessedAt: new Date() });
 		//? If sheets does not include the sheet being added, added to the sheets list
 	} else {
 		sheets.forEach((item) => {
 			if (item._id === _id) {
 				item.name = name;
 				item.members = members;
+				item.lastAccessedAt = new Date();
 			}
 		});
 		//? If sheet list already contains the 'new' sheet, update the sheet entry
