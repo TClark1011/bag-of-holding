@@ -74,28 +74,29 @@ const ItemDialog: React.FC<Props> = ({ mode }) => {
 			data,
 			sendToServer: true,
 			/**
-			 * Set submitting to false when the server responds
-			 */
-			onFinally: () => {
-				setSubmitting(false);
-			},
-			/**
 			 * Close the dialog if the server responded positively
 			 */
 			onThen: () => {
 				closeDialog();
 			},
+			/**
+			 * Set submitting to false when the server responds
+			 */
+			onFinally: () => {
+				setSubmitting(false);
+			},
 		};
 		dispatch(action);
 	};
 
-	const [isDeleting, setIsDeleting] = useState<boolean>(false);
-
 	/**
 	 * Function to execute when delete button is clicked
+	 *
+	 * @param {Function} setSubmitting Function set the
+	 * 'isSubmitting' status of the form
 	 */
-	const onDelete = (): void => {
-		setIsDeleting(true);
+	const onDelete = (setSubmitting: (a: boolean) => void): void => {
+		setSubmitting(true);
 		dispatch({
 			type: "item_remove",
 			data: activeItem._id,
@@ -104,7 +105,7 @@ const ItemDialog: React.FC<Props> = ({ mode }) => {
 			 * Regardless of result, mark submission as complete at end of query
 			 */
 			onFinally: () => {
-				setIsDeleting(false);
+				setSubmitting(false);
 			},
 			/**
 			 * Close Dialog if delete request was successful
@@ -124,7 +125,7 @@ const ItemDialog: React.FC<Props> = ({ mode }) => {
 			header={`${headingPrefix} Item`}
 		>
 			<Formik initialValues={initialFormValues} onSubmit={onSubmit}>
-				{({ handleSubmit, isSubmitting }) => (
+				{({ handleSubmit, isSubmitting, setSubmitting }) => (
 					<>
 						<ModalBody>
 							<VStack spacing="group">
@@ -184,8 +185,8 @@ const ItemDialog: React.FC<Props> = ({ mode }) => {
 								{inEditMode && (
 									<Button
 										colorScheme="error"
-										onClick={onDelete}
-										isLoading={isDeleting}
+										onClick={() => onDelete(setSubmitting)}
+										isLoading={isSubmitting}
 									>
 										Delete
 									</Button>
