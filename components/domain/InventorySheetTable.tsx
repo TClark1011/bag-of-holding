@@ -22,6 +22,7 @@ import TableFilter from "./TableFilter";
 import { Text } from "@chakra-ui/layout";
 import { useSheetPageState } from "../../state/sheetPageState";
 import { useInventoryState } from "../contexts/InventoryStateContext";
+import { Tooltip } from "@chakra-ui/tooltip";
 
 const col4Display = ["none", "table-cell"];
 const col5Display = ["none", "none", "table-cell"];
@@ -125,9 +126,25 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 						Name
 					</TableHeader>
 					<TableHeader property="quantity">Quantity</TableHeader>
-					<TableHeader property="weight">Weight</TableHeader>
+					<TableHeader property="weight">
+						<Tooltip
+							label="The weight shown is the total weight of all the instances of an item."
+							placement="top"
+							openDelay={500}
+							hasArrow
+						>
+							Weight
+						</Tooltip>
+					</TableHeader>
 					<TableHeader property="value" display={col4Display}>
-						Value
+						<Tooltip
+							label="The value shown is the total value of all the instances of an item."
+							placement="top"
+							openDelay={500}
+							hasArrow
+						>
+							Value
+						</Tooltip>
 					</TableHeader>
 					<TableHeader property="carriedBy" display={col5Display}>
 						Carried By
