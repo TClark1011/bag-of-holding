@@ -22,7 +22,7 @@ import SheetStateProvider from "../components/contexts/InventoryStateContext";
 import { fetchSheet } from "../db/sheetServices";
 import { REFETCH_INTERVAL } from "../config/publicEnv";
 import { GetServerSideProps } from "next";
-import SheetDialog from "../components/domain/SheetDialog";
+import SheetOptionsDialog from "../components/domain/SheetOptionsDialog";
 import { CreateOutlineIcon } from "chakra-ui-ionicons";
 import MemberCarryWeightTable from "../components/domain/MemberCarryWeightTable";
 import ColorModeSwitch from "../components/domain/ColorModeSwitch";
@@ -55,15 +55,12 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 	);
 
 	const {
-		closeDialog,
 		openDialog,
-		isDialogOpen,
 		searchbarValue,
 		searchbarOnChange,
 		resetFilters,
 	} = useSheetPageState();
 
-	//TODO: Switch back to manual fetches
 	useInterval(() => {
 		if (isAhead) {
 			//? If local state is ahead of server, we ignore the next refetch give the server time to update
@@ -185,21 +182,10 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 					<MemberCarryWeightTable />
 
 					{/* Dialogs */}
-					<ItemDialog
-						isOpen={isDialogOpen("item.new")}
-						onClose={closeDialog}
-						mode={"new"}
-					/>
-					<ItemDialog
-						isOpen={isDialogOpen("item.edit")}
-						onClose={closeDialog}
-						mode={"edit"}
-					/>
-					<FilterDialog isOpen={isDialogOpen("filter")} onClose={closeDialog} />
-					<SheetDialog
-						isOpen={isDialogOpen("sheetOptions")}
-						onClose={closeDialog}
-					/>
+					<ItemDialog mode="new" />
+					<ItemDialog mode="edit" />
+					<FilterDialog />
+					<SheetOptionsDialog />
 				</main>
 			</Box>
 		</SheetStateProvider>

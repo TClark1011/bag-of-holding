@@ -1,14 +1,7 @@
 import { Button } from "@chakra-ui/button";
 import { Flex, SimpleGrid, VStack } from "@chakra-ui/layout";
-import {
-	Modal,
-	ModalBody,
-	ModalCloseButton,
-	ModalContent,
-	ModalFooter,
-	ModalHeader,
-	ModalOverlay,
-} from "@chakra-ui/modal";
+import { ModalBody, ModalFooter } from "@chakra-ui/modal";
+import codeToTitle from "code-to-title";
 import { Formik } from "formik";
 import {
 	InputControl,
@@ -17,18 +10,18 @@ import {
 	TextareaControl,
 } from "formik-chakra-ui";
 import { useState } from "react";
-import { useSheetPageState } from "../../state/sheetPageState";
-import DialogControlProps from "../../types/DialogControlProps";
+import { SheetDialogType, useSheetPageState } from "../../state/sheetPageState";
 import { InventoryItemCreationFields } from "../../types/InventoryItemFields";
 import { InventorySheetStateAction } from "../../types/InventorySheetState";
 import {
 	useInventoryState,
 	useInventoryStateDispatch,
 } from "../contexts/InventoryStateContext";
+import SheetDialog from "../templates/SheetDialog";
 
 export type ItemDialogMode = "edit" | "new";
 
-interface Props extends DialogControlProps {
+interface Props {
 	mode: ItemDialogMode;
 }
 
@@ -38,14 +31,12 @@ interface Props extends DialogControlProps {
  * @param {object} props props
  * @param {ItemDialogMode} props.mode The mode the dialog is in. Eg; "new" if being used to
  * create a new item or "edit" if being used to edit an existing item.
- * @param {Function} props.onClose Function to execute to close the popover
- * @param {boolean} props.isOpen Whether or not the popover should be open
  * @returns {React.ReactElement} The rendered HTML
  */
-const ItemDialog: React.FC<Props> = ({ mode, onClose, isOpen }) => {
+const ItemDialog: React.FC<Props> = ({ mode }) => {
 	const inEditMode = mode === "edit";
 
-	const { activeItem } = useSheetPageState();
+	const { activeItem, closeDialog } = useSheetPageState();
 
 	const initialFormValues: InventoryItemCreationFields = inEditMode
 		? activeItem
@@ -89,7 +80,7 @@ const ItemDialog: React.FC<Props> = ({ mode, onClose, isOpen }) => {
 			 * Close the dialog if the server responded positively
 			 */
 			onThen: () => {
-				onClose();
+				closeDialog();
 			},
 		};
 		dispatch(action);
@@ -116,22 +107,22 @@ const ItemDialog: React.FC<Props> = ({ mode, onClose, isOpen }) => {
 			 * Close Dialog if delete request was successful
 			 */
 			onThen: () => {
-				onClose();
+				closeDialog();
 			},
 		});
 	};
 
-	//TODO Handle form validation errors
+	const headingPrefix = mode === "new" ? "Create" : codeToTitle(mode);
+
+	//TODO Form Validation
 	return (
-		<Modal isOpen={isOpen} onClose={onClose}>
-			<ModalOverlay />
+		<SheetDialog
+			dialogType={("item." + mode) as SheetDialogType}
+			header={`${headingPrefix} Item`}
+		>
 			<Formik initialValues={initialFormValues} onSubmit={onSubmit}>
 				{({ handleSubmit, isSubmitting }) => (
-					<ModalContent>
-						<ModalHeader>
-							{inEditMode ? "Edit Item" : "Add New Item"}
-						</ModalHeader>
-						<ModalCloseButton />
+					<>
 						<ModalBody>
 							<VStack spacing="group">
 								<InputControl
@@ -205,10 +196,10 @@ const ItemDialog: React.FC<Props> = ({ mode, onClose, isOpen }) => {
 								</Button>
 							</Flex>
 						</ModalFooter>
-					</ModalContent>
+					</>
 				)}
 			</Formik>
-		</Modal>
+		</SheetDialog>
 	);
 };
 

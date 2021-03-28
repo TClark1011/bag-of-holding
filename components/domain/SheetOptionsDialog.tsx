@@ -2,42 +2,28 @@ import { Button, IconButton } from "@chakra-ui/button";
 import { FormControl, FormLabel } from "@chakra-ui/form-control";
 import { Input } from "@chakra-ui/input";
 import { Divider, Flex, Text, VStack } from "@chakra-ui/layout";
-import {
-	Modal,
-	ModalBody,
-	ModalCloseButton,
-	ModalContent,
-	ModalFooter,
-	ModalHeader,
-	ModalOverlay,
-} from "@chakra-ui/modal";
+import { ModalBody, ModalFooter } from "@chakra-ui/modal";
 import { Field, FieldArray, Formik, FormikHelpers } from "formik";
 import { InputControl } from "formik-chakra-ui";
-import DialogControlProps from "../../types/DialogControlProps";
 import InventorySheetFields from "../../types/InventorySheetFields";
 import {
 	useInventoryState,
 	useInventoryStateDispatch,
 } from "../contexts/InventoryStateContext";
 import { RemoveIcon } from "chakra-ui-ionicons";
+import { useSheetPageState } from "../../state/sheetPageState";
+import SheetDialog from "../templates/SheetDialog";
 
 /**
  * Component for sheet settings dialog
  *
- * @param props.onClose
- * @param {object} props The props
- * @param {object} props.controller Controller for manipulating
- * dialog state
- * @param props.isOpen
  * @returns {React.ReactElement} The rendered component
  */
-const SheetOptionsDialog: React.FC<DialogControlProps> = ({
-	onClose,
-	isOpen,
-	...props
-}) => {
+const SheetOptionsDialog: React.FC = () => {
 	const { name, members } = useInventoryState();
 	const dispatch = useInventoryStateDispatch();
+
+	const { closeDialog } = useSheetPageState();
 
 	/**
 	 * Handle submission of formik form
@@ -64,7 +50,7 @@ const SheetOptionsDialog: React.FC<DialogControlProps> = ({
 			 * Close dialog on success
 			 */
 			onThen: () => {
-				onClose();
+				closeDialog();
 			},
 			/**
 			 *	Set submitting to false at end of request regardless of results
@@ -78,13 +64,10 @@ const SheetOptionsDialog: React.FC<DialogControlProps> = ({
 	//TODO: Field Validation
 	///TODO: Confirmation when deleting a member
 	return (
-		<Modal isOpen={isOpen} onClose={onClose}>
-			<ModalOverlay />
+		<SheetDialog dialogType="sheetOptions" header="Sheet Options">
 			<Formik onSubmit={onSubmit} initialValues={{ name, members }}>
 				{({ handleSubmit, isSubmitting, values }) => (
-					<ModalContent>
-						<ModalHeader>Sheet Options</ModalHeader>
-						<ModalCloseButton />
+					<>
 						<ModalBody>
 							<InputControl
 								name="name"
@@ -150,10 +133,10 @@ const SheetOptionsDialog: React.FC<DialogControlProps> = ({
 								</Button>
 							</Flex>
 						</ModalFooter>
-					</ModalContent>
+					</>
 				)}
 			</Formik>
-		</Modal>
+		</SheetDialog>
 	);
 };
 
