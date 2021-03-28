@@ -12,6 +12,7 @@
 		"@emotion/react": "^11.1.5",
 		"@emotion/styled": "^11.1.5",
 		"@hookstate/core": "^3.0.6",
+		"@lukeboyle/array-item-toggle": "^1.0.2",
 		"chakra-ui-ionicons": "^0.3.3",
 		"code-to-title": "^1.1.1",
 		"compare-func": "^2.0.0",
