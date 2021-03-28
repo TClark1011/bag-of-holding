@@ -184,7 +184,7 @@ export const useSheetPageState = () => {
 		) => {
 			state.dialog.set({
 				type: dialog,
-				activeItem: item,
+				activeItem: { ...item },
 				isOpen: true,
 			});
 		},
