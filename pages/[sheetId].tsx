@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/layout";
 import { Tag } from "@chakra-ui/tag";
 import Head from "next/head";
-import { Reducer, useReducer } from "react";
+import { Reducer, useReducer, useState } from "react";
 import ItemDialog from "../components/domain/ItemDialog";
 import InventoryTableSheet from "../components/domain/InventorySheetTable";
 import InventorySheetFields from "../types/InventorySheetFields";
@@ -32,11 +32,12 @@ import deepEqual from "deep-equal";
 import { appName } from "../constants/branding";
 import sheetPageReducer, {
 	emptyFilters,
-	selectDialogIsOpen,
 	SheetPageState,
 	SheetPageStateAction,
 } from "../reducers/sheetPageReducer";
 import FilterDialog from "../components/domain/FilterDialog";
+import { useSheetPageState } from "../state/sheetPageState";
+import { useDebounce } from "use-debounce/lib";
 
 /**
  * The page for a specific sheet
@@ -59,7 +60,7 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 		}
 	);
 
-	const [sheetState, sheetDispatch] = useReducer<
+	const [sheetState] = useReducer<
 		Reducer<SheetPageState, SheetPageStateAction>
 	>(sheetPageReducer, {
 		dialog: {
@@ -71,12 +72,15 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 		search: "",
 	});
 
-	/**
-	 * Close dialog message
-	 */
-	const dialogOnClose = () => {
-		sheetDispatch({ type: "dialog_close" });
-	};
+	const {
+		closeDialog,
+		openDialog,
+		isDialogOpen,
+		updateFilter,
+		searchbarValue,
+		searchbarOnChange,
+		resetFilters,
+	} = useSheetPageState();
 
 	//TODO: Switch back to manual fetches
 	useInterval(() => {
@@ -89,7 +93,11 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 			fetch("/api/" + sheetFields._id)
 				.then((res) => res.json())
 				.then((data) => {
-					if (!deepEqual({ items, name, members, _id, isAhead }, data))
+					if (
+						!deepEqual(items, data.items) ||
+						!deepEqual(name, data.name) ||
+						!deepEqual(members, data.members)
+					)
 						inventoryDispatch({ type: "sheet_update", data });
 				});
 		}
@@ -119,9 +127,7 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 								<IconButton
 									aria-label="edit sheet settings"
 									icon={<CreateOutlineIcon boxSize={6} />}
-									onClick={() =>
-										sheetDispatch({ type: "dialog_open", data: "sheetOptions" })
-									}
+									onClick={() => openDialog("sheetOptions")}
 									variant="ghost"
 									isRound
 								/>
@@ -150,9 +156,7 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 							{/* Add new Item Button */}
 							<Button
 								colorScheme="secondary"
-								onClick={() =>
-									sheetDispatch({ type: "dialog_open", data: "item.new" })
-								}
+								onClick={() => openDialog("item.new")}
 								width="full"
 							>
 								Add New Item
@@ -163,20 +167,16 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 							<Input
 								width="full"
 								placeholder="Search"
-								value={sheetState.search}
-								onChange={(e) =>
-									sheetDispatch({ type: "search", data: e.target.value })
-								}
+								onChange={searchbarOnChange}
+								value={searchbarValue}
 							/>
+							{/* NOTE: Updates may stutter in dev mode but is fine when built */}
 						</Box>
 						<Box>
 							{/* Reset Filters Button */}
 							<SimpleGrid columns={[2, 2, 2, 1]} gap="group">
 								{/* Reset Filters Button */}
-								<Button
-									width="full"
-									onClick={() => sheetDispatch({ type: "filter_reset" })}
-								>
+								<Button width="full" onClick={resetFilters}>
 									Reset Filters
 								</Button>{" "}
 								<Button
@@ -187,35 +187,17 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 										"inline-flex",
 										"none",
 									]}
-									onClick={() =>
-										sheetDispatch({ type: "dialog_open", data: "filter" })
-									}
+									onClick={() => openDialog("filter")}
 								>
-									Filter Options
+									Filters
 								</Button>
 							</SimpleGrid>
 						</Box>
 					</Stack>
 					<InventoryTableSheet
-						onRowClick={(item) =>
-							sheetDispatch({
-								type: "dialog_open",
-								data: {
-									type: "item.edit",
-									item,
-								},
-							})
-						}
+						onRowClick={(item) => openDialog("item.edit", item)}
 						filters={sheetState.filters}
-						onFilterChange={(property, value) =>
-							sheetDispatch({
-								type: "filter",
-								data: {
-									property,
-									value,
-								},
-							})
-						}
+						onFilterChange={(property, value) => updateFilter(property, value)}
 						items={items}
 						marginBottom="break"
 						search={sheetState.search}
@@ -226,34 +208,24 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 
 					{/* Dialogs */}
 					<ItemDialog
-						isOpen={selectDialogIsOpen(sheetState, "item.new")}
-						onClose={dialogOnClose}
+						isOpen={isDialogOpen("item.new")}
+						onClose={closeDialog}
 						mode={"new"}
-						item={sheetState.dialog.activeItem}
 					/>
 					<ItemDialog
-						isOpen={selectDialogIsOpen(sheetState, "item.edit")}
-						onClose={dialogOnClose}
+						isOpen={isDialogOpen("item.edit")}
+						onClose={closeDialog}
 						mode={"edit"}
-						item={sheetState.dialog.activeItem}
 					/>
 					<FilterDialog
-						isOpen={selectDialogIsOpen(sheetState, "filter")}
-						onClose={dialogOnClose}
+						isOpen={isDialogOpen("filter")}
+						onClose={closeDialog}
 						filters={sheetState.filters}
-						getOnChange={(property) => (value) => {
-							sheetDispatch({
-								type: "filter",
-								data: {
-									property,
-									value,
-								},
-							});
-						}}
+						getOnChange={(property) => (value) => updateFilter(property, value)}
 					/>
 					<SheetDialog
-						isOpen={selectDialogIsOpen(sheetState, "sheetOptions")}
-						onClose={dialogOnClose}
+						isOpen={isDialogOpen("sheetOptions")}
+						onClose={closeDialog}
 					/>
 				</main>
 			</Box>

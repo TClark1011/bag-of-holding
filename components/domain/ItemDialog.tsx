@@ -17,6 +17,7 @@ import {
 	TextareaControl,
 } from "formik-chakra-ui";
 import { useState } from "react";
+import { useSheetPageState } from "../../state/sheetPageState";
 import DialogControlProps from "../../types/DialogControlProps";
 import { InventoryItemCreationFields } from "../../types/InventoryItemFields";
 import { InventorySheetStateAction } from "../../types/InventorySheetState";
@@ -29,7 +30,6 @@ export type ItemDialogMode = "edit" | "new";
 
 interface Props extends DialogControlProps {
 	mode: ItemDialogMode;
-	item?: InventoryItemCreationFields;
 }
 
 /**
@@ -43,22 +43,26 @@ interface Props extends DialogControlProps {
  * @param {boolean} props.isOpen Whether or not the popover should be open
  * @returns {React.ReactElement} The rendered HTML
  */
-const ItemDialog: React.FC<Props> = ({ mode, item, onClose, isOpen }) => {
+const ItemDialog: React.FC<Props> = ({ mode, onClose, isOpen }) => {
+	//FIXME: When opening new item dialog, crashes with "Maximum call stack size exceeded"
 	const inEditMode = mode === "edit";
 
-	const initialFormValues: InventoryItemCreationFields =
-		inEditMode && item
-			? item
-			: {
-				name: "",
-				quantity: 1,
-				value: 0,
-				weight: 0,
-				description: "",
-				category: "None",
-				reference: "",
-				carriedBy: "Nobody",
-			  };
+	const { activeItem } = useSheetPageState();
+
+	const initialFormValues: InventoryItemCreationFields = inEditMode
+		? activeItem
+		: {
+			name: "",
+			quantity: 1,
+			value: 0,
+			weight: 0,
+			description: "",
+			category: "None",
+			reference: "",
+			carriedBy: "Nobody",
+		  };
+
+	//FIXME: Callstack crash not caused by this
 
 	const dispatch = useInventoryStateDispatch();
 
@@ -104,7 +108,7 @@ const ItemDialog: React.FC<Props> = ({ mode, item, onClose, isOpen }) => {
 		setIsDeleting(true);
 		dispatch({
 			type: "item_remove",
-			data: item._id,
+			data: activeItem._id,
 			sendToServer: true,
 			/**
 			 * Regardless of result, mark submission as complete at end of query
@@ -121,6 +125,7 @@ const ItemDialog: React.FC<Props> = ({ mode, item, onClose, isOpen }) => {
 		});
 	};
 
+	//FIXME: Callstack crash not caused by an JSX code
 	//TODO Handle form validation errors
 	return (
 		<Modal isOpen={isOpen} onClose={onClose}>

@@ -1,4 +1,3 @@
-import { useInventoryState } from "./../components/contexts/InventoryStateContext";
 import sort from "fast-sort";
 import InventoryItemFields, {
 	FilterableItemProperty,
@@ -29,7 +28,7 @@ export interface SheetPageState {
 	};
 	filters: InventoryFilters;
 	ui: {
-		searchBarValue: string;
+		searchbarValue: string;
 		openFilter: FilterableItemProperty | "none";
 	};
 	sorting: {
@@ -46,6 +45,11 @@ export const sheetPageState = createHookstate<SheetPageState>({
 			name: "",
 			quantity: 0,
 			weight: 0,
+			carriedBy: "Nobody",
+			category: "None",
+			reference: "",
+			description: "",
+			value: 0,
 		},
 		isOpen: false,
 	},
@@ -55,7 +59,7 @@ export const sheetPageState = createHookstate<SheetPageState>({
 		direction: "ascending",
 	},
 	ui: {
-		searchBarValue: "",
+		searchbarValue: "",
 		openFilter: "none",
 	},
 });
@@ -69,15 +73,16 @@ export const sheetPageState = createHookstate<SheetPageState>({
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const useSheetPageState = () => {
 	const state = useHookstate(sheetPageState);
-	const { items } = useInventoryState();
 
 	/**
 	 * Sort/filter items according to the sort/filter state
 	 *
+	 * @param {InventoryItemFields[]} items The items in
+	 * the sheet inventory
 	 * @returns {InventoryItemFields[]} Sorted/filtered inventory
 	 * items
 	 */
-	const getProcessedItems = () => {
+	const getProcessedItems = (items: InventoryItemFields[]) => {
 		const sorting = state.sorting.value;
 		const sortFn =
 			sorting.direction === "ascending"
@@ -97,7 +102,7 @@ export const useSheetPageState = () => {
 
 		//* Filter items
 		let result = [...sorted].filter((item) =>
-			item.name.includes(state.ui.searchBarValue.value)
+			item.name.includes(state.ui.searchbarValue.value)
 		);
 		for (const [property, filter] of Object.entries(state.filters.value)) {
 			result = result.filter((item) => !filter.includes(item[property]));
@@ -109,6 +114,9 @@ export const useSheetPageState = () => {
 
 	return {
 		//# SELECTORS
+		searchbarValue: state.ui.searchbarValue.value,
+		activeItem: { ...state.value.dialog.activeItem },
+
 		/**
 		 * Check if a specific dialog is open
 		 *
@@ -128,16 +136,20 @@ export const useSheetPageState = () => {
 		 * will be shown in the bottom column of the item
 		 * table.
 		 *
+		 * @param {InventoryItemFields[]} items The items in
+		 * the sheet inventory
 		 * @returns {Record<SummableItemProperty, number>} An
 		 * object containing the sums
 		 */
-		getColumnSums: (): Record<SummableItemProperty, number> => {
+		getColumnSums: (
+			items: InventoryItemFields[]
+		): Record<SummableItemProperty, number> => {
 			const result = {
 				weight: 0,
 				value: 0,
 			};
 
-			getProcessedItems().forEach((item) => {
+			getProcessedItems(items).forEach((item) => {
 				result.value += item.value;
 				result.weight += item.weight;
 			});
@@ -155,7 +167,7 @@ export const useSheetPageState = () => {
 		 */
 		openDialog: (
 			dialog: SheetDialogType,
-			item: InventoryItemFields = state.dialog.activeItem.value
+			item: InventoryItemFields = { ...state.dialog.activeItem.value }
 		) => {
 			state.dialog.set({
 				type: dialog,
@@ -199,8 +211,8 @@ export const useSheetPageState = () => {
 		 * @param {React.ChangeEvent<HTMLInputElement>} e The
 		 * change event fired by input into the search bar
 		 */
-		searchBarOnChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-			state.ui.searchBarValue.set(e.target.value);
+		searchbarOnChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+			state.ui.searchbarValue.set(e.target.value);
 		},
 
 		/**
