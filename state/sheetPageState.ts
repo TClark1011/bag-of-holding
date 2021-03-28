@@ -213,7 +213,8 @@ export const useSheetPageState = () => {
 		 * Reset the filters
 		 */
 		resetFilters: () => {
-			state.filters.set(emptyFilters);
+			state.filters.carriedBy.set([]);
+			state.filters.category.set([]);
 		},
 
 		/**

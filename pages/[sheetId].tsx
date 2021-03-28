@@ -154,12 +154,13 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 							{/* NOTE: Updates may stutter in dev mode but is fine when built */}
 						</Box>
 						<Box>
-							{/* Reset Filters Button */}
 							<SimpleGrid columns={[2, 2, 2, 1]} gap="group">
 								{/* Reset Filters Button */}
 								<Button width="full" onClick={resetFilters}>
 									Reset Filters
-								</Button>{" "}
+									{/* //FIXME: This button does not work */}
+								</Button>
+								{/* Filter Options Dialog Button */}
 								<Button
 									width="full"
 									display={[
