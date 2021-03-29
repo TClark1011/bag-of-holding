@@ -9,7 +9,6 @@ import {
 	SimpleGrid,
 	Stack,
 } from "@chakra-ui/layout";
-import Head from "next/head";
 import { Reducer, useEffect, useReducer } from "react";
 import ItemDialog from "../components/domain/ItemDialog";
 import InventorySheetFields from "../types/InventorySheetFields";
