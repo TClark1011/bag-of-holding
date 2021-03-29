@@ -28,6 +28,10 @@ const theme = extendTheme({
 			fontSize: getResponsiveValues("3xl"),
 			fontWeight: 300,
 		},
+		h3: {
+			fontSize: getResponsiveValues("2xl"),
+			fontWeight: 300,
+		},
 	},
 	fonts: {
 		heading: "Roboto, sans-serif",

@@ -44,21 +44,22 @@ const WelcomeBack: React.FC<BoxProps> = (props) => {
 	const dividerColor = useColorModeValue("gray.500", "gray.200");
 
 	return (
-		<Box {...props}>
-			<Divider backgroundColor={dividerColor} borderColor={dividerColor} />
-			<Heading textAlign="center" textStyle="h2" marginY="break">
-				Welcome Back
-			</Heading>
-			{/* <Heading textStyle="h4">Recent Sheets</Heading> */}
-			<SimpleGrid columns={rememberedSheetCardColumns} spacing="break">
-				{sort(rememberedSheets)
-					.desc("lastAccessedAt")
-					.slice(0, 4)
-					.map((props, index) => (
-						<RememberedSheet {...props} key={index} />
-					))}
-			</SimpleGrid>
-		</Box>
+		!!rememberedSheets.length && (
+			<Box {...props}>
+				<Divider backgroundColor={dividerColor} borderColor={dividerColor} />
+				<Heading textAlign="center" textStyle="h3" marginY="break">
+					Welcome Back
+				</Heading>
+				<SimpleGrid columns={rememberedSheetCardColumns} spacing="break">
+					{sort(rememberedSheets)
+						.desc("lastAccessedAt")
+						.slice(0, 4)
+						.map((props, index) => (
+							<RememberedSheet {...props} key={index} />
+						))}
+				</SimpleGrid>
+			</Box>
+		)
 	);
 };
 

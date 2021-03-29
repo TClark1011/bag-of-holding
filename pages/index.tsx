@@ -1,10 +1,11 @@
 import { Button } from "@chakra-ui/button";
-import { Box, Center, Flex, Heading } from "@chakra-ui/layout";
+import { Box, Center, Heading, VStack } from "@chakra-ui/layout";
 import Head from "next/head";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { appName } from "../constants/branding";
 import WelcomeBack from "../components/domain/Home/WelcomeBack";
+import BagOfHoldingIcon from "../components/icons/BagOfHoldingIcon";
 
 /**
  * Home component
@@ -37,24 +38,27 @@ const Home: React.FC = () => {
 			<main>
 				<Center width="full" minHeight="100vh" padding="break">
 					<Box>
-						<Heading
-							textAlign="center"
-							marginBottom={10}
-							textStyle="h1"
-							as="h1"
-							width="full"
-						>
-							The {appName}
-						</Heading>
-						<Flex justify="center" marginBottom="break">
-							<Button
-								onClick={getNewSheet}
-								isLoading={newSheetIsLoading}
-								colorScheme="primary"
-							>
-								Get Started
-							</Button>
-						</Flex>
+						<VStack spacing="break" marginBottom="break">
+							<Center>
+								<BagOfHoldingIcon fill="white" boxSize={52} />
+							</Center>
+							{/* Main Title */}
+							<Heading textAlign="center" textStyle="h1" as="h1" width="full">
+								The {appName}
+							</Heading>
+							<Heading textAlign="center" textStyle="h2" as="h2" width="full">
+								Inventory made easy
+							</Heading>
+							<Center>
+								<Button
+									onClick={getNewSheet}
+									isLoading={newSheetIsLoading}
+									colorScheme="primary"
+								>
+									Get Started
+								</Button>
+							</Center>
+						</VStack>
 						<WelcomeBack />
 					</Box>
 				</Center>
