@@ -21,7 +21,7 @@ const Home: React.FC = () => {
 	 */
 	const getNewSheet = () => {
 		setNewSheetIsLoading(true);
-		fetch("/api/sheet", { method: "POST" })
+		fetch("api/sheet", { method: "POST" })
 			.then((res) => res.json())
 			.then((data) => {
 				router.push("/" + data);

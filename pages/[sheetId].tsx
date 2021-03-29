@@ -94,7 +94,6 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 					<title>
 						{appName} - {name}
 					</title>
-					<link rel="icon" href="/favicon.ico" />
 				</Head>
 				<main>
 					{/* Top Bar */}

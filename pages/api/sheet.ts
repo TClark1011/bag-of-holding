@@ -20,7 +20,7 @@ const routeHandler: NextApiHandler = async (req, res) => {
 		res.status(200).send(item._id);
 		return;
 	}
-	res.status(500);
+	res.status(500).send("er");
 };
 
 export default routeHandler;
