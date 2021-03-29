@@ -27,7 +27,7 @@ const Meta: React.FC<MetaProps> = ({
 }) => (
 	<Head>
 		<title key="title">{title}</title>
-		<meta property="og:title" content={appName} key="ogTitle" />
+		<meta property="og:title" content={title} key="ogTitle" />
 
 		<meta name="description" content={description} key="ogDescription" />
 		<meta property="og:description" content={description} key="description" />

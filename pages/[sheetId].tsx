@@ -87,7 +87,7 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 
 	return (
 		<>
-			<Meta title={appName + " " + name} />
+			<Meta title={appName + " - " + name} />
 			<SheetStateProvider
 				dispatch={inventoryDispatch}
 				state={{ items, members, name, _id }}
