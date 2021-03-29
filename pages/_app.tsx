@@ -7,6 +7,8 @@ import "@fontsource/roboto";
 import "@fontsource/roboto/100.css";
 import "@fontsource/roboto/300.css";
 import Head from "next/head";
+import { appName } from "../constants/branding";
+import Meta from "../components/ui/Meta";
 
 /**
  * Core app component
@@ -19,8 +21,12 @@ import Head from "next/head";
 const MyApp = ({ Component, pageProps }: AppProps): React.ReactElement => (
 	<ChakraProvider theme={theme}>
 		<ColorModeScript initialColorMode={theme.config.initialColorMode} />
+
+		<Meta />
 		<Head>
-			<link rel="icon" href="/favicon.svg" />
+			<link rel="icon" href="/favicon.svg" key="favicon" />
+			<meta name="twitter:card" content="summary" />
+			<meta property="og:site_name" content={appName} />
 		</Head>
 		<Component {...pageProps} />
 	</ChakraProvider>
