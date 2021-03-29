@@ -28,6 +28,7 @@ const MyApp = ({ Component, pageProps }: AppProps): React.ReactElement => (
 			<link rel="icon" href="/favicon.svg" key="favicon" />
 			<meta name="twitter:card" content="summary" />
 			<meta property="og:site_name" content={appName} />
+			<meta property="og:type" content="website" />
 		</Head>
 		<Component {...pageProps} />
 	</ChakraProvider>

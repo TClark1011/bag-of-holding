@@ -26,7 +26,7 @@ import MemberCarryWeightTable from "../components/domain/MemberCarryWeightTable"
 import ColorModeSwitch from "../components/domain/ColorModeSwitch";
 import { Input } from "@chakra-ui/input";
 import deepEqual from "deep-equal";
-import { appName } from "../constants/branding";
+import { appDomain, appName } from "../constants/branding";
 import FilterDialog from "../components/domain/FilterDialog";
 import { useSheetPageState } from "../state/sheetPageState";
 import InventorySheetTable from "../components/domain/InventorySheetTable";
@@ -86,7 +86,10 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 
 	return (
 		<>
-			<Meta title={appName + " - " + name} />
+			<Meta
+				title={appName + " - " + name}
+				url={appDomain + "/" + sheetFields._id}
+			/>
 			<SheetStateProvider
 				dispatch={inventoryDispatch}
 				state={{ items, members, name, _id }}

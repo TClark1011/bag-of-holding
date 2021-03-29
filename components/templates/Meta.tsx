@@ -5,6 +5,7 @@ interface MetaProps {
 	description?: string;
 	title?: string;
 	image?: string;
+	url?: string;
 }
 
 /**
@@ -18,12 +19,14 @@ interface MetaProps {
  * @param {string} [props.image] The path to the image to
  * appear in link previews. Defaults to the path of the
  * 'ogIndex' file.
+ * @param props.url
  * @returns {React.ReactElement} Metadata tags
  */
 const Meta: React.FC<MetaProps> = ({
 	description = appDescription,
 	title = appName,
 	image = "/ogImages/ogIndex.png",
+	url,
 }) => (
 	<Head>
 		<title key="title">{title}</title>
@@ -34,7 +37,12 @@ const Meta: React.FC<MetaProps> = ({
 
 		<meta property="og:image" content={image} key="ogImage" />
 
-		{/* TODO: Add canonical tag when hosting with domain is setup */}
+		{url && (
+			<>
+				<meta property="og:url" content={url} key="ogUrl" />
+				<link rel="canonical" href={url} />
+			</>
+		)}
 
 		{/* Some metadata that will be constant between all pages are defined in the 'Head' of '_app.tsx' */}
 	</Head>
