@@ -30,7 +30,7 @@ const theme = extendTheme({
 		},
 		h3: {
 			fontSize: getResponsiveValues("2xl"),
-			fontWeight: 300,
+			fontWeight: 700,
 		},
 	},
 	fonts: {
