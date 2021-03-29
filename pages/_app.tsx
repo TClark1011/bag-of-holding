@@ -6,6 +6,7 @@ import "../assets/fonts/Coves/stylesheet.css";
 import "@fontsource/roboto";
 import "@fontsource/roboto/100.css";
 import "@fontsource/roboto/300.css";
+import "@fontsource/roboto/700.css";
 import Head from "next/head";
 import { appName } from "../constants/branding";
 import Meta from "../components/ui/Meta";
