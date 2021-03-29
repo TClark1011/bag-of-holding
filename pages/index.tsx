@@ -3,7 +3,7 @@ import { Box, Center, Heading, VStack } from "@chakra-ui/layout";
 import Head from "next/head";
 import { useState } from "react";
 import { useRouter } from "next/router";
-import { appName } from "../constants/branding";
+import { appDisplayTitle, appName } from "../constants/branding";
 import WelcomeBack from "../components/domain/Home/WelcomeBack";
 import BagOfHoldingIcon from "../components/icons/BagOfHoldingIcon";
 
@@ -44,7 +44,7 @@ const Home: React.FC = () => {
 							</Center>
 							{/* Main Title */}
 							<Heading textAlign="center" textStyle="h1" as="h1" width="full">
-								The {appName}
+								{appDisplayTitle}
 							</Heading>
 							<Heading textAlign="center" textStyle="h2" as="h2" width="full">
 								Inventory made easy
