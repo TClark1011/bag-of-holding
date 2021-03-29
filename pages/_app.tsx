@@ -13,7 +13,7 @@ import theme from "../config/theme";
  */
 const MyApp = ({ Component, pageProps }: AppProps): React.ReactElement => (
 	<ChakraProvider theme={theme}>
-		<ColorModeScript initialColorMode={theme.config.initialColorMode} />
+		{/* <ColorModeScript initialColorMode={theme.config.initialColorMode} /> */}
 		<Component {...pageProps} />
 	</ChakraProvider>
 );

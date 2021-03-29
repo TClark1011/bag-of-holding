@@ -33,6 +33,12 @@ import { useSheetPageState } from "../state/sheetPageState";
 import InventorySheetTable from "../components/domain/InventorySheetTable";
 import { addToRememberedSheets } from "../utils/rememberSheets";
 import inventoryReducer from "../state/inventoryReducer";
+import {
+	DarkMode,
+	LightMode,
+	useColorMode,
+	useColorModeValue,
+} from "@chakra-ui/color-mode";
 
 /**
  * The page for a specific sheet
@@ -96,11 +102,16 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 				</Head>
 				<main>
 					{/* Top Bar */}
-					<Box padding={2} backgroundColor="primary.600" color="white">
+					<Box
+						padding={2}
+						backgroundColor="gray.900"
+						color="gray.50"
+						boxShadow="lg"
+					>
 						<Flex justify="space-between">
 							<Flex>
 								{/* Sheet Title */}
-								<Heading paddingBottom="group" marginRight={1}>
+								<Heading paddingBottom="md" marginRight={1}>
 									{name}
 								</Heading>
 								<IconButton
@@ -113,12 +124,14 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 							</Flex>
 							<ColorModeSwitch variant="ghost" />
 						</Flex>
-						<HStack spacing="group">
-							{/* Party Members Tags */}
-							{members.map((item) => (
-								<Tag key={item}>{item}</Tag>
-							))}
-						</HStack>
+						<LightMode>
+							<HStack spacing="group">
+								{/* Party Members Tags */}
+								{members.map((item) => (
+									<Tag key={item}>{item}</Tag>
+								))}
+							</HStack>
+						</LightMode>
 					</Box>
 
 					{/* Include in search bar:

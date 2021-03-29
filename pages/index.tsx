@@ -47,7 +47,7 @@ const Home: React.FC = () => {
 		setRememberedSheets(fetchRememberedSheets());
 	}, []);
 
-	const rememberedSheetCardBgColor = useColorModeValue("gray.100", "gray.700");
+	const rememberedSheetCardBgColor = useColorModeValue("gray.50", "gray.700");
 
 	/**
 	 * @param columns
@@ -57,7 +57,7 @@ const Home: React.FC = () => {
 
 	const rememberedSheetCardColumns = useBreakpointValue([
 		getRememberedSheetCardColumns(2),
-		getRememberedSheetCardColumns(3),
+		getRememberedSheetCardColumns(2),
 		getRememberedSheetCardColumns(4),
 	]);
 
@@ -89,7 +89,8 @@ const Home: React.FC = () => {
 						</Center>
 						<SimpleGrid columns={rememberedSheetCardColumns} spacing="break">
 							{sort(rememberedSheets)
-								.asc("lastAccessedAt")
+								.desc("lastAccessedAt")
+								.slice(0, 4)
 								.map(({ _id, name, members }, index) => (
 									<Box
 										key={index}
