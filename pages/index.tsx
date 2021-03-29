@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 import { appDisplayTitle, appName } from "../constants/branding";
 import WelcomeBack from "../components/domain/Home/WelcomeBack";
 import BagOfHoldingIcon from "../components/icons/BagOfHoldingIcon";
+import { use100vh } from "react-div-100vh";
 
 /**
  * Home component
@@ -28,6 +29,8 @@ const Home: React.FC = () => {
 			.catch(() => setNewSheetIsLoading(false));
 	};
 
+	const screenHeight = use100vh();
+
 	return (
 		<Box>
 			<Head>
@@ -36,7 +39,7 @@ const Home: React.FC = () => {
 			</Head>
 
 			<main>
-				<Center width="full" minHeight="100vh" padding="break">
+				<Center width="full" minHeight={screenHeight} padding="break">
 					<Box>
 						<VStack spacing="break" marginBottom="break">
 							<Center>
