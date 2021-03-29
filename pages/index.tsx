@@ -35,7 +35,6 @@ const Home: React.FC = () => {
 		<Box>
 			<Head>
 				<title>{appName}</title>
-				<link rel="icon" href="/favicon.svg" />
 			</Head>
 
 			<main>
@@ -50,7 +49,7 @@ const Home: React.FC = () => {
 								{appDisplayTitle}
 							</Heading>
 							<Heading textAlign="center" textStyle="h2" as="h2" width="full">
-								Inventory made easy
+								Track your party{"'"}s inventory, no matter what you play
 							</Heading>
 							<Center>
 								<Button

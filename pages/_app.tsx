@@ -5,6 +5,8 @@ import theme from "../config/theme";
 import "../assets/fonts/Coves/stylesheet.css";
 import "@fontsource/roboto";
 import "@fontsource/roboto/100.css";
+import "@fontsource/roboto/300.css";
+import Head from "next/head";
 
 /**
  * Core app component
@@ -17,6 +19,9 @@ import "@fontsource/roboto/100.css";
 const MyApp = ({ Component, pageProps }: AppProps): React.ReactElement => (
 	<ChakraProvider theme={theme}>
 		<ColorModeScript initialColorMode={theme.config.initialColorMode} />
+		<Head>
+			<link rel="icon" href="/favicon.svg" />
+		</Head>
 		<Component {...pageProps} />
 	</ChakraProvider>
 );

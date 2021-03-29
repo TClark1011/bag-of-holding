@@ -1,6 +1,14 @@
 import { Button, IconButton } from "@chakra-ui/button";
 import { useInterval } from "@chakra-ui/hooks";
-import { Box, Flex, Heading, SimpleGrid, Stack } from "@chakra-ui/layout";
+import {
+	Box,
+	Center,
+	Divider,
+	Flex,
+	Heading,
+	SimpleGrid,
+	Stack,
+} from "@chakra-ui/layout";
 import Head from "next/head";
 import { Reducer, useEffect, useReducer } from "react";
 import ItemDialog from "../components/domain/ItemDialog";
@@ -116,7 +124,6 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 							<PartyMemberTagList members={members} />
 						</LightMode>
 					</Box>
-
 					{/* Include in search bar:
 						- Reset filters button
 						- Add new Item button
@@ -130,7 +137,7 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 						<Box>
 							{/* Add new Item Button */}
 							<Button
-								colorScheme="secondary"
+								colorScheme="primary"
 								onClick={() => openDialog("item.new")}
 								width="full"
 							>
@@ -152,7 +159,6 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 								{/* Reset Filters Button */}
 								<Button width="full" onClick={resetFilters}>
 									Reset Filters
-									{/* //FIXME: This button does not work */}
 								</Button>
 								{/* Filter Options Dialog Button */}
 								<Button
@@ -174,10 +180,26 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 						onRowClick={(item) => openDialog("item.edit", item)}
 						marginBottom="break"
 					/>
-
-					<Heading as="h2">Member Inventories</Heading>
+					<Flex width="full">
+						<Center flexGrow={1}>
+							<Divider />
+						</Center>
+						<Heading
+							as="h3"
+							textStyle="h3"
+							fontWeight="300"
+							flexShrink={1}
+							textAlign="center"
+							display="inline"
+							paddingX="break"
+						>
+							Party Member Totals
+						</Heading>
+						<Center flexGrow={1}>
+							<Divider />
+						</Center>
+					</Flex>
 					<MemberCarryWeightTable />
-
 					{/* Dialogs */}
 					<ItemDialog mode="new" />
 					<ItemDialog mode="edit" />

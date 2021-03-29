@@ -21,6 +21,7 @@ const ColorModeSwitch: React.FC<
 			aria-label={"change color mode to " + oppositeColorMode + " mode"}
 			icon={<SwitchIcon boxSize={6} />}
 			onClick={toggleColorMode}
+			isRound
 			{...props}
 		/>
 	);
