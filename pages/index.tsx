@@ -28,6 +28,7 @@ const Home: React.FC = () => {
 			})
 			.catch(() => setNewSheetIsLoading(false));
 	};
+	//FIXME: The get started button does not work most of the time
 
 	const screenHeight = use100vh();
 
