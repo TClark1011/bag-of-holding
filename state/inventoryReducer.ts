@@ -20,7 +20,7 @@ import createInventoryItem from "../utils/createInventoryItem";
  * about how the action should be executed
  * @returns {InventoryItemFields[]} The state updated by the passed action
  */
-const inventoryStateReducer = (
+const inventoryReducer = (
 	state: InventorySheetState,
 	{
 		type,
@@ -30,7 +30,7 @@ const inventoryStateReducer = (
 		onCatch,
 		onFinally,
 	}: InventorySheetStateAction
-): InventorySheetFields => {
+): InventorySheetState => {
 	if (sendToServer) {
 		//? If send to server is true, we send the action to the server
 		fetch("/api/" + state._id, {
@@ -49,17 +49,20 @@ const inventoryStateReducer = (
 	 *
 	 * @param {Function} mutation The function to execute
 	 * to produce the next state via mutation
-	 * @param {boolean} [setIsAhead=false] If true, mark the
-	 * state as being ahead of the server state.
+	 * @param {boolean} [blockRefetch=false] Whether or not
+	 * to start blocking refetching
 	 * @returns {InventorySheetState} The next state
 	 */
 	const produceNewState = (
 		mutation: (p: typeof state) => void,
-		setIsAhead = false
+		blockRefetch = false
 	) =>
 		produce(state, (draftState) => {
-			if (setIsAhead) {
-				draftState.isAhead = true;
+			if (blockRefetch) {
+				draftState.blockRefetch = {
+					for: 4000,
+					from: new Date(),
+				};
 			}
 			mutation(draftState);
 		});
@@ -90,10 +93,6 @@ const inventoryStateReducer = (
 		case "sheet_update":
 			//TODO: If a party member is deleted, set items that were being carried by them to being carried by nobody
 			return merge(state, data as InventorySheetFields);
-		case "sheet_setIsAhead":
-			return produceNewState((draftState) => {
-				draftState.isAhead = data as boolean;
-			});
 		case "sheet_metadataUpdate":
 			return produceNewState((draftState) => {
 				draftState.name = (data as { name: string }).name;
@@ -109,4 +108,4 @@ const inventoryStateReducer = (
  * Update member
  */
 
-export default inventoryStateReducer;
+export default inventoryReducer;

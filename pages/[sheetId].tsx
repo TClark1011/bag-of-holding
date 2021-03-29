@@ -16,7 +16,6 @@ import InventorySheetFields from "../types/InventorySheetFields";
 import InventorySheetState, {
 	InventorySheetStateAction,
 } from "../types/InventorySheetState";
-import inventorySheetStateReducer from "../state/inventoryReducer";
 import getUrlParam from "../utils/getUrlParam";
 import SheetStateProvider from "../components/contexts/InventoryStateContext";
 import { fetchSheet } from "../db/sheetServices";
@@ -33,6 +32,7 @@ import FilterDialog from "../components/domain/FilterDialog";
 import { useSheetPageState } from "../state/sheetPageState";
 import InventorySheetTable from "../components/domain/InventorySheetTable";
 import { addToRememberedSheets } from "../utils/rememberSheets";
+import inventoryReducer from "../state/inventoryReducer";
 
 /**
  * The page for a specific sheet
@@ -45,13 +45,16 @@ import { addToRememberedSheets } from "../utils/rememberSheets";
  */
 const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 	const [
-		{ items, name, members, _id, isAhead },
+		{ items, name, members, _id, blockRefetch },
 		inventoryDispatch,
 	] = useReducer<Reducer<InventorySheetState, InventorySheetStateAction>>(
-		inventorySheetStateReducer,
+		inventoryReducer,
 		{
 			...sheetFields,
-			isAhead: false,
+			blockRefetch: {
+				for: 0,
+				from: new Date(),
+			},
 		}
 	);
 
@@ -68,23 +71,20 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 	} = useSheetPageState();
 
 	useInterval(() => {
-		if (isAhead) {
-			//? If local state is ahead of server, we ignore the next refetch give the server time to update
-			inventoryDispatch({ type: "sheet_setIsAhead", data: false });
-		} else {
-			//? We refresh the props from the server every 3 seconds
-			// router.replace(router.asPath, "", { scroll: false });
-			fetch("/api/" + sheetFields._id)
-				.then((res) => res.json())
-				.then((data) => {
-					if (
-						!deepEqual(items, data.items) ||
-						!deepEqual(name, data.name) ||
-						!deepEqual(members, data.members)
-					)
-						inventoryDispatch({ type: "sheet_update", data });
-				});
-		}
+		// if () {
+		//? We refresh the props from the server every 3 seconds
+		// router.replace(router.asPath, "", { scroll: false });
+		fetch("/api/" + sheetFields._id)
+			.then((res) => res.json())
+			.then((data) => {
+				if (
+					!deepEqual(items, data.items) ||
+					!deepEqual(name, data.name) ||
+					!deepEqual(members, data.members)
+				)
+					inventoryDispatch({ type: "sheet_update", data });
+			});
+		// }
 	}, REFETCH_INTERVAL);
 
 	return (

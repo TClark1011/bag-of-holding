@@ -64,14 +64,6 @@ type UpdateSheetAction = InventorySheetStateActionTemplate<
 	Partial<InventorySheetFields>
 >;
 
-/**
- * Action for setting whether or not sheet state is ahead of server state
- */
-type SetStateIsAheadAction = InventorySheetStateActionTemplate<
-	"sheet_setIsAhead",
-	boolean
->;
-
 type UpdateSheetMetaDataAction = InventorySheetStateActionTemplate<
 	"sheet_metadataUpdate",
 	{
@@ -87,7 +79,6 @@ export type InventorySheetStateAction =
 	| AddItemAction
 	| RemoveItemAction
 	| UpdateSheetAction
-	| SetStateIsAheadAction
 	| UpdateItemAction
 	| UpdateSheetMetaDataAction;
 
@@ -95,15 +86,17 @@ export type InventorySheetStateAction =
  * @typedef {object} InventorySheetState Holds the local state of an inventory sheet
  * @augments InventorySheetFields Extends the base inventory sheet, adding extra
  * information related to the state of the application.
- * @property {boolean} [isAhead] Whether or not the state is ahead of the server
- * state. If this equals true, data returned from the regular refetching will not
- * be applied.
- * @property {boolean} [isLoading] Whether or not the sheet is currently in a 'loading'
- * state. If true, the sheet will be covered with a loading overlay, blocking input
- * until this property is switched back to false.
+ * @property {object} blockRefetch Information about how to block refetching
+ * @property {number} blockRefetch.for The number of milliseconds to block
+ * refetching
+ * @property {Date} blockRefetch.from The timestamp from which to start blocking
+ * refetching
  */
 interface InventorySheetState extends InventorySheetFields {
-	isAhead?: boolean;
+	blockRefetch: {
+		for: number;
+		from: Date;
+	};
 }
 
 export default InventorySheetState;
