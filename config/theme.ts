@@ -1,8 +1,27 @@
 import { extendTheme, theme as defaultTheme } from "@chakra-ui/react";
 
+/**
+ * Generate array containing all the same values.
+ * Required as textStyles must provide a full array
+ * for values in order to override default styles
+ * at all breakpoints
+ *
+ * @param {string | number} value The value to fill
+ * the array with
+ * @returns {string[] | number[]} The values
+ */
+const getResponsiveValues = (value: string | number) =>
+	new Array(4).fill(value, 0);
+
 const theme = extendTheme({
 	config: {
 		initialColorMode: "light",
+	},
+	textStyles: {
+		h3: {
+			fontSize: getResponsiveValues("3xl"),
+			fontWeight: "thin",
+		},
 	},
 	colors: {
 		primary: defaultTheme.colors.blue,

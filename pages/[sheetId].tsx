@@ -1,14 +1,6 @@
 import { Button, IconButton } from "@chakra-ui/button";
 import { useInterval } from "@chakra-ui/hooks";
-import {
-	Box,
-	Flex,
-	Heading,
-	HStack,
-	SimpleGrid,
-	Stack,
-} from "@chakra-ui/layout";
-import { Tag } from "@chakra-ui/tag";
+import { Box, Flex, Heading, SimpleGrid, Stack } from "@chakra-ui/layout";
 import Head from "next/head";
 import { Reducer, useEffect, useReducer } from "react";
 import ItemDialog from "../components/domain/ItemDialog";
@@ -33,12 +25,8 @@ import { useSheetPageState } from "../state/sheetPageState";
 import InventorySheetTable from "../components/domain/InventorySheetTable";
 import { addToRememberedSheets } from "../utils/rememberSheets";
 import inventoryReducer from "../state/inventoryReducer";
-import {
-	DarkMode,
-	LightMode,
-	useColorMode,
-	useColorModeValue,
-} from "@chakra-ui/color-mode";
+import { LightMode } from "@chakra-ui/color-mode";
+import PartyMemberTagList from "../components/templates/PartyMemberTagList";
 
 /**
  * The page for a specific sheet
@@ -125,12 +113,7 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 							<ColorModeSwitch variant="ghost" />
 						</Flex>
 						<LightMode>
-							<HStack spacing="group">
-								{/* Party Members Tags */}
-								{members.map((item) => (
-									<Tag key={item}>{item}</Tag>
-								))}
-							</HStack>
+							<PartyMemberTagList members={members} />
 						</LightMode>
 					</Box>
 
