@@ -120,10 +120,6 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 								<PartyMemberTagList members={members} />
 							</LightMode>
 						</Box>
-						{/* Include in search bar:
-						- Reset filters button
-						- Add new Item button
-					*/}
 						<Stack
 							minHeight={16}
 							columns={3}
