@@ -35,6 +35,7 @@ import { addToRememberedSheets } from "../utils/rememberSheets";
 import inventoryReducer from "../state/inventoryReducer";
 import { LightMode } from "@chakra-ui/color-mode";
 import PartyMemberTagList from "../components/templates/PartyMemberTagList";
+import Meta from "../components/templates/Meta";
 
 /**
  * The page for a specific sheet
@@ -85,128 +86,126 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 	}, REFETCH_INTERVAL);
 
 	return (
-		<SheetStateProvider
-			dispatch={inventoryDispatch}
-			state={{ items, members, name, _id }}
-		>
-			<Box>
-				<Head>
-					<title>
-						{appName} - {name}
-					</title>
-				</Head>
-				<main>
-					{/* Top Bar */}
-					<Box
-						padding={2}
-						backgroundColor="gray.900"
-						color="gray.50"
-						boxShadow="lg"
-					>
-						<Flex justify="space-between">
-							<Flex>
-								{/* Sheet Title */}
-								<Heading paddingBottom="md" marginRight={1}>
-									{name}
-								</Heading>
-								<IconButton
-									aria-label="edit sheet settings"
-									icon={<CreateOutlineIcon boxSize={6} />}
-									onClick={() => openDialog("sheetOptions")}
-									variant="ghost"
-									isRound
-								/>
+		<>
+			<Meta title={appName + " " + name} />
+			<SheetStateProvider
+				dispatch={inventoryDispatch}
+				state={{ items, members, name, _id }}
+			>
+				<Box>
+					<main>
+						{/* Top Bar */}
+						<Box
+							padding={2}
+							backgroundColor="gray.900"
+							color="gray.50"
+							boxShadow="lg"
+						>
+							<Flex justify="space-between">
+								<Flex>
+									{/* Sheet Title */}
+									<Heading paddingBottom="md" marginRight={1}>
+										{name}
+									</Heading>
+									<IconButton
+										aria-label="edit sheet settings"
+										icon={<CreateOutlineIcon boxSize={6} />}
+										onClick={() => openDialog("sheetOptions")}
+										variant="ghost"
+										isRound
+									/>
+								</Flex>
+								<ColorModeSwitch variant="ghost" />
 							</Flex>
-							<ColorModeSwitch variant="ghost" />
-						</Flex>
-						<LightMode>
-							<PartyMemberTagList members={members} />
-						</LightMode>
-					</Box>
-					{/* Include in search bar:
+							<LightMode>
+								<PartyMemberTagList members={members} />
+							</LightMode>
+						</Box>
+						{/* Include in search bar:
 						- Reset filters button
 						- Add new Item button
 					*/}
-					<Stack
-						minHeight={16}
-						columns={3}
-						padding="group"
-						direction={["column-reverse", "column-reverse", "row"]}
-					>
-						<Box>
-							{/* Add new Item Button */}
-							<Button
-								colorScheme="primary"
-								onClick={() => openDialog("item.new")}
-								width="full"
-							>
-								Add New Item
-							</Button>
-						</Box>
-						<Box flexGrow={2}>
-							{/* Search Bar */}
-							<Input
-								width="full"
-								placeholder="Search"
-								onChange={searchbarOnChange}
-								value={searchbarValue}
-							/>
-							{/* NOTE: Updates may stutter in dev mode but is fine when built */}
-						</Box>
-						<Box>
-							<SimpleGrid columns={[2, 2, 2, 1]} gap="group">
-								{/* Reset Filters Button */}
-								<Button width="full" onClick={resetFilters}>
-									Reset Filters
-								</Button>
-								{/* Filter Options Dialog Button */}
-								<Button
-									width="full"
-									display={[
-										"inline-flex",
-										"inline-flex",
-										"inline-flex",
-										"none",
-									]}
-									onClick={() => openDialog("filter")}
-								>
-									Filters
-								</Button>
-							</SimpleGrid>
-						</Box>
-					</Stack>
-					<InventorySheetTable
-						onRowClick={(item) => openDialog("item.edit", item)}
-						marginBottom="break"
-					/>
-					<Flex width="full">
-						<Center flexGrow={1}>
-							<Divider />
-						</Center>
-						<Heading
-							as="h3"
-							textStyle="h3"
-							fontWeight="300"
-							flexShrink={1}
-							textAlign="center"
-							display="inline"
-							paddingX="break"
+						<Stack
+							minHeight={16}
+							columns={3}
+							padding="group"
+							direction={["column-reverse", "column-reverse", "row"]}
 						>
-							Party Member Totals
-						</Heading>
-						<Center flexGrow={1}>
-							<Divider />
-						</Center>
-					</Flex>
-					<MemberCarryWeightTable />
-					{/* Dialogs */}
-					<ItemDialog mode="new" />
-					<ItemDialog mode="edit" />
-					<FilterDialog />
-					<SheetOptionsDialog />
-				</main>
-			</Box>
-		</SheetStateProvider>
+							<Box>
+								{/* Add new Item Button */}
+								<Button
+									colorScheme="primary"
+									onClick={() => openDialog("item.new")}
+									width="full"
+								>
+									Add New Item
+								</Button>
+							</Box>
+							<Box flexGrow={2}>
+								{/* Search Bar */}
+								<Input
+									width="full"
+									placeholder="Search"
+									onChange={searchbarOnChange}
+									value={searchbarValue}
+								/>
+								{/* NOTE: Updates may stutter in dev mode but is fine when built */}
+							</Box>
+							<Box>
+								<SimpleGrid columns={[2, 2, 2, 1]} gap="group">
+									{/* Reset Filters Button */}
+									<Button width="full" onClick={resetFilters}>
+										Reset Filters
+									</Button>
+									{/* Filter Options Dialog Button */}
+									<Button
+										width="full"
+										display={[
+											"inline-flex",
+											"inline-flex",
+											"inline-flex",
+											"none",
+										]}
+										onClick={() => openDialog("filter")}
+									>
+										Filters
+									</Button>
+								</SimpleGrid>
+							</Box>
+						</Stack>
+						<InventorySheetTable
+							onRowClick={(item) => openDialog("item.edit", item)}
+							marginBottom="break"
+						/>
+						<Flex width="full">
+							<Center flexGrow={1}>
+								<Divider />
+							</Center>
+							<Heading
+								as="h3"
+								textStyle="h3"
+								fontWeight="300"
+								flexShrink={1}
+								textAlign="center"
+								display="inline"
+								paddingX="break"
+							>
+								Party Member Totals
+							</Heading>
+							<Center flexGrow={1}>
+								<Divider />
+							</Center>
+						</Flex>
+						<MemberCarryWeightTable />
+						{/* Dialogs */}
+						<ItemDialog mode="new" />
+						<ItemDialog mode="edit" />
+						<FilterDialog />
+						<SheetOptionsDialog />
+					</main>
+				</Box>
+			</SheetStateProvider>
+		</>
 	);
 };
 
