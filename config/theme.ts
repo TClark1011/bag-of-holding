@@ -20,7 +20,7 @@ const theme = extendTheme({
 	textStyles: {
 		h1: {
 			fontSize: ["40px", "50px", "60px", "70px"],
-			fontWeight: "extrabold",
+			fontWeight: "bold",
 			fontFamily: "coves",
 		},
 		//TODO: Need to buy the license for this (https://harvatt.house/store/coves-font) Before going commercial
