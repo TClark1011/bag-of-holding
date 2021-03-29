@@ -30,7 +30,7 @@ const inventoryReducer = (
 		onCatch,
 		onFinally,
 	}: InventorySheetStateAction
-): InventorySheetState => {
+): InventorySheetFields => {
 	if (sendToServer) {
 		//? If send to server is true, we send the action to the server
 		fetch("/api/" + state._id, {
