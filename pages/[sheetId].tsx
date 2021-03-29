@@ -44,19 +44,15 @@ import inventoryReducer from "../state/inventoryReducer";
  * @returns {React.ReactElement} Sheet component
  */
 const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
-	const [
-		{ items, name, members, _id, blockRefetch },
-		inventoryDispatch,
-	] = useReducer<Reducer<InventorySheetState, InventorySheetStateAction>>(
-		inventoryReducer,
-		{
-			...sheetFields,
-			blockRefetch: {
-				for: 0,
-				from: new Date(),
-			},
-		}
-	);
+	const [{ items, name, members, _id }, inventoryDispatch] = useReducer<
+		Reducer<InventorySheetState, InventorySheetStateAction>
+	>(inventoryReducer, {
+		...sheetFields,
+		blockRefetch: {
+			for: 0,
+			from: new Date(),
+		},
+	});
 
 	useEffect(() => {
 		addToRememberedSheets({ _id, name, members });
@@ -84,7 +80,6 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 				)
 					inventoryDispatch({ type: "sheet_update", data });
 			});
-		// }
 	}, REFETCH_INTERVAL);
 
 	return (
