@@ -43,7 +43,7 @@ const Home: React.FC = () => {
 					<Box>
 						<VStack spacing="break" marginBottom="break">
 							<Center>
-								<BagOfHoldingIcon fill="white" boxSize={52} />
+								<BagOfHoldingIcon fill="white" boxSize={[40, 44, 52]} />
 							</Center>
 							{/* Main Title */}
 							<Heading textAlign="center" textStyle="h1" as="h1" width="full">
