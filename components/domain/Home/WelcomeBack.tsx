@@ -1,11 +1,9 @@
 import { Box, BoxProps, Divider, Heading, SimpleGrid } from "@chakra-ui/layout";
 import { useBreakpointValue } from "@chakra-ui/media-query";
-import { useEffect, useState } from "react";
-import { InventorySheetMenuItemFields } from "../../../types/InventorySheetFields";
-import { fetchRememberedSheets } from "../../../utils/rememberSheets";
 import sort from "fast-sort";
 import RememberedSheet from "./RememberedSheet";
 import { useColorModeValue } from "@chakra-ui/color-mode";
+import useRememberedSheets from "../../../utils/useRememberedSheets";
 
 /**
  * The 'welcome back' section in the homepage
@@ -14,13 +12,7 @@ import { useColorModeValue } from "@chakra-ui/color-mode";
  * @returns {React.ReactElement} Component stuff
  */
 const WelcomeBack: React.FC<BoxProps> = (props) => {
-	const [rememberedSheets, setRememberedSheets] = useState<
-		InventorySheetMenuItemFields[]
-	>([]);
-
-	useEffect(() => {
-		setRememberedSheets(fetchRememberedSheets());
-	}, []);
+	const rememberedSheets = useRememberedSheets();
 
 	/**
 	 * Calculate how many columns to use in the SheetCard
