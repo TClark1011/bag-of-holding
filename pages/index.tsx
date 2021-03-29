@@ -35,7 +35,7 @@ const Home: React.FC = () => {
 		<Box>
 			<Head>
 				<title>{appName}</title>
-				<link rel="icon" href="/favicon.ico" />
+				<link rel="icon" href="/favicon.svg" />
 			</Head>
 
 			<main>
