@@ -92,7 +92,15 @@ const inventoryReducer = (
 			};
 		case "sheet_update":
 			//TODO: If a party member is deleted, set items that were being carried by them to being carried by nobody
-			return merge(state, data as InventorySheetFields);
+			if (
+				state.blockRefetch &&
+				new Date().getTime() - state.blockRefetch.from.getTime() >
+					state.blockRefetch.for
+			) {
+				return merge(state, data as InventorySheetFields);
+				//? Only update the state if enough time has passed since we started blocking data
+			}
+			return state;
 		case "sheet_metadataUpdate":
 			return produceNewState((draftState) => {
 				draftState.name = (data as { name: string }).name;

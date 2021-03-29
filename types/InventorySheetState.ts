@@ -93,7 +93,7 @@ export type InventorySheetStateAction =
  * refetching
  */
 interface InventorySheetState extends InventorySheetFields {
-	blockRefetch: {
+	blockRefetch?: {
 		for: number;
 		from: Date;
 	};

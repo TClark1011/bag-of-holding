@@ -70,10 +70,10 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 		resetFilters,
 	} = useSheetPageState();
 
+	/**
+	 * Refetch the data regularly
+	 */
 	useInterval(() => {
-		// if () {
-		//? We refresh the props from the server every 3 seconds
-		// router.replace(router.asPath, "", { scroll: false });
 		fetch("/api/" + sheetFields._id)
 			.then((res) => res.json())
 			.then((data) => {
