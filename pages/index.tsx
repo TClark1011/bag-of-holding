@@ -24,7 +24,7 @@ const Home: React.FC = () => {
 			.then((data) => {
 				router.push("/" + data);
 			})
-			.finally(() => setNewSheetIsLoading(false));
+			.catch(() => setNewSheetIsLoading(false));
 	};
 
 	return (
@@ -35,24 +35,26 @@ const Home: React.FC = () => {
 			</Head>
 
 			<main>
-				<Center width="full" minHeight="100vh">
+				<Center width="full" minHeight="100vh" padding="break">
 					<Box>
-						<Center>
-							<Box maxWidth="400px">
-								<Heading textAlign="center" marginBottom={10}>
-									Take the hassle out of your inventory
-								</Heading>
-								<Flex justify="center" marginBottom="break">
-									<Button
-										onClick={getNewSheet}
-										isLoading={newSheetIsLoading}
-										colorScheme="primary"
-									>
-										Get Started
-									</Button>
-								</Flex>
-							</Box>
-						</Center>
+						<Heading
+							textAlign="center"
+							marginBottom={10}
+							textStyle="h1"
+							as="h1"
+							width="full"
+						>
+							The {appName}
+						</Heading>
+						<Flex justify="center" marginBottom="break">
+							<Button
+								onClick={getNewSheet}
+								isLoading={newSheetIsLoading}
+								colorScheme="primary"
+							>
+								Get Started
+							</Button>
+						</Flex>
 						<WelcomeBack />
 					</Box>
 				</Center>

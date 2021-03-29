@@ -36,7 +36,7 @@ const WelcomeBack: React.FC<BoxProps> = (props) => {
 		Math.min(rememberedSheets.length, columns);
 
 	const rememberedSheetCardColumns = useBreakpointValue([
-		getRememberedSheetCardColumns(2),
+		getRememberedSheetCardColumns(1),
 		getRememberedSheetCardColumns(2),
 		getRememberedSheetCardColumns(4),
 	]);
@@ -45,14 +45,10 @@ const WelcomeBack: React.FC<BoxProps> = (props) => {
 
 	return (
 		<Box {...props}>
-			<Heading textAlign="center" textStyle="h3">
+			<Divider backgroundColor={dividerColor} borderColor={dividerColor} />
+			<Heading textAlign="center" textStyle="h2" marginY="break">
 				Welcome Back
 			</Heading>
-			<Divider
-				marginY="break"
-				backgroundColor={dividerColor}
-				borderColor={dividerColor}
-			/>
 			{/* <Heading textStyle="h4">Recent Sheets</Heading> */}
 			<SimpleGrid columns={rememberedSheetCardColumns} spacing="break">
 				{sort(rememberedSheets)

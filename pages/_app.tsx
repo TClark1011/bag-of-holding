@@ -2,6 +2,9 @@ import { ChakraProvider, ColorModeScript } from "@chakra-ui/react";
 import { AppProps } from "next/dist/next-server/lib/router/router";
 import React from "react";
 import theme from "../config/theme";
+import "../assets/fonts/Coves/stylesheet.css";
+import "@fontsource/roboto/100.css";
+import "@fontsource/roboto/400.css";
 
 /**
  * Core app component
