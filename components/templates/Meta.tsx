@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { appDescription, appName } from "../../constants/branding";
+import { appDescription, appName } from "../../constants/meta";
 
 interface MetaProps {
 	description?: string;
@@ -19,7 +19,9 @@ interface MetaProps {
  * @param {string} [props.image] The path to the image to
  * appear in link previews. Defaults to the path of the
  * 'ogIndex' file.
- * @param props.url
+ * @param {string} [props.url] The url to use for the
+ * 'og:url' and 'canonical' meta data tags. These tags
+ * will not be used if this parameter is not provided.
  * @returns {React.ReactElement} Metadata tags
  */
 const Meta: React.FC<MetaProps> = ({

@@ -2,7 +2,7 @@ import { Button } from "@chakra-ui/button";
 import { Box, Center, Flex, Heading, VStack } from "@chakra-ui/layout";
 import { useState } from "react";
 import { useRouter } from "next/router";
-import { appDisplayTitle, appDomain } from "../constants/branding";
+import { appDisplayTitle, appDomain } from "../constants/meta";
 import WelcomeBack from "../components/domain/Home/WelcomeBack";
 import BagOfHoldingIcon from "../components/icons/BagOfHoldingIcon";
 import { use100vh } from "react-div-100vh";
