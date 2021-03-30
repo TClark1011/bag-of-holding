@@ -117,7 +117,7 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 										isRound
 									/>
 								</Flex>
-								<ColorModeSwitch variant="ghost" />
+								<ColorModeSwitch forceDarkMode />
 							</Flex>
 							<LightMode>
 								<PartyMemberTagList members={members} />
