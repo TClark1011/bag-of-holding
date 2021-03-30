@@ -16,7 +16,7 @@ export interface FlexibleLinkProps {
 /**
  * A link that can either use the smooth client-side loading
  * provided by the NextJS link component, or the more standard
- * link capabilties of the chakra ui 'Link' component
+ * link capabilities of the chakra ui 'Link' component
  *
  * @param {object} props The props
  * @param {string} props.href The link destination
