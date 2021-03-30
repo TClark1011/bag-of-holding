@@ -35,6 +35,7 @@ import inventoryReducer from "../../state/inventoryReducer";
 import { LightMode } from "@chakra-ui/color-mode";
 import PartyMemberTagList from "../../components/templates/PartyMemberTagList";
 import Meta from "../../components/templates/Meta";
+import getSheetLink from "../../utils/getSheetLink";
 
 /**
  * The page for a specific sheet
@@ -88,7 +89,7 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 		<>
 			<Meta
 				title={appName + " - " + name}
-				url={appDomain + "/" + sheetFields._id}
+				url={getSheetLink(sheetFields._id, true)}
 			/>
 			<SheetStateProvider
 				dispatch={inventoryDispatch}
