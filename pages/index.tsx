@@ -43,7 +43,9 @@ const Home: React.FC = () => {
 		<>
 			<Meta url={appDomain} />
 			<main>
+				{/* Content Wrapper */}
 				<Flex direction="column" minHeight={screenHeight}>
+					{/* Top Bar */}
 					<Flex justify="space-between" padding={2} width="full">
 						<ColorModeSwitch />
 						<HStack justify="flex-end">
@@ -62,6 +64,7 @@ const Home: React.FC = () => {
 							<GitLink />
 						</HStack>
 					</Flex>
+					{/* Main Content */}
 					<Center width="full" flexGrow={1} padding="break">
 						<Box>
 							<VStack spacing="break" marginBottom="break">
