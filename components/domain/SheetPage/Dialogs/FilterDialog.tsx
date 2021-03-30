@@ -1,10 +1,10 @@
 import { Button } from "@chakra-ui/button";
 import { VStack } from "@chakra-ui/layout";
 import { ModalBody, ModalFooter } from "@chakra-ui/modal";
-import { useSheetPageState } from "../../state/sheetPageState";
-import { FilterableItemProperty } from "../../types/InventoryItemFields";
-import FilterInterface from "../templates/FilterInterface";
-import SheetDialog from "../templates/SheetDialog";
+import { useSheetPageState } from "../../../../state/sheetPageState";
+import { FilterableItemProperty } from "../../../../types/InventoryItemFields";
+import FilterInterface from "../../../templates/FilterInterface";
+import SheetDialog from "../../../templates/SheetDialog";
 
 /**
  * Dialog for filtering the table on mobile devices

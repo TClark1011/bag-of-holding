@@ -27,7 +27,7 @@ import ColorModeSwitch from "../components/ui/ColorModeSwitch";
 import { Input } from "@chakra-ui/input";
 import deepEqual from "deep-equal";
 import { appDomain, appName } from "../constants/meta";
-import FilterDialog from "../components/domain/FilterDialog";
+import FilterDialog from "../components/domain/SheetPage/Dialogs/FilterDialog";
 import { useSheetPageState } from "../state/sheetPageState";
 import InventorySheetTable from "../components/domain/InventorySheetTable";
 import { addToRememberedSheets } from "../utils/rememberSheets";
