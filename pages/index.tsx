@@ -1,5 +1,5 @@
 import { Button } from "@chakra-ui/button";
-import { Box, Center, Flex, Heading, VStack } from "@chakra-ui/layout";
+import { Box, Center, Flex, Heading, HStack, VStack } from "@chakra-ui/layout";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { appDisplayTitle, appDomain } from "../constants/meta";
@@ -8,6 +8,7 @@ import BagOfHoldingIcon from "../components/icons/BagOfHoldingIcon";
 import { use100vh } from "react-div-100vh";
 import Meta from "../components/templates/Meta";
 import ColorModeSwitch from "../components/ui/ColorModeSwitch";
+import GitLink from "../components/ui/GitLink";
 
 /**
  * Home component
@@ -37,10 +38,11 @@ const Home: React.FC = () => {
 		<>
 			<Meta url={appDomain} />
 			<main>
-				<Flex direction="column">
-					<Flex padding={2} width="full" justify="flex-end">
-						<ColorModeSwitch variant="ghost" />
-					</Flex>
+				<Flex direction="column" minHeight={screenHeight}>
+					<HStack padding={2} width="full" justify="flex-end">
+						<GitLink />
+						<ColorModeSwitch />
+					</HStack>
 					<Center width="full" flexGrow={1} padding="break">
 						<Box>
 							<VStack spacing="break" marginBottom="break">

@@ -19,9 +19,10 @@ const ColorModeSwitch: React.FC<
 	return (
 		<IconButton
 			aria-label={"change color mode to " + oppositeColorMode + " mode"}
-			icon={<SwitchIcon boxSize={6} />}
+			icon={<SwitchIcon boxSize="icon" />}
 			onClick={toggleColorMode}
 			isRound
+			variant="ghost"
 			{...props}
 		/>
 	);
