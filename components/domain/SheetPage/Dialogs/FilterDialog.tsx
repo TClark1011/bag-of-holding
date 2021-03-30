@@ -20,7 +20,10 @@ const FilterDialog: React.FC = () => {
 					{Object.entries(filters).map(([property, filter], index) => (
 						<FilterInterface
 							property={property as FilterableItemProperty}
-							// Type casting is guaranteed to be safe here, its only required due to limitation with auto type recognition
+							/**
+							 * Type casting is guaranteed to be safe here, its only required
+							 * due to limitation with auto type recognition
+							 */
 							filter={filter}
 							key={index}
 						/>
