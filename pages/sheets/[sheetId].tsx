@@ -10,31 +10,31 @@ import {
 	Stack,
 } from "@chakra-ui/layout";
 import { Reducer, useEffect, useReducer } from "react";
-import ItemDialog from "../components/domain/SheetPage/Dialogs/ItemDialog";
-import InventorySheetFields from "../types/InventorySheetFields";
+import ItemDialog from "../../components/domain/SheetPage/Dialogs/ItemDialog";
+import InventorySheetFields from "../../types/InventorySheetFields";
 import InventorySheetState, {
 	InventorySheetStateAction,
-} from "../types/InventorySheetState";
-import getUrlParam from "../utils/getUrlParam";
-import SheetStateProvider from "../components/contexts/InventoryStateContext";
-import { fetchSheet } from "../db/sheetServices";
-import { REFETCH_INTERVAL } from "../config/publicEnv";
+} from "../../types/InventorySheetState";
+import getUrlParam from "../../utils/getUrlParam";
+import SheetStateProvider from "../../components/contexts/InventoryStateContext";
+import { fetchSheet } from "../../db/sheetServices";
+import { REFETCH_INTERVAL } from "../../config/publicEnv";
 import { GetServerSideProps } from "next";
-import SheetOptionsDialog from "../components/domain/SheetPage/Dialogs/SheetOptionsDialog";
+import SheetOptionsDialog from "../../components/domain/SheetPage/Dialogs/SheetOptionsDialog";
 import { CreateOutlineIcon } from "chakra-ui-ionicons";
-import MemberCarryWeightTable from "../components/domain/SheetPage/MemberCarryWeightTable";
-import ColorModeSwitch from "../components/ui/ColorModeSwitch";
+import MemberCarryWeightTable from "../../components/domain/SheetPage/MemberCarryWeightTable";
+import ColorModeSwitch from "../../components/ui/ColorModeSwitch";
 import { Input } from "@chakra-ui/input";
 import deepEqual from "deep-equal";
-import { appDomain, appName } from "../constants/meta";
-import FilterDialog from "../components/domain/SheetPage/Dialogs/FilterDialog";
-import { useSheetPageState } from "../state/sheetPageState";
-import InventorySheetTable from "../components/domain/SheetPage/InventorySheetTable";
-import { addToRememberedSheets } from "../utils/rememberSheets";
-import inventoryReducer from "../state/inventoryReducer";
+import { appDomain, appName } from "../../constants/meta";
+import FilterDialog from "../../components/domain/SheetPage/Dialogs/FilterDialog";
+import { useSheetPageState } from "../../state/sheetPageState";
+import InventorySheetTable from "../../components/domain/SheetPage/InventorySheetTable";
+import { addToRememberedSheets } from "../../utils/rememberSheets";
+import inventoryReducer from "../../state/inventoryReducer";
 import { LightMode } from "@chakra-ui/color-mode";
-import PartyMemberTagList from "../components/templates/PartyMemberTagList";
-import Meta from "../components/templates/Meta";
+import PartyMemberTagList from "../../components/templates/PartyMemberTagList";
+import Meta from "../../components/templates/Meta";
 
 /**
  * The page for a specific sheet
