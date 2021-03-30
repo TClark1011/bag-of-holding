@@ -9,7 +9,7 @@ import { use100vh } from "react-div-100vh";
 import Meta from "../components/templates/Meta";
 import ColorModeSwitch from "../components/ui/ColorModeSwitch";
 import GitLink from "../components/ui/GitLink";
-import { InformationIcon, MailOutlineIcon } from "chakra-ui-ionicons";
+import { HelpOutlineIcon, MailOutlineIcon } from "chakra-ui-ionicons";
 import IconLink from "../components/ui/IconLink";
 import getSheetLink from "../utils/getSheetLink";
 import ButtonLink from "../components/ui/ButtonLink";
@@ -50,7 +50,7 @@ const Home: React.FC = () => {
 							<IconLink
 								href={infoPageUrl}
 								aria-label="link to info page"
-								icon={<InformationIcon boxSize="icon" />}
+								icon={<HelpOutlineIcon boxSize="icon" />}
 								variant="ghost"
 							/>
 							<IconLink
