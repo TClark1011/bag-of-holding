@@ -9,6 +9,13 @@ import { use100vh } from "react-div-100vh";
 import Meta from "../components/templates/Meta";
 import ColorModeSwitch from "../components/ui/ColorModeSwitch";
 import GitLink from "../components/ui/GitLink";
+import {
+	InformationCircleIcon,
+	InformationCircleOutlineIcon,
+	InformationIcon,
+	MailOutlineIcon,
+} from "chakra-ui-ionicons";
+import IconLink from "../components/ui/IconLink";
 
 /**
  * Home component
@@ -42,6 +49,18 @@ const Home: React.FC = () => {
 					<Flex justify="space-between" padding={2} width="full">
 						<ColorModeSwitch />
 						<HStack justify="flex-end">
+							<IconLink
+								href="/info"
+								aria-label="link to info page"
+								icon={<InformationIcon boxSize="icon" />}
+								variant="ghost"
+							/>
+							<IconLink
+								href="/contact"
+								aria-label="link to contact page"
+								icon={<MailOutlineIcon boxSize="icon" />}
+								variant="ghost"
+							/>
 							<GitLink />
 						</HStack>
 					</Flex>
