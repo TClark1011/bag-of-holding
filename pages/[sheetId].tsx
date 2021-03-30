@@ -23,7 +23,7 @@ import { GetServerSideProps } from "next";
 import SheetOptionsDialog from "../components/domain/SheetOptionsDialog";
 import { CreateOutlineIcon } from "chakra-ui-ionicons";
 import MemberCarryWeightTable from "../components/domain/MemberCarryWeightTable";
-import ColorModeSwitch from "../components/domain/ColorModeSwitch";
+import ColorModeSwitch from "../components/ui/ColorModeSwitch";
 import { Input } from "@chakra-ui/input";
 import deepEqual from "deep-equal";
 import { appDomain, appName } from "../constants/meta";

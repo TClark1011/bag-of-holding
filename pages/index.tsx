@@ -7,7 +7,7 @@ import WelcomeBack from "../components/domain/Home/WelcomeBack";
 import BagOfHoldingIcon from "../components/icons/BagOfHoldingIcon";
 import { use100vh } from "react-div-100vh";
 import Meta from "../components/templates/Meta";
-import ColorModeSwitch from "../components/domain/ColorModeSwitch";
+import ColorModeSwitch from "../components/ui/ColorModeSwitch";
 
 /**
  * Home component
