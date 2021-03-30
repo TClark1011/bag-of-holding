@@ -1,4 +1,5 @@
 import { appDomain } from "../constants/meta";
+import { sheetsUrlPrefix } from "../constants/urls";
 
 /**
  * Generate a link to a sheet.
@@ -16,6 +17,6 @@ import { appDomain } from "../constants/meta";
  * @returns {string} The generated link
  */
 const getSheetLink = (sheetId: string, fullLink = false): string =>
-	(fullLink ? appDomain : "") + `/sheets/${sheetId}`;
+	(fullLink ? appDomain : "") + sheetsUrlPrefix + sheetId;
 
 export default getSheetLink;
