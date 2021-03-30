@@ -14,7 +14,7 @@ interface IconLinkProps extends IconButtonProps {
  */
 const IconLink: React.FC<IconLinkProps> = ({ href, ...props }) => (
 	<Link href={href}>
-		<IconButton {...props} />
+		<IconButton isRound {...props} />
 	</Link>
 );
 
