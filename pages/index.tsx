@@ -74,13 +74,18 @@ const Home: React.FC = () => {
 									Track your party{"'"}s inventory, no matter what you play
 								</Heading>
 								<Center>
-									<Button
-										onClick={getNewSheet}
-										isLoading={newSheetIsLoading}
-										colorScheme="primary"
-									>
-										Get Started
-									</Button>
+									<VStack spacing="break">
+										<Button
+											onClick={getNewSheet}
+											isLoading={newSheetIsLoading}
+											colorScheme="primary"
+										>
+											Get Started
+										</Button>
+										<Button variant="ghost" size="xs">
+											What is this?
+										</Button>
+									</VStack>
 								</Center>
 							</VStack>
 							<WelcomeBack />
