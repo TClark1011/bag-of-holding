@@ -1,4 +1,5 @@
 import { extendTheme, theme as defaultTheme } from "@chakra-ui/react";
+import { triggerAsyncId } from "node:async_hooks";
 
 /**
  * Generate array containing all the same values.
@@ -10,8 +11,7 @@ import { extendTheme, theme as defaultTheme } from "@chakra-ui/react";
  * the array with
  * @returns {string[] | number[]} The values
  */
-const getResponsiveValues = (value: string | number) =>
-	new Array(4).fill(value, 0);
+const getResponsiveValues = <T>(value: T) => new Array(4).fill(value, 0);
 
 const theme = extendTheme({
 	config: {
@@ -73,8 +73,11 @@ const theme = extendTheme({
 	},
 	components: {
 		IconButton: {
+			baseStyle: {
+				borderRadius: "full",
+			},
 			defaultProps: {
-				isRound: true,
+				isRound: getResponsiveValues(true),
 			},
 		},
 	},
