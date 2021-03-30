@@ -1,6 +1,22 @@
-import { IconButton, IconButtonProps } from "@chakra-ui/button";
+import {
+	Button,
+	ButtonProps,
+	IconButton,
+	IconButtonProps,
+} from "@chakra-ui/button";
 import { useColorMode, useColorModeValue } from "@chakra-ui/color-mode";
+import { StyleProps } from "@chakra-ui/styled-system";
 import { SunnyOutlineIcon, MoonOutlineIcon } from "chakra-ui-ionicons";
+import codeToTitle from "code-to-title";
+
+type LimitedButtonProps = Omit<
+	ButtonProps | IconButtonProps,
+	"onClick" | "icon" | "aria-label" | "leftIcon"
+>;
+
+interface ColorModeSwitchProps extends LimitedButtonProps {
+	iconOnly?: boolean;
+}
 
 /**
  * Button to switch between color modes
@@ -10,21 +26,31 @@ import { SunnyOutlineIcon, MoonOutlineIcon } from "chakra-ui-ionicons";
  * omitted
  * @returns {React.ReactElement} Component stuff
  */
-const ColorModeSwitch: React.FC<
-	Omit<IconButtonProps, "onClick" | "icon" | "aria-label">
-> = ({ ...props }) => {
-	const { toggleColorMode } = useColorMode();
+const ColorModeSwitch: React.FC<ColorModeSwitchProps> = ({
+	iconOnly = false,
+	...props
+}) => {
+	const { colorMode, toggleColorMode } = useColorMode();
 	const SwitchIcon = useColorModeValue(MoonOutlineIcon, SunnyOutlineIcon);
 	const oppositeColorMode = useColorModeValue("dark", "light");
-	return (
-		<IconButton
-			aria-label={"change color mode to " + oppositeColorMode + " mode"}
-			icon={<SwitchIcon boxSize="icon" />}
-			onClick={toggleColorMode}
-			isRound
-			variant="ghost"
-			{...props}
-		/>
+
+	const commonProps: Pick<
+		IconButtonProps,
+		"aria-label" | "variant" | "onClick"
+	> = {
+		"aria-label": "change color mode to " + oppositeColorMode + " mode",
+		variant: "ghost",
+		onClick: toggleColorMode,
+	};
+
+	const iconElement = <SwitchIcon boxSize="icon" />;
+
+	return iconOnly ? (
+		<IconButton isRound {...commonProps} {...props} icon={iconElement} />
+	) : (
+		<Button {...commonProps} width={32} {...props} leftIcon={iconElement}>
+			{codeToTitle(colorMode)} Mode
+		</Button>
 	);
 };
 

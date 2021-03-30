@@ -6,8 +6,8 @@ import {
 	PopoverProps,
 	PopoverTrigger,
 } from "@chakra-ui/popover";
-import { FilterableItemProperty } from "../../types/InventoryItemFields";
-import FilterInterface from "../templates/FilterInterface";
+import { FilterableItemProperty } from "../../../types/InventoryItemFields";
+import FilterInterface from "../../templates/FilterInterface";
 
 interface TableFilterProps extends PopoverProps {
 	property: FilterableItemProperty;

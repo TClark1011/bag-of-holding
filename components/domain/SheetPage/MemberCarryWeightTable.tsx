@@ -1,5 +1,5 @@
 import { Table, TableProps, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/table";
-import { useInventoryState } from "../contexts/InventoryStateContext";
+import { useInventoryState } from "../../contexts/InventoryStateContext";
 
 /**
  * Component for showing the total carry weight/value of each party member's inventory

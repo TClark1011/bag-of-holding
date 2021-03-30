@@ -10,18 +10,18 @@ import {
 } from "@chakra-ui/table";
 import InventoryItemFields, {
 	ProcessableItemProperty,
-} from "../../types/InventoryItemFields";
+} from "../../../types/InventoryItemFields";
 import {
 	ArrowDownIcon,
 	ArrowUpIcon,
 	FilterOutlineIcon,
 } from "chakra-ui-ionicons";
-import TableCell from "../ui/TableCell";
+import TableCell from "../../ui/TableCell";
 import { Button, IconButton } from "@chakra-ui/button";
 import TableFilter from "./TableFilter";
 import { Text } from "@chakra-ui/layout";
-import { useSheetPageState } from "../../state/sheetPageState";
-import { useInventoryState } from "../contexts/InventoryStateContext";
+import { useSheetPageState } from "../../../state/sheetPageState";
+import { useInventoryState } from "../../contexts/InventoryStateContext";
 import { Tooltip } from "@chakra-ui/tooltip";
 
 const col4Display = ["none", "table-cell"];

@@ -5,14 +5,14 @@ import { Divider, Flex, Text, VStack } from "@chakra-ui/layout";
 import { ModalBody, ModalFooter } from "@chakra-ui/modal";
 import { Field, FieldArray, Formik, FormikHelpers } from "formik";
 import { InputControl } from "formik-chakra-ui";
-import InventorySheetFields from "../../types/InventorySheetFields";
+import InventorySheetFields from "../../../../types/InventorySheetFields";
 import {
 	useInventoryState,
 	useInventoryStateDispatch,
-} from "../contexts/InventoryStateContext";
+} from "../../../contexts/InventoryStateContext";
 import { RemoveIcon } from "chakra-ui-ionicons";
-import { useSheetPageState } from "../../state/sheetPageState";
-import SheetDialog from "../templates/SheetDialog";
+import { useSheetPageState } from "../../../../state/sheetPageState";
+import SheetDialog from "../../../templates/SheetDialog";
 
 /**
  * Component for sheet settings dialog

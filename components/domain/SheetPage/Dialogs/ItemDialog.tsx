@@ -9,14 +9,17 @@ import {
 	SelectControl,
 	TextareaControl,
 } from "formik-chakra-ui";
-import { SheetDialogType, useSheetPageState } from "../../state/sheetPageState";
-import { InventoryItemCreationFields } from "../../types/InventoryItemFields";
-import { InventorySheetStateAction } from "../../types/InventorySheetState";
+import {
+	SheetDialogType,
+	useSheetPageState,
+} from "../../../../state/sheetPageState";
+import { InventoryItemCreationFields } from "../../../../types/InventoryItemFields";
+import { InventorySheetStateAction } from "../../../../types/InventorySheetState";
 import {
 	useInventoryState,
 	useInventoryStateDispatch,
-} from "../contexts/InventoryStateContext";
-import SheetDialog from "../templates/SheetDialog";
+} from "../../../contexts/InventoryStateContext";
+import SheetDialog from "../../../templates/SheetDialog";
 import faker from "faker";
 
 export type ItemDialogMode = "edit" | "new";
