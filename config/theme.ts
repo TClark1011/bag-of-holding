@@ -71,6 +71,10 @@ const theme = extendTheme({
 		group: defaultTheme.space[2],
 		break: defaultTheme.space[6],
 	},
+	sizes: {
+		...defaultTheme.sizes,
+		icon: defaultTheme.sizes[6],
+	},
 	components: {
 		IconButton: {
 			baseStyle: {
