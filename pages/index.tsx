@@ -12,6 +12,8 @@ import GitLink from "../components/ui/GitLink";
 import { InformationIcon, MailOutlineIcon } from "chakra-ui-ionicons";
 import IconLink from "../components/ui/IconLink";
 import getSheetLink from "../utils/getSheetLink";
+import ButtonLink from "../components/ui/ButtonLink";
+import { contactPageUrl, infoPageUrl } from "../constants/urls";
 
 /**
  * Home component
@@ -46,13 +48,13 @@ const Home: React.FC = () => {
 						<ColorModeSwitch />
 						<HStack justify="flex-end">
 							<IconLink
-								href="/info"
+								href={infoPageUrl}
 								aria-label="link to info page"
 								icon={<InformationIcon boxSize="icon" />}
 								variant="ghost"
 							/>
 							<IconLink
-								href="/contact"
+								href={contactPageUrl}
 								aria-label="link to contact page"
 								icon={<MailOutlineIcon boxSize="icon" />}
 								variant="ghost"
@@ -82,9 +84,9 @@ const Home: React.FC = () => {
 										>
 											Get Started
 										</Button>
-										<Button variant="ghost" size="xs">
+										<ButtonLink href={infoPageUrl} variant="ghost" size="xs">
 											What is this?
-										</Button>
+										</ButtonLink>
 									</VStack>
 								</Center>
 							</VStack>
