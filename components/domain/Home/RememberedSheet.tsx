@@ -2,6 +2,7 @@ import { Button } from "@chakra-ui/button";
 import { BoxProps } from "@chakra-ui/layout";
 import { InventorySheetMenuItemFields } from "../../../types/InventorySheetFields";
 import Link from "next/link";
+import getSheetLink from "../../../utils/getSheetLink";
 
 /**
  * Component displaying a remembered sheet on the homepage
@@ -17,7 +18,7 @@ const RememberedSheet: React.FC<BoxProps & InventorySheetMenuItemFields> = ({
 	_id,
 }) => {
 	return (
-		<Link href={_id}>
+		<Link href={getSheetLink(_id)}>
 			<Button
 				variant="outline"
 				colorScheme="primary"

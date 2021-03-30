@@ -9,13 +9,9 @@ import { use100vh } from "react-div-100vh";
 import Meta from "../components/templates/Meta";
 import ColorModeSwitch from "../components/ui/ColorModeSwitch";
 import GitLink from "../components/ui/GitLink";
-import {
-	InformationCircleIcon,
-	InformationCircleOutlineIcon,
-	InformationIcon,
-	MailOutlineIcon,
-} from "chakra-ui-ionicons";
+import { InformationIcon, MailOutlineIcon } from "chakra-ui-ionicons";
 import IconLink from "../components/ui/IconLink";
+import getSheetLink from "../utils/getSheetLink";
 
 /**
  * Home component
@@ -33,7 +29,7 @@ const Home: React.FC = () => {
 		fetch("api/sheet", { method: "POST" })
 			.then((res) => res.json())
 			.then((data) => {
-				router.push("/" + data);
+				router.push(getSheetLink(data as string));
 			})
 			.catch(() => setNewSheetIsLoading(false));
 	};
