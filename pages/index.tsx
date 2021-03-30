@@ -39,10 +39,12 @@ const Home: React.FC = () => {
 			<Meta url={appDomain} />
 			<main>
 				<Flex direction="column" minHeight={screenHeight}>
-					<HStack padding={2} width="full" justify="flex-end">
-						<GitLink />
+					<Flex justify="space-between" padding={2} width="full">
 						<ColorModeSwitch />
-					</HStack>
+						<HStack justify="flex-end">
+							<GitLink />
+						</HStack>
+					</Flex>
 					<Center width="full" flexGrow={1} padding="break">
 						<Box>
 							<VStack spacing="break" marginBottom="break">
