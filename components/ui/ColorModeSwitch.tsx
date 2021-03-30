@@ -25,16 +25,18 @@ interface ColorModeSwitchProps extends LimitedButtonProps {
 }
 
 /**
- * Button to switch between color modes
+ * Button to switch between 'light' and 'dark' color modes
  *
  * @param {object} props The
  * style props for an IconButton but with the props required for button functionality
  * omitted
  * @param {boolean} [props.iconOnly=false] if true, the switch will use an 'IconButton'
  * and will only display an icon without any text
- * @param {boolean} [props.useLightModeColors]
- * @param {boolean} [props.useDarkModeColors]
- * @returns {React.ReactElement} Component stuff
+ * @param {boolean} [props.useLightModeColors] If the switch should only use colors from it's
+ * 'light mode' color scheme
+ * @param {boolean} [props.useDarkModeColors] If the switch should only use colors from it's
+ * 'dark mode' color scheme
+ * @returns {React.ReactElement} Switch for toggling between color modes
  */
 const ColorModeSwitch: React.FC<ColorModeSwitchProps> = ({
 	iconOnly = false,
