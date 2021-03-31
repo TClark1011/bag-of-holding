@@ -7,6 +7,7 @@ import InventorySheetState, {
 	InventorySheetStateAction,
 } from "../types/InventorySheetState";
 import createInventoryItem from "../utils/createInventoryItem";
+import sendSheetAction from "../services/sendSheetAction";
 
 //TODO: Create separate 'server' reducer that processes how to update mongo state
 
@@ -22,25 +23,16 @@ import createInventoryItem from "../utils/createInventoryItem";
  */
 const inventoryReducer = (
 	state: InventorySheetState,
-	{
-		type,
-		data,
-		sendToServer,
-		onThen,
-		onCatch,
-		onFinally,
-	}: InventorySheetStateAction
+	{ type, data, sendToServer, ...action }: InventorySheetStateAction
 ): InventorySheetFields => {
 	if (sendToServer) {
 		//? If send to server is true, we send the action to the server
-		fetch("/api/" + state._id, {
-			method: "PATCH",
-			body: JSON.stringify({ type, data, sendToServer: false }),
-			//? We set 'sendToServer' to false when sending the action to the server to prevent an infinite loop
-		})
-			.then(() => onThen && onThen())
-			.catch((err) => onCatch && onCatch(err))
-			.finally(() => onFinally && onFinally());
+		sendSheetAction(state._id, {
+			type,
+			data,
+			sendToServer: false,
+			...action,
+		} as InventorySheetStateAction);
 	}
 
 	/**

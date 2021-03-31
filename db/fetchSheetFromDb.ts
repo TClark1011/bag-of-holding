@@ -12,7 +12,7 @@ connectToMongoose();
  * @returns {Promise<InventorySheetFields>} The fetched
  * sheet
  */
-const fetchSheet = async (_id: string): Promise<InventorySheetFields> =>
+const fetchSheetFromDb = async (_id: string): Promise<InventorySheetFields> =>
 	stringifyCopy<InventorySheetFields>(await SheetModel.findById(_id));
 
-export default fetchSheet;
+export default fetchSheetFromDb;

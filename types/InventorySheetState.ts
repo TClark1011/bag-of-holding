@@ -24,7 +24,7 @@ import InventorySheetFields from "./InventorySheetFields";
  * @property {Function} [onThen] Callback executed in the '.then'
  * callback of the request sending the action to the server
  */
-interface InventorySheetStateActionTemplate<T extends string, D> {
+export interface InventorySheetStateActionTemplate<T extends string, D> {
 	readonly type: T;
 	readonly data: D;
 	readonly sendToServer?: boolean;

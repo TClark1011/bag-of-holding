@@ -1,6 +1,6 @@
 import { NextApiHandler, NextApiRequest } from "next";
-import dbReducer from "../../db/dbReducer";
-import fetchSheet from "../../db/fetchSheet";
+import dbReducer from "../../../db/dbReducer";
+import fetchSheetFromDb from "../../../db/fetchSheetFromDb";
 
 //NOTE: Apparently the NextJS 'API resolved without sending a response for..." errors are false positives and can be ignored.
 // As seen here "https://github.com/vercel/next.js/issues/10439" it is a known issue with NextJS/Mongoose compatibility
@@ -21,7 +21,7 @@ const getSheetId = (req: NextApiRequest): string => req.query.sheetId as string;
  */
 const handleGET: NextApiHandler = async (req, res) => {
 	try {
-		const data = await fetchSheet(getSheetId(req));
+		const data = await fetchSheetFromDb(getSheetId(req));
 		res.status(200).json(data);
 	} catch {
 		res.status(500).send("There was an error");
@@ -35,8 +35,7 @@ const handleGET: NextApiHandler = async (req, res) => {
  * @param {NextApiResponse} res The HTTP response object
  */
 const handlePATCH: NextApiHandler = async (req, res) => {
-	const action = JSON.parse(req.body);
-	dbReducer(getSheetId(req), action);
+	dbReducer(getSheetId(req), req.body);
 	res.status(200).json({});
 };
 

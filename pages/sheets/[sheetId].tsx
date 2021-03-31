@@ -36,7 +36,9 @@ import PartyMemberTagList from "../../components/templates/PartyMemberTagList";
 import Meta from "../../components/templates/Meta";
 import getSheetLink from "../../utils/getSheetLink";
 import { H3 } from "../../components/ui/Typography";
-import fetchSheet from "../../db/fetchSheet";
+import fetchSheetFromDb from "../../db/fetchSheetFromDb";
+import axios from "axios";
+import fetchSheet from "../../services/fetchSheet";
 
 /**
  * The page for a specific sheet
@@ -74,16 +76,14 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 	 * Refetch the data regularly
 	 */
 	useInterval(() => {
-		fetch("/api/" + sheetFields._id)
-			.then((res) => res.json())
-			.then((data) => {
-				if (
-					!deepEqual(items, data.items) ||
-					!deepEqual(name, data.name) ||
-					!deepEqual(members, data.members)
-				)
-					inventoryDispatch({ type: "sheet_update", data });
-			});
+		fetchSheet(sheetFields._id).then(({ data }) => {
+			if (
+				!deepEqual(items, data.items) ||
+				!deepEqual(name, data.name) ||
+				!deepEqual(members, data.members)
+			)
+				inventoryDispatch({ type: "sheet_update", data });
+		});
 	}, REFETCH_INTERVAL);
 
 	return (
@@ -218,7 +218,7 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 export const getServerSideProps: GetServerSideProps<InventorySheetFields> = async (
 	context
 ) => {
-	const sheetData = await fetchSheet(getUrlParam(context.params.sheetId));
+	const sheetData = await fetchSheetFromDb(getUrlParam(context.params.sheetId));
 	return {
 		props: sheetData,
 	};
