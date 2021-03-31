@@ -39,6 +39,11 @@ import { H3 } from "../../components/ui/Typography";
 import fetchSheetFromDb from "../../db/fetchSheetFromDb";
 import fetchSheet from "../../services/fetchSheet";
 import { Tag, TagLabel, TagLeftIcon } from "@chakra-ui/tag";
+import WelcomeDialog from "../../components/domain/SheetPage/Dialogs/WelcomeDialog";
+
+export interface SheetPageProps extends InventorySheetFields {
+	isNew?: boolean;
+}
 
 /**
  * The page for a specific sheet
@@ -49,7 +54,7 @@ import { Tag, TagLabel, TagLeftIcon } from "@chakra-ui/tag";
  * @param {string[]} sheetFields.members Members
  * @returns {React.ReactElement} Sheet component
  */
-const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
+const Sheet: React.FC<SheetPageProps> = ({ isNew = false, ...sheetFields }) => {
 	const [{ items, name, members, _id }, inventoryDispatch] = useReducer<
 		Reducer<InventorySheetState, InventorySheetStateAction>
 	>(inventoryReducer, {
@@ -59,6 +64,12 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 			from: new Date(),
 		},
 	});
+
+	useEffect(() => {
+		if (isNew) {
+			openDialog("welcome");
+		}
+	}, []);
 
 	useEffect(() => {
 		addToRememberedSheets({ _id, name, members });
@@ -211,6 +222,7 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 						<ItemDialog mode="edit" />
 						<FilterDialog />
 						<SheetOptionsDialog />
+						<WelcomeDialog />
 					</main>
 				</Box>
 			</SheetStateProvider>
@@ -231,7 +243,7 @@ export const getServerSideProps: GetServerSideProps<InventorySheetFields> = asyn
 ) => {
 	const sheetData = await fetchSheetFromDb(getUrlParam(context.params.sheetId));
 	return {
-		props: sheetData,
+		props: { ...sheetData, isNew: typeof context.query.new !== "undefined" },
 	};
 };
 

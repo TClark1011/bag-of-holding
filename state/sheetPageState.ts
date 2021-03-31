@@ -11,7 +11,8 @@ export type SheetDialogType =
 	| "item.new"
 	| "item.edit"
 	| "sheetOptions"
-	| "filter";
+	| "filter"
+	| "welcome";
 
 export type InventoryFilters = Record<FilterableItemProperty, string[]>;
 

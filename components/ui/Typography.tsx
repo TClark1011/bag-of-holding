@@ -1,5 +1,6 @@
 /* eslint-disable jsdoc/require-jsdoc */
-import { Heading, HeadingProps } from "@chakra-ui/layout";
+import { Heading, HeadingProps, Text, TextProps } from "@chakra-ui/layout";
+import { chakra } from "@chakra-ui/system";
 
 type HeadingComponent = React.FC<HeadingProps>;
 
@@ -19,4 +20,8 @@ export const H2: HeadingComponent = (props) => (
 
 export const H3: HeadingComponent = (props) => (
 	<Heading as="h3" fontSize="2xl" fontWeight={700} {...props} />
+);
+
+export const Paragraph: React.FC<TextProps> = (props) => (
+	<Text as="p" width="full" {...props} />
 );

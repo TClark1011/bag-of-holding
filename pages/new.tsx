@@ -29,7 +29,8 @@ const New: React.FC = () => {
 	useEffect(() => {
 		requestNewSheet()
 			.then((res) => {
-				router.replace(getSheetLink(res.data));
+				const newSheetUrl = getSheetLink(res.data);
+				router.replace(newSheetUrl + "?new", newSheetUrl);
 			})
 			.catch(() => {
 				turnOnError();

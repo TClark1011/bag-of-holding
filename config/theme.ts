@@ -16,22 +16,6 @@ const theme = extendTheme({
 	config: {
 		initialColorMode: "light",
 	},
-	textStyles: {
-		h1: {
-			fontSize: ["40px", "50px", "60px", "70px"],
-			fontWeight: "extrabold",
-			fontFamily: "coves",
-		},
-		//TODO: Need to buy the license for this (https://harvatt.house/store/coves-font) Before going commercial
-		h2: {
-			fontSize: getResponsiveValues("3xl"),
-			fontWeight: 300,
-		},
-		h3: {
-			fontSize: getResponsiveValues("2xl"),
-			fontWeight: 700,
-		},
-	},
 	fonts: {
 		heading: "Roboto, sans-serif",
 		body: "Roboto, sans-serif",
