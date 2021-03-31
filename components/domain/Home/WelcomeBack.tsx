@@ -1,9 +1,10 @@
-import { Box, BoxProps, Divider, Heading, SimpleGrid } from "@chakra-ui/layout";
+import { Box, BoxProps, Divider, SimpleGrid } from "@chakra-ui/layout";
 import { useBreakpointValue } from "@chakra-ui/media-query";
 import sort from "fast-sort";
 import RememberedSheet from "./RememberedSheet";
 import { useColorModeValue } from "@chakra-ui/color-mode";
 import useRememberedSheets from "../../../utils/useRememberedSheets";
+import { H3 } from "../../ui/Typography";
 
 /**
  * The 'welcome back' section in the homepage
@@ -39,9 +40,9 @@ const WelcomeBack: React.FC<BoxProps> = (props) => {
 		!!rememberedSheets.length && (
 			<Box {...props}>
 				<Divider backgroundColor={dividerColor} borderColor={dividerColor} />
-				<Heading textAlign="center" textStyle="h3" marginY="break">
+				<H3 marginY="break" textAlign="center">
 					Welcome Back
-				</Heading>
+				</H3>
 				<SimpleGrid columns={rememberedSheetCardColumns} spacing="break">
 					{sort(rememberedSheets)
 						.desc("lastAccessedAt")

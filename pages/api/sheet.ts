@@ -2,6 +2,9 @@ import { NextApiHandler } from "next";
 import SheetModel from "../../db/SheetModel";
 import OmitId from "../../utils/OmitId";
 import InventorySheetFields from "../../types/InventorySheetFields";
+import connectToMongoose from "../../utils/connectToMongoose";
+
+connectToMongoose();
 
 /**
  * Handle HTTP requests to the route
@@ -10,7 +13,7 @@ import InventorySheetFields from "../../types/InventorySheetFields";
  * @param {NextApiResponse} res The HTTP response object
  */
 const routeHandler: NextApiHandler = async (req, res) => {
-	if (req.method === "POST") {
+	if (req.method === "GET") {
 		const fields: OmitId<InventorySheetFields> = {
 			name: "New Sheet",
 			members: [],

@@ -1,5 +1,4 @@
 import { extendTheme, theme as defaultTheme } from "@chakra-ui/react";
-import { triggerAsyncId } from "node:async_hooks";
 
 /**
  * Generate array containing all the same values.

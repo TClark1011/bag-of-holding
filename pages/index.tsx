@@ -1,13 +1,4 @@
-import { Button } from "@chakra-ui/button";
-import {
-	Box,
-	Center,
-	Flex,
-	Heading,
-	HStack,
-	LinkBox,
-	VStack,
-} from "@chakra-ui/layout";
+import { Box, Center, Flex, HStack, VStack } from "@chakra-ui/layout";
 import { appDisplayTitle, appDomain } from "../constants/meta";
 import WelcomeBack from "../components/domain/Home/WelcomeBack";
 import BagOfHoldingIcon from "../components/icons/BagOfHoldingIcon";
@@ -19,6 +10,7 @@ import { HelpOutlineIcon, MailOutlineIcon } from "chakra-ui-ionicons";
 import IconLink from "../components/ui/IconLink";
 import ButtonLink from "../components/ui/ButtonLink";
 import { contactPageUrl, infoPageUrl } from "../constants/urls";
+import { H1, H2 } from "../components/ui/Typography";
 
 /**
  * Home component
@@ -64,17 +56,15 @@ const Home: React.FC = () => {
 								<BagOfHoldingIcon fill="white" boxSize={[40, 44, 52]} />
 							</Center>
 							{/* Main Title */}
-							<Heading textAlign="center" textStyle="h1" as="h1" width="full">
-								{appDisplayTitle}
-							</Heading>
-							<Heading textAlign="center" textStyle="h2" as="h2" width="full">
+							<H1 textAlign="center">{appDisplayTitle}</H1>
+							<H2 textAlign="center">
 								Track your party{"'"}s inventory, no matter what you play
-							</Heading>
+							</H2>
 							<Center>
 								<VStack spacing="break">
-									<LinkBox href="/new" as={Button} colorScheme="primary">
+									<ButtonLink href="/new" colorScheme="primary">
 										Get Started
-									</LinkBox>
+									</ButtonLink>
 									<ButtonLink href={infoPageUrl} variant="ghost" size="xs">
 										What is this?
 									</ButtonLink>

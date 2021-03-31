@@ -28,14 +28,15 @@ import { Input } from "@chakra-ui/input";
 import deepEqual from "deep-equal";
 import { appName } from "../../constants/meta";
 import FilterDialog from "../../components/domain/SheetPage/Dialogs/FilterDialog";
-import { useSheetPageState } from "../../state/sheetPageState";
 import InventorySheetTable from "../../components/domain/SheetPage/InventorySheetTable";
 import { addToRememberedSheets } from "../../utils/rememberSheets";
 import inventoryReducer from "../../state/inventoryReducer";
+import { useSheetPageState } from "../../state/sheetPageState";
 import { LightMode } from "@chakra-ui/color-mode";
 import PartyMemberTagList from "../../components/templates/PartyMemberTagList";
 import Meta from "../../components/templates/Meta";
 import getSheetLink from "../../utils/getSheetLink";
+import { H3 } from "../../components/ui/Typography";
 
 /**
  * The page for a specific sheet
@@ -180,9 +181,7 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 							<Center flexGrow={1}>
 								<Divider />
 							</Center>
-							<Heading
-								as="h3"
-								textStyle="h3"
+							<H3
 								fontWeight="300"
 								flexShrink={1}
 								textAlign="center"
@@ -190,7 +189,7 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 								paddingX="break"
 							>
 								Party Member Totals
-							</Heading>
+							</H3>
 							<Center flexGrow={1}>
 								<Divider />
 							</Center>
