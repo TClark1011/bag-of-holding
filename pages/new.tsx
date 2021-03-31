@@ -36,8 +36,7 @@ const New: React.FC = () => {
 			})
 			.catch(() => {
 				turnOnError();
-			})
-			.finally(() => console.log("(new) Finished fetching "));
+			});
 	}, []);
 
 	const screenHeight = use100vh();
