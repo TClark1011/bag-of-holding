@@ -21,6 +21,7 @@ import {
 } from "../../../contexts/InventoryStateContext";
 import SheetDialog from "../../../templates/SheetDialog";
 import faker from "faker";
+import itemValidation from "../../../../validation/itemValidation";
 
 export type ItemDialogMode = "edit" | "new";
 
@@ -125,7 +126,11 @@ const ItemDialog: React.FC<Props> = ({ mode }) => {
 			dialogType={("item." + mode) as SheetDialogType}
 			header={`${headingPrefix} Item`}
 		>
-			<Formik initialValues={initialFormValues} onSubmit={onSubmit}>
+			<Formik
+				initialValues={initialFormValues}
+				onSubmit={onSubmit}
+				validationSchema={itemValidation}
+			>
 				{({ handleSubmit, isSubmitting, setSubmitting }) => (
 					<>
 						<ModalBody>
