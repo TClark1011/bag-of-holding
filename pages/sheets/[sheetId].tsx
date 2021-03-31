@@ -117,12 +117,11 @@ const Sheet: React.FC<SheetPageProps> = ({ isNew = false, ...sheetFields }) => {
 							color="gray.50"
 							boxShadow="lg"
 						>
-							<Flex justify="space-between">
+							<Flex justify="space-between" marginBottom="group">
 								<Flex>
 									{/* Sheet Title */}
-									<Heading paddingBottom="md" marginRight={1}>
-										{name}
-									</Heading>
+									<Heading marginRight={1}>{name}</Heading>
+									{/* Sheet Options Button */}
 									<IconButton
 										aria-label="edit sheet settings"
 										icon={<CreateOutlineIcon boxSize={6} />}
@@ -131,6 +130,7 @@ const Sheet: React.FC<SheetPageProps> = ({ isNew = false, ...sheetFields }) => {
 										isRound
 									/>
 								</Flex>
+								{/* Color Mode Switch */}
 								<ColorModeSwitch useDarkModeColors />
 							</Flex>
 							<LightMode>

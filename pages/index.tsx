@@ -32,21 +32,21 @@ const Home: React.FC = () => {
 					position="absolute"
 				>
 					<HStack justify="flex-end">
-						<Box display="none">
-							<GitLink />
-							<IconLink
-								href={contactPageUrl}
-								aria-label="link to contact page"
-								icon={<MailOutlineIcon boxSize="icon" />}
-								variant="ghost"
-							/>
-							<IconLink
-								href={infoPageUrl}
-								aria-label="link to info page"
-								icon={<HelpOutlineIcon boxSize="icon" />}
-								variant="ghost"
-							/>
-						</Box>
+						<GitLink display="none" />
+						<IconLink
+							display="none"
+							href={contactPageUrl}
+							aria-label="link to contact page"
+							icon={<MailOutlineIcon boxSize="icon" />}
+							variant="ghost"
+						/>
+						<IconLink
+							display="none"
+							href={infoPageUrl}
+							aria-label="link to info page"
+							icon={<HelpOutlineIcon boxSize="icon" />}
+							variant="ghost"
+						/>
 					</HStack>
 					<ColorModeSwitch />
 				</Flex>
