@@ -32,19 +32,21 @@ const Home: React.FC = () => {
 					position="absolute"
 				>
 					<HStack justify="flex-end">
-						<GitLink />
-						<IconLink
-							href={contactPageUrl}
-							aria-label="link to contact page"
-							icon={<MailOutlineIcon boxSize="icon" />}
-							variant="ghost"
-						/>
-						<IconLink
-							href={infoPageUrl}
-							aria-label="link to info page"
-							icon={<HelpOutlineIcon boxSize="icon" />}
-							variant="ghost"
-						/>
+						<Box display="none">
+							<GitLink />
+							<IconLink
+								href={contactPageUrl}
+								aria-label="link to contact page"
+								icon={<MailOutlineIcon boxSize="icon" />}
+								variant="ghost"
+							/>
+							<IconLink
+								href={infoPageUrl}
+								aria-label="link to info page"
+								icon={<HelpOutlineIcon boxSize="icon" />}
+								variant="ghost"
+							/>
+						</Box>
 					</HStack>
 					<ColorModeSwitch />
 				</Flex>
@@ -65,13 +67,13 @@ const Home: React.FC = () => {
 									<ButtonLink href="/new" colorScheme="primary">
 										Get Started
 									</ButtonLink>
-									<ButtonLink href={infoPageUrl} variant="ghost" size="xs">
+									{/* <ButtonLink href={infoPageUrl} variant="ghost" size="xs">
 										What is this?
-									</ButtonLink>
+									</ButtonLink> */}
 								</VStack>
 							</Center>
 						</VStack>
-						<WelcomeBack />
+						<WelcomeBack display="none" />
 					</Box>
 				</Center>
 			</main>
