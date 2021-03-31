@@ -1,3 +1,4 @@
+import { REFETCH_INTERVAL } from "./../config/publicEnv";
 import { InventoryItemCreationFields } from "../types/InventoryItemFields";
 import produce from "immer";
 import { merge } from "merge-anything";
@@ -52,7 +53,7 @@ const inventoryReducer = (
 		produce(state, (draftState) => {
 			if (blockRefetch) {
 				draftState.blockRefetch = {
-					for: 4000,
+					for: REFETCH_INTERVAL + 1000,
 					from: new Date(),
 				};
 			}
