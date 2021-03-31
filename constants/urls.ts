@@ -4,4 +4,4 @@ export const homePageUrl = "/";
 export const sheetsUrlPrefix = "/sheets/";
 
 export const apiRootUrl = "/api";
-export const newSheetApiRoute = "/sheet";
+export const newSheetApiRoute = "/newSheet";

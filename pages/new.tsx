@@ -1,8 +1,6 @@
 import { Box, Center } from "@chakra-ui/layout";
-import axios from "axios";
 import { useEffect } from "react";
 import { use100vh } from "react-div-100vh";
-import { newSheetApiRoute } from "../constants/urls";
 import { useRouter } from "next/router";
 import getSheetLink from "../utils/getSheetLink";
 import { H3 } from "../components/ui/Typography";
@@ -14,6 +12,7 @@ import {
 	AlertIcon,
 	AlertTitle,
 } from "@chakra-ui/alert";
+import requestNewSheet from "../services/requestNewSheet";
 
 /**
  * Page to take user to when they want to make a new sheet.
@@ -28,9 +27,7 @@ const New: React.FC = () => {
 	const { errorHasOccurred, turnOnError } = useNewSheetPageState();
 
 	useEffect(() => {
-		console.log("Requesting new sheet");
-		axios
-			.get(newSheetApiRoute)
+		requestNewSheet()
 			.then((res) => {
 				router.replace(getSheetLink(res.data));
 			})
