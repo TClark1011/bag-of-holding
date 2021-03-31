@@ -17,7 +17,6 @@ import InventorySheetState, {
 } from "../../types/InventorySheetState";
 import getUrlParam from "../../utils/getUrlParam";
 import SheetStateProvider from "../../components/contexts/InventoryStateContext";
-import { fetchSheet } from "../../db/sheetServices";
 import { REFETCH_INTERVAL } from "../../config/publicEnv";
 import { GetServerSideProps } from "next";
 import SheetOptionsDialog from "../../components/domain/SheetPage/Dialogs/SheetOptionsDialog";
@@ -37,6 +36,7 @@ import PartyMemberTagList from "../../components/templates/PartyMemberTagList";
 import Meta from "../../components/templates/Meta";
 import getSheetLink from "../../utils/getSheetLink";
 import { H3 } from "../../components/ui/Typography";
+import fetchSheet from "../../db/fetchSheet";
 
 /**
  * The page for a specific sheet

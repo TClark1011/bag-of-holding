@@ -1,13 +1,14 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { InventorySheetStateAction } from "./../types/InventorySheetState";
-import InventorySheetState from "../types/InventorySheetState";
 import SheetModel from "./SheetModel";
 
 /**
  * Reducer for controlling database
  *
- * @param state
- * @param sheetId
- * @param action
+ * @param {string} sheetId The id of the sheet to
+ * update
+ * @param {object} action The action used to update
+ * the sheet
  */
 const dbReducer = async (
 	sheetId: string,

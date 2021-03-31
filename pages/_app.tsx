@@ -22,7 +22,6 @@ import Meta from "../components/templates/Meta";
 const MyApp = ({ Component, pageProps }: AppProps): React.ReactElement => (
 	<ChakraProvider theme={theme}>
 		<ColorModeScript initialColorMode={theme.config.initialColorMode} />
-
 		<Meta />
 		<Head>
 			<link rel="icon" href="/favicon.svg" key="favicon" />
