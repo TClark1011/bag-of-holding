@@ -37,7 +37,7 @@ export interface SheetPageState {
 	};
 }
 
-export const sheetPageState = createHookstate<SheetPageState>({
+const sheetPageState = createHookstate<SheetPageState>({
 	dialog: {
 		type: "item.new",
 		activeItem: {
@@ -277,3 +277,5 @@ export const useSheetPageState = () => {
 		},
 	};
 };
+
+export default sheetPageState;
