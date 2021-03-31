@@ -4,8 +4,16 @@ import axiosInstance from "../config/axiosInstance";
 import { sheetsUrlPrefix } from "../constants/urls";
 
 /**
- * @param _id
- * @param action
+ * Send a sheet-state related action to the server
+ * to be processed and acted upon by the database
+ * reducer.
+ *
+ * @param {string} _id The id of the sheet to be
+ * acted upon
+ * @param {InventorySheetStateAction} action The
+ * action to be sent to the server
+ * @returns {Promise<void | AxiosResponse<void>>} The
+ * resulting promise
  */
 const sendSheetAction = (
 	_id: string,
