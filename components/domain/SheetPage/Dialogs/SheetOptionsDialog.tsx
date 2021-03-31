@@ -1,5 +1,9 @@
 import { Button, IconButton } from "@chakra-ui/button";
-import { FormControl, FormLabel } from "@chakra-ui/form-control";
+import {
+	FormControl,
+	FormErrorMessage,
+	FormLabel,
+} from "@chakra-ui/form-control";
 import { Input } from "@chakra-ui/input";
 import { Divider, Flex, Text, VStack } from "@chakra-ui/layout";
 import { ModalBody, ModalFooter } from "@chakra-ui/modal";
@@ -13,6 +17,7 @@ import {
 import { RemoveIcon } from "chakra-ui-ionicons";
 import { useSheetPageState } from "../../../../state/sheetPageState";
 import SheetDialog from "../../../templates/SheetDialog";
+import sheetOptionsValidation from "../../../../validation/sheetOptionsValidation";
 
 /**
  * Component for sheet settings dialog
@@ -65,15 +70,15 @@ const SheetOptionsDialog: React.FC = () => {
 	///TODO: Confirmation when deleting a member
 	return (
 		<SheetDialog dialogType="sheetOptions" header="Sheet Options">
-			<Formik onSubmit={onSubmit} initialValues={{ name, members }}>
+			<Formik
+				onSubmit={onSubmit}
+				initialValues={{ name, members }}
+				validationSchema={sheetOptionsValidation}
+			>
 				{({ handleSubmit, isSubmitting, values }) => (
 					<>
 						<ModalBody>
-							<InputControl
-								name="name"
-								label="Name"
-								inputProps={{ marginBottom: "break" }}
-							/>
+							<InputControl name="name" label="Name" marginBottom="break" />
 							<Text fontWeight="bold" textAlign="center">
 								Members
 							</Text>
@@ -83,34 +88,41 @@ const SheetOptionsDialog: React.FC = () => {
 									{(helpers) => (
 										<>
 											{values.members.map((item, index) => (
-												<Flex key={index} width="full" alignItems="flex-end">
-													<Field name={"members." + index}>
-														{({ field }) => (
-															<>
-																<FormControl
-																	name={"members." + index}
-																	paddingRight="group"
-																>
-																	<FormLabel>Member {index + 1}</FormLabel>
-																	<Input {...field} />
-																</FormControl>
-															</>
-														)}
-													</Field>
-													<IconButton
-														colorScheme="error"
-														onClick={() => helpers.remove(index)}
-														aria-label={"delete member " + (index + 1)}
-														icon={<RemoveIcon />}
-														borderRadius="full"
-														variant="outline"
-													/>
-												</Flex>
+												<Field name={"members." + index} key={index}>
+													{({ field, form }) => (
+														<FormControl
+															name={"members." + index}
+															isInvalid={
+																form.errors.members &&
+																form.touched.members &&
+																form.errors.members[index] &&
+																form.touched.members[index]
+															}
+														>
+															<FormLabel>Member {index + 1}</FormLabel>
+															<Flex>
+																<Input {...field} marginRight="group" />
+																<IconButton
+																	colorScheme="error"
+																	onClick={() => helpers.remove(index)}
+																	aria-label={"delete member " + (index + 1)}
+																	icon={<RemoveIcon />}
+																	borderRadius="full"
+																	variant="outline"
+																/>
+															</Flex>
+															<FormErrorMessage>
+																{form.errors.members &&
+																	form.errors.members[index]}
+															</FormErrorMessage>
+														</FormControl>
+													)}
+												</Field>
 											))}
 											<Button
 												width="full"
 												size="sm"
-												colorScheme="primary"
+												colorScheme="secondary"
 												onClick={() => {
 													helpers.push("");
 												}}
@@ -125,7 +137,7 @@ const SheetOptionsDialog: React.FC = () => {
 						<ModalFooter>
 							<Flex justify="flex-end">
 								<Button
-									colorScheme="secondary"
+									colorScheme="primary"
 									onClick={() => handleSubmit()}
 									isLoading={isSubmitting}
 								>
