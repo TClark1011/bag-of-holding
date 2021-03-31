@@ -40,17 +40,13 @@ const handleGET: NextApiHandler = async (req, res) => {
 const handlePATCH: NextApiHandler = async (req, res) => {
 	const action = JSON.parse(req.body);
 
-	// const currentState = await fetchSheet(getSheetId(req));
-	// const newState = inventoryStateReducer(currentState, action);
-	// updateSheet(newState);
-
 	dbReducer(getSheetId(req), action);
 
 	res.status(200).json({});
 };
 
 /**
- * Handle GET requests to the route
+ * Handle HTTP requests to the route
  *
  * @param {NextApiRequest} req The HTTP request object
  * @param {NextApiResponse} res The HTTP response object
@@ -61,8 +57,10 @@ const routeHandler: NextApiHandler = (req, res) => {
 			handlePATCH(req, res);
 			break;
 		case "GET":
-		default:
 			handleGET(req, res);
+			break;
+		default:
+			res.status(400).send("Invalid request method");
 	}
 };
 
