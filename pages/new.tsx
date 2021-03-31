@@ -14,7 +14,6 @@ import {
 	AlertIcon,
 	AlertTitle,
 } from "@chakra-ui/alert";
-import { AlertCircleOutlineIcon } from "chakra-ui-ionicons";
 
 /**
  * Page to take user to when they want to make a new sheet.
