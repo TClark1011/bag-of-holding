@@ -32,7 +32,6 @@ const New: React.FC = () => {
 		axios
 			.get(newSheetApiRoute)
 			.then((res) => {
-				throw Error();
 				router.replace(getSheetLink(res.data));
 			})
 			.catch(() => {
