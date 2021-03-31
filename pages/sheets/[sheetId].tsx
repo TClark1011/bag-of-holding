@@ -68,6 +68,7 @@ const Sheet: React.FC<SheetPageProps> = ({ isNew = false, ...sheetFields }) => {
 	useEffect(() => {
 		if (isNew) {
 			openDialog("welcome");
+			//? Open the welcome dialog if the sheet is new
 		}
 	}, []);
 
