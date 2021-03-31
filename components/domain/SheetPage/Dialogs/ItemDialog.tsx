@@ -139,7 +139,6 @@ const ItemDialog: React.FC<Props> = ({ mode }) => {
 									name="name"
 									label="Name"
 									inputProps={{ placeholder: "Name" }}
-									isRequired
 								/>
 								<InputControl
 									name="category"
