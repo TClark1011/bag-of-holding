@@ -20,7 +20,7 @@ import SheetStateProvider from "../../components/contexts/InventoryStateContext"
 import { REFETCH_INTERVAL } from "../../config/publicEnv";
 import { GetServerSideProps } from "next";
 import SheetOptionsDialog from "../../components/domain/SheetPage/Dialogs/SheetOptionsDialog";
-import { CreateOutlineIcon } from "chakra-ui-ionicons";
+import { AddIcon, CreateOutlineIcon } from "chakra-ui-ionicons";
 import MemberCarryWeightTable from "../../components/domain/SheetPage/MemberCarryWeightTable";
 import ColorModeSwitch from "../../components/ui/ColorModeSwitch";
 import { Input } from "@chakra-ui/input";
@@ -37,8 +37,8 @@ import Meta from "../../components/templates/Meta";
 import getSheetLink from "../../utils/getSheetLink";
 import { H3 } from "../../components/ui/Typography";
 import fetchSheetFromDb from "../../db/fetchSheetFromDb";
-import axios from "axios";
 import fetchSheet from "../../services/fetchSheet";
+import { Tag, TagLabel, TagLeftIcon } from "@chakra-ui/tag";
 
 /**
  * The page for a specific sheet
@@ -122,7 +122,18 @@ const Sheet: React.FC<InventorySheetFields> = (sheetFields) => {
 								<ColorModeSwitch useDarkModeColors />
 							</Flex>
 							<LightMode>
-								<PartyMemberTagList members={members} />
+								{members.length ? (
+									<PartyMemberTagList members={members} />
+								) : (
+									<Tag
+										_hover={{ backgroundColor: "gray.200" }}
+										cursor="pointer"
+										onClick={() => openDialog("sheetOptions")}
+									>
+										<TagLeftIcon as={AddIcon} />
+										<TagLabel>Add Members</TagLabel>
+									</Tag>
+								)}
 							</LightMode>
 						</Box>
 						<Stack
