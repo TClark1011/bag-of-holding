@@ -1,5 +1,5 @@
 import { Box, Center, Flex, HStack, VStack } from "@chakra-ui/layout";
-import { appDisplayTitle, appDomain, appSlogan } from "../constants/meta";
+import { appDisplayTitle, appDomain, appSlogan } from "../constants/branding";
 import WelcomeBack from "../components/domain/Home/WelcomeBack";
 import BagOfHoldingIcon from "../components/icons/BagOfHoldingIcon";
 import { use100vh } from "react-div-100vh";

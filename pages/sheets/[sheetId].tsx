@@ -25,7 +25,7 @@ import MemberCarryWeightTable from "../../components/domain/SheetPage/MemberCarr
 import ColorModeSwitch from "../../components/ui/ColorModeSwitch";
 import { Input } from "@chakra-ui/input";
 import deepEqual from "deep-equal";
-import { appName } from "../../constants/meta";
+import { appName } from "../../constants/branding";
 import FilterDialog from "../../components/domain/SheetPage/Dialogs/FilterDialog";
 import InventorySheetTable from "../../components/domain/SheetPage/InventorySheetTable";
 import { addToRememberedSheets } from "../../utils/rememberSheets";

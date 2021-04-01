@@ -1,4 +1,4 @@
-import { appDomain } from "../constants/meta";
+import { appDomain } from "../constants/branding";
 import { sheetsUrlPrefix } from "../constants/urls";
 
 /**
