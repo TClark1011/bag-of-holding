@@ -1,5 +1,5 @@
 import { Box, Center, Flex, HStack, VStack } from "@chakra-ui/layout";
-import { appDisplayTitle, appDomain } from "../constants/meta";
+import { appDisplayTitle, appDomain, appSlogan } from "../constants/meta";
 import WelcomeBack from "../components/domain/Home/WelcomeBack";
 import BagOfHoldingIcon from "../components/icons/BagOfHoldingIcon";
 import { use100vh } from "react-div-100vh";
@@ -59,9 +59,7 @@ const Home: React.FC = () => {
 							</Center>
 							{/* Main Title */}
 							<H1 textAlign="center">{appDisplayTitle}</H1>
-							<H2 textAlign="center">
-								Track your party{"'"}s inventory, no matter what you play
-							</H2>
+							<H2 textAlign="center">{appSlogan}</H2>
 							<Center>
 								<VStack spacing="break">
 									<ButtonLink href="/new" colorScheme="primary">
