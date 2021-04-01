@@ -26,7 +26,7 @@ const WelcomeDialog: React.FC = () => {
 					<Paragraph>
 						We recommend that your first priority should be to rename your sheet
 						and add some party members by clicking the icon to the right of the
-						sheet name in the top right corner.
+						sheet name in the top left corner.
 					</Paragraph>
 					<Paragraph>
 						You can share this page with other players by just sending them the
