@@ -21,7 +21,11 @@ import {
 } from "../../../contexts/InventoryStateContext";
 import SheetDialog from "../../../templates/SheetDialog";
 import faker from "faker";
-import itemValidation from "../../../../validation/itemValidation";
+import itemValidation, {
+	descriptionLength,
+	referenceLength,
+} from "../../../../validation/itemValidation";
+import { defaultFieldLength } from "../../../../constants/validationConstants";
 
 export type ItemDialogMode = "edit" | "new";
 
@@ -138,17 +142,26 @@ const ItemDialog: React.FC<Props> = ({ mode }) => {
 								<InputControl
 									name="name"
 									label="Name"
-									inputProps={{ placeholder: "Name" }}
+									inputProps={{
+										placeholder: "Name",
+										maxLength: defaultFieldLength,
+									}}
 								/>
 								<InputControl
 									name="category"
 									label="Category"
-									inputProps={{ placeholder: "eg; 'Weapon' or 'Survival'" }}
+									inputProps={{
+										placeholder: "eg; 'Weapon' or 'Survival'",
+										maxLength: defaultFieldLength,
+									}}
 								/>
 								<TextareaControl
 									name="description"
 									label="Description"
-									textareaProps={{ placeholder: "Description of the item" }}
+									textareaProps={{
+										placeholder: "Description of the item",
+										maxLength: descriptionLength,
+									}}
 								/>
 								<SimpleGrid columns={3} spacing="group">
 									<NumberInputControl
@@ -178,7 +191,10 @@ const ItemDialog: React.FC<Props> = ({ mode }) => {
 								<InputControl
 									name="reference"
 									label="Reference"
-									inputProps={{ placeholder: "Link to more information" }}
+									inputProps={{
+										placeholder: "Link to more information",
+										maxLength: referenceLength,
+									}}
 								/>
 							</VStack>
 						</ModalBody>

@@ -18,6 +18,7 @@ import { RemoveIcon } from "chakra-ui-ionicons";
 import { useSheetPageState } from "../../../../state/sheetPageState";
 import SheetDialog from "../../../templates/SheetDialog";
 import sheetOptionsValidation from "../../../../validation/sheetOptionsValidation";
+import { defaultFieldLength } from "../../../../constants/validationConstants";
 
 /**
  * Component for sheet settings dialog
@@ -78,7 +79,12 @@ const SheetOptionsDialog: React.FC = () => {
 				{({ handleSubmit, isSubmitting, values }) => (
 					<>
 						<ModalBody>
-							<InputControl name="name" label="Name" marginBottom="break" />
+							<InputControl
+								name="name"
+								label="Name"
+								marginBottom="break"
+								inputProps={{ maxLength: defaultFieldLength }}
+							/>
 							<Text fontWeight="bold" textAlign="center">
 								Members
 							</Text>
@@ -101,7 +107,11 @@ const SheetOptionsDialog: React.FC = () => {
 														>
 															<FormLabel>Member {index + 1}</FormLabel>
 															<Flex>
-																<Input {...field} marginRight="group" />
+																<Input
+																	{...field}
+																	marginRight="group"
+																	maxLength={defaultFieldLength}
+																/>
 																<IconButton
 																	colorScheme="error"
 																	onClick={() => helpers.remove(index)}
