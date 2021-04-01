@@ -138,7 +138,7 @@ const Sheet: React.FC<SheetPageProps> = ({ isNew = false, ...sheetFields }) => {
 									<PartyMemberTagList members={members} />
 								) : (
 									<Tag
-										_hover={{ backgroundColor: "gray.200" }}
+										_hover={{ backgroundColor: "gray.300" }}
 										cursor="pointer"
 										onClick={() => openDialog("sheetOptions")}
 									>
