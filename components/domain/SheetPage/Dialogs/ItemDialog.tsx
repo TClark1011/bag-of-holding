@@ -224,7 +224,7 @@ const ItemDialog: React.FC<Props> = ({ mode }) => {
 									<Button
 										colorScheme="error"
 										onClick={() => onDelete(setSubmitting)}
-										isLoading={isSubmitting}
+										isDisabled={isSubmitting}
 									>
 										Delete
 									</Button>
