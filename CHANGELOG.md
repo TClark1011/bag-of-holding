@@ -12,6 +12,12 @@
 
 ### Bug Fixes -->
 
+## Version 1.1.0
+
+### Backend
+
+- MongoDB sheet document version fields now increment when sheets are edited
+
 ## Version 1.0.1
 
 ### Features
