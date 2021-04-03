@@ -1,5 +1,5 @@
 import InventorySheetFields from "../types/InventorySheetFields";
-import connectToMongoose from "../utils/connectToMongoose";
+import connectToMongoose from "./connectToMongoose";
 import stringifyCopy from "../utils/stringifyCopy";
 import SheetModel from "./SheetModel";
 

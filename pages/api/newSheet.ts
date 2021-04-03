@@ -2,7 +2,7 @@ import { NextApiHandler } from "next";
 import SheetModel from "../../db/SheetModel";
 import OmitId from "../../utils/OmitId";
 import InventorySheetFields from "../../types/InventorySheetFields";
-import connectToMongoose from "../../utils/connectToMongoose";
+import connectToMongoose from "../../db/connectToMongoose";
 
 connectToMongoose();
 
