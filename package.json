@@ -14,6 +14,7 @@
 		"@fontsource/roboto": "^4.2.2",
 		"@hookstate/core": "^3.0.6",
 		"@lukeboyle/array-item-toggle": "^1.0.2",
+		"array-union": "^3.0.1",
 		"axios": "^0.21.1",
 		"chakra-ui-ionicons": "^0.3.3",
 		"code-to-title": "^1.1.1",
