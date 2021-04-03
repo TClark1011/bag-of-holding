@@ -24,6 +24,7 @@ import { Link, Text } from "@chakra-ui/layout";
 import { useSheetPageState } from "../../../state/sheetPageState";
 import { useInventoryState } from "../../contexts/InventoryStateContext";
 import { Tooltip } from "@chakra-ui/tooltip";
+import isUrl from "is-url-superb";
 
 const col4Display = ["none", "table-cell"];
 const col5Display = ["none", "none", "table-cell"];
@@ -164,7 +165,7 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 						_hover={{ backgroundColor: hoverBg }}
 					>
 						<TableCell textAlign="left">
-							{item.reference ? (
+							{item.reference && isUrl(item.reference) ? (
 								<Link
 									href={item.reference}
 									isExternal
