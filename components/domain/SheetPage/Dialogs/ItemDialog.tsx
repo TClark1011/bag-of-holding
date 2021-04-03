@@ -2,7 +2,7 @@ import { Button } from "@chakra-ui/button";
 import { Box, Flex, List, SimpleGrid, VStack } from "@chakra-ui/layout";
 import { ModalBody, ModalFooter } from "@chakra-ui/modal";
 import codeToTitle from "code-to-title";
-import { Field, FieldProps, Formik } from "formik";
+import { Formik } from "formik";
 import {
 	InputControl,
 	NumberInputControl,
@@ -27,8 +27,6 @@ import itemValidation, {
 } from "../../../../validation/itemValidation";
 import { defaultFieldLength } from "../../../../constants/validationConstants";
 import { useMemo } from "react";
-import { FormControl, FormLabel } from "@chakra-ui/form-control";
-import { Input } from "@chakra-ui/input";
 
 export type ItemDialogMode = "edit" | "new";
 
@@ -130,8 +128,6 @@ const ItemDialog: React.FC<Props> = ({ mode }) => {
 	};
 
 	const headingPrefix = mode === "new" ? "Create" : codeToTitle(mode);
-
-	//TODO Form Validation
 	return (
 		<SheetDialog
 			dialogType={("item." + mode) as SheetDialogType}
@@ -176,25 +172,6 @@ const ItemDialog: React.FC<Props> = ({ mode }) => {
 										)}
 									</List>
 								</Box>
-								{/* <Field name="catgory">
-									{({ field, form }: FieldProps) => (
-										<FormControl
-											isInvalid={
-												!!form.errors.category && !!form.touched.category
-											}
-										>
-											<FormLabel htmlFor="category">Category</FormLabel>
-											<Input {...field} placeholder="Item Category" />
-											<Box>
-												<List>
-													{categoryAutocompleteItems.filter((item) =>
-														item.includes(field.value)
-													)}
-												</List>
-											</Box>
-										</FormControl>
-									)}
-								</Field> */}
 								<TextareaControl
 									name="description"
 									label="Description"
