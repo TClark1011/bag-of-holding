@@ -6,6 +6,7 @@ import InventoryItemFields, {
 } from "../types/InventoryItemFields";
 import { createState as createHookstate, useHookstate } from "@hookstate/core";
 import toggleArrayItem from "@lukeboyle/array-item-toggle";
+import arrayUnion from "array-union";
 
 export type SheetDialogType =
 	| "item.new"
@@ -170,6 +171,17 @@ export const useSheetPageState = () => {
 
 			return result;
 		},
+
+		/**
+		 * Fetch all the different values of item categories in
+		 * the inventory
+		 *
+		 * @param {InventoryItemFields[]} items The inventory items
+		 * @returns {string[]} An array of all the unique category
+		 * values
+		 */
+		getUniqueCategories: (items: InventoryItemFields[]) =>
+			arrayUnion(items.map((item) => item.category)).filter((item) => !!item),
 
 		//# ACTIONS
 		/**

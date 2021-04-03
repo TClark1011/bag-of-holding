@@ -26,6 +26,7 @@ import itemValidation, {
 	referenceLength,
 } from "../../../../validation/itemValidation";
 import { defaultFieldLength } from "../../../../constants/validationConstants";
+import { useMemo } from "react";
 
 export type ItemDialogMode = "edit" | "new";
 
@@ -44,7 +45,7 @@ interface Props {
 const ItemDialog: React.FC<Props> = ({ mode }) => {
 	const inEditMode = mode === "edit";
 
-	const { activeItem, closeDialog } = useSheetPageState();
+	const { activeItem, closeDialog, getUniqueCategories } = useSheetPageState();
 
 	const initialFormValues: InventoryItemCreationFields = inEditMode
 		? activeItem
@@ -62,7 +63,16 @@ const ItemDialog: React.FC<Props> = ({ mode }) => {
 
 	const dispatch = useInventoryStateDispatch();
 
-	const { members } = useInventoryState();
+	const { members, items } = useInventoryState();
+
+	// const categoryAutocompleteItems = useMemo(
+	// 	() =>
+	// 		getUniqueCategories(items).map((item) => ({
+	// 			label: item,
+	// 			value: item,
+	// 		})),
+	// 	[items]
+	// );
 
 	/**
 	 * Handle the submitting of the new item form
