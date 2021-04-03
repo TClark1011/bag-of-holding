@@ -14,12 +14,13 @@ import InventoryItemFields, {
 import {
 	ArrowDownIcon,
 	ArrowUpIcon,
+	BookOutlineIcon,
 	FilterOutlineIcon,
 } from "chakra-ui-ionicons";
 import TableCell from "../../ui/TableCell";
 import { Button, IconButton } from "@chakra-ui/button";
 import TableFilter from "./TableFilter";
-import { Text } from "@chakra-ui/layout";
+import { Link, Text } from "@chakra-ui/layout";
 import { useSheetPageState } from "../../../state/sheetPageState";
 import { useInventoryState } from "../../contexts/InventoryStateContext";
 import { Tooltip } from "@chakra-ui/tooltip";
@@ -162,7 +163,19 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 						cursor="pointer"
 						_hover={{ backgroundColor: hoverBg }}
 					>
-						<TableCell textAlign="left">{item.name}</TableCell>
+						<TableCell textAlign="left">
+							{item.reference ? (
+								<Link
+									href={item.reference}
+									isExternal
+									onClick={(e) => e.stopPropagation()}
+								>
+									{item.name} <BookOutlineIcon marginLeft={1} />
+								</Link>
+							) : (
+								item.name
+							)}
+						</TableCell>
 						<TableCell>{item.quantity}</TableCell>
 						<TableCell>{item.weight * item.quantity}</TableCell>
 						<TableCell display={col4Display}>
