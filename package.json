@@ -25,6 +25,7 @@
 		"formik-chakra-ui": "^1.4.6",
 		"framer-motion": "3.10.6",
 		"immer": "^9.0.0",
+		"is-url-superb": "^5.0.0",
 		"merge-anything": "^4.0.1",
 		"mongoose": "^5.12.1",
 		"next": "^10.1.1",
