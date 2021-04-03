@@ -6,7 +6,8 @@ import InventoryItemFields, {
 } from "../types/InventoryItemFields";
 import { createState as createHookstate, useHookstate } from "@hookstate/core";
 import toggleArrayItem from "@lukeboyle/array-item-toggle";
-import arrayUnion from "array-union";
+// import arrayUnion from "array-union";
+import unique from "uniq";
 
 export type SheetDialogType =
 	| "item.new"
@@ -181,7 +182,7 @@ export const useSheetPageState = () => {
 		 * values
 		 */
 		getUniqueCategories: (items: InventoryItemFields[]) =>
-			arrayUnion(items.map((item) => item.category)).filter((item) => !!item),
+			unique(items.map((item) => item.category)).filter((item) => !!item),
 
 		//# ACTIONS
 		/**

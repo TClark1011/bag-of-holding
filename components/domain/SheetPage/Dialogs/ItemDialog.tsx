@@ -1,8 +1,8 @@
 import { Button } from "@chakra-ui/button";
-import { Flex, SimpleGrid, VStack } from "@chakra-ui/layout";
+import { Box, Flex, List, SimpleGrid, VStack } from "@chakra-ui/layout";
 import { ModalBody, ModalFooter } from "@chakra-ui/modal";
 import codeToTitle from "code-to-title";
-import { Formik } from "formik";
+import { Field, FieldProps, Formik } from "formik";
 import {
 	InputControl,
 	NumberInputControl,
@@ -27,6 +27,8 @@ import itemValidation, {
 } from "../../../../validation/itemValidation";
 import { defaultFieldLength } from "../../../../constants/validationConstants";
 import { useMemo } from "react";
+import { FormControl, FormLabel } from "@chakra-ui/form-control";
+import { Input } from "@chakra-ui/input";
 
 export type ItemDialogMode = "edit" | "new";
 
@@ -65,14 +67,9 @@ const ItemDialog: React.FC<Props> = ({ mode }) => {
 
 	const { members, items } = useInventoryState();
 
-	// const categoryAutocompleteItems = useMemo(
-	// 	() =>
-	// 		getUniqueCategories(items).map((item) => ({
-	// 			label: item,
-	// 			value: item,
-	// 		})),
-	// 	[items]
-	// );
+	const categoryAutocompleteItems = useMemo(() => getUniqueCategories(items), [
+		items,
+	]);
 
 	/**
 	 * Handle the submitting of the new item form
@@ -145,7 +142,7 @@ const ItemDialog: React.FC<Props> = ({ mode }) => {
 				onSubmit={onSubmit}
 				validationSchema={itemValidation}
 			>
-				{({ handleSubmit, isSubmitting, setSubmitting }) => (
+				{({ handleSubmit, isSubmitting, setSubmitting, values }) => (
 					<>
 						<ModalBody>
 							<VStack spacing="group">
@@ -163,8 +160,41 @@ const ItemDialog: React.FC<Props> = ({ mode }) => {
 									inputProps={{
 										placeholder: "eg; 'Weapon' or 'Survival'",
 										maxLength: defaultFieldLength,
+										list: "test",
+										autoComplete: "off",
 									}}
 								/>
+								<datalist id="test">
+									{categoryAutocompleteItems.map((item) => (
+										<option value={item} key={item} />
+									))}
+								</datalist>
+								<Box>
+									<List>
+										{categoryAutocompleteItems.filter((item) =>
+											item.includes(values.category)
+										)}
+									</List>
+								</Box>
+								{/* <Field name="catgory">
+									{({ field, form }: FieldProps) => (
+										<FormControl
+											isInvalid={
+												!!form.errors.category && !!form.touched.category
+											}
+										>
+											<FormLabel htmlFor="category">Category</FormLabel>
+											<Input {...field} placeholder="Item Category" />
+											<Box>
+												<List>
+													{categoryAutocompleteItems.filter((item) =>
+														item.includes(field.value)
+													)}
+												</List>
+											</Box>
+										</FormControl>
+									)}
+								</Field> */}
 								<TextareaControl
 									name="description"
 									label="Description"
