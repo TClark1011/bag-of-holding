@@ -50,7 +50,7 @@ const ItemDialog: React.FC<Props> = ({ mode }) => {
 	const initialFormValues: InventoryItemCreationFields = inEditMode
 		? activeItem
 		: {
-			_id: faker.random.uuid(),
+			_id: faker.datatype.uuid(),
 			name: "",
 			quantity: 1,
 			value: 0,
