@@ -5,12 +5,17 @@
 ## Version *VERSION NUMBER*
 
 ### Features
-* features *
+* new/altered features *
 
 ### Backend
 * non user-facing stuff *
 
-### Bug Fixes -->
+### Bug Fixes
+* bug fixes *
+
+### Documentation
+* changes to documentation *
+-->
 
 ## Version 1.0.2
 
@@ -18,10 +23,15 @@
 
 - MongoDB sheet document version fields now increment when sheets are edited
 
-### Other
+### Documentation
 
 - Replaced template 'README.md' content with custom content
 - Added required MIT license documentation
+- Created `/docs` folder for storing documentation files
+- Created`ENV.md` file documenting use of environment variables
+- Created `FOLDER_STRUCTURE.md` file documenting codebase folder structure
+- Created `API.md` file providing basic documentation of API routes
+
 ## Version 1.0.1
 
 ### Features
