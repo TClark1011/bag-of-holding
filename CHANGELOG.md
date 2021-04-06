@@ -12,12 +12,16 @@
 
 ### Bug Fixes -->
 
-## Version 1.1.0
+## Version 1.0.2
 
 ### Backend
 
 - MongoDB sheet document version fields now increment when sheets are edited
 
+### Other
+
+- Replaced template 'README.md' content with custom content
+- Added required MIT license documentation
 ## Version 1.0.1
 
 ### Features
