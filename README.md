@@ -6,6 +6,8 @@ Bag of Holding is a web app that lets all the players in a  tabletop RPG session
 
 [Live Site](https://www.bagofholding.cloud/)
 
+![](/public/ogImages/ogSheet.png?raw=true)
+
 **Stack:** Bag of Holding is built primarily using the following technologies:
 
 - Typescript
