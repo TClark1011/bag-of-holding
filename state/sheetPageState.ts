@@ -98,6 +98,7 @@ export const useSheetPageState = () => {
 			(item) =>
 				sorting.property === "quantity" || sorting.property === "weight"
 					? (item[sorting.property] as number) * item.quantity
+					//? If 'quantity' or 'weight' are being sorted by, multiply them by the quantity
 					: item[sorting.property],
 			(item) => item.name,
 			//? We add a second layer of sorting in the name property to ensure consistency when duplicate values exist in the same column
