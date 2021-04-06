@@ -28,3 +28,7 @@ How to install and locally host your own installation of Bag of Holding:
 ### Configuration
 
 - **Fetch Intervals:** By default, inventory sheets will request new data from the server once every 30000 milliseconds. The regularity of this can be customized. To do this, add `NEXT_PUBLIC_REFETCH_INTERVAL=*desired refetch intervals in milliseconds*`
+
+## License
+
+MIT
