@@ -11,6 +11,13 @@ import IconLink from "../components/ui/IconLink";
 import ButtonLink from "../components/ui/ButtonLink";
 import { contactPageUrl, infoPageUrl } from "../constants/urls";
 import { H1, H2 } from "../components/ui/Typography";
+import { testIdGeneratorFactory } from "../utils/testUtils";
+
+const getTestIds = testIdGeneratorFactory("Home");
+
+export const homePageTestIds = {
+	logo: "Logo",
+};
 
 /**
  * Home component
@@ -55,7 +62,11 @@ const Home: React.FC = () => {
 					<Box>
 						<VStack spacing="break" marginBottom="break">
 							<Center>
-								<BagOfHoldingIcon fill="white" boxSize={[40, 44, 52]} />
+								<BagOfHoldingIcon
+									fill="white"
+									boxSize={[40, 44, 52]}
+									data-testid={homePageTestIds.logo}
+								/>
 							</Center>
 							{/* Main Title */}
 							<H1 textAlign="center">{appDisplayTitle}</H1>
