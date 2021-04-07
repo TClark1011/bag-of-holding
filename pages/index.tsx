@@ -13,10 +13,13 @@ import { contactPageUrl, infoPageUrl } from "../constants/urls";
 import { H1, H2 } from "../components/ui/Typography";
 import { testIdGeneratorFactory } from "../utils/testUtils";
 
-const getTestIds = testIdGeneratorFactory("Home");
+const getTestId = testIdGeneratorFactory("Home");
 
 export const homePageTestIds = {
-	logo: "Logo",
+	logo: getTestId("Logo"),
+	gitLink: getTestId("GitLink"),
+	contactLink: getTestId("ContactLink"),
+	infoLink: getTestId("InfoLink"),
 };
 
 /**
@@ -39,13 +42,14 @@ const Home: React.FC = () => {
 					position="absolute"
 				>
 					<HStack justify="flex-end">
-						<GitLink display="none" />
+						<GitLink data-testid={homePageTestIds.gitLink} />
 						<IconLink
 							display="none"
 							href={contactPageUrl}
 							aria-label="link to contact page"
 							icon={<MailOutlineIcon boxSize="icon" />}
 							variant="ghost"
+							data-testid={homePageTestIds.contactLink}
 						/>
 						<IconLink
 							display="none"
@@ -53,6 +57,7 @@ const Home: React.FC = () => {
 							aria-label="link to info page"
 							icon={<HelpOutlineIcon boxSize="icon" />}
 							variant="ghost"
+							data-testid={homePageTestIds.infoLink}
 						/>
 					</HStack>
 					<ColorModeSwitch />
@@ -76,9 +81,9 @@ const Home: React.FC = () => {
 									<ButtonLink href="/new" colorScheme="primary">
 										Get Started
 									</ButtonLink>
-									{/* <ButtonLink href={infoPageUrl} variant="ghost" size="xs">
+									<ButtonLink href={infoPageUrl} variant="ghost" size="xs">
 										What is this?
-									</ButtonLink> */}
+									</ButtonLink>
 								</VStack>
 							</Center>
 						</VStack>

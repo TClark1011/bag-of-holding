@@ -8,6 +8,7 @@ test("Elements render", () => {
 		renderTest(<Home />);
 	});
 	expect(screen.getByText("Get Started")).toBeInTheDocument();
+	expect(screen.getByText("What is this?")).toBeInTheDocument();
 	expect(screen.getByText(appSlogan)).toBeInTheDocument();
 	expect(screen.getByText(appDisplayTitle)).toBeInTheDocument();
 
