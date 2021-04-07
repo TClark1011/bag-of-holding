@@ -19,6 +19,10 @@
 
 ## Version 1.0.2
 
+### Features
+
+- Added link to github repository on home page
+
 ### Backend
 
 - MongoDB sheet document version fields now increment when sheets are edited
