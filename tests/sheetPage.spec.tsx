@@ -4,7 +4,7 @@ import React from "react";
 import { inventoryTableTestIds } from "../components/domain/SheetPage/InventorySheetTable";
 import { basicSheetFixture } from "../fixtures/sheetFixtures";
 import Sheet, { sheetPageTestIds } from "../pages/sheets/[sheetId]";
-import { renderTest } from "../utils/testUtils";
+import { checkTestIdsRender, renderTest } from "../utils/testUtils";
 
 const basicSheetJsx = <Sheet {...basicSheetFixture} />;
 
@@ -17,11 +17,7 @@ describe("Elements render", () => {
 			renderTest(<Sheet _id={_id} name={name} members={[]} items={[]} />);
 		});
 
-		Object.values({ ...inventoryTableTestIds, ...sheetPageTestIds }).forEach(
-			(testId) => {
-				expect(screen.getByTestId(testId)).toBeInTheDocument();
-			}
-		);
+		checkTestIdsRender({ ...inventoryTableTestIds, ...sheetPageTestIds });
 		//? Check rendering of all items with a test id
 
 		["Reset Filters", addMembersButtonText, "Add New Item"].forEach(
