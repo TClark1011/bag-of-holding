@@ -1,4 +1,9 @@
-import { render, RenderOptions, RenderResult } from "@testing-library/react";
+import {
+	render,
+	RenderOptions,
+	RenderResult,
+	screen,
+} from "@testing-library/react";
 import React from "react";
 import { StateMethods, useHookstate } from "@hookstate/core";
 import { ChakraProvider, ColorModeScript } from "@chakra-ui/react";
@@ -101,3 +106,16 @@ export const StateMergeMock: React.FC<StateMergeMockProps> = ({
 export const testIdGeneratorFactory = (
 	componentName: string
 ): ((a: string) => string) => (label: string) => componentName + "__" + label;
+
+/**
+ * Check that components with provided test ids are
+ * rendering
+ *
+ * @param {Record<string,string>} testIds Object containing testIds as
+ * the values.
+ */
+export const checkTestIdsRender = (testIds: Record<string, string>): void => {
+	Object.values(testIds).forEach((testId) => {
+		expect(screen.getByTestId(testId)).toBeInTheDocument();
+	});
+};
