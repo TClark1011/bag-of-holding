@@ -19,7 +19,7 @@ The 1.1 update will focus on "cleaning up" certain of aspects of Bag of Holding.
 - [ ] **New Pages:** "Information" and "Contact" pages on the Bag of Holding website
 - [ ] **Will & Testimony:** When deleting a party member from a sheet, the user will be given a prompt to decide whether items carried by that character should now be carried by nobody, if they should be deleted, or if they should all be moved to another party member.
 - [ ] **Are You Sure?** Confirmation prompts before party members or items are deleted
-- [ ] **Housekeeping:** Inventory sheets will not be automatically deleted if they are left inactive for a long time. (Don't be worried about your sheets being deleted, as long as a sheet is used with almost any degree of regularity it will not be deleted)
+- [ ] **Housekeeping:** Inventory sheets will be automatically deleted if they are left inactive for a long time. (Don't be worried about your sheets being deleted, as long as a sheet is used with almost any degree of regularity it will not be deleted)
 
 <!-- If implementing PWA features turns out to be relatively easy, it can go here or in 1.2 -->
 
