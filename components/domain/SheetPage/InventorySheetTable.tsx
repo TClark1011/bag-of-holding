@@ -25,6 +25,18 @@ import { useSheetPageState } from "../../../state/sheetPageState";
 import { useInventoryState } from "../../contexts/InventoryStateContext";
 import { Tooltip } from "@chakra-ui/tooltip";
 import isUrl from "is-url-superb";
+import { testIdGeneratorFactory } from "../../../utils/testUtils";
+
+const getTestId = testIdGeneratorFactory("InventoryTable");
+
+export const inventoryTableTestIds = {
+	nameColumnHeader: getTestId("NameColumnHeader"),
+	weightColumnHeader: getTestId("WeightColumnHeader"),
+	valueColumnHeader: getTestId("ValueColumnHeader"),
+	quantityColumnHeader: getTestId("QuantityColumnHeader"),
+	carriedByColumnHeader: getTestId("CarriedByColumnHeader"),
+	categoryColumnHeader: getTestId("CategoryColumnHeader"),
+};
 
 const col4Display = ["none", "table-cell"];
 const col5Display = ["none", "none", "table-cell"];
@@ -124,11 +136,23 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 		>
 			<Thead>
 				<Tr>
-					<TableHeader property="name" textAlign="left">
+					<TableHeader
+						property="name"
+						textAlign="left"
+						data-testid={inventoryTableTestIds.nameColumnHeader}
+					>
 						Name
 					</TableHeader>
-					<TableHeader property="quantity">Quantity</TableHeader>
-					<TableHeader property="weight">
+					<TableHeader
+						property="quantity"
+						data-testid={inventoryTableTestIds.quantityColumnHeader}
+					>
+						Quantity
+					</TableHeader>
+					<TableHeader
+						property="weight"
+						data-testid={inventoryTableTestIds.weightColumnHeader}
+					>
 						<Tooltip
 							label="The weight shown is the total weight of all the instances of an item."
 							placement="top"
@@ -138,7 +162,11 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 							Weight
 						</Tooltip>
 					</TableHeader>
-					<TableHeader property="value" display={col4Display}>
+					<TableHeader
+						property="value"
+						display={col4Display}
+						data-testid={inventoryTableTestIds.valueColumnHeader}
+					>
 						<Tooltip
 							label="The value shown is the total value of all the instances of an item."
 							placement="top"
@@ -148,10 +176,18 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 							Value
 						</Tooltip>
 					</TableHeader>
-					<TableHeader property="carriedBy" display={col5Display}>
+					<TableHeader
+						property="carriedBy"
+						display={col5Display}
+						data-testid={inventoryTableTestIds.carriedByColumnHeader}
+					>
 						Carried By
 					</TableHeader>
-					<TableHeader property="category" display={col6Display}>
+					<TableHeader
+						property="category"
+						display={col6Display}
+						data-testid={inventoryTableTestIds.categoryColumnHeader}
+					>
 						Category
 					</TableHeader>
 				</Tr>

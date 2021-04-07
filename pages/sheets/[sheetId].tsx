@@ -40,6 +40,14 @@ import fetchSheetFromDb from "../../db/fetchSheetFromDb";
 import fetchSheet from "../../services/fetchSheet";
 import { Tag, TagLabel, TagLeftIcon } from "@chakra-ui/tag";
 import WelcomeDialog from "../../components/domain/SheetPage/Dialogs/WelcomeDialog";
+import { testIdGeneratorFactory } from "../../utils/testUtils";
+
+const getTestId = testIdGeneratorFactory("SheetPage");
+
+export const sheetPageTestIds = {
+	colorModeButton: getTestId("ColorModeButton"),
+	sheetOptionsButton: getTestId("SheetOptionsButton"),
+};
 
 export interface SheetPageProps extends InventorySheetFields {
 	isNew?: boolean;
@@ -49,6 +57,7 @@ export interface SheetPageProps extends InventorySheetFields {
  * The page for a specific sheet
  *
  * @param {InventorySheetFields} sheetFields The component sheetFields
+ * @param {boolean} [sheetFields.isNew=false] Whether or not the sheet is newly created
  * @param {string} sheetFields.name The name of the sheet
  * @param {InventoryItemFields[]} sheetFields.items The items in the sheet
  * @param {string[]} sheetFields.members Members
@@ -128,10 +137,14 @@ const Sheet: React.FC<SheetPageProps> = ({ isNew = false, ...sheetFields }) => {
 										onClick={() => openDialog("sheetOptions")}
 										variant="ghost"
 										isRound
+										data-testid={sheetPageTestIds.sheetOptionsButton}
 									/>
 								</Flex>
 								{/* Color Mode Switch */}
-								<ColorModeSwitch useDarkModeColors />
+								<ColorModeSwitch
+									useDarkModeColors
+									data-testid={sheetPageTestIds.colorModeButton}
+								/>
 							</Flex>
 							<LightMode>
 								{members.length ? (
