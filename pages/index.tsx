@@ -81,7 +81,12 @@ const Home: React.FC = () => {
 									<ButtonLink href="/new" colorScheme="primary">
 										Get Started
 									</ButtonLink>
-									<ButtonLink href={infoPageUrl} variant="ghost" size="xs">
+									<ButtonLink
+										href={infoPageUrl}
+										variant="ghost"
+										size="xs"
+										display="none"
+									>
 										What is this?
 									</ButtonLink>
 								</VStack>
