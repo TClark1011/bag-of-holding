@@ -13,4 +13,20 @@ test("Elements render", () => {
 	expect(screen.getByText(appDisplayTitle)).toBeInTheDocument();
 
 	checkTestIdsRender(homePageTestIds);
+
+	Object.values(homePageTestIds)
+		.filter((item) => {
+			const compare = item.toLowerCase();
+			return (
+				compare.includes("info") ||
+				compare.includes("about") ||
+				compare.includes("contact") ||
+				compare.includes("news")
+			);
+		})
+		.forEach((item) => {
+			expect(screen.getByTestId(item)).not.toBeVisible();
+		});
+	expect(screen.getByText("What is this?")).not.toBeVisible();
+	//? Test that currently not implemented elements are not visible
 });
