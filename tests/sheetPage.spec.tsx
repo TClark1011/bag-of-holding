@@ -15,16 +15,22 @@ describe("Elements render", () => {
 		act(() => {
 			renderTest(<Sheet _id={_id} name={name} members={[]} items={[]} />);
 		});
+
 		Object.values({ ...inventoryTableTestIds, ...sheetPageTestIds }).forEach(
 			(testId) => {
 				expect(screen.getByTestId(testId)).toBeInTheDocument();
 			}
 		);
+		//? Check rendering of all items with a test id
+
 		["Reset Filters", "Add Members", "Add New Item"].forEach((textItem) => {
 			expect(screen.getByText(textItem)).toBeInTheDocument();
 		});
+
 		expect(screen.getByPlaceholderText("Search")).toBeInTheDocument();
+		//? Searchbar
 	});
+
 	test("Basic Data", () => {
 		act(() => {
 			renderTest(<Sheet _id={_id} name={name} members={members} items={[]} />);
