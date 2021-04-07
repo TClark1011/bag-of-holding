@@ -8,6 +8,7 @@ import { renderTest } from "../utils/testUtils";
 
 const basicSheetJsx = <Sheet {...basicSheetFixture} />;
 
+const addMembersButtonText = "Add Members";
 describe("Elements render", () => {
 	const { items, name, members, _id } = basicSheetFixture;
 
@@ -23,9 +24,11 @@ describe("Elements render", () => {
 		);
 		//? Check rendering of all items with a test id
 
-		["Reset Filters", "Add Members", "Add New Item"].forEach((textItem) => {
-			expect(screen.getByText(textItem)).toBeInTheDocument();
-		});
+		["Reset Filters", addMembersButtonText, "Add New Item"].forEach(
+			(textItem) => {
+				expect(screen.getByText(textItem)).toBeInTheDocument();
+			}
+		);
 
 		expect(screen.getByPlaceholderText("Search")).toBeInTheDocument();
 		//? Searchbar
@@ -35,7 +38,12 @@ describe("Elements render", () => {
 		act(() => {
 			renderTest(<Sheet _id={_id} name={name} members={members} items={[]} />);
 		});
+
+		expect(screen.queryByText(addMembersButtonText)).toBeFalsy();
+		//? 'Add Members' button should not be visible when the sheet has members
+
 		expect(screen.getByText(name)).toBeInTheDocument;
+
 		members.forEach((member) => {
 			expect(screen.getAllByText(member)).toBeTruthy();
 		});
