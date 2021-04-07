@@ -36,6 +36,10 @@
 - Created `FOLDER_STRUCTURE.md` file documenting codebase folder structure
 - Created `API.md` file providing basic documentation of API routes
 
+### Tests
+
+- Added basic render testing to home and sheet page
+
 ## Version 1.0.1
 
 ### Features
