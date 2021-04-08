@@ -2987,7 +2987,7 @@ dotenv-flow@^3.2.0:
   dependencies:
     dotenv "^8.0.0"
 
-dotenv@^8.0.0, dotenv@^8.2.0:
+dotenv@^8.0.0:
   version "8.2.0"
   resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-8.2.0.tgz#97e619259ada750eea3e4ea3e26bceea5424b16a"
   integrity sha512-8sJ78ElpbDJBHNeBzUbUVLsqKdccaa/BXF1uPTw3GrvQTBgrQrtObr2mUrE38vzYd8cEv+m/JBfDLioYcfXoaw==
@@ -6990,13 +6990,6 @@ throat@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/throat/-/throat-5.0.0.tgz#c5199235803aad18754a667d659b5e72ce16764b"
   integrity sha512-fcwX4mndzpLQKBS1DVYhGAcYaYt7vsHNIvQV+WXMvnow5cgjPphq5CaayLaGsjRdSCKZFNGt7/GYAuXaNOiYCA==
-
-throw-env@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/throw-env/-/throw-env-1.0.1.tgz#1ce62b902439dc7cce152566c3a4843dab3d1927"
-  integrity sha512-F1A03+MolCREnAQBvMxMy/kSCqObUaYI9//d7O+NAaoeEO17ge7WkfhPtOsj4nFuxtTZE2HnMKCfeyUsLU0CJg==
-  dependencies:
-    dotenv "^8.2.0"
 
 timers-browserify@2.0.12, timers-browserify@^2.0.4:
   version "2.0.12"
