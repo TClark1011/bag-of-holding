@@ -21,7 +21,14 @@ const SheetSchema = new mongoose.Schema({
 });
 
 /**
- * @param useLiveCollection
+ * Get the name to use for the sheet model depending on if
+ * the application is being run in production mode or not
+ *
+ * @param {boolean} [useLiveCollection] Whether or not to get
+ * the name of the collection used in the live version of
+ * the application. Defaults to the value of 'inProduction'
+ * @returns {string} The name to use for the sheet collection
+ * in mongodb
  */
 export const getSheetModelName = (useLiveCollection = inProduction): string =>
 	(useLiveCollection ? "" : "dev-") + "sheet";
