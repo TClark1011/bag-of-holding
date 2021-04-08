@@ -16,7 +16,6 @@ const dbReducer = async (
 ): Promise<void> => {
 	const updateMetaFields = {
 		$inc: { __v: 1 },
-		$set: { lastEdited: Date.now() },
 	};
 	if (action.type === "item_add") {
 		//# Add An Item
