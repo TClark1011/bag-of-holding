@@ -1,6 +1,10 @@
 import { config } from "dotenv-flow";
 
-config();
+if (!process.env.NODE_ENV) {
+	config();
+	//? Only configure 'dotenv-flow' if environment variables are already configured
+	//? Allows env vars to be accessed by scripts without throwing an error when running the application
+}
 
 /**
  * Fetch environment variables, throwing an error if they are
