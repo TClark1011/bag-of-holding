@@ -14,18 +14,21 @@ const dbReducer = async (
 	sheetId: string,
 	action: InventorySheetStateAction
 ): Promise<void> => {
-	const incrementVersion = { $inc: { __v: 1 } };
+	const updateMetaFields = {
+		$inc: { __v: 1 },
+		$set: { lastEdited: Date.now() },
+	};
 	if (action.type === "item_add") {
 		//# Add An Item
 		SheetModel.findByIdAndUpdate(sheetId, {
 			$push: { items: action.data },
-			...incrementVersion,
+			...updateMetaFields,
 		}).exec();
 	} else if (action.type === "item_remove") {
 		//# Remove An Item
 		SheetModel.findByIdAndUpdate(sheetId, {
 			$pull: { items: { _id: action.data } } as any,
-			...incrementVersion,
+			...updateMetaFields,
 		}).exec();
 	} else if (action.type === "item_update") {
 		//# Update an item
@@ -37,13 +40,13 @@ const dbReducer = async (
 
 		SheetModel.updateMany(
 			{ _id: sheetId, "items._id": action.data._id } as any,
-			{ $set: update, ...incrementVersion } as any
+			{ $set: update, ...updateMetaFields } as any
 		).exec();
 	} else if (action.type === "sheet_metadataUpdate") {
 		//# Update sheet metadata
 		SheetModel.findByIdAndUpdate(sheetId, {
 			$set: { name: action.data.name, members: action.data.members },
-			...incrementVersion,
+			...updateMetaFields,
 		}).exec();
 	}
 };
