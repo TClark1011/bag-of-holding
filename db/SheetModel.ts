@@ -1,3 +1,4 @@
+import { inProduction } from "./../config/publicEnv";
 import mongoose, { Model, Document } from "mongoose";
 import InventorySheetFields from "../types/InventorySheetFields";
 
@@ -19,8 +20,19 @@ const SheetSchema = new mongoose.Schema({
 	],
 });
 
+/**
+ * @param useLiveCollection
+ */
+export const getSheetModelName = (useLiveCollection = inProduction): string =>
+	(useLiveCollection ? "" : "dev-") + "sheet";
+
 const SheetModel =
-	(mongoose.models.sheet as Model<Document<InventorySheetFields>>) ||
-	mongoose.model<Document<InventorySheetFields>>("sheet", SheetSchema);
+	(mongoose.models[getSheetModelName()] as Model<
+		Document<InventorySheetFields>
+	>) ||
+	mongoose.model<Document<InventorySheetFields>>(
+		getSheetModelName(),
+		SheetSchema
+	);
 
 export default SheetModel;
