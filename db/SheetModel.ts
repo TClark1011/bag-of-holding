@@ -42,4 +42,14 @@ const SheetModel =
 		SheetSchema
 	);
 
+//* Model for accessing the production database
+export const ProductionSheetModel =
+	(mongoose.models[getSheetModelName(true)] as Model<
+		Document<InventorySheetFields>
+	>) ||
+	mongoose.model<Document<InventorySheetFields>>(
+		getSheetModelName(true),
+		SheetSchema
+	);
+
 export default SheetModel;
