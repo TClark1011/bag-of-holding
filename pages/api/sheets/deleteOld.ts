@@ -14,6 +14,7 @@ const routeHandler: NextApiHandler = async (req, res) => {
 	if (req.method !== "DELETE") {
 		res.status(405).send("Request method not implemented");
 	}
+	console.log("deleting old sheets...");
 	await connectToMongoose();
 
 	await SheetModel.deleteMany({
@@ -21,10 +22,12 @@ const routeHandler: NextApiHandler = async (req, res) => {
 		"items.0": { $exists: true },
 	})
 		.then((data) => {
-			res.status(200).send(`deleted ${data.deletedCount} sheets`);
+			const resultStr = `deleted ${data.deletedCount} sheets`;
+			res.status(200).send(resultStr);
+			console.log(resultStr);
 		})
 		.catch((err) => {
-			res.status(500).send("an error occurred");
+			res.status(500).send("an error occurred while deleting old sheets");
 			throw Error(err);
 		});
 };
