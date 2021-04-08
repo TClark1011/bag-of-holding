@@ -6,7 +6,7 @@ import SheetModel, { ProductionSheetModel } from "../db/SheetModel";
 	if (!inProduction) {
 		await connectToMongoose();
 		const prodData = await ProductionSheetModel.find({});
-		await SheetModel.remove({});
+		await SheetModel.deleteMany({});
 		await SheetModel.insertMany(prodData, { lean: true })
 			.then(() => {
 				console.log(
