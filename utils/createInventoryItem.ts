@@ -18,7 +18,6 @@ const createInventoryItem = (
 	return {
 		_id: faker.datatype.uuid(),
 		carriedBy: "Nobody",
-		category: "None",
 		quantity: 1,
 		//? quantity defaults to 1
 		weight: 0,
