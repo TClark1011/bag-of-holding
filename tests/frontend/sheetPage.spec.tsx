@@ -1,10 +1,10 @@
 import { screen } from "@testing-library/dom";
 import { act } from "@testing-library/react";
 import React from "react";
-import { inventoryTableTestIds } from "../components/domain/SheetPage/InventorySheetTable";
-import { basicSheetFixture } from "../fixtures/sheetFixtures";
-import Sheet, { sheetPageTestIds } from "../pages/sheets/[sheetId]";
-import { checkTestIdsRender, renderTest } from "../utils/testUtils";
+import { inventoryTableTestIds } from "../../components/domain/SheetPage/InventorySheetTable";
+import { basicSheetFixture } from "../../fixtures/sheetFixtures";
+import Sheet, { sheetPageTestIds } from "../../pages/sheets/[sheetId]";
+import { checkTestIdsRender, renderTest } from "../../utils/testUtils";
 
 const basicSheetJsx = <Sheet {...basicSheetFixture} />;
 

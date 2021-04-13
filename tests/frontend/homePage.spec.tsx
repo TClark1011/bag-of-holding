@@ -1,7 +1,7 @@
 import { act, screen } from "@testing-library/react";
-import { appDisplayTitle, appSlogan } from "../constants/branding";
-import Home, { homePageTestIds } from "../pages";
-import { checkTestIdsRender, renderTest } from "../utils/testUtils";
+import { appDisplayTitle, appSlogan } from "../../constants/branding";
+import Home, { homePageTestIds } from "../../pages";
+import { checkTestIdsRender, renderTest } from "../../utils/testUtils";
 
 test("Elements render", () => {
 	act(() => {

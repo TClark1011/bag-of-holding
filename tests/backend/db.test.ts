@@ -1,9 +1,9 @@
-import { MONGO_URL } from "../config/env";
-import connectToMongoose from "../db/connectToMongoose";
-import dbReducer from "../db/dbReducer";
-import SheetModel from "../db/SheetModel";
-import InventoryItemFields from "../types/InventoryItemFields";
-import InventorySheetFields from "../types/InventorySheetFields";
+import connectToMongoose from "../../db/connectToMongoose";
+import dbReducer from "../../db/dbReducer";
+import SheetModel from "../../db/SheetModel";
+import InventoryItemFields from "../../types/InventoryItemFields";
+import InventorySheetFields from "../../types/InventorySheetFields";
+import mongoose from "mongoose";
 
 let sheetId = "";
 
@@ -29,6 +29,8 @@ beforeAll(async () => {
 afterAll(async () => {
 	await SheetModel.findByIdAndDelete(sheetId);
 	//? Delete the sheet after tests are complete
+
+	mongoose.connection.close();
 });
 
 describe("Item CRUD", () => {
