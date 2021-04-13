@@ -28,3 +28,4 @@ try {
 } catch (e) {
 	console.log("Skipped window property mock because of testing environment");
 }
+//? We mock the 'matchMedia' media method in a try/catch as it will throw an error if the testing environment is not "jsdom"
