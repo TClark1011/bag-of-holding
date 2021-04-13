@@ -55,9 +55,6 @@ const ItemDialog: React.FC<Props> = ({ mode }) => {
 			quantity: 1,
 			value: 0,
 			weight: 0,
-			description: "",
-			category: "None",
-			reference: "",
 			carriedBy: "Nobody",
 		  };
 
@@ -80,6 +77,9 @@ const ItemDialog: React.FC<Props> = ({ mode }) => {
 	 * currently submitting
 	 */
 	const onSubmit = (data: InventoryItemCreationFields, { setSubmitting }) => {
+		if (!data.category) {
+			data.category = 'None';
+		}
 		const action: InventorySheetStateAction = {
 			type: inEditMode ? "item_update" : "item_add",
 			data,
