@@ -7,8 +7,9 @@
 		"start:dev": "next dev",
 		"build": "next build",
 		"start": "next start",
-		"test": "jest",
-		"test:watch": "jest --watch",
+		"test": "yarn test:backend & yarn test:frontend",
+		"test:backend": "jest --testEnvironment=node --testPathPattern=/tests/backend",
+		"test:frontend": "jest --testPathPattern=/tests/frontend",
 		"setupDevDb": "ts-node scripts/setupDevDb.ts"
 	},
 	"dependencies": {
