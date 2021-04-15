@@ -1,13 +1,14 @@
 import { Box, BoxProps } from "@chakra-ui/layout";
 import React from "react";
 import { use100vh } from "react-div-100vh";
-import TopNav, { TopNavProps } from "../contexts/TopNav";
+import TopNav, { topNavHeight, TopNavProps } from "../domain/TopNav";
 import Meta, { MetaProps } from "./Meta";
 
 type ExtraProps = MetaProps & TopNavProps;
 export type ViewProps = ExtraProps & {
 	showTopNav?: boolean;
 	minFullHeight?: boolean;
+	accountForTopNav?: boolean;
 };
 
 /**
@@ -24,6 +25,9 @@ export type ViewProps = ExtraProps & {
  * height of the root "main" element is set to be equal to the screen
  * height. Height of the screen is calculated using the 'use100vh'
  * hook.
+ * @param {boolean} [props.accountForTopNav=true] If true, top padding
+ * is added to the element containing the page content to account for
+ * the height of the "absolute" position top navigation bar
  * @param {React.ReactElement} props.children The main content
  * of the view
  * @returns {React.ReactElement} Rendered view
@@ -32,20 +36,25 @@ const View: React.FC<ViewProps> = ({
 	showTopNav = true,
 	showHomeLink = true,
 	minFullHeight = true,
+	accountForTopNav = true,
 	children,
 	...metaProps
 }) => {
 	const screenHeight = use100vh();
 
-	const heightProps: Pick<BoxProps, "height" | "minHeight"> = minFullHeight
-		? { minHeight: screenHeight, height: 1 }
-		: {};
+	const contentContainerProps: Pick<
+		BoxProps,
+		"height" | "minHeight" | "paddingTop"
+	> = {
+		...(minFullHeight ? { minHeight: screenHeight, height: 1 } : {}),
+		paddingTop: accountForTopNav ? topNavHeight : null,
+	};
 
 	return (
-		<Box as="main" {...heightProps}>
+		<Box as="main">
 			<Meta {...metaProps} />
 			{showTopNav && <TopNav showHomeLink={showHomeLink} />}
-			{children}
+			<Box {...contentContainerProps}>{children}</Box>
 		</Box>
 	);
 };
