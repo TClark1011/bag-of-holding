@@ -1,7 +1,7 @@
 import Head from "next/head";
 import { appDescription, appName } from "../../constants/branding";
 
-interface MetaProps {
+export interface MetaProps {
 	description?: string;
 	title?: string;
 	image?: string;
