@@ -11,10 +11,8 @@ import { infoPageUrl } from "../constants/urls";
 const getTestId = testIdGeneratorFactory("Home");
 
 export const homePageTestIds = {
-	logo: getTestId("Logo"),
-	gitLink: getTestId("GitLink"),
-	contactLink: getTestId("ContactLink"),
-	infoLink: getTestId("InfoLink"),
+	logo: getTestId("logo"),
+	infoLink: "infoLink",
 };
 
 /**
@@ -24,30 +22,37 @@ export const homePageTestIds = {
  */
 const Home: React.FC = () => {
 	return (
-		<View showHomeLink={false} accountForTopNav={false} url={appDomain}>
+		<View accountForTopNav={false} url={appDomain}>
 			<Center width="full" height="100%" padding="break">
 				<Box>
 					<VStack spacing="break" marginBottom="break">
 						<Center>
+							{/* Big Icon */}
 							<BagOfHoldingIcon
 								fill="white"
 								boxSize={[40, 44, 52]}
 								data-testid={homePageTestIds.logo}
 							/>
 						</Center>
+
 						{/* Main Title */}
 						<H1 textAlign="center">{appDisplayTitle}</H1>
+						{/* Slogan */}
 						<H2 textAlign="center">{appSlogan}</H2>
+
+						{/* Actions */}
 						<Center>
 							<VStack spacing="break">
+								{/* Get Started Button */}
 								<ButtonLink href="/new" colorScheme="primary">
 									Get Started
 								</ButtonLink>
+								{/* Link to info page */}
 								<ButtonLink
 									href={infoPageUrl}
 									variant="ghost"
 									size="xs"
-									display="none"
+									data-testid={homePageTestIds.infoLink}
 								>
 									What is this?
 								</ButtonLink>
