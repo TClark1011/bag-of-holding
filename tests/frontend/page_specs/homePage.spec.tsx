@@ -17,7 +17,4 @@ test("Contains required elements", () => {
 	Object.values(homePageTestIds).forEach((item) => {
 		expect(screen.getByTestId(item)).toBeVisible();
 	});
-
-	expect(screen.getByText("What is this?")).not.toBeVisible();
-	//? Test that currently not implemented elements are not visible
 });
