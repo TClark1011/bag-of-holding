@@ -92,6 +92,22 @@ const InfoPage: React.FC = () => {
 							sheet, then you {"won't"} be able to access it!
 						</Paragraph>
 					</InfoPageQuestion>
+					<InfoPageQuestion title="Do Sheets Last Forever?">
+						<Paragraph>
+							Unfortunately, storing a lot of data costs money, so we delete
+							sheets that have not been edited in a long time.
+						</Paragraph>
+						<Paragraph>
+							If a sheet is created but has not items added to it for a week,
+							that sheet will be deleted.
+						</Paragraph>
+						<Paragraph>
+							Sheets that do contain items will still be deleted if they are not
+							edited for 6 months. To avoid this happening to your sheets, just
+							hop on your sheets every now and then and add a new item and then
+							delete it again right after.
+						</Paragraph>
+					</InfoPageQuestion>
 					<InfoPageQuestion title="Can I Help?">
 						<Paragraph>
 							Bag of Holding is an open source project and we welcome anybody
