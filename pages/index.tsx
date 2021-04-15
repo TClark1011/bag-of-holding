@@ -7,6 +7,7 @@ import { H1, H2 } from "../components/ui/Typography";
 import { testIdGeneratorFactory } from "../utils/testUtils";
 import View from "../components/templates/View";
 import { infoPageUrl } from "../constants/urls";
+import GetStartedButton from "../components/domain/GetStartedButton";
 
 const getTestId = testIdGeneratorFactory("Home");
 
@@ -44,9 +45,7 @@ const Home: React.FC = () => {
 						<Center>
 							<VStack spacing="break">
 								{/* Get Started Button */}
-								<ButtonLink href="/new" colorScheme="primary">
-									Get Started
-								</ButtonLink>
+								<GetStartedButton />
 								{/* Link to info page */}
 								<ButtonLink
 									href={infoPageUrl}
