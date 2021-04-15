@@ -1,4 +1,5 @@
 import { Box, Center, Divider, Link, VStack } from "@chakra-ui/layout";
+import React from "react";
 import GetStartedButton from "../components/domain/GetStartedButton";
 import View from "../components/templates/View";
 import { H3, Paragraph, SectionTitle } from "../components/ui/Typography";
@@ -16,10 +17,14 @@ export const infoPageTestIds = {
 };
 
 /**
- * @param root0
- * @param root0.title
- * @param root0.chilren
- * @param root0.children
+ * A question on the info page
+ *
+ * @param {object} props The component props
+ * @param {string} props.title The question title
+ * @param {React.ReactElement} props.children The question
+ * paragraphs
+ * @returns {React.ReactElement} The title of the question and
+ * all answer paragraphs consistently spaced out.
  */
 const InfoPageQuestion: React.FC<{ title: string }> = ({
 	title,
@@ -35,7 +40,9 @@ const InfoPageQuestion: React.FC<{ title: string }> = ({
 );
 
 /**
+ * The info page
  *
+ * @returns {React.ReactElement} The info page content
  */
 const InfoPage: React.FC = () => {
 	return (
