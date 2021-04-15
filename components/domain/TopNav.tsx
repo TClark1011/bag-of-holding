@@ -34,18 +34,16 @@ const TopNav: React.FC<TopNavProps> = ({ showHomeLink = true }) => (
 				<IconLink
 					href="/"
 					aria-label="link to home page"
-					icon={<BagOfHoldingIcon boxSize={6} thickStroke />}
+					icon={<BagOfHoldingIcon boxSize={5} thickStroke />}
 				/>
 			)}
 			<GitLink />
 			<IconLink
-				display="none"
 				href={contactPageUrl}
 				aria-label="link to contact page"
 				icon={<MailOutlineIcon boxSize="icon" />}
 			/>
 			<IconLink
-				display="none"
 				href={infoPageUrl}
 				aria-label="link to info page"
 				icon={<HelpOutlineIcon boxSize="icon" />}
