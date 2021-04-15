@@ -10,7 +10,7 @@ import { infoPageUrl } from "../constants/urls";
  * @param root0.children
  */
 const InfoPageQuestion: React.FC<{ title: string }> = ({ title, children }) => (
-	<Box width="full" paddingX={[0, 16, 32, 64]}>
+	<Box width="full">
 		<H3 marginBottom={4} textAlign="center">
 			{title}
 		</H3>
@@ -28,7 +28,7 @@ const InfoPage: React.FC = () => {
 			description="Information about Bag of Holding"
 			url={infoPageUrl}
 		>
-			<Box paddingX={[0, 2, 4, 8]}>
+			<Box paddingX={[0, 16, 32, 64, 96]}>
 				<SectionTitle>Info</SectionTitle>
 				<VStack spacing="break">
 					<InfoPageQuestion title="What is Bag of Holding?">
