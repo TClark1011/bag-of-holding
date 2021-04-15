@@ -24,8 +24,8 @@ export const homePageTestIds = {
  */
 const Home: React.FC = () => {
 	return (
-		<View showHomeLink={false} url={appDomain}>
-			<Center width="full" height="100%" padding="break" id="homepage-center">
+		<View showHomeLink={false} accountForTopNav={false} url={appDomain}>
+			<Center width="full" height="100%" padding="break">
 				<Box>
 					<VStack spacing="break" marginBottom="break">
 						<Center>
