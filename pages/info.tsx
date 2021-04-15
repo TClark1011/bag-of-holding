@@ -1,7 +1,19 @@
-import { Box, VStack } from "@chakra-ui/layout";
+import { Box, Center, Divider, Link, VStack } from "@chakra-ui/layout";
+import GetStartedButton from "../components/domain/GetStartedButton";
 import View from "../components/templates/View";
 import { H3, Paragraph, SectionTitle } from "../components/ui/Typography";
+import { appGitLink } from "../constants/branding";
 import { infoPageUrl } from "../constants/urls";
+import { testIdGeneratorFactory } from "../utils/testUtils";
+
+const getTestId = testIdGeneratorFactory("TestPage");
+
+export const infoPageTestIds = {
+	sectionTitle: getTestId("sectionTitle"),
+	explanationQuestion: getTestId("explanationQuestion"),
+	getStarted: getTestId("getStarted"),
+	gitLink: getTestId("gitLink"),
+};
 
 /**
  * @param root0
@@ -9,8 +21,12 @@ import { infoPageUrl } from "../constants/urls";
  * @param root0.chilren
  * @param root0.children
  */
-const InfoPageQuestion: React.FC<{ title: string }> = ({ title, children }) => (
-	<Box width="full">
+const InfoPageQuestion: React.FC<{ title: string }> = ({
+	title,
+	children,
+	...props
+}) => (
+	<Box width="full" {...props}>
 		<H3 marginBottom={4} textAlign="center">
 			{title}
 		</H3>
@@ -29,9 +45,14 @@ const InfoPage: React.FC = () => {
 			url={infoPageUrl}
 		>
 			<Box paddingX={[0, 16, 32, 64, 96]}>
-				<SectionTitle>Info</SectionTitle>
+				<SectionTitle data-testid={infoPageTestIds.sectionTitle}>
+					Info
+				</SectionTitle>
 				<VStack spacing="break">
-					<InfoPageQuestion title="What is Bag of Holding?">
+					<InfoPageQuestion
+						title="What is Bag of Holding?"
+						data-testid={infoPageTestIds.explanationQuestion}
+					>
 						<Paragraph>
 							Bag of Holding is a web app that {"let's"} tabletop RPG players
 							track their {"group's"} inventory with ease.
@@ -64,7 +85,28 @@ const InfoPage: React.FC = () => {
 							sheet, then you {"won't"} be able to access it!
 						</Paragraph>
 					</InfoPageQuestion>
+					<InfoPageQuestion title="Can I Help?">
+						<Paragraph>
+							Bag of Holding is an open source project and we welcome anybody
+							who wants to help!
+						</Paragraph>
+						<Paragraph>
+							If you have experience with Javascript and want to help, check out{" "}
+							<Link
+								href={appGitLink}
+								color="primary.500"
+								data-testid={infoPageTestIds.gitLink}
+							>
+								the github
+							</Link>{" "}
+							and reach out!
+						</Paragraph>
+					</InfoPageQuestion>
 				</VStack>
+				<Divider marginY="break" background="white" />
+				<Center paddingBottom="break">
+					<GetStartedButton data-testid={infoPageTestIds.getStarted} />
+				</Center>
 			</Box>
 		</View>
 	);
