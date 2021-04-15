@@ -1,4 +1,5 @@
 import { Box, BoxProps } from "@chakra-ui/layout";
+import { useToken } from "@chakra-ui/system";
 import React from "react";
 import { use100vh } from "react-div-100vh";
 import TopNav, { topNavHeight, TopNavProps } from "../domain/TopNav";
@@ -42,11 +43,14 @@ const View: React.FC<ViewProps> = ({
 }) => {
 	const screenHeight = use100vh();
 
+	const basePadding = useToken("space", "break");
+
 	const contentContainerProps: Pick<
 		BoxProps,
-		"height" | "minHeight" | "paddingTop"
+		"height" | "minHeight" | "paddingX" | "paddingTop"
 	> = {
 		...(minFullHeight ? { minHeight: screenHeight, height: 1 } : {}),
+		paddingX: basePadding,
 		paddingTop: accountForTopNav ? topNavHeight : null,
 	};
 
