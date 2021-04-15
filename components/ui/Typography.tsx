@@ -29,4 +29,6 @@ export const Paragraph: React.FC<TextProps> = (props) => (
 /**
  * Title of sections/pages such as "Info" and "Contact"
  */
-export const SectionTitle = chakra(H2, { baseStyle: { textAlign: "center" } });
+export const SectionTitle = chakra(H2, {
+	baseStyle: { textAlign: "center", marginBottom: "break" },
+});
