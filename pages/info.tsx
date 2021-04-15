@@ -3,8 +3,6 @@ import View from "../components/templates/View";
 import { H3, Paragraph, SectionTitle } from "../components/ui/Typography";
 import { infoPageUrl } from "../constants/urls";
 
-export const 
-
 /**
  * @param root0
  * @param root0.title
@@ -12,9 +10,11 @@ export const
  * @param root0.children
  */
 const InfoPageQuestion: React.FC<{ title: string }> = ({ title, children }) => (
-	<Box width="full">
-		<H3 marginBottom={4}>{title}</H3>
-		<VStack>{children}</VStack>
+	<Box width="full" paddingX={[0, 16, 32, 64]}>
+		<H3 marginBottom={4} textAlign="center">
+			{title}
+		</H3>
+		<VStack spacing={4}>{children}</VStack>
 	</Box>
 );
 
@@ -47,12 +47,23 @@ const InfoPage: React.FC = () => {
 							place, collaboration becomes easy.
 						</Paragraph>
 						<Paragraph>
-							With features like searching, sorting and filtering items by who is
-							carrying them, players can still track their own inventory quickly
-							and conveniently.
+							With features like searching, sorting and filtering items by who
+							is carrying them, players can still track their own inventory
+							quickly and conveniently.
 						</Paragraph>
 					</InfoPageQuestion>
-					<InfoPageQuestion title="How Do I Save My Sheet?"></InfoPageQuestion>
+					<InfoPageQuestion title="How Do I Save My Sheet?">
+						<Paragraph>
+							Inventory sheets are automatically saved on our servers whenever
+							you make a change.
+						</Paragraph>
+						<Paragraph>
+							To make sure you can access your sheet again at a later date, you
+							should make sure to save your {"sheet's"} URL to your{" "}
+							{"browser's"} bookmarks. Remember, if you lose the URL to your
+							sheet, then you {"won't"} be able to access it!
+						</Paragraph>
+					</InfoPageQuestion>
 				</VStack>
 			</Box>
 		</View>
