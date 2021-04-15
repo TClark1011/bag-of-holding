@@ -6,7 +6,7 @@ import Meta, { MetaProps } from "./Meta";
 
 type ExtraProps = MetaProps & TopNavProps;
 export type ViewProps = ExtraProps & {
-	showTopNav: boolean;
+	showTopNav?: boolean;
 	minFullHeight?: boolean;
 };
 
@@ -15,21 +15,21 @@ export type ViewProps = ExtraProps & {
  * application
  *
  * @param {object} props The props
- * @param {boolean} props.showTopNav Whether or not to show
+ * @param {boolean} [props.showTopNav=true] Whether or not to show
  * the top navigation bar in the view
  * @param {boolean} [props.showHomeLink=true] Whether or
  * not to show a link to return to the home page of the
  * application
- * @param {React.ReactElement} props.children The main content
- * of the view
  * @param {boolean} [props.minFullHeight=true] If true, the minimum
  * height of the root "main" element is set to be equal to the screen
  * height. Height of the screen is calculated using the 'use100vh'
  * hook.
+ * @param {React.ReactElement} props.children The main content
+ * of the view
  * @returns {React.ReactElement} Rendered view
  */
 const View: React.FC<ViewProps> = ({
-	showTopNav,
+	showTopNav = true,
 	showHomeLink = true,
 	minFullHeight = true,
 	children,
