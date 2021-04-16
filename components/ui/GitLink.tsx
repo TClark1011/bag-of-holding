@@ -1,6 +1,6 @@
 import { IconButton, IconButtonProps } from "@chakra-ui/button";
+import { Link } from "@chakra-ui/layout";
 import { LogoGithubIcon } from "chakra-ui-ionicons";
-import Link from "next/link";
 import { appGitLink } from "../../constants/branding";
 
 type GitLinkProps = Omit<IconButtonProps, "aria-label" | "icon" | "children">;
