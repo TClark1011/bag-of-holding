@@ -19,7 +19,11 @@ const ContactPage: React.FC = () => {
 	blockProdBuild(`Confirm that contact email '${contactEmailAddress}' works`);
 
 	return (
-		<View title={createPageTitle("Contact")} url={contactPageUrl}>
+		<View
+			title={createPageTitle("Contact")}
+			url={contactPageUrl}
+			description={`Contact details for ${appName} support`}
+		>
 			<PageContentContainer>
 				<SectionTitle data-testid={contactPageTitle}>Contact</SectionTitle>
 				<Paragraph textAlign="center">
