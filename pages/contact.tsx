@@ -5,6 +5,7 @@ import ButtonLink from "../components/ui/ButtonLink";
 import { Paragraph, SectionTitle } from "../components/ui/Typography";
 import { appName, contactEmailAddress } from "../constants/branding";
 import { contactPageUrl } from "../constants/urls";
+import blockProdBuild from "../utils/blockProdBuild";
 import createPageTitle from "../utils/createPageTitle";
 
 export const contactPageTitle = "Contact";
@@ -15,9 +16,7 @@ export const contactPageTitle = "Contact";
  * @returns {React.ReactElement} The contact page
  */
 const ContactPage: React.FC = () => {
-	console.warn(
-		`Please confirm that contact email '${contactEmailAddress}' successfully forwards emails`
-	);
+	blockProdBuild(`Confirm that contact email '${contactEmailAddress}' works`);
 
 	return (
 		<View title={createPageTitle("Contact")} url={contactPageUrl}>
