@@ -48,11 +48,7 @@ const InfoPageQuestion: React.FC<{ title: string }> = ({
  */
 const InfoPage: React.FC = () => {
 	return (
-		<View
-			title={createPageTitle("Info")}
-			description="Information about Bag of Holding"
-			url={infoPageUrl}
-		>
+		<View title={createPageTitle("Info")} url={infoPageUrl}>
 			<PageContentContainer>
 				<SectionTitle data-testid={infoPageTestIds.sectionTitle}>
 					Info
