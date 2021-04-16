@@ -5,13 +5,8 @@ import { Paragraph, SectionTitle } from "../components/ui/Typography";
 import { appName, contactEmailAddress } from "../constants/branding";
 import { contactPageUrl } from "../constants/urls";
 import createPageTitle from "../utils/createPageTitle";
-import { testIdGeneratorFactory } from "../utils/testUtils";
 
-const getPageId = testIdGeneratorFactory("ContactPage");
-
-export const contactPageTestIds = {
-	sectionTitle: getPageId("sectionTitle"),
-};
+export const contactPageTitle = "Contact";
 
 /**
  * The page containing contact information
@@ -25,7 +20,7 @@ const ContactPage: React.FC = () => {
 
 	return (
 		<View title={createPageTitle("Contact")} url={contactPageUrl}>
-			<SectionTitle data-testid={contactPageTestIds}>Contact</SectionTitle>
+			<SectionTitle data-testid={contactPageTitle}>Contact</SectionTitle>
 			<Paragraph textAlign="center">
 				If you are having a problem with {appName} you can reach out at the
 				following email address:
