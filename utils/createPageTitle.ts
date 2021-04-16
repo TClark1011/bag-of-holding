@@ -1,3 +1,4 @@
+import { appName } from "./../constants/branding";
 /**
  * Generate a string to be used as the title in
  * a page's metadata by prefixing a provided string
@@ -9,6 +10,6 @@
  * with the name of the app
  */
 const createPageTitle = (pageTitle: string): string =>
-	`Bag of Holding | ${pageTitle}`;
+	`${appName} | ${pageTitle}`;
 
 export default createPageTitle;
