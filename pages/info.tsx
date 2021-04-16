@@ -5,6 +5,7 @@ import View from "../components/templates/View";
 import { H3, Paragraph, SectionTitle } from "../components/ui/Typography";
 import { appGitLink } from "../constants/branding";
 import { infoPageUrl } from "../constants/urls";
+import createPageTitle from "../utils/createPageTitle";
 import { testIdGeneratorFactory } from "../utils/testUtils";
 
 const getTestId = testIdGeneratorFactory("TestPage");
@@ -47,7 +48,7 @@ const InfoPageQuestion: React.FC<{ title: string }> = ({
 const InfoPage: React.FC = () => {
 	return (
 		<View
-			title="Bag of Holding | Info"
+			title={createPageTitle("Info")}
 			description="Information about Bag of Holding"
 			url={infoPageUrl}
 		>
