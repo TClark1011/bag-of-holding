@@ -1,5 +1,6 @@
 import { Box, Center, Divider, Link, VStack } from "@chakra-ui/layout";
 import React from "react";
+import PageContentContainer from "../components/domain/PageContentContainer";
 import GetStartedButton from "../components/domain/GetStartedButton";
 import View from "../components/templates/View";
 import { H3, Paragraph, SectionTitle } from "../components/ui/Typography";
@@ -52,7 +53,7 @@ const InfoPage: React.FC = () => {
 			description="Information about Bag of Holding"
 			url={infoPageUrl}
 		>
-			<Box paddingX={[0, 16, 32, 64, 96]}>
+			<PageContentContainer>
 				<SectionTitle data-testid={infoPageTestIds.sectionTitle}>
 					Info
 				</SectionTitle>
@@ -131,7 +132,7 @@ const InfoPage: React.FC = () => {
 				<Center paddingBottom="break">
 					<GetStartedButton data-testid={infoPageTestIds.getStarted} />
 				</Center>
-			</Box>
+			</PageContentContainer>
 		</View>
 	);
 };
