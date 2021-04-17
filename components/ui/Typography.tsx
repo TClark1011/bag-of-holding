@@ -1,13 +1,7 @@
 /* eslint-disable jsdoc/require-jsdoc  */
 /* eslint-disable jsdoc/require-param  */
 /* eslint-disable jsdoc/require-returns  */
-import {
-	Heading,
-	HeadingProps,
-	Text,
-	TextProps,
-	VStack,
-} from "@chakra-ui/layout";
+import { Heading, HeadingProps, Text, TextProps } from "@chakra-ui/layout";
 import { chakra } from "@chakra-ui/system";
 
 type HeadingComponent = React.FC<HeadingProps>;
@@ -40,9 +34,3 @@ export const Paragraph: React.FC<TextProps> = (props) => (
 export const SectionTitle = chakra(H2, {
 	baseStyle: { textAlign: "center", marginBottom: "break" },
 });
-
-/**
- * Used for sections with multiple consecutive text paragraphs
- * to apply spacing between paragraphs
- */
-// export const TextBlock: React.FC = (props) => <VStack spacing={6} {...props} />;
