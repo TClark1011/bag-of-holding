@@ -1,5 +1,6 @@
 import { Button, ButtonProps } from "@chakra-ui/button";
-import { ModalFooter } from "@chakra-ui/modal";
+import { Flex } from "@chakra-ui/layout";
+import { ModalBody, ModalFooter } from "@chakra-ui/modal";
 import React from "react";
 import Dialog, { DialogProps } from "./Dialog";
 
@@ -37,6 +38,8 @@ export interface ConfirmationDialogProps extends CustomDialogProps {
  * @param {Function} [props.onClose=props.onCancel]
  * Function to close the dialog. If not provided
  * it is set to be equal to onCancel
+ * @param {React.ReactElement} props.children The
+ * content to be used in the body of the dialog
  * @returns {React.ReactElement} Rendered stuff
  */
 const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
@@ -47,24 +50,33 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
 	cancelLabel = "Cancel",
 	confirmProps = {},
 	cancelProps = {},
+	children,
 	...props
 }) => {
 	return (
 		<Dialog {...props} onClose={onCancel}>
+			<ModalBody>{children}</ModalBody>
 			<ModalFooter>
-				<Button colorScheme={"error"} onClick={onCancel} {...cancelProps}>
-					{cancelLabel}
-				</Button>
-				<Button
-					colorScheme={"primary"}
-					onClick={() => {
-						onConfirm();
-						onClose();
-					}}
-					{...confirmProps}
-				>
-					{confirmLabel}
-				</Button>
+				<Flex justify="space-between" width="full">
+					<Button
+						colorScheme="error"
+						variant="ghost"
+						onClick={onCancel}
+						{...cancelProps}
+					>
+						{cancelLabel}
+					</Button>
+					<Button
+						colorScheme={"primary"}
+						onClick={() => {
+							onConfirm();
+							onClose();
+						}}
+						{...confirmProps}
+					>
+						{confirmLabel}
+					</Button>
+				</Flex>
 			</ModalFooter>
 		</Dialog>
 	);
