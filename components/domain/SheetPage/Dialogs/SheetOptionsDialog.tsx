@@ -19,6 +19,10 @@ import { useSheetPageState } from "../../../../state/sheetPageState";
 import SheetDialog from "../../../templates/SheetDialog";
 import sheetOptionsValidation from "../../../../validation/sheetOptionsValidation";
 import { defaultFieldLength } from "../../../../constants/validationConstants";
+import { useDisclosure } from "@chakra-ui/hooks";
+import ConfirmationDialog from "../../../ui/ConfirmationDialog";
+import { useState } from "react";
+import { Paragraph } from "../../../ui/Typography";
 
 /**
  * Component for sheet settings dialog
@@ -67,7 +71,17 @@ const SheetOptionsDialog: React.FC = () => {
 		});
 	};
 
-	//TODO: Field Validation
+	const {
+		isOpen: deleteMemberConfirmIsOpen,
+		onOpen: deleteMemberConfirmOnOpen,
+		onClose: deleteMemberConfirmOnClose,
+	} = useDisclosure();
+
+	const [deleteMemberTarget, setDeleteMemberTarget] = useState<{
+		name: string;
+		index: number;
+	}>({ name: "", index: 0 });
+
 	///TODO: Confirmation when deleting a member
 	return (
 		<SheetDialog dialogType="sheetOptions" header="Sheet Options">
@@ -114,7 +128,13 @@ const SheetOptionsDialog: React.FC = () => {
 																/>
 																<IconButton
 																	colorScheme="error"
-																	onClick={() => helpers.remove(index)}
+																	onClick={() => {
+																		deleteMemberConfirmOnOpen();
+																		setDeleteMemberTarget({
+																			name: item,
+																			index,
+																		});
+																	}}
 																	aria-label={"delete member " + (index + 1)}
 																	icon={<RemoveIcon />}
 																	borderRadius="full"
@@ -139,6 +159,26 @@ const SheetOptionsDialog: React.FC = () => {
 											>
 												Add Party Member
 											</Button>
+											<ConfirmationDialog
+												isOpen={deleteMemberConfirmIsOpen}
+												onCancel={deleteMemberConfirmOnClose}
+												onConfirm={() =>
+													helpers.remove(deleteMemberTarget.index)
+												}
+												header={`Remove "${deleteMemberTarget.name}" from sheet?`}
+											>
+												<Paragraph>
+													Are you sure you want to remove this party member?
+												</Paragraph>
+												<Paragraph marginBottom={0}>
+													<Text fontWeight="bold" as="span">
+														NOTE:
+													</Text>{" "}
+													Any items they are carrying will still be registered
+													as being carried by them. Any items they are currently
+													carrying must be edited manually.
+												</Paragraph>
+											</ConfirmationDialog>
 										</>
 									)}
 								</FieldArray>
