@@ -25,3 +25,10 @@ export const H3: HeadingComponent = (props) => (
 export const Paragraph: React.FC<TextProps> = (props) => (
 	<Text as="p" width="full" {...props} />
 );
+
+/**
+ * Title of sections/pages such as "Info" and "Contact"
+ */
+export const SectionTitle = chakra(H2, {
+	baseStyle: { textAlign: "center", marginBottom: "break" },
+});
