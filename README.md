@@ -24,7 +24,7 @@ How to install and locally host your own installation of Bag of Holding:
 1. Fork + Clone this repository
 2. Run the `yarn` command (yarn must be installed) and wait for installation of packages to finish
 3. Create a MongoDB Atlas collection and get the connection string (for help, follow [this guide](https://dev.to/dalalrohit/how-to-connect-to-mongodb-atlas-using-node-js-k9i) up to the point that you get the connection string in step 4)
-4. Create a file named `.env.local` in the root directory of your forked repository. In that file, write `MONGO_URL=*your connection string*`
+4. Create a file named `.env` in the root directory of your forked repository. In that file, write `MONGO_URL=*your connection string*`
 5. Run `yarn start:dev` to run the development server, or just `yarn start` for the production server.
 
 ### Configuration
