@@ -21,6 +21,7 @@ export const infoPageTestIds = {
 const InfoPageQuestion = chakra(H3, {
 	baseStyle: { textAlign: "center", marginBottom: "break" },
 });
+//? Use for the question titles
 
 /**
  * The info page
