@@ -1,0 +1,38 @@
+{
+	"editor.defaultFormatter": "rvest.vs-code-prettier-eslint",
+	"editor.formatOnSave": true,
+	"better-comments.tags": [
+		{
+			"tag": "#",
+			"color": "#ffcc00",
+			"strikethrough": false,
+			"underline": false,
+			"backgroundColor": "transparent",
+			"bold": false
+		},
+		{
+			"tag": "*",
+			"color": "#63db00",
+			"strikethrough": false,
+			"underline": false,
+			"backgroundColor": "transparent",
+			"bold": false
+		},
+		{
+			"tag": "?",
+			"color": "#00cddb",
+			"strikethrough": false,
+			"underline": false,
+			"backgroundColor": "transparent",
+			"bold": false
+		},
+		{
+			"tag": "FIXME",
+			"color": "#ff1f0f",
+			"strikethrough": false,
+			"underline": false,
+			"backgroundColor": "transparent",
+			"bold": false
+		}
+	]
+}
