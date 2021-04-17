@@ -8,9 +8,9 @@ import { appGitLink } from "../constants/branding";
 import { infoPageUrl } from "../constants/urls";
 import createPageTitle from "../utils/createPageTitle";
 import { testIdGeneratorFactory } from "../utils/testUtils";
+import { chakra } from "@chakra-ui/system";
 
 const getTestId = testIdGeneratorFactory("TestPage");
-
 export const infoPageTestIds = {
 	sectionTitle: getTestId("sectionTitle"),
 	explanationQuestion: getTestId("explanationQuestion"),
@@ -18,28 +18,9 @@ export const infoPageTestIds = {
 	gitLink: getTestId("gitLink"),
 };
 
-/**
- * A question on the info page
- *
- * @param {object} props The component props
- * @param {string} props.title The question title
- * @param {React.ReactElement} props.children The question
- * paragraphs
- * @returns {React.ReactElement} The title of the question and
- * all answer paragraphs consistently spaced out.
- */
-const InfoPageQuestion: React.FC<{ title: string }> = ({
-	title,
-	children,
-	...props
-}) => (
-	<Box width="full" {...props}>
-		<H3 marginBottom={4} textAlign="center">
-			{title}
-		</H3>
-		<VStack spacing={4}>{children}</VStack>
-	</Box>
-);
+const InfoPageQuestion = chakra(H3, {
+	baseStyle: { textAlign: "center", marginBottom: "break" },
+});
 
 /**
  * The info page
@@ -54,10 +35,10 @@ const InfoPage: React.FC = () => {
 					Info
 				</SectionTitle>
 				<VStack spacing="break">
-					<InfoPageQuestion
-						title="What is Bag of Holding?"
-						data-testid={infoPageTestIds.explanationQuestion}
-					>
+					<Box>
+						<InfoPageQuestion data-testid={infoPageTestIds.explanationQuestion}>
+							What is Bag of Holding?
+						</InfoPageQuestion>
 						<Paragraph>
 							Bag of Holding is a web app that {"let's"} tabletop RPG players
 							track their {"group's"} inventory with ease.
@@ -77,8 +58,9 @@ const InfoPage: React.FC = () => {
 							is carrying them, players can still track their own inventory
 							quickly and conveniently.
 						</Paragraph>
-					</InfoPageQuestion>
-					<InfoPageQuestion title="How Do I Save My Sheet?">
+					</Box>
+					<Box>
+						<InfoPageQuestion>How Do I Save My Sheet?</InfoPageQuestion>
 						<Paragraph>
 							Inventory sheets are automatically saved on our servers whenever
 							you make a change.
@@ -89,8 +71,9 @@ const InfoPage: React.FC = () => {
 							{"browser's"} bookmarks. Remember, if you lose the URL to your
 							sheet, then you {"won't"} be able to access it!
 						</Paragraph>
-					</InfoPageQuestion>
-					<InfoPageQuestion title="Do Sheets Last Forever?">
+					</Box>
+					<Box>
+						<InfoPageQuestion>Do Sheets Last Forever?</InfoPageQuestion>
 						<Paragraph>
 							Unfortunately, storing a lot of data costs money, so we delete
 							sheets that have not been edited in a long time.
@@ -105,8 +88,9 @@ const InfoPage: React.FC = () => {
 							hop on your sheets every now and then and add a new item and then
 							delete it again right after.
 						</Paragraph>
-					</InfoPageQuestion>
-					<InfoPageQuestion title="Can I Help?">
+					</Box>
+					<Box>
+						<InfoPageQuestion>Can I Help?</InfoPageQuestion>
 						<Paragraph>
 							Bag of Holding is an open source project and we welcome anybody
 							who wants to help!
@@ -122,7 +106,7 @@ const InfoPage: React.FC = () => {
 							</Link>{" "}
 							and reach out!
 						</Paragraph>
-					</InfoPageQuestion>
+					</Box>
 				</VStack>
 				<Divider marginY="break" background="white" />
 				<Center paddingBottom="break">
