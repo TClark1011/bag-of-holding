@@ -27,6 +27,7 @@ import itemValidation, {
 } from "../../../../validation/itemValidation";
 import { defaultFieldLength } from "../../../../constants/validationConstants";
 import { useMemo } from "react";
+import ConfirmationDialog from "../../../ui/ConfirmationDialog";
 
 export type ItemDialogMode = "edit" | "new";
 
@@ -78,7 +79,7 @@ const ItemDialog: React.FC<Props> = ({ mode }) => {
 	 */
 	const onSubmit = (data: InventoryItemCreationFields, { setSubmitting }) => {
 		if (!data.category) {
-			data.category = 'None';
+			data.category = "None";
 		}
 		const action: InventorySheetStateAction = {
 			type: inEditMode ? "item_update" : "item_add",
@@ -241,6 +242,7 @@ const ItemDialog: React.FC<Props> = ({ mode }) => {
 					</>
 				)}
 			</Formik>
+			{/* <ConfirmationDialog></ConfirmationDialog> */}
 		</SheetDialog>
 	);
 };
