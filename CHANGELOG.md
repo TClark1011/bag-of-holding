@@ -12,6 +12,12 @@
 
 ### Bug Fixes -->
 
+## Version 1.0.1a (Hotfix)
+
+### Bug Fixes:
+
+- Fixed a problem where dialog action buttons could sometimes be covered by the safari bottom navigation bar when viewed on certain models of iPhone
+
 ## Version 1.0.1
 
 ### Features

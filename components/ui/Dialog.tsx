@@ -36,7 +36,8 @@ const Dialog: React.FC<DialogProps> = ({
 }) => (
 	<Modal {...props}>
 		{!noOverlay && <ModalOverlay />}
-		<ModalContent>
+		<ModalContent marginBottom={32}>
+			{/* //? Extra Margin Bottom to stop bottom action buttons being covered by safari navigation bar */}
 			{header && <ModalHeader>{header}</ModalHeader>}
 			{!noCloseButton && <ModalCloseButton />}
 			{children}
