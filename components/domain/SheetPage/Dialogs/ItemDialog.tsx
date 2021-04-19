@@ -27,6 +27,8 @@ import itemValidation, {
 } from "../../../../validation/itemValidation";
 import { defaultFieldLength } from "../../../../constants/validationConstants";
 import { useMemo } from "react";
+import ConfirmationDialog from "../../../ui/ConfirmationDialog";
+import { useDisclosure } from "@chakra-ui/hooks";
 
 export type ItemDialogMode = "edit" | "new";
 
@@ -59,12 +61,17 @@ const ItemDialog: React.FC<Props> = ({ mode }) => {
 		  };
 
 	const dispatch = useInventoryStateDispatch();
-
 	const { members, items } = useInventoryState();
 
 	const categoryAutocompleteItems = useMemo(() => getUniqueCategories(items), [
 		items,
 	]);
+
+	const {
+		isOpen: deleteConfirmIsOpen,
+		onOpen: deleteConfirmOnOpen,
+		onClose: deleteConfirmOnClose,
+	} = useDisclosure();
 
 	/**
 	 * Handle the submitting of the new item form
@@ -78,7 +85,7 @@ const ItemDialog: React.FC<Props> = ({ mode }) => {
 	 */
 	const onSubmit = (data: InventoryItemCreationFields, { setSubmitting }) => {
 		if (!data.category) {
-			data.category = 'None';
+			data.category = "None";
 		}
 		const action: InventorySheetStateAction = {
 			type: inEditMode ? "item_update" : "item_add",
@@ -223,21 +230,34 @@ const ItemDialog: React.FC<Props> = ({ mode }) => {
 								{inEditMode && (
 									<Button
 										colorScheme="error"
-										onClick={() => onDelete(setSubmitting)}
+										// onClick={() => onDelete(setSubmitting)}
+										onClick={deleteConfirmOnOpen}
 										isDisabled={isSubmitting}
 									>
 										Delete
 									</Button>
 								)}
-								<Button
-									colorScheme="primary"
-									onClick={() => handleSubmit()}
-									isLoading={isSubmitting}
-								>
+								<Button colorScheme="primary" onClick={() => handleSubmit()}>
 									{inEditMode ? "Save" : "Create Item"}
 								</Button>
 							</Flex>
 						</ModalFooter>
+						<ConfirmationDialog
+							isOpen={deleteConfirmIsOpen}
+							onConfirm={() => onDelete(setSubmitting)}
+							onCancel={deleteConfirmOnClose}
+							confirmProps={{ isLoading: isSubmitting }}
+							header={`Delete "${activeItem.name}" ?`}
+						>
+							Are you sure you want to delete this item?{" "}
+							{activeItem.quantity > 1 && (
+								<>
+									All
+									{activeItem.quantity} instanceof it will be removed from the
+									sheet.
+								</>
+							)}
+						</ConfirmationDialog>
 					</>
 				)}
 			</Formik>

@@ -1,4 +1,6 @@
-/* eslint-disable jsdoc/require-jsdoc */
+/* eslint-disable jsdoc/require-jsdoc  */
+/* eslint-disable jsdoc/require-param  */
+/* eslint-disable jsdoc/require-returns  */
 import { Heading, HeadingProps, Text, TextProps } from "@chakra-ui/layout";
 import { chakra } from "@chakra-ui/system";
 
@@ -23,11 +25,11 @@ export const H3: HeadingComponent = (props) => (
 );
 
 export const Paragraph: React.FC<TextProps> = (props) => (
-	<Text as="p" width="full" {...props} />
+	<Text as="p" width="full" marginBottom={6} {...props} />
 );
 
 /**
- * Title of sections/pages such as "Info" and "Contact"
+ * Titles of sections/pages, such as "Info" and "Contact"
  */
 export const SectionTitle = chakra(H2, {
 	baseStyle: { textAlign: "center", marginBottom: "break" },
