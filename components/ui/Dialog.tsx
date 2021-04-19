@@ -36,7 +36,7 @@ const Dialog: React.FC<DialogProps> = ({
 }) => (
 	<Modal {...props}>
 		{!noOverlay && <ModalOverlay />}
-		<ModalContent>
+		<ModalContent marginBottom={32}>
 			{header && <ModalHeader>{header}</ModalHeader>}
 			{!noCloseButton && <ModalCloseButton />}
 			{children}
