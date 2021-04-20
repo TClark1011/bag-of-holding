@@ -1,4 +1,7 @@
 import GoogleAnalytics from "react-ga";
+import blockProdBuild from "./blockProdBuild";
+
+blockProdBuild("Confirm that google analytics is working");
 
 /**
  * Log a page view in Google Analytics
