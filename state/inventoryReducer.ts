@@ -9,6 +9,7 @@ import InventorySheetState, {
 } from "../types/InventorySheetState";
 import createInventoryItem from "../utils/createInventoryItem";
 import sendSheetAction from "../services/sendSheetAction";
+import { logEvent } from "../utils/analytics";
 
 //TODO: Create separate 'server' reducer that processes how to update mongo state
 
@@ -59,6 +60,9 @@ const inventoryReducer = (
 			}
 			mutation(draftState);
 		});
+
+	logEvent(`Inventory Action - ${type}`, JSON.stringify(data));
+	//? Log the action in google analytics
 
 	switch (type) {
 		case "item_add":
