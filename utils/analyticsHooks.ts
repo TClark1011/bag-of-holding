@@ -1,4 +1,4 @@
-import { GOOGLE_ANALYTICS_ID } from "./../config/publicEnv";
+import { GOOGLE_ANALYTICS_ID, inProduction } from "./../config/publicEnv";
 import { useHookstate, createState as createHookstate } from "@hookstate/core";
 import { useEffect } from "react";
 import GoogleAnalytics from "react-ga";
@@ -53,8 +53,10 @@ export const useAnalyticsInitStatus = (): boolean =>
 export const useAnalyticsInit = (): void => {
 	const analyticsInitialised = useHookstate(analyticsInitialisedState);
 
-	if (!analyticsInitialised) {
-		GoogleAnalytics.initialize(GOOGLE_ANALYTICS_ID);
+	if (!analyticsInitialised.value) {
+		GoogleAnalytics.initialize(GOOGLE_ANALYTICS_ID, {
+			debug: !inProduction,
+		});
 		analyticsInitialised.set(true);
 	}
 };
