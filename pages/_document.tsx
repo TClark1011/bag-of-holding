@@ -8,7 +8,7 @@ class MyDocument extends Document {
 			<Html>
 				<Head>
 					{/* Global Site Tag (gtag.js) - Google Analytics */}
-					<script
+					{/* <script
 						async
 						src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ANALYTICS_ID}`}
 					/>
@@ -23,7 +23,7 @@ class MyDocument extends Document {
 				});
 			  `,
 						}}
-					/>
+					/> */}
 				</Head>
 				<body>
 					<Main />
