@@ -19,18 +19,20 @@ import Meta from "../components/templates/Meta";
  * @param {object} props.pageProps The props to pass to the page component
  * @returns {React.ReactElement} The application
  */
-const MyApp = ({ Component, pageProps }: AppProps): React.ReactElement => (
-	<ChakraProvider theme={theme}>
-		<ColorModeScript initialColorMode={theme.config.initialColorMode} />
-		<Meta />
-		<Head>
-			<link rel="icon" href="/favicon.svg" key="favicon" />
-			<meta name="twitter:card" content="summary" />
-			<meta property="og:site_name" content={appName} />
-			<meta property="og:type" content="website" />
-		</Head>
-		<Component {...pageProps} />
-	</ChakraProvider>
-);
+const MyApp = ({ Component, pageProps }: AppProps): React.ReactElement => {
+	return (
+		<ChakraProvider theme={theme}>
+			<ColorModeScript initialColorMode={theme.config.initialColorMode} />
+			<Meta />
+			<Head>
+				<link rel="icon" href="/favicon.svg" key="favicon" />
+				<meta name="twitter:card" content="summary" />
+				<meta property="og:site_name" content={appName} />
+				<meta property="og:type" content="website" />
+			</Head>
+			<Component {...pageProps} />
+		</ChakraProvider>
+	);
+};
 
 export default MyApp;
