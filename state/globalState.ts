@@ -11,7 +11,9 @@ export const globalState = createHookstate<GlobalStoreFields>({
 });
 
 /**
+ * Global state store
  *
+ * @returns {object} State values and actions
  */
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const useGlobalState = () => {
