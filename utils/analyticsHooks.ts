@@ -11,13 +11,34 @@ blockProdBuild(
 	"Log analytic exceptions (if error occurs when creating new sheet)"
 );
 
+export interface AnalyticsPageViewProps {
+	url?: string;
+	title?: string;
+}
+
 /**
  * Log a page view in Google Analytics
+ *
+ * @param {object} pageViewProps Props to pass to the analytics
+ * page view event
+ * @param {string} [pageViewProps.url] The url of the
+ * page. If not provided, use `window.location.pathname`
+ * @param {string} [pageViewProps.title] The title of the
+ * page. If not provided, uses `document.title`
  */
-export const logPageView = (): void => {
+export const logPageView = ({
+	url,
+	title,
+}: AnalyticsPageViewProps = {}): void => {
 	try {
-		GoogleAnalytics.set({ page: window.location.pathname });
-		GoogleAnalytics.pageview(window.location.pathname);
+		const location = url || window.location.pathname;
+		GoogleAnalytics.set({ page: location });
+		console.log("(analyticsHooks) title: ", title);
+		if (title) {
+			GoogleAnalytics.pageview(window.location.pathname, [], title);
+		} else {
+			GoogleAnalytics.pageview(window.location.pathname);
+		}
 	} catch (e) {
 		-1;
 	}
@@ -69,11 +90,14 @@ export const useAnalyticsInit = (): void => {
 /**
  * Log a Page View with analytics.
  * Will only execute on component mount.
+ *
+ * @param {object} [pageViewProps] The props to pass to
+ * 'logPageView'
  */
-export const useAnalyticsPageView = (): void => {
+export const useAnalyticsPageView: typeof logPageView = (pageViewProps) => {
 	useAnalyticsInit();
 	useEffect(() => {
-		logPageView();
+		logPageView(pageViewProps);
 	}, []);
 };
 
