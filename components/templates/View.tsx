@@ -6,6 +6,7 @@ import { logPageView } from "../../utils/analytics";
 import TopNav, { topNavHeight, TopNavProps } from "../domain/TopNav";
 import Meta, { MetaProps } from "./Meta";
 import { useGlobalState } from "../../state/globalState";
+import { useAnalyticsPageView } from "../../utils/analyticsHooks";
 
 type ExtraProps = MetaProps & TopNavProps;
 export type ViewProps = ExtraProps & {
@@ -43,11 +44,7 @@ const View: React.FC<ViewProps> = ({
 	children,
 	...metaProps
 }) => {
-	const { initialiseGoogleAnalytics } = useGlobalState();
-	useEffect(() => {
-		initialiseGoogleAnalytics();
-		logPageView();
-	}, []);
+	useAnalyticsPageView();
 
 	const screenHeight = use100vh();
 
