@@ -62,7 +62,7 @@ const inventoryReducer = (
 			mutation(draftState);
 		});
 
-	logEvent("Sheet Event", stringifyObject(data));
+	logEvent("Sheet", stringifyObject(data));
 	//? Log the action in google analytics
 
 	switch (type) {

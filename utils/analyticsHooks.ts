@@ -23,7 +23,7 @@ export const logPageView = (): void => {
 	}
 };
 
-export type AnalyticsEventCategory = "Sheet Event";
+export type AnalyticsEventCategory = "Sheet";
 
 /**
  * Log an event in Google Analytics
@@ -85,7 +85,5 @@ export const useAnalyticsPageView = (): void => {
  */
 export const useAnalyticsEvent = (): typeof logEvent => {
 	useAnalyticsInit();
-	return (category, action) => {
-		logEvent(category, action);
-	};
+	return logEvent;
 };
