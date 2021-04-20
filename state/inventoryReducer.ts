@@ -10,7 +10,7 @@ import InventorySheetState, {
 import createInventoryItem from "../utils/createInventoryItem";
 import sendSheetAction from "../services/sendSheetAction";
 import { logEvent } from "../utils/analyticsHooks";
-import stringifyObject from "stringify-object";
+import codeToTitle from "code-to-title";
 
 //TODO: Create separate 'server' reducer that processes how to update mongo state
 
@@ -62,7 +62,7 @@ const inventoryReducer = (
 			mutation(draftState);
 		});
 
-	logEvent("Sheet", stringifyObject(data));
+	logEvent("Sheet", codeToTitle(type));
 	//? Log the action in google analytics
 
 	switch (type) {
@@ -106,12 +106,5 @@ const inventoryReducer = (
 			});
 	}
 };
-
-/**
- * //TODO: Actions
- * Add member
- * Remove member
- * Update member
- */
 
 export default inventoryReducer;
