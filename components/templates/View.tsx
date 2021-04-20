@@ -1,4 +1,3 @@
-import GoogleAnalytics from "react-ga";
 import { Box, BoxProps } from "@chakra-ui/layout";
 import { useToken } from "@chakra-ui/system";
 import React, { useEffect } from "react";
@@ -6,7 +5,6 @@ import { use100vh } from "react-div-100vh";
 import { logPageView } from "../../utils/analytics";
 import TopNav, { topNavHeight, TopNavProps } from "../domain/TopNav";
 import Meta, { MetaProps } from "./Meta";
-import { GOOGLE_ANALYTICS_ID } from "../../config/publicEnv";
 import { useGlobalState } from "../../state/globalState";
 
 type ExtraProps = MetaProps & TopNavProps;
