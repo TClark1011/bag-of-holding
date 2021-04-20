@@ -10,8 +10,12 @@ blockProdBuild("Confirm that google analytics is working");
  * Log a page view in Google Analytics
  */
 export const logPageView = (): void => {
-	GoogleAnalytics.set({ page: window.location.pathname });
-	GoogleAnalytics.pageview(window.location.pathname);
+	try {
+		GoogleAnalytics.set({ page: window.location.pathname });
+		GoogleAnalytics.pageview(window.location.pathname);
+	} catch (e) {
+		-1;
+	}
 };
 
 /**
@@ -55,8 +59,8 @@ export const useAnalyticsInit = (): void => {
  * Will only execute on component mount.
  */
 export const useAnalyticsPageView = (): void => {
+	useAnalyticsInit();
 	useEffect(() => {
-		useAnalyticsInit();
 		logPageView();
 	}, []);
 };
