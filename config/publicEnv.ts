@@ -8,7 +8,8 @@ export const inDevelopment = process.env.NODE_ENV === "development";
 export const inTesting = process.env.NODE_ENV === "test";
 
 export const onProdBranch =
-	process.env.ON_PROD_BRANCH && JSON.parse(process.env.ON_PROD_BRANCH) === true;
+	process.env.NEXT_PUBLIC_ON_PROD_BRANCH &&
+	JSON.parse(process.env.NEXT_PUBLIC_ON_PROD_BRANCH) === true;
 //? If the application is running on the production branch
 
 export const isBuildingForProd = onProdBranch && inProduction;
