@@ -18,13 +18,18 @@ export const logPageView = (): void => {
 	}
 };
 
+export type AnalyticsEventCategory = "Sheet Event";
+
 /**
  * Log an event in Google Analytics
  *
  * @param {string} category The category of the event
  * @param {string} action The action of the event
  */
-export const logEvent = (category: string, action: string): void => {
+export const logEvent = (
+	category: AnalyticsEventCategory,
+	action: string
+): void => {
 	GoogleAnalytics.event({ category, action });
 };
 
@@ -71,7 +76,7 @@ export const useAnalyticsPageView = (): void => {
  * @returns {Function} a function to log an
  * analytics event
  */
-export const useAnalyticsEvent = (): ((p1: string, p2: string) => void) => {
+export const useAnalyticsEvent = (): typeof logEvent => {
 	useAnalyticsInit();
 	return (category, action) => {
 		logEvent(category, action);
