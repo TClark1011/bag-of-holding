@@ -33,7 +33,7 @@ const New: React.FC = () => {
 			.then((res) => {
 				const newSheetUrl = getSheetLink(res.data);
 				router.replace(newSheetUrl + "?new", newSheetUrl);
-				logAnalyticsEvent("Sheet Event", "New Sheet Created");
+				logAnalyticsEvent("Sheet", "New Sheet Created");
 			})
 			.catch(() => {
 				turnOnError();
