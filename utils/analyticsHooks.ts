@@ -35,9 +35,9 @@ export const logPageView = ({
 		GoogleAnalytics.set({ page: location });
 		console.log("(analyticsHooks) title: ", title);
 		if (title) {
-			GoogleAnalytics.pageview(window.location.pathname, [], title);
+			GoogleAnalytics.pageview(location, [], title);
 		} else {
-			GoogleAnalytics.pageview(window.location.pathname);
+			GoogleAnalytics.pageview(location);
 		}
 	} catch (e) {
 		-1;
