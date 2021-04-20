@@ -25,7 +25,7 @@ export const useGlobalState = () => {
 
 		//# ACTIONS
 		/**
-		 *
+		 * Initialise google analytics if it has not already been initialised
 		 */
 		initialiseGoogleAnalytics: () => {
 			if (!state.googleAnalyticsInitialised.value) {
