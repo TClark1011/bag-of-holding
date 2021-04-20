@@ -2,9 +2,6 @@ import { GOOGLE_ANALYTICS_ID, inProduction } from "./../config/publicEnv";
 import { useHookstate, createState as createHookstate } from "@hookstate/core";
 import { useEffect } from "react";
 import GoogleAnalytics from "react-ga";
-import blockProdBuild from "./blockProdBuild";
-
-blockProdBuild("Confirm that google analytics is working");
 
 /**
  * Log a page view in Google Analytics
