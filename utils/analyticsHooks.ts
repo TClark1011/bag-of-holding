@@ -5,9 +5,6 @@ import GoogleAnalytics from "react-ga";
 import blockProdBuild from "./blockProdBuild";
 
 blockProdBuild(
-	"Configure page names in google analytics (currently the analytics recognise every sheet as a different page)"
-);
-blockProdBuild(
 	"Log analytic exceptions (if error occurs when creating new sheet)"
 );
 
