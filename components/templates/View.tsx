@@ -1,11 +1,9 @@
 import { Box, BoxProps } from "@chakra-ui/layout";
 import { useToken } from "@chakra-ui/system";
-import React, { useEffect } from "react";
+import React from "react";
 import { use100vh } from "react-div-100vh";
-import { logPageView } from "../../utils/analytics";
 import TopNav, { topNavHeight, TopNavProps } from "../domain/TopNav";
 import Meta, { MetaProps } from "./Meta";
-import { useGlobalState } from "../../state/globalState";
 import { useAnalyticsPageView } from "../../utils/analyticsHooks";
 
 type ExtraProps = MetaProps & TopNavProps;
