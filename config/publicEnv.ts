@@ -16,3 +16,7 @@ export const isBuildingForProd = onProdBranch && inProduction;
 //? If the application is being built to be deployed to production
 
 export const GOOGLE_ANALYTICS_ID = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID;
+
+export const DEBUG_ANALYTICS: boolean =
+	process.env.NEXT_PUBLIC_DEBUG_ANALYTICS &&
+	JSON.parse(process.env.NEXT_PUBLIC_DEBUG_ANALYTICS);
