@@ -14,6 +14,7 @@ import {
 } from "@chakra-ui/alert";
 import requestNewSheet from "../services/requestNewSheet";
 import { useAnalyticsEvent } from "../utils/analyticsHooks";
+import View from "../components/templates/View";
 
 /**
  * Page to take user to when they want to make a new sheet.
@@ -42,29 +43,34 @@ const New: React.FC = () => {
 
 	const screenHeight = use100vh();
 	return (
-		<Center minHeight={screenHeight} padding="break">
-			{errorHasOccurred ? (
-				<Alert
-					status="error"
-					colorScheme="error"
-					variant="left-accent"
-					width="max-content"
-				>
-					<AlertIcon />
-					<AlertTitle>An error has occurred</AlertTitle>
-					<AlertDescription>Please try again later</AlertDescription>
-				</Alert>
-			) : (
-				<Box>
-					<H3 textAlign="center" marginBottom="break">
-						Creating a new sheet
-					</H3>
-					<Center>
-						<Spinner />
-					</Center>
-				</Box>
-			)}
-		</Center>
+		<View
+			title="Creating New Sheet..."
+			analyticsPageViewProps={{ title: "New Sheet Loading Screen" }}
+		>
+			<Center minHeight={screenHeight} padding="break">
+				{errorHasOccurred ? (
+					<Alert
+						status="error"
+						colorScheme="error"
+						variant="left-accent"
+						width="max-content"
+					>
+						<AlertIcon />
+						<AlertTitle>An error has occurred</AlertTitle>
+						<AlertDescription>Please try again later</AlertDescription>
+					</Alert>
+				) : (
+					<Box>
+						<H3 textAlign="center" marginBottom="break">
+							Creating a new sheet
+						</H3>
+						<Center>
+							<Spinner />
+						</Center>
+					</Box>
+				)}
+			</Center>
+		</View>
 	);
 };
 
