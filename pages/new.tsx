@@ -13,6 +13,7 @@ import {
 	AlertTitle,
 } from "@chakra-ui/alert";
 import requestNewSheet from "../services/requestNewSheet";
+import { useAnalyticsEvent } from "../utils/analyticsHooks";
 
 /**
  * Page to take user to when they want to make a new sheet.
@@ -25,12 +26,14 @@ import requestNewSheet from "../services/requestNewSheet";
 const New: React.FC = () => {
 	const router = useRouter();
 	const { errorHasOccurred, turnOnError } = useNewSheetPageState();
+	const logAnalyticsEvent = useAnalyticsEvent();
 
 	useEffect(() => {
 		requestNewSheet()
 			.then((res) => {
 				const newSheetUrl = getSheetLink(res.data);
 				router.replace(newSheetUrl + "?new", newSheetUrl);
+				logAnalyticsEvent("Sheet Event", "New Sheet Created");
 			})
 			.catch(() => {
 				turnOnError();
