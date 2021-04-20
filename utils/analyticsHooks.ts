@@ -41,6 +41,17 @@ export const logPageView = ({
 	}
 };
 
+/**
+ * Log an exception in analytics
+ *
+ * @param {string} description A description of the exception.
+ * @param {boolean} [fatal=false] Whether or not the exception
+ * was fatal to the application
+ */
+export const logException = (description: string, fatal = false): void => {
+	GoogleAnalytics.exception({ description, fatal });
+};
+
 export type AnalyticsEventCategory = "Sheet";
 
 /**
@@ -107,4 +118,15 @@ export const useAnalyticsPageView: typeof logPageView = (pageViewProps) => {
 export const useAnalyticsEvent = (): typeof logEvent => {
 	useAnalyticsInit();
 	return logEvent;
+};
+
+/**
+ * Return a function to log an analytics exception.
+ *
+ * @returns {Function} a function to log an
+ * analytics exception
+ */
+export const useAnalyticsException = (): typeof logException => {
+	useAnalyticsInit();
+	return logException;
 };
