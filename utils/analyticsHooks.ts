@@ -2,12 +2,7 @@ import { DEBUG_ANALYTICS, GOOGLE_ANALYTICS_ID } from "./../config/publicEnv";
 import { useHookstate, createState as createHookstate } from "@hookstate/core";
 import { useEffect } from "react";
 import GoogleAnalytics from "react-ga";
-import blockProdBuild from "./blockProdBuild";
 import stringifyObject from "stringify-object";
-
-blockProdBuild(
-	"Log analytic exceptions (if error occurs when creating new sheet)"
-);
 
 export interface AnalyticsPageViewProps {
 	url?: string;
