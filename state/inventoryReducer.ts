@@ -9,8 +9,9 @@ import InventorySheetState, {
 } from "../types/InventorySheetState";
 import createInventoryItem from "../utils/createInventoryItem";
 import sendSheetAction from "../services/sendSheetAction";
-import { logEvent } from "../utils/analyticsHooks";
+import { logEvent, logException } from "../utils/analyticsHooks";
 import codeToTitle from "code-to-title";
+import stringifyObject from "stringify-object";
 
 //TODO: Create separate 'server' reducer that processes how to update mongo state
 
@@ -35,7 +36,18 @@ const inventoryReducer = (
 		sendSheetAction(state._id, {
 			...action,
 			sendToServer: false,
-		} as InventorySheetStateAction);
+		} as InventorySheetStateAction).catch((err) => {
+			logException(
+				`Error occurred when sending sheet '${type}' action: ${err.message}`,
+				{
+					fatal: true,
+					extraData: stringifyObject({
+						sheetId: state._id,
+						action,
+					}),
+				}
+			);
+		});
 	}
 
 	/**
