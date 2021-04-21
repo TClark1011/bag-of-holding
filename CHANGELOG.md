@@ -17,11 +17,13 @@
 * changes to documentation *
 -->
 
-## Version 1.0.2
+## Version 1.1.0
 
 ### Features
 
-- Added link to github repository on home page
+- Created 'Contact' and 'Info' pages
+- Added links to home, contact and info pages as well as to the GitHub repository to the top navigation bar
+- Confirmation prompts are used when deleting an item or a party member from a sheet
 
 ### Backend
 
