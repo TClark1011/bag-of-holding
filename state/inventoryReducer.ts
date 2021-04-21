@@ -9,6 +9,9 @@ import InventorySheetState, {
 } from "../types/InventorySheetState";
 import createInventoryItem from "../utils/createInventoryItem";
 import sendSheetAction from "../services/sendSheetAction";
+import { logEvent, logException } from "../utils/analyticsHooks";
+import codeToTitle from "code-to-title";
+import stringifyObject from "stringify-object";
 
 //TODO: Create separate 'server' reducer that processes how to update mongo state
 
@@ -24,16 +27,25 @@ import sendSheetAction from "../services/sendSheetAction";
  */
 const inventoryReducer = (
 	state: InventorySheetState,
-	{ type, data, sendToServer, ...action }: InventorySheetStateAction
+	action: InventorySheetStateAction
 ): InventorySheetFields => {
+	const { type, data, sendToServer } = action;
+
 	if (sendToServer) {
 		//? If send to server is true, we send the action to the server
 		sendSheetAction(state._id, {
-			type,
-			data,
-			sendToServer: false,
 			...action,
-		} as InventorySheetStateAction);
+			sendToServer: false,
+		} as InventorySheetStateAction).catch((err) => {
+			logException(`Error occurred when sending sheet '${type}' action`, {
+				fatal: true,
+				extraData: stringifyObject({
+					err: err.message,
+					sheetId: state._id,
+					action,
+				}),
+			});
+		});
 	}
 
 	/**
@@ -59,6 +71,9 @@ const inventoryReducer = (
 			}
 			mutation(draftState);
 		});
+
+	logEvent("Sheet", codeToTitle(type));
+	//? Log the action in google analytics
 
 	switch (type) {
 		case "item_add":
@@ -101,12 +116,5 @@ const inventoryReducer = (
 			});
 	}
 };
-
-/**
- * //TODO: Actions
- * Add member
- * Remove member
- * Update member
- */
 
 export default inventoryReducer;

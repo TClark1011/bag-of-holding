@@ -4,12 +4,17 @@ import React from "react";
 import { use100vh } from "react-div-100vh";
 import TopNav, { topNavHeight, TopNavProps } from "../domain/TopNav";
 import Meta, { MetaProps } from "./Meta";
+import {
+	AnalyticsPageViewProps,
+	useAnalyticsPageView,
+} from "../../utils/analyticsHooks";
 
 type ExtraProps = MetaProps & TopNavProps;
 export type ViewProps = ExtraProps & {
 	showTopNav?: boolean;
 	minFullHeight?: boolean;
 	accountForTopNav?: boolean;
+	analyticsPageViewProps?: AnalyticsPageViewProps;
 };
 
 /**
@@ -31,6 +36,9 @@ export type ViewProps = ExtraProps & {
  * the height of the "absolute" position top navigation bar
  * @param {React.ReactElement} props.children The main content
  * of the view
+ * @param {object} [props.analyticsPageViewProps={}] Props for defining
+ * the page view event that will be sent to the analytics tracker when
+ * this page is viewed
  * @returns {React.ReactElement} Rendered view
  */
 const View: React.FC<ViewProps> = ({
@@ -39,8 +47,14 @@ const View: React.FC<ViewProps> = ({
 	minFullHeight = true,
 	accountForTopNav = true,
 	children,
+	analyticsPageViewProps = {},
 	...metaProps
 }) => {
+	useAnalyticsPageView({
+		...(metaProps.title && { title: metaProps.title }),
+		...analyticsPageViewProps,
+	});
+
 	const screenHeight = use100vh();
 
 	const basePadding = useToken("space", "break");
