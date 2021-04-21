@@ -13,7 +13,10 @@ import {
 	AlertTitle,
 } from "@chakra-ui/alert";
 import requestNewSheet from "../services/requestNewSheet";
-import { useAnalyticsEvent } from "../utils/analyticsHooks";
+import {
+	useAnalyticsEvent,
+	useAnalyticsException,
+} from "../utils/analyticsHooks";
 import View from "../components/templates/View";
 
 /**
@@ -28,6 +31,7 @@ const New: React.FC = () => {
 	const router = useRouter();
 	const { errorHasOccurred, turnOnError } = useNewSheetPageState();
 	const logAnalyticsEvent = useAnalyticsEvent();
+	const logAnalyticsException = useAnalyticsException();
 
 	useEffect(() => {
 		requestNewSheet()
@@ -36,8 +40,12 @@ const New: React.FC = () => {
 				router.replace(newSheetUrl + "?new", newSheetUrl);
 				logAnalyticsEvent("Sheet", "New Sheet Created");
 			})
-			.catch(() => {
+			.catch((err) => {
 				turnOnError();
+				logAnalyticsException("Failed to create new sheet.", {
+					fatal: true,
+					extraData: err.message,
+				});
 			});
 	}, []);
 
