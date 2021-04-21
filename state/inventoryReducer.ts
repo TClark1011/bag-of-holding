@@ -37,16 +37,14 @@ const inventoryReducer = (
 			...action,
 			sendToServer: false,
 		} as InventorySheetStateAction).catch((err) => {
-			logException(
-				`Error occurred when sending sheet '${type}' action: ${err.message}`,
-				{
-					fatal: true,
-					extraData: stringifyObject({
-						sheetId: state._id,
-						action,
-					}),
-				}
-			);
+			logException(`Error occurred when sending sheet '${type}' action`, {
+				fatal: true,
+				extraData: stringifyObject({
+					err: err.message,
+					sheetId: state._id,
+					action,
+				}),
+			});
 		});
 	}
 
