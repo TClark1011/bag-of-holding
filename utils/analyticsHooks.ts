@@ -44,12 +44,23 @@ export const logPageView = ({
 /**
  * Log an exception in analytics
  *
- * @param {string} description A description of the exception.
- * @param {boolean} [fatal=false] Whether or not the exception
- * was fatal to the application
+ * @param {string} description A description of the exception
+ * @param {object} [optionalProps] Extra props that can be
+ * optionally provided
+ * @param {false} [optionalProps.fatal=false] Whether or not
+ * the exception was fatal
+ * @param {string} [optionalProps.extraData] Extra data that can
+ * be provided to give extra context
  */
-export const logException = (description: string, fatal = false): void => {
-	GoogleAnalytics.exception({ description, fatal });
+export const logException = (
+	description: string,
+	{ fatal = false, extraData }: { fatal?: boolean; extraData?: string }
+): void => {
+	GoogleAnalytics.exception({
+		description,
+		fatal,
+		...(extraData && { extraData }),
+	});
 };
 
 export type AnalyticsEventCategory = "Sheet";
