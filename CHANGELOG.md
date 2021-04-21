@@ -25,7 +25,7 @@
 
 ### Backend
 
-- MongoDB sheet document version fields now increment when sheets are edited
+- Implemented Google Analytics
 
 ### Documentation
 
