@@ -3,6 +3,7 @@ import { useHookstate, createState as createHookstate } from "@hookstate/core";
 import { useEffect } from "react";
 import GoogleAnalytics from "react-ga";
 import blockProdBuild from "./blockProdBuild";
+import stringifyObject from "stringify-object";
 
 blockProdBuild(
 	"Log analytic exceptions (if error occurs when creating new sheet)"
@@ -59,7 +60,7 @@ export const logException = (
 	GoogleAnalytics.exception({
 		description,
 		fatal,
-		...(extraData && { extraData }),
+		...(extraData && { extraData: stringifyObject(extraData) }),
 	});
 };
 
