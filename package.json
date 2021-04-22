@@ -10,7 +10,8 @@
 		"test": "yarn test:backend & yarn test:frontend",
 		"test:backend": "jest --testEnvironment=node --testPathPattern=/tests/backend",
 		"test:frontend": "jest --testPathPattern=/tests/frontend",
-		"setupDevDb": "ts-node scripts/setupDevDb.ts"
+		"setupDevDb": "ts-node scripts/setupDevDb.ts",
+		"postinstall": "husky install"
 	},
 	"dependencies": {
 		"@chakra-ui/react": "^1.3.4",
