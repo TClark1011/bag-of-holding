@@ -1,8 +1,6 @@
 import { REFETCH_INTERVAL } from "./../config/publicEnv";
-import { InventoryItemCreationFields } from "../types/InventoryItemFields";
 import produce from "immer";
 import { merge } from "merge-anything";
-import InventoryItemFields from "../types/InventoryItemFields";
 import InventorySheetFields from "../types/InventorySheetFields";
 import InventorySheetState, {
 	InventorySheetStateAction,
@@ -75,45 +73,43 @@ const inventoryReducer = (
 	logEvent("Sheet", codeToTitle(type));
 	//? Log the action in google analytics
 
-	switch (type) {
+	switch (action.type) {
 		case "item_add":
 			return produceNewState((draftState) => {
-				draftState.items.push(
-					createInventoryItem(data as InventoryItemCreationFields)
-				);
+				draftState.items.push(createInventoryItem(action.data));
 			});
 		case "item_remove":
 			return produceNewState((draftState) => {
 				draftState.items = draftState.items.filter(
-					(item) => item._id !== (data as string)
+					(item) => item._id !== action.data
 				);
 			}, true);
 		case "item_update":
-			return {
-				...state,
-				items: state.items.map((item) => {
-					if (item._id === (data as InventoryItemFields)._id) {
-						return data as InventoryItemFields;
+			return produceNewState((draftState) => {
+				draftState.items.forEach((item, index) => {
+					if (item._id === action.data._id) {
+						draftState.items[index] = {
+							...draftState.items[index],
+							...action.data,
+						};
 					}
-					return item;
-				}),
-			};
+				});
+			}, true);
 		case "sheet_update":
-			//TODO: If a party member is deleted, set items that were being carried by them to being carried by nobody
 			if (
 				state.blockRefetch &&
 				new Date().getTime() - state.blockRefetch.from.getTime() >
 					state.blockRefetch.for
+			//? If not currently blocking refetch...
 			) {
-				return merge(state, data as InventorySheetFields);
-				//? Only update the state if enough time has passed since we started blocking data
+				return merge(state, action.data);
 			}
 			return state;
 		case "sheet_metadataUpdate":
 			return produceNewState((draftState) => {
 				draftState.name = (data as { name: string }).name;
 				draftState.members = (data as { members: string[] }).members;
-			});
+			}, true);
 	}
 };
 
