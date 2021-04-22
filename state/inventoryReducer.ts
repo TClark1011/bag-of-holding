@@ -16,7 +16,7 @@ import stringifyObject from "stringify-object";
 /**
  * The reducer for a sheet's inventory state
  *
- * @param {InventoryItemFields[]} state The current  ate of the inventory
+ * @param {InventoryItemFields[]} state The current  state of the inventory
  * @param {InventoryStateAction} action The action to be performed upon the state
  * @param {InventoryStateActionType} action.type The type of action being performed
  * @param {InventoryStateActionValidData} action.data Supplementary information
