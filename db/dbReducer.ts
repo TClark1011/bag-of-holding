@@ -1,6 +1,6 @@
 import mapObject from "map-obj";
 import omit from "omit.js";
-import { InventorySheetStateAction } from "./../types/InventorySheetState";
+import { InventorySheetPartialUpdateAction } from "../types/InventorySheetState";
 import SheetModel from "./SheetModel";
 
 /**
@@ -13,7 +13,7 @@ import SheetModel from "./SheetModel";
  */
 const dbReducer = async (
 	sheetId: string,
-	action: InventorySheetStateAction
+	action: InventorySheetPartialUpdateAction
 ): Promise<void> => {
 	const metaUpdates = {
 		$inc: { __v: 1 },
