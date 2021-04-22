@@ -27,22 +27,23 @@ const inventoryReducer = (
 	state: InventorySheetState,
 	action: InventorySheetStateAction
 ): InventorySheetFields => {
-	const { type, data, sendToServer } = action;
-
-	if (sendToServer) {
+	if (action.sendToServer) {
 		//? If send to server is true, we send the action to the server
 		sendSheetAction(state._id, {
 			...action,
 			sendToServer: false,
 		} as InventorySheetStateAction).catch((err) => {
-			logException(`Error occurred when sending sheet '${type}' action`, {
-				fatal: true,
-				extraData: stringifyObject({
-					err: err.message,
-					sheetId: state._id,
-					action,
-				}),
-			});
+			logException(
+				`Error occurred when sending sheet '${action.type}' action`,
+				{
+					fatal: true,
+					extraData: stringifyObject({
+						err: err.message,
+						sheetId: state._id,
+						action,
+					}),
+				}
+			);
 		});
 	}
 
@@ -70,7 +71,7 @@ const inventoryReducer = (
 			mutation(draftState);
 		});
 
-	logEvent("Sheet", codeToTitle(type));
+	logEvent("Sheet", codeToTitle(action.type));
 	//? Log the action in google analytics
 
 	switch (action.type) {
@@ -107,8 +108,8 @@ const inventoryReducer = (
 			return state;
 		case "sheet_metadataUpdate":
 			return produceNewState((draftState) => {
-				draftState.name = (data as { name: string }).name;
-				draftState.members = (data as { members: string[] }).members;
+				draftState.name = action.data.name;
+				draftState.members = action.data.members;
 			}, true);
 	}
 };
