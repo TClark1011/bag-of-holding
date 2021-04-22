@@ -61,7 +61,7 @@ type UpdateItemAction = InventorySheetStateActionTemplate<
  */
 type UpdateSheetAction = InventorySheetStateActionTemplate<
 	"sheet_update",
-	Partial<InventorySheetFields>
+	Omit<InventorySheetFields, "_id">
 >;
 
 type UpdateSheetMetaDataAction = InventorySheetStateActionTemplate<
@@ -73,14 +73,22 @@ type UpdateSheetMetaDataAction = InventorySheetStateActionTemplate<
 >;
 
 /**
- * Type for all valid actions
+ * An action that performs a partial update on a sheet
+ * Used for backend database reducer
  */
-export type InventorySheetStateAction =
+export type InventorySheetPartialUpdateAction =
 	| AddItemAction
 	| RemoveItemAction
-	| UpdateSheetAction
 	| UpdateItemAction
 	| UpdateSheetMetaDataAction;
+
+/**
+ * Action that can be executed to mutate frontend state
+ * of a sheet.
+ */
+export type InventorySheetStateAction =
+	| InventorySheetPartialUpdateAction
+	| UpdateSheetAction;
 
 /**
  * @typedef {object} InventorySheetState Holds the local state of an inventory sheet
