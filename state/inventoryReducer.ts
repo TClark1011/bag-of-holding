@@ -98,10 +98,11 @@ const inventoryReducer = (
 			}, true);
 		case "sheet_update":
 			if (
-				state.blockRefetch &&
-				new Date().getTime() - state.blockRefetch.from.getTime() >
-					state.blockRefetch.for
-			//? If not currently blocking refetch...
+				!state.blockRefetch ||
+				(state.blockRefetch &&
+					new Date().getTime() - state.blockRefetch.from.getTime() >
+						state.blockRefetch.for)
+				//? If not currently blocking refetch...
 			) {
 				return merge(state, action.data);
 			}
