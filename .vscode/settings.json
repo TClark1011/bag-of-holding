@@ -37,5 +37,8 @@
 	],
 	"cSpell.words": [
 		"pageview"
+	],
+	"conventionalCommits.scopes": [
+		"workspace"
 	]
 }
