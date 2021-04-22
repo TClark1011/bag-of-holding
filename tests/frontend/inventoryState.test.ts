@@ -1,6 +1,6 @@
-import inventoryReducer from "../../state/inventoryReducer";
-import InventoryItemFields from "../../types/InventoryItemFields";
-import InventorySheetState from "../../types/InventorySheetState";
+import inventoryReducer from "../../src/state/inventoryReducer";
+import InventoryItemFields from "../../src/types/InventoryItemFields";
+import InventorySheetState from "../../src/types/InventorySheetState";
 
 const testState: InventorySheetState = {
 	_id: "0",

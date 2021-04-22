@@ -1,4 +1,4 @@
-import { apiRootUrl } from "./../constants/urls";
+import { apiRootUrl } from "../constants/urls";
 import axios from "axios";
 
 const axiosInstance = axios.create({

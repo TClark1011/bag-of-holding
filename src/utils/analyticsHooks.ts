@@ -2,7 +2,7 @@ import {
 	DEBUG_ANALYTICS,
 	GOOGLE_ANALYTICS_ID,
 	inTesting,
-} from "./../config/publicEnv";
+} from "../config/publicEnv";
 import { useHookstate, createState as createHookstate } from "@hookstate/core";
 import { useEffect } from "react";
 import GoogleAnalytics from "react-ga";

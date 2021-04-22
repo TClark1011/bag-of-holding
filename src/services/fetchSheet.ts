@@ -1,4 +1,4 @@
-import { sheetsUrlPrefix } from "./../constants/urls";
+import { sheetsUrlPrefix } from "../constants/urls";
 import axiosInstance from "../config/axiosInstance";
 import InventorySheetFields from "../types/InventorySheetFields";
 import { AxiosResponse } from "axios";

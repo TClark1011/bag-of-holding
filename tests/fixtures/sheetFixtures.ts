@@ -1,4 +1,4 @@
-import InventorySheetFields from "../types/InventorySheetFields";
+import InventorySheetFields from "../../src/types/InventorySheetFields";
 import { healthPotionFixture, longswordFixture } from "./itemFixtures";
 import { averageMembersFixture } from "./membersFixtures";
 

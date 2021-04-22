@@ -1,6 +1,6 @@
-import { inProduction } from "../config/publicEnv";
-import connectToMongoose from "../db/connectToMongoose";
-import SheetModel, { ProductionSheetModel } from "../db/SheetModel";
+import { inProduction } from "../src/config/publicEnv";
+import connectToMongoose from "../src/db/connectToMongoose";
+import SheetModel, { ProductionSheetModel } from "../src/db/SheetModel";
 
 (async () => {
 	if (!inProduction) {

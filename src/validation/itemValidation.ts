@@ -1,4 +1,4 @@
-import { defaultFieldLength } from "./../constants/validationConstants";
+import { defaultFieldLength } from "../constants/validationConstants";
 import * as yup from "yup";
 
 export const descriptionLength = 400;

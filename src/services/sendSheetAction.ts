@@ -1,4 +1,4 @@
-import { InventorySheetStateAction } from "./../types/InventorySheetState";
+import { InventorySheetStateAction } from "../types/InventorySheetState";
 import { AxiosResponse } from "axios";
 import axiosInstance from "../config/axiosInstance";
 import { sheetsUrlPrefix } from "../constants/urls";
