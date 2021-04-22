@@ -1,6 +1,6 @@
 import faker from "faker";
-import InventoryItemFields from "../types/InventoryItemFields";
-import { generateRandomInventoryItem } from "../utils/createInventoryItem";
+import InventoryItemFields from "../../src/types/InventoryItemFields";
+import { generateRandomInventoryItem } from "../../src/utils/createInventoryItem";
 import { averageMembersFixture } from "./membersFixtures";
 
 /**

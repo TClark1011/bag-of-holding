@@ -1,4 +1,4 @@
-import { inProduction } from "./../config/publicEnv";
+import { inProduction } from "../config/publicEnv";
 import mongoose, { Model, Document } from "mongoose";
 import InventorySheetFields from "../types/InventorySheetFields";
 

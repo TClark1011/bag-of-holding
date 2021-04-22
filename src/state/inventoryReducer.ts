@@ -1,4 +1,4 @@
-import { REFETCH_INTERVAL } from "./../config/publicEnv";
+import { REFETCH_INTERVAL } from "../config/publicEnv";
 import produce from "immer";
 import { merge } from "merge-anything";
 import InventorySheetFields from "../types/InventorySheetFields";

@@ -1,4 +1,4 @@
-import { appName } from "./../constants/branding";
+import { appName } from "../constants/branding";
 /**
  * Generate a string to be used as the title in
  * a page's metadata by prefixing a provided string

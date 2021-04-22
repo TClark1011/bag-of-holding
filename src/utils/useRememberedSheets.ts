@@ -1,6 +1,6 @@
 import { fetchRememberedSheets } from "./rememberSheets";
 import { useEffect, useState } from "react";
-import { InventorySheetMenuItemFields } from "./../types/InventorySheetFields";
+import { InventorySheetMenuItemFields } from "../types/InventorySheetFields";
 
 /**
  * Fetch the remembered sheets.
