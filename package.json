@@ -49,6 +49,8 @@
 		"yup": "^0.32.9"
 	},
 	"devDependencies": {
+		"@commitlint/cli": "^12.1.1",
+		"@commitlint/config-conventional": "^12.1.1",
 		"@testing-library/dom": "^7.30.3",
 		"@testing-library/jest-dom": "^5.11.10",
 		"@testing-library/react": "^11.2.6",
