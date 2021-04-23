@@ -4,9 +4,12 @@ import SheetModel from "../../src/db/SheetModel";
 import InventoryItemFields from "../../src/types/InventoryItemFields";
 import InventorySheetFields from "../../src/types/InventorySheetFields";
 import mongoose from "mongoose";
+import { MockMongoose } from "mock-mongoose";
 
 let sheetId = "";
 //? Variable to store the id of the sheet we create for testing
+
+const mockMongoose = new MockMongoose(mongoose);
 
 /**
  * Fetch the sheet at the id defined by the 'sheetId'
@@ -18,7 +21,9 @@ const getSheet = async () =>
 	((await SheetModel.findById(sheetId)) as unknown) as InventorySheetFields;
 
 beforeAll(async () => {
-	await connectToMongoose();
+	await mockMongoose.prepareStorage().then(() => {
+		connectToMongoose();
+	});
 
 	const newSheet = await new SheetModel({
 		name: "Sheet Name",
@@ -32,10 +37,8 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-	await SheetModel.findByIdAndDelete(sheetId);
-	//? Delete the sheet after tests are complete
-
 	mongoose.connection.close();
+	mockMongoose.killMongo();
 });
 
 describe("DB Reducer Actions", () => {
@@ -81,64 +84,22 @@ describe("DB Reducer Actions", () => {
 
 	test("Sheet Metadata Update", async () => {
 		const originalState = await getSheet();
-		const membersUpdateTest = ["member 1", "member 2"];
-		const nameUpdateTest = "updated name";
-
-		const fullUpdateTest = {
-			name: "Full Update Name",
-			members: [
-				"Full Update Member 1",
-				"Full Update Member 2",
-				"Full Update Member 3",
-				"Full Update Member 4",
-			],
+		const testUpdate = {
+			name: originalState.name + "+",
+			members: ["1", "2"],
 		};
 
-		//# Update members
 		await dbReducer(sheetId, {
 			type: "sheet_metadataUpdate",
-			data: {
-				name: originalState.name,
-				members: membersUpdateTest,
-			},
+			data: testUpdate,
 		});
-		await getSheet();
-		//? If I don't include this the next tests
-		//FIXME: Make it like not do that pls
-		const postMemberUpdateState = await getSheet();
-		expect(Array.from(postMemberUpdateState.members)).toEqual(
-			membersUpdateTest
+
+		const postUpdateState = await getSheet();
+
+		expect(originalState).not.toMatchObject(postUpdateState);
+		expect(originalState.members.length).toBeLessThan(
+			postUpdateState.members.length
 		);
-		expect(postMemberUpdateState.name).toEqual(originalState.name);
-
-		//# Update sheet name
-		await dbReducer(sheetId, {
-			type: "sheet_metadataUpdate",
-			data: {
-				name: nameUpdateTest,
-				members: postMemberUpdateState.members,
-			},
-		});
-		await getSheet();
-		//? See above
-		const postNameUpdateState = await getSheet();
-		expect(Array.from(postNameUpdateState.members)).toEqual(
-			Array.from(postMemberUpdateState.members)
-		);
-		expect(postNameUpdateState.name).toEqual(nameUpdateTest);
-
-		//# Update Members and Name
-		await dbReducer(sheetId, {
-			type: "sheet_metadataUpdate",
-			data: fullUpdateTest,
-		});
-		await getSheet();
-		//? See above
-
-		const postFullUpdateState = await getSheet();
-		expect(postFullUpdateState).toMatchObject({
-			...postNameUpdateState,
-			...postFullUpdateState,
-		});
+		expect(originalState.name).not.toEqual(postUpdateState.name);
 	});
 });

@@ -7,7 +7,7 @@ import { MONGO_URL } from "../config/env";
  * @returns {Promise<typeof mongoose>} Mongoose object connected to the MongoDB
  * database
  */
-const connectToMongoose = async (): Promise<typeof mongoose> =>
+const connectToMongoose = (): Promise<typeof mongoose> =>
 	mongoose
 		.connect(MONGO_URL, {
 			useUnifiedTopology: true,
