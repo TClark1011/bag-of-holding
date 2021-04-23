@@ -1,6 +1,6 @@
 {
 	"name": "rpg-party-inventory",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"private": true,
 	"license": "MIT",
 	"scripts": {
@@ -64,6 +64,7 @@
 		"@types/mongoose": "^5.10.3",
 		"@types/node": "^14.14.35",
 		"@types/react": "^17.0.3",
+		"@types/standard-version": "^7.0.0",
 		"@types/stringify-object": "^3.3.0",
 		"@types/uniq": "^0.0.27",
 		"@typescript-eslint/eslint-plugin": "^4.18.0",
@@ -79,6 +80,7 @@
 		"mock-mongoose": "^8.0.1-a",
 		"prettier": "^2.2.1",
 		"prettier-eslint": "^12.0.0",
+		"standard-version": "^9.2.0",
 		"typescript": "^4.2.3"
 	},
 	"config": {
