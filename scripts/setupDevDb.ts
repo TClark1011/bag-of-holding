@@ -1,6 +1,7 @@
 import { inProduction } from "../src/config/publicEnv";
 import connectToMongoose from "../src/db/connectToMongoose";
 import SheetModel, { ProductionSheetModel } from "../src/db/SheetModel";
+import mongoose from "mongoose";
 
 (async () => {
 	if (!inProduction) {
@@ -18,6 +19,9 @@ import SheetModel, { ProductionSheetModel } from "../src/db/SheetModel";
 					"An error ocurred while attempting to copy production data into the development database"
 				);
 				console.log(err);
+			})
+			.finally(() => {
+				mongoose.connection.close();
 			});
 	}
 
