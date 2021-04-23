@@ -12,7 +12,8 @@
 		"test:backend": "jest --selectProjects backend",
 		"setupDevDb": "ts-node scripts/setupDevDb.ts",
 		"postinstall": "husky install",
-		"commit": "git-cz"
+		"commit": "git-cz",
+		"release": "standard-version"
 	},
 	"dependencies": {
 		"@chakra-ui/react": "^1.3.4",
