@@ -1,12 +1,13 @@
 import mongoose from "mongoose";
-import { MockMongoose } from "mock-mongoose";
 import { MONGO_URL } from "../config/env";
-import { inTesting } from "../config/publicEnv";
 
 /**
+ * Establish a connection to MongoDB via mongoose
  *
+ * @returns {Promise<typeof mongoose>} Mongoose object connected to the MongoDB
+ * database
  */
-const initiateConnection = () => {
+const connectToMongoose = (): Promise<typeof mongoose> =>
 	mongoose
 		.connect(MONGO_URL, {
 			useUnifiedTopology: true,
@@ -17,22 +18,5 @@ const initiateConnection = () => {
 			console.log("connected to mongoose");
 			return result;
 		});
-};
-
-/**
- * Establish a connection to MongoDB via mongoose
- *
- * @returns {Promise<typeof mongoose>} Mongoose object connected to the MongoDB
- * database
- */
-const connectToMongoose = async (): Promise<void> => {
-	if (inTesting) {
-		new MockMongoose(mongoose).prepareStorage().then(() => {
-			initiateConnection();
-		});
-	} else {
-		initiateConnection();
-	}
-};
 
 export default connectToMongoose;
