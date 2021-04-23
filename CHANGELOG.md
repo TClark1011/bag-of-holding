@@ -1,50 +1,11 @@
-# CHANGELOG
+# Changelog
 
-<!-- VERSION CHANGELOG TEMPLATE -->
-<!--
-## Version *VERSION NUMBER*
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-### Features
-* new/altered features *
+### 1.0.3 (2021-04-23)
 
-### Backend
-* non user-facing stuff *
 
 ### Bug Fixes
-* bug fixes *
 
-### Documentation
-* changes to documentation *
--->
-
-## Version 1.1.0
-
-### Features
-
-- Created 'Contact' and 'Info' pages
-- Added links to home, contact and info pages as well as to the GitHub repository to the top navigation bar
-- Confirmation prompts are used when deleting an item or a party member from a sheet
-
-### Backend
-
-- Implemented Google Analytics
-
-### Documentation
-
-- Replaced template 'README.md' content with custom content
-- Added required MIT license documentation
-- Created `/docs` folder for storing documentation files
-- Created`ENV.md` file documenting use of environment variables
-- Created `FOLDER_STRUCTURE.md` file documenting codebase folder structure
-- Created `API.md` file providing basic documentation of API routes
-
-### Tests
-
-- Added basic render testing to home and sheet page
-
-## Version 1.0.1
-
-### Features
-
-- If an item's reference is a valid URL, the name becomes a clickable link to that URL
-- The category item field will now auto suggest other category values from items in the sheet
+* **workspace:** :bug: moved assets folder inside src folder ([f61079b](https://github.com/TClark1011/bag-of-holding/commit/f61079be84d2a67348af77abd9bf1023c7b5a688))
+* **workspace:** :wrench: setup pre install hook to run husky ([6e3012f](https://github.com/TClark1011/bag-of-holding/commit/6e3012fcaa994f6d47491c155f811ba4c1c9b9e2))
