@@ -8,6 +8,8 @@
 		"build": "next build",
 		"start": "next start",
 		"test": "jest",
+		"test:frontend": "jest --selectProjects frontend",
+		"test:backend": "jest --selectProjects backend",
 		"setupDevDb": "ts-node scripts/setupDevDb.ts",
 		"postinstall": "husky install"
 	},
