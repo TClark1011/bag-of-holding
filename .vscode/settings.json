@@ -39,6 +39,7 @@
 		"pageview"
 	],
 	"conventionalCommits.scopes": [
-		"workspace"
+		"workspace",
+		"backend"
 	]
 }
