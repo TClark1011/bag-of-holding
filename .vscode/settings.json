@@ -41,6 +41,7 @@
 	"conventionalCommits.scopes": [
 		"workspace",
 		"backend",
-		"scripts"
+		"scripts",
+		"fullstack"
 	]
 }

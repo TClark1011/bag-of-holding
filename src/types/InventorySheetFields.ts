@@ -1,10 +1,11 @@
 import InventoryItemFields from "./InventoryItemFields";
+import InventoryMemberFields from "./InventoryMemberFields";
 
 interface InventorySheetFields {
 	readonly _id: string;
 	name: string;
 	items: InventoryItemFields[];
-	members: string[];
+	members: InventoryMemberFields[];
 }
 //? name max length (max length: 24 chars)
 
