@@ -1,8 +1,8 @@
 import InventoryItemFields from "./InventoryItemFields";
 import InventoryMemberFields from "./InventoryMemberFields";
+import { IdentifiedObject } from "./UtilityTypes";
 
-interface InventorySheetFields {
-	readonly _id: string;
+interface InventorySheetFields extends IdentifiedObject {
 	name: string;
 	items: InventoryItemFields[];
 	members: InventoryMemberFields[];
