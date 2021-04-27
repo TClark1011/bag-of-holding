@@ -13,5 +13,6 @@ export interface InventorySheetMenuItemFields
 	extends Omit<InventorySheetFields, "items"> {
 	lastAccessedAt: Date;
 }
+//? Information about sheet used for the 'recent sheets' feature
 
 export default InventorySheetFields;
