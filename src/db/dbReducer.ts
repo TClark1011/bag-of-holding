@@ -1,5 +1,7 @@
+import faker from "faker";
 import mapObject from "map-obj";
 import omit from "omit.js";
+import InventoryMemberFields from "../types/InventoryMemberFields";
 import { InventorySheetPartialUpdateAction } from "../types/InventorySheetState";
 import SheetModel from "./SheetModel";
 
@@ -60,7 +62,16 @@ const dbReducer = async (
 			break;
 		case "sheet_metadataUpdate":
 			updateSheet({
-				$set: { name: action.data.name, members: action.data.members },
+				$set: {
+					name: action.data.name,
+					members: action.data.members.map(
+						(member): InventoryMemberFields => ({
+							_id: faker.datatype.uuid(),
+							name: member,
+							carryCapacity: 0,
+						})
+					),
+				},
 			});
 			break;
 	}
