@@ -42,7 +42,8 @@
 		"workspace",
 		"backend",
 		"scripts",
-		"fullstack"
+		"fullstack",
+		"frontend"
 	],
 	"[typescriptreact]": {
 		"editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
