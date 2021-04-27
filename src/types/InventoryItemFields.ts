@@ -1,4 +1,4 @@
-import OmitId from "../utils/OmitId";
+import { OmitId } from "./UtilityTypes";
 
 /**
  * @typedef {object} InventoryItemFields The fields for an inventory item
