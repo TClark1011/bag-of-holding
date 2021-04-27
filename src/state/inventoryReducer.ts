@@ -11,8 +11,6 @@ import { logEvent, logException } from "../utils/analyticsHooks";
 import codeToTitle from "code-to-title";
 import stringifyObject from "stringify-object";
 
-//TODO: Create separate 'server' reducer that processes how to update mongo state
-
 /**
  * The reducer for a sheet's inventory state
  *
