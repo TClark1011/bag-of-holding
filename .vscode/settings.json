@@ -40,6 +40,7 @@
 	],
 	"conventionalCommits.scopes": [
 		"workspace",
-		"backend"
+		"backend",
+		"scripts"
 	]
 }
