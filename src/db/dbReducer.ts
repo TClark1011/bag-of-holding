@@ -1,7 +1,6 @@
-import faker from "faker";
 import mapObject from "map-obj";
 import omit from "omit.js";
-import InventoryMemberFields from "../types/InventoryMemberFields";
+import generateMember from "../generators/generateMember";
 import { InventorySheetPartialUpdateAction } from "../types/InventorySheetState";
 import SheetModel from "./SheetModel";
 
@@ -64,13 +63,8 @@ const dbReducer = async (
 			updateSheet({
 				$set: {
 					name: action.data.name,
-					members: action.data.members.map(
-						(member): InventoryMemberFields => ({
-							_id: faker.datatype.uuid(),
-							name: member,
-							carryCapacity: 0,
-						})
-					),
+					members: action.data.members.map((name) => generateMember(name)),
+					//? We have to write an arrow function because if we just pass the function then the index gets passed as the carry capacity
 				},
 			});
 			break;

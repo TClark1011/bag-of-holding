@@ -10,6 +10,7 @@ import sendSheetAction from "../services/sendSheetAction";
 import { logEvent, logException } from "../utils/analyticsHooks";
 import codeToTitle from "code-to-title";
 import stringifyObject from "stringify-object";
+import generateMember from "../generators/generateMember";
 
 /**
  * The reducer for a sheet's inventory state
@@ -108,7 +109,9 @@ const inventoryReducer = (
 		case "sheet_metadataUpdate":
 			return produceNewState((draftState) => {
 				draftState.name = action.data.name;
-				draftState.members = action.data.members;
+				draftState.members = action.data.members.map((name) =>
+					generateMember(name)
+				);
 			}, true);
 	}
 };
