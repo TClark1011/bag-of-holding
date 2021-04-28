@@ -8,6 +8,7 @@ import { createState as createHookstate, useHookstate } from "@hookstate/core";
 import toggleArrayItem from "@lukeboyle/array-item-toggle";
 // import arrayUnion from "array-union";
 import unique from "uniq";
+import { SheetStateMembersUpdateQueue } from "../types/InventorySheetState";
 
 export type SheetDialogType =
 	| "item.new"
@@ -38,6 +39,9 @@ export interface SheetPageState {
 		property: ProcessableItemProperty;
 		direction: "ascending" | "descending";
 	};
+	sheetMemberOptionsQueue: {
+		[Property in keyof SheetStateMembersUpdateQueue]: string[];
+	};
 }
 
 const sheetPageState = createHookstate<SheetPageState>({
@@ -61,6 +65,10 @@ const sheetPageState = createHookstate<SheetPageState>({
 	ui: {
 		searchbarValue: "",
 		openFilter: "none",
+	},
+	sheetMemberOptionsQueue: {
+		add: [],
+		remove: [],
 	},
 });
 
@@ -119,6 +127,10 @@ export const useSheetPageState = () => {
 		sorting: { ...state.sorting.value },
 		searchbarValue: state.ui.searchbarValue.value,
 		activeItem: { ...state.dialog.activeItem.value },
+		sheetMembersQueue: JSON.parse(
+			JSON.stringify({ ...state.sheetMemberOptionsQueue.value })
+		),
+		//? Not performing a stringify/parse copy here causes the app to crash
 
 		/**
 		 * Check if a specific dialog is open
@@ -205,7 +217,14 @@ export const useSheetPageState = () => {
 		 * Close dialog
 		 */
 		closeDialog: () => {
-			state.dialog.merge({ isOpen: false });
+			state.dialog.isOpen.set(false);
+			if (state.dialog.type.value === "sheetOptions") {
+				//? Reset the sheet member options queue if it was the sheet options dialog that was closed
+				state.sheetMemberOptionsQueue.set({
+					add: [],
+					remove: [],
+				});
+			}
 		},
 
 		/**
@@ -286,6 +305,40 @@ export const useSheetPageState = () => {
 				state.sorting.property.set(column);
 				state.sorting.direction.set("ascending");
 			}
+		},
+
+		/**
+		 * We 'queue' a party member in the sheet to be deleted.
+		 * When the 'SheetOptions' dialog form is submitted, all
+		 * members stored in the 'delete' queue will be deleted.
+		 * If a member is queued to be removed, we first check if
+		 * it is queued to be added, and if it is, we just remove
+		 * it from the 'add' queue rather than adding it to the
+		 * 'remove' queue
+		 *
+		 * @param {string} _id The'_id' of the member to remove
+		 */
+		queueMemberForRemove: (_id: string) => {
+			if (state.sheetMemberOptionsQueue.add.value.includes(_id)) {
+				state.sheetMemberOptionsQueue.add.set((value) =>
+					value.filter((queuedMember) => queuedMember !== _id)
+				);
+			} else {
+				state.sheetMemberOptionsQueue.remove.set((state) => [...state, _id]);
+			}
+		},
+
+		/**
+		 * Add a member to the queue to be added. When the sheet
+		 * options dialog form is submitted, members in that form
+		 * with '_id' values in this queue are sent to be added to
+		 * the sheet.
+		 *
+		 * @param {string} _id Thw '_id' of the member to add to the
+		 * sheet
+		 */
+		queueMemberForAdd: (_id: string) => {
+			state.sheetMemberOptionsQueue.add.set((value) => [...value, _id]);
 		},
 	};
 };

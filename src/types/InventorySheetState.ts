@@ -1,4 +1,5 @@
 import { InventoryItemCreationFields } from "./InventoryItemFields";
+import InventoryMemberFields from "./InventoryMemberFields";
 import InventorySheetFields from "./InventorySheetFields";
 
 /**
@@ -64,10 +65,15 @@ type UpdateSheetAction = InventorySheetStateActionTemplate<
 	Omit<InventorySheetFields, "_id">
 >;
 
+export type SheetStateMembersUpdateQueue = {
+	add: InventoryMemberFields[];
+	remove: InventoryMemberFields[];
+};
+
 type UpdateSheetMetaDataAction = InventorySheetStateActionTemplate<
 	"sheet_metadataUpdate",
 	{
-		members: string[];
+		members: SheetStateMembersUpdateQueue;
 		name: string;
 	}
 >;

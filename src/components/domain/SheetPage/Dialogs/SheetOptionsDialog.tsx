@@ -23,6 +23,14 @@ import { useDisclosure } from "@chakra-ui/hooks";
 import ConfirmationDialog from "../../../ui/ConfirmationDialog";
 import { useState } from "react";
 import { Paragraph } from "../../../ui/Typography";
+import generateMember from "../../../../generators/generateMember";
+import blockProdBuild from "../../../../utils/blockProdBuild";
+
+blockProdBuild(
+	"Fix validation sheet options dialog with the new inventory member objects"
+);
+blockProdBuild("Convert old sheets to use new member object structure");
+blockProdBuild("Update existing party members");
 
 /**
  * Component for sheet settings dialog
@@ -33,7 +41,12 @@ const SheetOptionsDialog: React.FC = () => {
 	const { name, members } = useInventoryState();
 	const dispatch = useInventoryStateDispatch();
 
-	const { closeDialog } = useSheetPageState();
+	const {
+		closeDialog,
+		sheetMembersQueue,
+		queueMemberForAdd,
+		queueMemberForRemove,
+	} = useSheetPageState();
 
 	/**
 	 * Handle submission of formik form
@@ -50,11 +63,20 @@ const SheetOptionsDialog: React.FC = () => {
 			setSubmitting,
 		}: FormikHelpers<Pick<InventorySheetFields, "name"> & { members: string[] }>
 	) => {
-		console.log("(SheetOptionsDialog) data: ", data);
 		setSubmitting(true);
 		dispatch({
 			type: "sheet_metadataUpdate",
-			data,
+			data: {
+				name: data.name,
+				members: {
+					add: data.members.filter((member) =>
+						sheetMembersQueue.add.includes(member._id)
+					),
+					remove: members.filter((member) =>
+						sheetMembersQueue.remove.includes(member._id)
+					),
+				},
+			},
 			sendToServer: true,
 			/**
 			 * Close dialog on success
@@ -108,7 +130,7 @@ const SheetOptionsDialog: React.FC = () => {
 									{(helpers) => (
 										<>
 											{values.members.map((item, index) => (
-												<Field name={"members." + index} key={index}>
+												<Field name={"members." + index + ".name"} key={index}>
 													{({ field, form }) => (
 														<FormControl
 															name={"members." + index}
@@ -131,7 +153,7 @@ const SheetOptionsDialog: React.FC = () => {
 																	onClick={() => {
 																		deleteMemberConfirmOnOpen();
 																		setDeleteMemberTarget({
-																			name: item,
+																			name: item.name,
 																			index,
 																		});
 																	}}
@@ -149,23 +171,30 @@ const SheetOptionsDialog: React.FC = () => {
 													)}
 												</Field>
 											))}
+											{/* //# Add new member button */}
 											<Button
 												width="full"
 												size="sm"
 												colorScheme="secondary"
 												onClick={() => {
-													helpers.push("");
+													const newMember = generateMember("");
+													helpers.push(newMember);
+													queueMemberForAdd(newMember._id);
 												}}
 											>
 												Add Party Member
 											</Button>
+											{/* //# Member Delete Confirmation */}
 											<ConfirmationDialog
 												isOpen={deleteMemberConfirmIsOpen}
 												onCancel={deleteMemberConfirmOnClose}
-												onConfirm={() =>
-													helpers.remove(deleteMemberTarget.index)
-												}
 												header={`Remove "${deleteMemberTarget.name}" from sheet?`}
+												onConfirm={() => {
+													queueMemberForRemove(
+														values.members[deleteMemberTarget.index]._id
+													);
+													helpers.remove(deleteMemberTarget.index);
+												}}
 											>
 												<Paragraph>
 													Are you sure you want to remove this party member?

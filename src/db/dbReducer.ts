@@ -1,7 +1,7 @@
 import mapObject from "map-obj";
 import omit from "omit.js";
-import generateMember from "../generators/generateMember";
 import { InventorySheetPartialUpdateAction } from "../types/InventorySheetState";
+import getIds from "../utils/getIds";
 import SheetModel from "./SheetModel";
 
 /**
@@ -60,18 +60,39 @@ const dbReducer = async (
 			);
 			break;
 		case "sheet_metadataUpdate":
-			console.log("(dbReducer) action: ", action);
 			console.log(
-				"(dbReducer) action.data.members.map((name) => generateMember(name)): ",
-				action.data.members.map((name) => generateMember(name))
+				"(dbReducer) action.data.members.add[0]: ",
+				action.data.members.add[0]
 			);
-			updateSheet({
-				$set: {
-					name: action.data.name,
-					members: action.data.members.map((name) => generateMember(name)),
-					//? We have to write an arrow function because if we just pass the function then the index gets passed as the carry capacity
-				},
-			});
+			if (action.data.name) {
+				updateSheet({
+					$set: {
+						name: action.data.name,
+						// members: action.data.members.map((name) => generateMember(name)),
+						//? We have to write an arrow function because if we just pass the function then the index gets passed as the carry capacity
+					},
+				});
+			}
+			if (action.data.members.add.length) {
+				updateSheet({
+					$push: {
+						members: {
+							$each: action.data.members.add,
+						},
+					},
+				});
+			}
+			if (action.data.members.remove.length) {
+				updateSheet({
+					$pull: {
+						members: {
+							_id: {
+								$in: getIds(action.data.members.remove),
+							},
+						},
+					},
+				});
+			}
 			break;
 	}
 };
