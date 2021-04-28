@@ -48,10 +48,10 @@ const SheetOptionsDialog: React.FC = () => {
 		data,
 		{
 			setSubmitting,
-		}: FormikHelpers<Pick<InventorySheetFields, "name" | "members">>
+		}: FormikHelpers<Pick<InventorySheetFields, "name"> & { members: string[] }>
 	) => {
+		console.log("(SheetOptionsDialog) data: ", data);
 		setSubmitting(true);
-		console.log("(SheetDialog) data: ", data);
 		dispatch({
 			type: "sheet_metadataUpdate",
 			data,

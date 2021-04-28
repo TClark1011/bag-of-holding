@@ -60,6 +60,11 @@ const dbReducer = async (
 			);
 			break;
 		case "sheet_metadataUpdate":
+			console.log("(dbReducer) action: ", action);
+			console.log(
+				"(dbReducer) action.data.members.map((name) => generateMember(name)): ",
+				action.data.members.map((name) => generateMember(name))
+			);
 			updateSheet({
 				$set: {
 					name: action.data.name,

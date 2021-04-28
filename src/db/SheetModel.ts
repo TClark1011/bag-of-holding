@@ -5,11 +5,13 @@ import InventorySheetFields from "../types/InventorySheetFields";
 const SheetSchema = new mongoose.Schema(
 	{
 		name: { type: String, required: true },
-		members: {
-			_id: { type: String, required: true },
-			name: { type: String, required: true },
-			carryCapacity: { type: Number, default: 0 },
-		},
+		members: [
+			{
+				_id: { type: String, required: true },
+				name: { type: String, required: true },
+				carryCapacity: { type: Number, default: 0 },
+			},
+		],
 		items: [
 			{
 				_id: { type: String, required: true },
