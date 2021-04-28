@@ -68,6 +68,7 @@ type UpdateSheetAction = InventorySheetStateActionTemplate<
 export type SheetStateMembersUpdateQueue = {
 	add: InventoryMemberFields[];
 	remove: InventoryMemberFields[];
+	update: InventoryMemberFields[];
 };
 
 type UpdateSheetMetaDataAction = InventorySheetStateActionTemplate<

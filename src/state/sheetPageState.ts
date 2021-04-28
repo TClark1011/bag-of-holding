@@ -69,6 +69,7 @@ const sheetPageState = createHookstate<SheetPageState>({
 	sheetMemberOptionsQueue: {
 		add: [],
 		remove: [],
+		update: [],
 	},
 });
 
@@ -223,6 +224,7 @@ export const useSheetPageState = () => {
 				state.sheetMemberOptionsQueue.set({
 					add: [],
 					remove: [],
+					update: [],
 				});
 			}
 		},
@@ -319,11 +321,19 @@ export const useSheetPageState = () => {
 		 * @param {string} _id The'_id' of the member to remove
 		 */
 		queueMemberForRemove: (_id: string) => {
-			if (state.sheetMemberOptionsQueue.add.value.includes(_id)) {
-				state.sheetMemberOptionsQueue.add.set((value) =>
-					value.filter((queuedMember) => queuedMember !== _id)
-				);
-			} else {
+			let inPositiveQueue = false;
+			[
+				state.sheetMemberOptionsQueue.add,
+				state.sheetMemberOptionsQueue.update,
+			].forEach((positiveQueue) => {
+				if (positiveQueue.value.includes(_id)) {
+					inPositiveQueue = true;
+					positiveQueue.set((value) =>
+						value.filter((queuedMember) => queuedMember !== _id)
+					);
+				}
+			});
+			if (!inPositiveQueue) {
 				state.sheetMemberOptionsQueue.remove.set((state) => [...state, _id]);
 			}
 		},

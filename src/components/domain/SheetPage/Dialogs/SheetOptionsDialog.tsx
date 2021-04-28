@@ -69,12 +69,22 @@ const SheetOptionsDialog: React.FC = () => {
 			data: {
 				name: data.name,
 				members: {
-					add: data.members.filter((member) =>
-						sheetMembersQueue.add.includes(member._id)
+					add: data.members.filter((dataMember) =>
+						sheetMembersQueue.add.includes(dataMember._id)
 					),
-					remove: members.filter((member) =>
-						sheetMembersQueue.remove.includes(member._id)
+					remove: members.filter((dataMember) =>
+						sheetMembersQueue.remove.includes(dataMember._id)
 					),
+					update: data.members.filter((dataMember) => {
+						const matchingExistingMember = members.find(
+							(item) => item._id === dataMember._id
+						);
+						return (
+							matchingExistingMember &&
+							matchingExistingMember.name !== dataMember.name
+						);
+						//? We get items that already existed as members in the sheet before this dialog was opened but have had their name changed
+					}),
 				},
 			},
 			sendToServer: true,
