@@ -60,10 +60,6 @@ const dbReducer = async (
 			);
 			break;
 		case "sheet_metadataUpdate":
-			console.log(
-				"(dbReducer) action.data.members.add[0]: ",
-				action.data.members.add[0]
-			);
 			if (action.data.name) {
 				updateSheet({
 					$set: {
@@ -91,6 +87,19 @@ const dbReducer = async (
 							},
 						},
 					},
+				});
+			}
+			if (action.data.members.update.length) {
+				action.data.members.update.forEach((updatedMember) => {
+					updateSheet(
+						{
+							$set: {
+								"members.$.name": updatedMember.name,
+								"members.$.carryCapacity": updatedMember.carryCapacity,
+							},
+						},
+						{ "members._id": updatedMember._id }
+					);
 				});
 			}
 			break;

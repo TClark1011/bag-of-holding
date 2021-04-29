@@ -11,6 +11,7 @@ import { logEvent, logException } from "../utils/analyticsHooks";
 import codeToTitle from "code-to-title";
 import stringifyObject from "stringify-object";
 import getIds from "../utils/getIds";
+import findItemWithId from "../utils/findItemWithId";
 
 /**
  * The reducer for a sheet's inventory state
@@ -113,6 +114,10 @@ const inventoryReducer = (
 					(member) => !getIds(action.data.members.remove).includes(member._id)
 				);
 				draftState.members = draftState.members.concat(action.data.members.add);
+				draftState.members = draftState.members.map(
+					(member) =>
+						findItemWithId(action.data.members.update, member._id) || member
+				);
 			}, true);
 	}
 };
