@@ -61,7 +61,7 @@ afterAll(async () => {
 			await mockMongoose.killMongo();
 		}
 	} catch (e) {
-		console.warn("mongoose close commands apparently failed ");
+		console.log("mongoose close commands apparently failed ");
 	}
 });
 
