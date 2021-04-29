@@ -21,7 +21,12 @@ const getSheet = async () =>
 	((await SheetModel.findById(sheetId)) as unknown) as InventorySheetFields;
 
 beforeAll(async () => {
-	await mockMongoose.prepareStorage().then(async () => {
+	await mockMongoose.prepareStorage().then(async (err) => {
+		console.log(
+			"mockMongoose prepareStorage callback: will now start connecting to mongoose"
+		);
+		console.log("mockMongoose prepareStorage callback: err (below)");
+		console.log(err);
 		await connectToMongoose();
 	});
 
