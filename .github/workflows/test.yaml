@@ -3,6 +3,9 @@ on:
   push:
   pull_request:
     branches: [development, production]
+env:
+  MONGO_URL: _
+  NEXT_PUBLIC_GOOGLE_ANALYTICS_ID: UA-111111111-1
 jobs:
   build:
     runs-on: ubuntu-latest
