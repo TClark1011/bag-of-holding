@@ -41,7 +41,7 @@ describe("Elements render", () => {
 		expect(screen.getByText(name)).toBeInTheDocument;
 
 		members.forEach((member) => {
-			expect(screen.getAllByText(member)).toBeTruthy();
+			expect(screen.getAllByText(member.name)).toBeTruthy();
 		});
 	});
 
