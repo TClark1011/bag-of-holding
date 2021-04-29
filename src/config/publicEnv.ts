@@ -6,6 +6,7 @@ export const REFETCH_INTERVAL = parseInt(
 export const inProduction = process.env.NODE_ENV === "production";
 export const inDevelopment = process.env.NODE_ENV === "development";
 export const inTesting = process.env.NODE_ENV === "test";
+export const inGitHubAction = process.env.GITHUB_ACTIONS === "true";
 
 export const onProdBranch =
 	process.env.NEXT_PUBLIC_ON_PROD_BRANCH &&

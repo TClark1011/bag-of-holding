@@ -5,6 +5,7 @@ import InventoryItemFields from "../../src/types/InventoryItemFields";
 import InventorySheetFields from "../../src/types/InventorySheetFields";
 import mongoose from "mongoose";
 import { MockMongoose } from "mock-mongoose";
+import { inGitHubAction } from "../../src/config/publicEnv";
 
 let sheetId = "";
 //? Variable to store the id of the sheet we create for testing
@@ -21,9 +22,16 @@ const getSheet = async () =>
 	((await SheetModel.findById(sheetId)) as unknown) as InventorySheetFields;
 
 beforeAll(async () => {
-	await mockMongoose.prepareStorage().then(() => {
-		connectToMongoose();
-	});
+	if (!inGitHubAction) {
+		await mockMongoose.prepareStorage().then(async () => {
+			console.log(
+				"mockMongoose prepareStorage callback: will now start connecting to mongoose"
+			);
+			await connectToMongoose();
+		});
+	} else {
+		await connectToMongoose();
+	}
 
 	const newSheet = await new SheetModel({
 		name: "Sheet Name",
@@ -37,8 +45,20 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-	mongoose.connection.close();
-	mockMongoose.killMongo();
+	await mongoose.disconnect().catch((err) => {
+		console.log("error with 'mongoose.disconnect'");
+		console.log(err);
+	});
+	await mongoose.connection.close().catch((err) => {
+		console.log("error with 'mongoose.connection.close'");
+		console.log(err);
+	});
+	if (inGitHubAction) {
+		await mockMongoose.killMongo().catch((err) => {
+			console.log("error with 'mockMongoose.killMongo'");
+			console.log(err);
+		});
+	}
 });
 
 describe("DB Reducer Actions", () => {
