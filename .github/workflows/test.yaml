@@ -32,5 +32,5 @@ jobs:
       - name: Run tests
         run: npm run test
         env:
-          MONGO_URL: localhost:27017
+          MONGO_URL: mongodb://127.0.0.1:27017/bag-of-holding
           CI: true
