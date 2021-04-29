@@ -25,6 +25,7 @@ import { useState } from "react";
 import { Paragraph } from "../../../ui/Typography";
 import generateMember from "../../../../generators/generateMember";
 import blockProdBuild from "../../../../utils/blockProdBuild";
+import findItemWithId from "../../../../utils/findItemWithId";
 
 blockProdBuild(
 	"Fix validation sheet options dialog with the new inventory member objects"
@@ -76,8 +77,9 @@ const SheetOptionsDialog: React.FC = () => {
 						sheetMembersQueue.remove.includes(dataMember._id)
 					),
 					update: data.members.filter((dataMember) => {
-						const matchingExistingMember = members.find(
-							(item) => item._id === dataMember._id
+						const matchingExistingMember = findItemWithId(
+							members,
+							dataMember._id
 						);
 						return (
 							matchingExistingMember &&

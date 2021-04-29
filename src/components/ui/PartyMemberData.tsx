@@ -2,6 +2,7 @@ import { Text, TextProps } from "@chakra-ui/layout";
 import React from "react";
 import InventoryMemberFields from "../../types/InventoryMemberFields";
 import { OmitId } from "../../types/UtilityTypes";
+import findItemWithId from "../../utils/findItemWithId";
 import { useInventoryState } from "../contexts/InventoryStateContext";
 
 export interface PartyMemberDataProps extends Omit<TextProps, "children"> {
@@ -27,8 +28,7 @@ const PartyMemberData: React.FC<PartyMemberDataProps> = ({
 }) => {
 	const { members } = useInventoryState();
 
-	const selectedMember = members.find((item) => item._id === memberId);
-
+	const selectedMember = findItemWithId(members, memberId);
 	return selectedMember ? (
 		<Text {...props}>{selectedMember[property]}</Text>
 	) : null;
