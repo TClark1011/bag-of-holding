@@ -1,0 +1,19 @@
+name: pull-request-test
+on:
+  pull_request:
+    branches: [development, production]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+      - uses: actions/checkout@v2
+
+      - name: Set up node
+        uses: actions/setup-node@v1
+
+      - name: Install dependencies
+        run: yarn
+
+      - name: Run tests
+        run: yarn test
