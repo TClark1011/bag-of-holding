@@ -20,6 +20,8 @@ const mockMongoose = new MockMongoose(mongoose);
 const getSheet = async () =>
 	((await SheetModel.findById(sheetId)) as unknown) as InventorySheetFields;
 
+console.log("This should get logged");
+
 beforeAll(async () => {
 	await mockMongoose.prepareStorage().then(async (err) => {
 		console.log(
