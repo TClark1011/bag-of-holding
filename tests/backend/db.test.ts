@@ -29,14 +29,18 @@ beforeAll(async () => {
 	console.log(
 		"running 'beforeAll'. about to run 'mockMongoose.prepareStorage()'"
 	);
-	await mockMongoose.prepareStorage().then(async (err) => {
-		console.log(
-			"mockMongoose prepareStorage callback: will now start connecting to mongoose"
-		);
-		console.log("mockMongoose prepareStorage callback: err (below)");
-		console.log(err);
+	if (!inGitHubAction) {
+		await mockMongoose.prepareStorage().then(async (err) => {
+			console.log(
+				"mockMongoose prepareStorage callback: will now start connecting to mongoose"
+			);
+			console.log("mockMongoose prepareStorage callback: err (below)");
+			console.log(err);
+			await connectToMongoose();
+		});
+	} else {
 		await connectToMongoose();
-	});
+	}
 
 	const newSheet = await new SheetModel({
 		name: "Sheet Name",
