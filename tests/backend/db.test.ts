@@ -56,7 +56,10 @@ beforeAll(async () => {
 afterAll(async () => {
 	try {
 		await mongoose.connection.close();
-		await mockMongoose.killMongo();
+
+		if (inGitHubAction) {
+			await mockMongoose.killMongo();
+		}
 	} catch (e) {
 		console.warn("mongoose close commands apparently failed ");
 	}
