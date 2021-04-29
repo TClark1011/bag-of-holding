@@ -21,21 +21,12 @@ const mockMongoose = new MockMongoose(mongoose);
 const getSheet = async () =>
 	((await SheetModel.findById(sheetId)) as unknown) as InventorySheetFields;
 
-console.log("This should get logged");
-
-console.log("(db.test) inGitHubAction: ", inGitHubAction);
-
 beforeAll(async () => {
-	console.log(
-		"running 'beforeAll'. about to run 'mockMongoose.prepareStorage()'"
-	);
 	if (!inGitHubAction) {
-		await mockMongoose.prepareStorage().then(async (err) => {
+		await mockMongoose.prepareStorage().then(async () => {
 			console.log(
 				"mockMongoose prepareStorage callback: will now start connecting to mongoose"
 			);
-			console.log("mockMongoose prepareStorage callback: err (below)");
-			console.log(err);
 			await connectToMongoose();
 		});
 	} else {
@@ -61,7 +52,7 @@ afterAll(async () => {
 			await mockMongoose.killMongo();
 		}
 	} catch (e) {
-		console.log("mongoose close commands apparently failed ");
+		console.log("mongoose connection close commands failed");
 	}
 });
 
