@@ -42,8 +42,12 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-	await mongoose.connection.close();
-	await mockMongoose.killMongo();
+	try {
+		await mongoose.connection.close();
+		await mockMongoose.killMongo();
+	} catch (e) {
+		console.warn("mongoose close commands apparently failed ");
+	}
 });
 
 describe("DB Reducer Actions", () => {
