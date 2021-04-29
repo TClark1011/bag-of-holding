@@ -1,6 +1,7 @@
 name: pull-request-test
 on:
-  [push, pull_request]:
+  push:
+  pull_request:
     branches: [development, production]
 jobs:
   build:
