@@ -45,14 +45,19 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-	try {
-		await mongoose.connection.close();
-
-		if (inGitHubAction) {
-			await mockMongoose.killMongo();
-		}
-	} catch (e) {
-		console.log("mongoose connection close commands failed");
+	await mongoose.disconnect().catch((err) => {
+		console.log("error with 'mongoose.disconnect'");
+		console.log(err);
+	});
+	await mongoose.connection.close().catch((err) => {
+		console.log("error with 'mongoose.connection.close'");
+		console.log(err);
+	});
+	if (inGitHubAction) {
+		await mockMongoose.killMongo().catch((err) => {
+			console.log("error with 'mockMongoose.killMongo'");
+			console.log(err);
+		});
 	}
 });
 
