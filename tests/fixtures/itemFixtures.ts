@@ -1,6 +1,7 @@
 import faker from "faker";
 import InventoryItemFields from "../../src/types/InventoryItemFields";
 import { generateRandomInventoryItem } from "../../src/utils/createInventoryItem";
+import getIds from "../../src/utils/getIds";
 import { averageMembersFixture } from "./membersFixtures";
 
 /**
@@ -15,7 +16,7 @@ export const getRandomInventoryItems = (
 ): InventoryItemFields[] => {
 	const result: InventoryItemFields[] = [];
 	for (let i = 0; i < amount; i++) {
-		result.push(generateRandomInventoryItem({}, averageMembersFixture));
+		result.push(generateRandomInventoryItem({}, getIds(averageMembersFixture)));
 	}
 	return result;
 };
