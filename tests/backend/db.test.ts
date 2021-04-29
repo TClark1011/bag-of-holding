@@ -37,8 +37,8 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-	mongoose.connection.close();
-	mockMongoose.killMongo();
+	await mongoose.connection.close();
+	await mockMongoose.killMongo();
 });
 
 describe("DB Reducer Actions", () => {
