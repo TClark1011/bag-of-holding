@@ -1,7 +1,6 @@
 module.exports = {
 	testPathIgnorePatterns: ["<rootDir>/.next/", "<rootDir>/node_modules/"],
-	testTimeout: 500000,
-	//Normally: 10000
+	testTimeout: 10000,
 	projects: [
 		{
 			displayName: "frontend",
