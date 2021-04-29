@@ -5,6 +5,7 @@ import InventoryItemFields from "../../src/types/InventoryItemFields";
 import InventorySheetFields from "../../src/types/InventorySheetFields";
 import mongoose from "mongoose";
 import { MockMongoose } from "mock-mongoose";
+import { inGitHubAction } from "../../src/config/publicEnv";
 
 let sheetId = "";
 //? Variable to store the id of the sheet we create for testing
@@ -21,6 +22,8 @@ const getSheet = async () =>
 	((await SheetModel.findById(sheetId)) as unknown) as InventorySheetFields;
 
 console.log("This should get logged");
+
+console.log("(db.test) inGitHubAction: ", inGitHubAction);
 
 beforeAll(async () => {
 	console.log(
