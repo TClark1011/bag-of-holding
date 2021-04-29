@@ -5,6 +5,8 @@ import InventoryItemFields from "../../src/types/InventoryItemFields";
 import InventorySheetFields from "../../src/types/InventorySheetFields";
 import mongoose from "mongoose";
 import { MockMongoose } from "mock-mongoose";
+import { InventorySheetStateAction } from "../../src/types/InventorySheetState";
+import { averageMembersFixture } from "../fixtures/membersFixtures";
 
 let sheetId = "";
 //? Variable to store the id of the sheet we create for testing
@@ -18,7 +20,10 @@ const mockMongoose = new MockMongoose(mongoose);
  * @returns {Document<InventorySheetFields>}The SheetModel fetched from mongodb
  */
 const getSheet = async () =>
-	((await SheetModel.findById(sheetId)) as unknown) as InventorySheetFields;
+	JSON.parse(
+		JSON.stringify((await SheetModel.findById(sheetId)) as unknown)
+	) as InventorySheetFields;
+//? We stringify + parse to remove mongoose's extra data fields because they confuse `expect()`
 
 beforeAll(async () => {
 	await mockMongoose.prepareStorage().then(() => {
@@ -40,6 +45,8 @@ afterAll(async () => {
 	mongoose.connection.close();
 	mockMongoose.killMongo();
 });
+
+const testMember = averageMembersFixture[0];
 
 describe("DB Reducer Actions", () => {
 	const testItem: InventoryItemFields = {
@@ -82,11 +89,15 @@ describe("DB Reducer Actions", () => {
 		expect((await getSheet()).items.length).toEqual(0);
 	});
 
-	test("Sheet Metadata Update", async () => {
+	test("Sheet Metadata Update (sheet name only)", async () => {
 		const originalState = await getSheet();
-		const testUpdate = {
+		const testUpdate: InventorySheetStateAction["data"] = {
 			name: originalState.name + "+",
-			members: ["1", "2"],
+			members: {
+				add: [],
+				remove: [],
+				update: [],
+			},
 		};
 
 		await dbReducer(sheetId, {
@@ -97,9 +108,73 @@ describe("DB Reducer Actions", () => {
 		const postUpdateState = await getSheet();
 
 		expect(originalState).not.toMatchObject(postUpdateState);
-		expect(originalState.members.length).toBeLessThan(
-			postUpdateState.members.length
-		);
 		expect(originalState.name).not.toEqual(postUpdateState.name);
+	});
+});
+
+describe("Sheet Member Updates", () => {
+	test("Add Member", async () => {
+		const originalState = await getSheet();
+
+		await dbReducer(sheetId, {
+			type: "sheet_metadataUpdate",
+			data: {
+				name: originalState.name,
+				members: {
+					add: [testMember],
+					remove: [],
+					update: [],
+				},
+			},
+		});
+
+		const postUpdateState = await getSheet();
+
+		expect(originalState).not.toMatchObject(postUpdateState);
+		expect(postUpdateState.members).toEqual([testMember]);
+	});
+
+	test("Update Member", async () => {
+		const originalState = await getSheet();
+
+		await dbReducer(sheetId, {
+			type: "sheet_metadataUpdate",
+			data: {
+				name: originalState.name,
+				members: {
+					add: [],
+					remove: [],
+					update: [{ ...testMember, name: testMember.name + "+" }],
+				},
+			},
+		});
+
+		const postUpdateState = await getSheet();
+
+		expect(postUpdateState.members).toEqual([
+			{
+				...originalState.members[0],
+				name: originalState.members[0].name + "+",
+			},
+		]);
+	});
+
+	test("Remove Member", async () => {
+		const originalState = await getSheet();
+		await dbReducer(sheetId, {
+			type: "sheet_metadataUpdate",
+			data: {
+				name: originalState.name,
+				members: {
+					add: [],
+					remove: [testMember],
+					update: [],
+				},
+			},
+		});
+
+		const postUpdateState = await getSheet();
+
+		expect(postUpdateState.members).toEqual([]);
 	});
 });
