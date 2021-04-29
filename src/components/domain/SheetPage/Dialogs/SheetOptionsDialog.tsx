@@ -27,11 +27,7 @@ import generateMember from "../../../../generators/generateMember";
 import blockProdBuild from "../../../../utils/blockProdBuild";
 import findItemWithId from "../../../../utils/findItemWithId";
 
-blockProdBuild(
-	"Fix validation sheet options dialog with the new inventory member objects"
-);
 blockProdBuild("Convert old sheets to use new member object structure");
-blockProdBuild("Update existing party members");
 
 /**
  * Component for sheet settings dialog
@@ -177,7 +173,8 @@ const SheetOptionsDialog: React.FC = () => {
 															</Flex>
 															<FormErrorMessage>
 																{form.errors.members &&
-																	form.errors.members[index]}
+																	form.errors.members[index] &&
+																	form.errors.members[index].name}
 															</FormErrorMessage>
 														</FormControl>
 													)}
