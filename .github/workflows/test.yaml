@@ -18,6 +18,3 @@ jobs:
 
       - name: Run tests
         run: yarn test
-        env: 
-          MONGO_URL:_
-          NEXT_PUBLIC_GOOGLE_ANALYTICS_ID:UA-111111111-1
