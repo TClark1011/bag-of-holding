@@ -23,6 +23,9 @@ const getSheet = async () =>
 console.log("This should get logged");
 
 beforeAll(async () => {
+	console.log(
+		"running 'beforeAll'. about to run 'mockMongoose.prepareStorage()'"
+	);
 	await mockMongoose.prepareStorage().then(async (err) => {
 		console.log(
 			"mockMongoose prepareStorage callback: will now start connecting to mongoose"
