@@ -21,8 +21,8 @@ const getSheet = async () =>
 	((await SheetModel.findById(sheetId)) as unknown) as InventorySheetFields;
 
 beforeAll(async () => {
-	await mockMongoose.prepareStorage().then(() => {
-		connectToMongoose();
+	await mockMongoose.prepareStorage().then(async () => {
+		await connectToMongoose();
 	});
 
 	const newSheet = await new SheetModel({
