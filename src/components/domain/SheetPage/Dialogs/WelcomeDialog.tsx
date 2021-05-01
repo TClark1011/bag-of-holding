@@ -33,7 +33,7 @@ const WelcomeDialog: React.FC = () => {
 					<Paragraph>
 						Currently the only way for you to get back to this sheet is if you
 						save the URL.{" "}
-						<b>If you lose the URL to sheet, {"it's"} gone forever!</b>
+						<b>If you lose the URL to a sheet, {"it's"} gone forever!</b>
 					</Paragraph>
 					<Paragraph>
 						You can share this page with other players by just sending them the
