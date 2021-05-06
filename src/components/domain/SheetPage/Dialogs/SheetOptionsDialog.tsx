@@ -31,6 +31,12 @@ blockProdBuild(
 );
 blockProdBuild("Convert old sheets to use new member object structure");
 blockProdBuild("Update existing party members");
+blockProdBuild("Add fallback value for 'PartyMemberData' component");
+
+export type SheetOptionsDialogFormFields = Pick<
+	InventorySheetFields,
+	"name" | "members"
+>;
 
 /**
  * Component for sheet settings dialog
@@ -58,11 +64,10 @@ const SheetOptionsDialog: React.FC = () => {
 	 * or not the form is currently submitting
 	 * */
 	const onSubmit = (
-		data,
-		{
-			setSubmitting,
-		}: FormikHelpers<Pick<InventorySheetFields, "name"> & { members: string[] }>
+		data: SheetOptionsDialogFormFields,
+		{ setSubmitting }: FormikHelpers<SheetOptionsDialogFormFields>
 	) => {
+		console.log("(SheetOptionsDialog) data: ", data);
 		setSubmitting(true);
 		dispatch({
 			type: "sheet_metadataUpdate",
@@ -72,9 +77,7 @@ const SheetOptionsDialog: React.FC = () => {
 					add: data.members.filter((dataMember) =>
 						sheetMembersQueue.add.includes(dataMember._id)
 					),
-					remove: members.filter((dataMember) =>
-						sheetMembersQueue.remove.includes(dataMember._id)
-					),
+					remove: sheetMembersQueue.remove,
 					update: data.members.filter((dataMember) => {
 						const matchingExistingMember = members.find(
 							(item) => item._id === dataMember._id
@@ -131,6 +134,10 @@ const SheetOptionsDialog: React.FC = () => {
 								marginBottom="break"
 								inputProps={{ maxLength: defaultFieldLength }}
 							/>
+							{/* {sheetMembersQueue.remove.length && (
+								<>Member is going to be deleted</>
+							)} */}
+							{/* //# Member fields */}
 							<Text fontWeight="bold" textAlign="center">
 								Members
 							</Text>
@@ -201,7 +208,10 @@ const SheetOptionsDialog: React.FC = () => {
 												header={`Remove "${deleteMemberTarget.name}" from sheet?`}
 												onConfirm={() => {
 													queueMemberForRemove(
-														values.members[deleteMemberTarget.index]._id
+														values.members[deleteMemberTarget.index]._id,
+														{
+															mode: "remove",
+														}
 													);
 													helpers.remove(deleteMemberTarget.index);
 												}}

@@ -6,9 +6,12 @@ import InventoryItemFields, {
 } from "../types/InventoryItemFields";
 import { createState as createHookstate, useHookstate } from "@hookstate/core";
 import toggleArrayItem from "@lukeboyle/array-item-toggle";
-// import arrayUnion from "array-union";
 import unique from "uniq";
-import { SheetStateMembersUpdateQueue } from "../types/InventorySheetState";
+import {
+	InventoryMemberDeleteMethodFields,
+	SheetStateMembersUpdateQueue,
+	InventoryMemberFieldsDeleteAction,
+} from "../types/InventorySheetState";
 
 export type SheetDialogType =
 	| "item.new"
@@ -23,6 +26,11 @@ export const emptyFilters: InventoryFilters = {
 	category: [],
 	carriedBy: [],
 };
+
+export type ClientStateMemberUpdateQueue = {
+	[Property in keyof Omit<SheetStateMembersUpdateQueue, "remove">]: string[];
+} & { remove: InventoryMemberFieldsDeleteAction[] };
+//? A version of 'SheetStateMembersUpdateQueue' with all field types except for 'remove' changed to 'string[]'
 
 export interface SheetPageState {
 	dialog: {
@@ -39,9 +47,7 @@ export interface SheetPageState {
 		property: ProcessableItemProperty;
 		direction: "ascending" | "descending";
 	};
-	sheetMemberOptionsQueue: {
-		[Property in keyof SheetStateMembersUpdateQueue]: string[];
-	};
+	sheetMemberOptionsQueue: ClientStateMemberUpdateQueue;
 }
 
 const sheetPageState = createHookstate<SheetPageState>({
@@ -130,7 +136,7 @@ export const useSheetPageState = () => {
 		activeItem: { ...state.dialog.activeItem.value },
 		sheetMembersQueue: JSON.parse(
 			JSON.stringify({ ...state.sheetMemberOptionsQueue.value })
-		),
+		) as SheetPageState["sheetMemberOptionsQueue"],
 		//? Not performing a stringify/parse copy here causes the app to crash
 
 		/**
@@ -319,8 +325,14 @@ export const useSheetPageState = () => {
 		 * 'remove' queue
 		 *
 		 * @param {string} _id The'_id' of the member to remove
+		 * @param {object} deleteMethod The method for handling
+		 * items that were being carried by the member to be
+		 * deleted
 		 */
-		queueMemberForRemove: (_id: string) => {
+		queueMemberForRemove: (
+			_id: string,
+			deleteMethod: InventoryMemberDeleteMethodFields
+		) => {
 			let inPositiveQueue = false;
 			[
 				state.sheetMemberOptionsQueue.add,
@@ -334,7 +346,15 @@ export const useSheetPageState = () => {
 				}
 			});
 			if (!inPositiveQueue) {
-				state.sheetMemberOptionsQueue.remove.set((state) => [...state, _id]);
+				state.sheetMemberOptionsQueue.remove.set((state) => [
+					...state,
+					{
+						_id,
+						carryCapacity: 0,
+						name: "",
+						deleteMethod,
+					},
+				]);
 			}
 		},
 
