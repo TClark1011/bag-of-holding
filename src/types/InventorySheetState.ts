@@ -65,9 +65,41 @@ type UpdateSheetAction = InventorySheetStateActionTemplate<
 	Omit<InventorySheetFields, "_id">
 >;
 
+/**
+ * Extra information on how items being carried
+ * by a member that is being removed should be
+ * handled.
+ *
+ * Modes:
+ * - "remove": Any items being carried by the
+ * member being removed will be removed from
+ * the sheet.
+ * - "move": Move the items being carried by the
+ * removed member to another member
+ * - "setToNobody": Items being carried by the
+ * removed user will have there "carriedBy" field
+ * set to "nobody"
+ */
+export type InventoryMemberDeleteMethodFields =
+	| {
+			mode: "move";
+			to: string;
+	  }
+	| {
+			mode: "remove";
+	  }
+	| {
+			mode: "setToNobody";
+	  };
+
+export interface InventoryMemberFieldsDeleteAction
+	extends InventoryMemberFields {
+	deleteMethod: InventoryMemberDeleteMethodFields;
+}
+
 export type SheetStateMembersUpdateQueue = {
 	add: InventoryMemberFields[];
-	remove: InventoryMemberFields[];
+	remove: InventoryMemberFieldsDeleteAction[];
 	update: InventoryMemberFields[];
 };
 
