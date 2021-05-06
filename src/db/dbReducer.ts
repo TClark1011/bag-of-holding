@@ -61,8 +61,12 @@ const dbReducer = async (
 			break;
 		case "sheet_metadataUpdate":
 			console.log(
-				"(dbReducer) action.data.members.add[0]: ",
-				action.data.members.add[0]
+				"(dbReducer)",
+				getIds(
+					action.data.members.remove.filter(
+						(removingMember) => removingMember.deleteMethod.mode === "remove"
+					)
+				)
 			);
 			if (action.data.name) {
 				updateSheet({
@@ -88,6 +92,16 @@ const dbReducer = async (
 						members: {
 							_id: {
 								$in: getIds(action.data.members.remove),
+							},
+						},
+						items: {
+							carriedBy: {
+								$in: getIds(
+									action.data.members.remove.filter(
+										(removingMember) =>
+											removingMember.deleteMethod.mode === "remove"
+									)
+								),
 							},
 						},
 					},

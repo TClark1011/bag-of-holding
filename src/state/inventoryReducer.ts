@@ -13,7 +13,7 @@ import stringifyObject from "stringify-object";
 import getIds from "../utils/getIds";
 
 /**
- * The reducer for a sheet's inventory state
+ * Reducer that handles updates to client state
  *
  * @param {InventoryItemFields[]} state The current  state of the inventory
  * @param {InventoryStateAction} action The action to be performed upon the state
@@ -112,6 +112,20 @@ const inventoryReducer = (
 				draftState.members = draftState.members.filter(
 					(member) => !getIds(action.data.members.remove).includes(member._id)
 				);
+
+				action.data.members.remove.forEach((removingMember) => {
+					switch (removingMember.deleteMethod.mode) {
+						case "remove":
+							draftState.items = draftState.items.filter(
+								(item) => item.carriedBy !== removingMember._id
+							);
+							break;
+						case "move":
+							console.warn("must implement item moving");
+							break;
+					}
+				});
+
 				draftState.members = draftState.members.concat(action.data.members.add);
 			}, true);
 	}
