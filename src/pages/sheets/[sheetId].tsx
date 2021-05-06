@@ -32,6 +32,7 @@ import { addToRememberedSheets } from "../../utils/rememberSheets";
 import inventoryReducer from "../../state/inventoryReducer";
 import { useSheetPageState } from "../../state/sheetPageState";
 import { LightMode } from "@chakra-ui/color-mode";
+import { DarkMode } from "@chakra-ui/color-mode";
 import PartyMemberTagList from "../../components/templates/PartyMemberTagList";
 import Meta from "../../components/templates/Meta";
 import getSheetLink from "../../utils/getSheetLink";
@@ -133,14 +134,16 @@ const Sheet: React.FC<SheetPageProps> = ({ isNew = false, ...sheetFields }) => {
 									{/* Sheet Title */}
 									<Heading marginRight={1}>{name}</Heading>
 									{/* Sheet Options Button */}
-									<IconButton
-										aria-label="edit sheet settings"
-										icon={<CreateOutlineIcon boxSize={6} />}
-										onClick={() => openDialog("sheetOptions")}
-										variant="ghost"
-										isRound
-										data-testid={sheetPageTestIds.sheetOptionsButton}
-									/>
+									<DarkMode>
+										<IconButton
+											aria-label="edit sheet settings"
+											icon={<CreateOutlineIcon boxSize={6} />}
+											onClick={() => openDialog("sheetOptions")}
+											variant="ghost"
+											isRound
+											data-testid={sheetPageTestIds.sheetOptionsButton}
+										/>
+									</DarkMode>
 								</Flex>
 								{/* Color Mode Switch */}
 								<ColorModeSwitch
