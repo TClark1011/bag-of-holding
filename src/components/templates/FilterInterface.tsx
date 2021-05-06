@@ -7,6 +7,7 @@ import { Checkbox } from "@chakra-ui/checkbox";
 import { Button, ButtonGroup } from "@chakra-ui/button";
 import { useColorModeValue } from "@chakra-ui/color-mode";
 import { useSheetPageState } from "../../state/sheetPageState";
+import PartyMemberData from "../ui/PartyMemberData";
 
 interface Props extends Omit<BoxProps, "onChange"> {
 	property: FilterableItemProperty;
@@ -110,7 +111,7 @@ const FilterInterface: React.FC<Props> = ({
 							isChecked={!filter.includes(item)}
 							onChange={() => onChange(item)}
 						/>
-						{item}
+						<PartyMemberData memberId={item} property="name" />
 					</ListItem>
 				))}
 			</List>
