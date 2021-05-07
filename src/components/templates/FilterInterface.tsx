@@ -31,7 +31,7 @@ const FilterInterface: React.FC<Props> = ({
 	heading = codeToTitle(property),
 	...props
 }) => {
-	//FIXME: Opening a filter popover, changing some values, then clicking the 'Filters' button exceeds maximum callstack.
+	//POSSIBLE ERROR: Opening a filter popover, changing some values, then clicking the 'Filters' button exceeds maximum callstack.
 	const { items } = useInventoryState();
 
 	const propertyValues = items.map((item) => item[property] + "");
