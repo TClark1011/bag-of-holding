@@ -5,7 +5,7 @@ import {
 	FormLabel,
 } from "@chakra-ui/form-control";
 import { Input } from "@chakra-ui/input";
-import { Divider, Flex, Text, VStack } from "@chakra-ui/layout";
+import { Center, Divider, Flex, Text, VStack } from "@chakra-ui/layout";
 import { ModalBody, ModalFooter } from "@chakra-ui/modal";
 import { Field, FieldArray, Formik, FormikHelpers } from "formik";
 import { InputControl } from "formik-chakra-ui";
@@ -21,22 +21,49 @@ import sheetOptionsValidation from "../../../../validation/sheetOptionsValidatio
 import { defaultFieldLength } from "../../../../constants/validationConstants";
 import { useDisclosure } from "@chakra-ui/hooks";
 import ConfirmationDialog from "../../../ui/ConfirmationDialog";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Paragraph } from "../../../ui/Typography";
 import generateMember from "../../../../generators/generateMember";
-import blockProdBuild from "../../../../utils/blockProdBuild";
+import {
+	Radio,
+	RadioGroup,
+	RadioGroupProps,
+	RadioProps,
+} from "@chakra-ui/radio";
+import { InventoryMemberDeleteMethodFields } from "../../../../types/InventorySheetState";
+import { chakra, ComponentWithAs } from "@chakra-ui/system";
+import { Select } from "@chakra-ui/select";
 
-blockProdBuild(
-	"Fix validation sheet options dialog with the new inventory member objects"
-);
-blockProdBuild("Convert old sheets to use new member object structure");
-blockProdBuild("Update existing party members");
-blockProdBuild("Add fallback value for 'PartyMemberData' component");
+//TODO: Fix validation sheet options dialog with the new inventory member objects;
+//TODO: Update existing party members
+//TODO: Add fallback value for 'PartyMemberData' component
 
 export type SheetOptionsDialogFormFields = Pick<
 	InventorySheetFields,
 	"name" | "members"
 >;
+
+const MemberDeleteMethodRadio = chakra<
+	ComponentWithAs<"input">,
+	Omit<RadioProps, "value"> & {
+		value: InventoryMemberDeleteMethodFields["mode"];
+	}
+>(Radio);
+//? A copy of the 'Radio' component from Chakra UI with it's `value` prop typed to `InventoryMemberDeleteMethodFields["mode"]`
+
+type MemberDeleteMethodRadioGroupProps = Omit<
+	RadioGroupProps,
+	"value" | "onChange"
+> & {
+	value: InventoryMemberDeleteMethodFields["mode"];
+	onChange: (val: InventoryMemberDeleteMethodFields["mode"]) => void;
+};
+
+const MemberDeleteMethodRadioGroup = chakra<
+	ComponentWithAs<"div", MemberDeleteMethodRadioGroupProps>,
+	MemberDeleteMethodRadioGroupProps
+>(RadioGroup);
+//? A copy of the 'RadioGroup' component from Chakra UI with it's typing changed
 
 /**
  * Component for sheet settings dialog
@@ -52,6 +79,10 @@ const SheetOptionsDialog: React.FC = () => {
 		sheetMembersQueue,
 		queueMemberForAdd,
 		queueMemberForRemove,
+		selectedSheetMemberRemoveMethod,
+		selectNewSheetMemberRemoveMethod,
+		selectedSheetMemberRemovedMoveToMember,
+		selectNewSheetMemberRemovedMoveToMember,
 	} = useSheetPageState();
 
 	/**
@@ -115,9 +146,9 @@ const SheetOptionsDialog: React.FC = () => {
 	const [deleteMemberTarget, setDeleteMemberTarget] = useState<{
 		name: string;
 		index: number;
-	}>({ name: "", index: 0 });
+		_id: string;
+	}>({ name: "", index: 0, _id: "" });
 
-	///TODO: Confirmation when deleting a member
 	return (
 		<SheetDialog dialogType="sheetOptions" header="Sheet Options">
 			<Formik
@@ -134,9 +165,6 @@ const SheetOptionsDialog: React.FC = () => {
 								marginBottom="break"
 								inputProps={{ maxLength: defaultFieldLength }}
 							/>
-							{/* {sheetMembersQueue.remove.length && (
-								<>Member is going to be deleted</>
-							)} */}
 							{/* //# Member fields */}
 							<Text fontWeight="bold" textAlign="center">
 								Members
@@ -170,6 +198,7 @@ const SheetOptionsDialog: React.FC = () => {
 																	onClick={() => {
 																		deleteMemberConfirmOnOpen();
 																		setDeleteMemberTarget({
+																			_id: item._id,
 																			name: item.name,
 																			index,
 																		});
@@ -217,16 +246,55 @@ const SheetOptionsDialog: React.FC = () => {
 												}}
 											>
 												<Paragraph>
-													Are you sure you want to remove this party member?
+													How do you want to remove this party member?
 												</Paragraph>
-												<Paragraph marginBottom={0}>
-													<Text fontWeight="bold" as="span">
-														NOTE:
-													</Text>{" "}
-													Any items they are carrying will still be registered
-													as being carried by them. Any items they are currently
-													carrying must be edited manually.
-												</Paragraph>
+												<MemberDeleteMethodRadioGroup
+													value={selectedSheetMemberRemoveMethod}
+													onChange={(val) =>
+														selectNewSheetMemberRemoveMethod(val)
+													}
+												>
+													<VStack align="start" spacing={4}>
+														<Flex justify="space-between" width="full">
+															<MemberDeleteMethodRadio value="move">
+																<Flex align="center" marginRight={2}>
+																	Give To
+																</Flex>
+															</MemberDeleteMethodRadio>
+															<Select
+																flexGrow={1}
+																width="max-content"
+																size="sm"
+																value={selectedSheetMemberRemovedMoveToMember}
+																onChange={(e) =>
+																	selectNewSheetMemberRemovedMoveToMember(
+																		e.target.value
+																	)
+																}
+																onFocus={
+																	() => selectNewSheetMemberRemoveMethod("move")
+																	//? Select this Radio when the member dropdown is focused
+																}
+															>
+																{members
+																	.filter(
+																		(mem) => mem._id !== deleteMemberTarget._id
+																	)
+																	.map((mem) => (
+																		<option value={mem._id} key={mem._id}>
+																			{mem.name}
+																		</option>
+																	))}
+															</Select>
+														</Flex>
+														<MemberDeleteMethodRadio value="remove">
+															Delete From Sheet
+														</MemberDeleteMethodRadio>
+														<MemberDeleteMethodRadio value="setToNobody">
+															Set {"\"Carried By\""} to {"\"Nobody\""}
+														</MemberDeleteMethodRadio>
+													</VStack>
+												</MemberDeleteMethodRadioGroup>
 											</ConfirmationDialog>
 										</>
 									)}

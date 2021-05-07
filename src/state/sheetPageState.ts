@@ -48,6 +48,8 @@ export interface SheetPageState {
 		direction: "ascending" | "descending";
 	};
 	sheetMemberOptionsQueue: ClientStateMemberUpdateQueue;
+	selectedSheetMemberRemoveMethod: InventoryMemberDeleteMethodFields["mode"];
+	selectedSheetMemberRemovedMoveToMember: string;
 }
 
 const sheetPageState = createHookstate<SheetPageState>({
@@ -77,6 +79,8 @@ const sheetPageState = createHookstate<SheetPageState>({
 		remove: [],
 		update: [],
 	},
+	selectedSheetMemberRemoveMethod: "remove",
+	selectedSheetMemberRemovedMoveToMember: "",
 });
 
 /**
@@ -138,6 +142,10 @@ export const useSheetPageState = () => {
 			JSON.stringify({ ...state.sheetMemberOptionsQueue.value })
 		) as SheetPageState["sheetMemberOptionsQueue"],
 		//? Not performing a stringify/parse copy here causes the app to crash
+		selectedSheetMemberRemoveMethod:
+			state.selectedSheetMemberRemoveMethod.value,
+		selectedSheetMemberRemovedMoveToMember:
+			state.selectedSheetMemberRemovedMoveToMember.value,
 
 		/**
 		 * Check if a specific dialog is open
@@ -370,6 +378,10 @@ export const useSheetPageState = () => {
 		queueMemberForAdd: (_id: string) => {
 			state.sheetMemberOptionsQueue.add.set((value) => [...value, _id]);
 		},
+
+		selectNewSheetMemberRemoveMethod: state.selectedSheetMemberRemoveMethod.set,
+		selectNewSheetMemberRemovedMoveToMember:
+			state.selectedSheetMemberRemovedMoveToMember.set,
 	};
 };
 
