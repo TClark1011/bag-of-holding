@@ -379,7 +379,15 @@ export const useSheetPageState = () => {
 			state.sheetMemberOptionsQueue.add.set((value) => [...value, _id]);
 		},
 
+		/**
+		 * Set the 'removeMethod' that is currently selected within the SheetOptions UI
+		 */
 		selectNewSheetMemberRemoveMethod: state.selectedSheetMemberRemoveMethod.set,
+
+		/**
+		 * Select the member that is currently selected to move an item to when a member
+		 * is removed via the SheetOptions UI
+		 */
 		selectNewSheetMemberRemovedMoveToMember:
 			state.selectedSheetMemberRemovedMoveToMember.set,
 	};
