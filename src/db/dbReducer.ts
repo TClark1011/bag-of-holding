@@ -60,14 +60,6 @@ const dbReducer = async (
 			);
 			break;
 		case "sheet_metadataUpdate":
-			console.log(
-				"(dbReducer)",
-				getIds(
-					action.data.members.remove.filter(
-						(removingMember) => removingMember.deleteMethod.mode === "remove"
-					)
-				)
-			);
 			if (action.data.name) {
 				updateSheet({
 					$set: {
