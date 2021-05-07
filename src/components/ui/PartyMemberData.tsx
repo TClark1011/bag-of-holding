@@ -7,6 +7,7 @@ import { useInventoryState } from "../contexts/InventoryStateContext";
 export interface PartyMemberDataProps extends Omit<TextProps, "children"> {
 	memberId: string;
 	property: keyof OmitId<InventoryMemberFields>;
+	fallback?: string | false;
 }
 
 /**
@@ -17,12 +18,18 @@ export interface PartyMemberDataProps extends Omit<TextProps, "children"> {
  * @param {string} props.memberId The id of the member to get the
  * data of
  * @param {string} props.property The data property to display
+ * @param {string | false} [props.fallback=props.memberId] The
+ * fallback value to use if member with the passed `_id` is not
+ * found. If passed boolean `false`, then this component will
+ * return `null` if the member is not found. Defaults to the
+ * passed `memberId` value
  * @returns {React.ReactNode} The fetched data inside a 'Text'
  * component. If no matching member is found, null is returned
  */
 const PartyMemberData: React.FC<PartyMemberDataProps> = ({
 	memberId,
 	property,
+	fallback = memberId,
 	...props
 }) => {
 	const { members } = useInventoryState();
@@ -30,8 +37,15 @@ const PartyMemberData: React.FC<PartyMemberDataProps> = ({
 	const selectedMember = members.find((item) => item._id === memberId);
 
 	return selectedMember ? (
-		<Text {...props}>{selectedMember[property]}</Text>
+		<Text {...props}>
+			{selectedMember ? selectedMember[property] : fallback}
+		</Text>
+	) : // ? If member with matching id was found, return the value of the property
+	fallback !== false ? (
+		// ? If member was not found and fallback is not `false`, then return the fallback
+		<Text {...props}>{fallback}</Text>
 	) : null;
+	//? If member was not found and fallback was `false`, then return `null`
 };
 
 export default PartyMemberData;
