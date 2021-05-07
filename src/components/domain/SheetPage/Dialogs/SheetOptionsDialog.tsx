@@ -33,10 +33,12 @@ import {
 import { InventoryMemberDeleteMethodFields } from "../../../../types/InventorySheetState";
 import { chakra, ComponentWithAs } from "@chakra-ui/system";
 import { Select } from "@chakra-ui/select";
+import ItemGiveToSelect from "../ItemGiveToSelect";
 
 //TODO: Fix validation sheet options dialog with the new inventory member objects;
 //TODO: Update existing party members
-//TODO: Add fallback value for 'PartyMemberData' component
+//TODO: Rename "move" remove member method to "give"
+//TODO: Test delete methods
 
 export type SheetOptionsDialogFormFields = Pick<
 	InventorySheetFields,
@@ -236,17 +238,30 @@ const SheetOptionsDialog: React.FC = () => {
 												onCancel={deleteMemberConfirmOnClose}
 												header={`Remove "${deleteMemberTarget.name}" from sheet?`}
 												onConfirm={() => {
+													console.log(
+														"(SheetOptionsDialog) selectedSheetMemberRemovedMoveToMember: ",
+														selectedSheetMemberRemovedMoveToMember
+													);
 													queueMemberForRemove(
 														values.members[deleteMemberTarget.index]._id,
 														{
-															mode: "remove",
+															mode: selectedSheetMemberRemoveMethod,
+															...(selectedSheetMemberRemoveMethod ===
+																"move" && {
+																to: selectedSheetMemberRemovedMoveToMember,
+															}),
 														}
 													);
 													helpers.remove(deleteMemberTarget.index);
 												}}
 											>
 												<Paragraph>
-													How do you want to remove this party member?
+													Are you sure you want to delete this party member from
+													the sheet?
+												</Paragraph>
+												<Paragraph>
+													What should happen to items being carried by{" "}
+													{deleteMemberTarget.name}?
 												</Paragraph>
 												<MemberDeleteMethodRadioGroup
 													value={selectedSheetMemberRemoveMethod}
@@ -255,38 +270,26 @@ const SheetOptionsDialog: React.FC = () => {
 													}
 												>
 													<VStack align="start" spacing={4}>
-														<Flex justify="space-between" width="full">
-															<MemberDeleteMethodRadio value="move">
-																<Flex align="center" marginRight={2}>
-																	Give To
-																</Flex>
-															</MemberDeleteMethodRadio>
-															<Select
-																flexGrow={1}
-																width="max-content"
-																size="sm"
-																value={selectedSheetMemberRemovedMoveToMember}
-																onChange={(e) =>
-																	selectNewSheetMemberRemovedMoveToMember(
-																		e.target.value
-																	)
-																}
-																onFocus={
-																	() => selectNewSheetMemberRemoveMethod("move")
-																	//? Select this Radio when the member dropdown is focused
-																}
-															>
-																{members
-																	.filter(
-																		(mem) => mem._id !== deleteMemberTarget._id
-																	)
-																	.map((mem) => (
-																		<option value={mem._id} key={mem._id}>
-																			{mem.name}
-																		</option>
-																	))}
-															</Select>
-														</Flex>
+														{/* //# "Give To" method */}
+														{members.length - sheetMembersQueue.remove.length >
+															1 && (
+															// ? Do not show "give to" option if there are no other members in the sheet that can receive items
+															// NOTE: Cannot currently move items to a character that was just created
+															<Flex justify="space-between" width="full">
+																<MemberDeleteMethodRadio value="move">
+																	<Flex align="center" marginRight={2}>
+																		Give To
+																	</Flex>
+																</MemberDeleteMethodRadio>
+																{/* //# "Give To" member Select */}
+																<ItemGiveToSelect
+																	removingMemberId={deleteMemberTarget._id}
+																	flexGrow={1}
+																	width="max-content"
+																	size="sm"
+																/>
+															</Flex>
+														)}
 														<MemberDeleteMethodRadio value="remove">
 															Delete From Sheet
 														</MemberDeleteMethodRadio>
