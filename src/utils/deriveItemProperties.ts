@@ -1,12 +1,11 @@
 const Big = require('big.js');
 
 /**
- * Generate a new inventory item object
- * Takes all the required files, excluding "_id"
- * Creates new object with randomly generated "_id" along with the provided fields
+ * Multiplies an item's weight by its quantity using big.js
+ * Returns the resulting number
  *
  * @param {InventoryItemFields} InventoryItemFields The fields for an inventory item
- * @returns {number} total item weight
+ * @returns {Number} total item weight
  */
 export const getItemTotalWeight = (currentItem) => {
   let calcWeight = new Big(currentItem.weight);
@@ -14,14 +13,13 @@ export const getItemTotalWeight = (currentItem) => {
 };
 
 /**
- * Generate a new inventory item object
- * Takes all the required files, excluding "_id"
- * Creates new object with randomly generated "_id" along with the provided fields
+* Multiplies an item's value by its quantity using big.js
+* Returns the resulting number
  *
 * @param {InventoryItemFields} InventoryItemFields The fields for an inventory item
- * @returns {value} total item value
+ * @returns {Number} total item value
  */
 export const getItemTotalValue = (currentItem) => {
-  let calcValue = new Big(currentItem.weight);
+  let calcValue = new Big(currentItem.value);
 	return  parseFloat(calcValue.times(currentItem.quantity));
 };
