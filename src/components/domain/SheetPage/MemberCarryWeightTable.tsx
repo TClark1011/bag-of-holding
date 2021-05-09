@@ -1,5 +1,8 @@
 import { Table, TableProps, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/table";
 import { useInventoryState } from "../../contexts/InventoryStateContext";
+import { getItemTotalWeight } from "../../../utils/deriveItemProperties";
+import { getItemTotalValue } from "../../../utils/deriveItemProperties";
+
 
 /**
  * Component for showing the total carry weight/value of each party member's inventory
@@ -33,13 +36,14 @@ const MemberCarryWeightTable: React.FC<TableProps> = ({ ...props }) => {
 						<Td>
 							{getCarriedItems(member).reduce<number>(
 								(total, current) =>
-									(total += current.weight * current.quantity),
+									(total += getItemTotalWeight(current)),
 								0
 							)}
 						</Td>
 						<Td>
 							{getCarriedItems(member).reduce<number>(
-								(total, current) => (total += current.value * current.quantity),
+								(total, current) =>
+								(total += getItemTotalValue(current)),
 								0
 							)}
 						</Td>

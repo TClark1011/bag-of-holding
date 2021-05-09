@@ -26,6 +26,8 @@ import { useInventoryState } from "../../contexts/InventoryStateContext";
 import { Tooltip } from "@chakra-ui/tooltip";
 import isUrl from "is-url-superb";
 import { testIdGeneratorFactory } from "../../../utils/testUtils";
+import { getItemTotalWeight } from "../../../utils/deriveItemProperties";
+import { getItemTotalValue } from "../../../utils/deriveItemProperties";
 
 const getTestId = testIdGeneratorFactory("InventoryTable");
 
@@ -214,9 +216,9 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 							)}
 						</TableCell>
 						<TableCell>{item.quantity}</TableCell>
-						<TableCell>{item.weight * item.quantity}</TableCell>
+						<TableCell>{getItemTotalWeight(item)}</TableCell>
 						<TableCell display={col4Display}>
-							{item.value * item.quantity}
+							{getItemTotalValue(item)}
 						</TableCell>
 						<TableCell display={col5Display}>{item.carriedBy}</TableCell>
 						<TableCell display={col6Display}>{item.category}</TableCell>
