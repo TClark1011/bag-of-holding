@@ -1,4 +1,7 @@
-const Big = require('big.js');
+import InventoryItemFields, {
+	InventoryItemCreationFields,
+} from "../types/InventoryItemFields";
+import Big from "big.js";
 
 /**
  * Multiplies an item's weight by its quantity using big.js
@@ -7,8 +10,8 @@ const Big = require('big.js');
  * @param {InventoryItemFields} InventoryItemFields The fields for an inventory item
  * @returns {Number} total item weight
  */
-export const getItemTotalWeight = (currentItem) => {
-  let calcWeight = new Big(currentItem.weight);
+ export const getItemTotalWeight = (currentItem:InventoryItemFields):number => {
+  const calcWeight = new Big(currentItem.weight);
 	return  parseFloat(calcWeight.times(currentItem.quantity));
 };
 
@@ -19,7 +22,7 @@ export const getItemTotalWeight = (currentItem) => {
 * @param {InventoryItemFields} InventoryItemFields The fields for an inventory item
  * @returns {Number} total item value
  */
-export const getItemTotalValue = (currentItem) => {
-  let calcValue = new Big(currentItem.value);
+export const getItemTotalValue = (currentItem:InventoryItemFields):number => {
+  const calcValue = new Big(currentItem.value);
 	return  parseFloat(calcValue.times(currentItem.quantity));
 };

@@ -26,8 +26,7 @@ import { useInventoryState } from "../../contexts/InventoryStateContext";
 import { Tooltip } from "@chakra-ui/tooltip";
 import isUrl from "is-url-superb";
 import { testIdGeneratorFactory } from "../../../utils/testUtils";
-import { getItemTotalWeight } from "../../../utils/deriveItemProperties";
-import { getItemTotalValue } from "../../../utils/deriveItemProperties";
+import { getItemTotalWeight, getItemTotalValue } from "../../../utils/deriveItemProperties";
 
 const getTestId = testIdGeneratorFactory("InventoryTable");
 
