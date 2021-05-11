@@ -37,7 +37,7 @@ export interface InventorySheetStateActionTemplate<T extends string, D> {
 /**
  * Action for adding an item to sheet inventory
  */
-type AddItemAction = InventorySheetStateActionTemplate<
+export type AddItemAction = InventorySheetStateActionTemplate<
 	"item_add",
 	InventoryItemCreationFields
 >;
@@ -45,14 +45,14 @@ type AddItemAction = InventorySheetStateActionTemplate<
 /**
  * Action for removing an item from sheet inventory
  */
-type RemoveItemAction = InventorySheetStateActionTemplate<
+export type RemoveItemAction = InventorySheetStateActionTemplate<
 	"item_remove",
 	string
 >;
 /**
  * Action for setting whether or not sheet state is ahead of server state
  */
-type UpdateItemAction = InventorySheetStateActionTemplate<
+export type UpdateItemAction = InventorySheetStateActionTemplate<
 	"item_update",
 	InventoryItemCreationFields
 >;
@@ -60,7 +60,7 @@ type UpdateItemAction = InventorySheetStateActionTemplate<
 /**
  * Action for completely updating a sheet's state
  */
-type UpdateSheetAction = InventorySheetStateActionTemplate<
+export type UpdateSheetAction = InventorySheetStateActionTemplate<
 	"sheet_update",
 	Omit<InventorySheetFields, "_id">
 >;
@@ -105,7 +105,7 @@ export type SheetStateMembersUpdateQueue = {
 	update: InventoryMemberFields[];
 };
 
-type UpdateSheetMetaDataAction = InventorySheetStateActionTemplate<
+export type UpdateSheetMetaDataAction = InventorySheetStateActionTemplate<
 	"sheet_metadataUpdate",
 	{
 		members: SheetStateMembersUpdateQueue;
