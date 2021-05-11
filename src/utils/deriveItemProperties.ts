@@ -1,6 +1,4 @@
-import InventoryItemFields, {
-	InventoryItemCreationFields,
-} from "../types/InventoryItemFields";
+import InventoryItemFields from "../types/InventoryItemFields";
 import Big from "big.js";
 
 /**
@@ -12,7 +10,7 @@ import Big from "big.js";
  */
  export const getItemTotalWeight = (currentItem:InventoryItemFields):number => {
   const calcWeight = new Big(currentItem.weight);
-	return  parseFloat(calcWeight.times(currentItem.quantity));
+	return  calcWeight.times(currentItem.quantity).toNumber();
 };
 
 /**
@@ -24,5 +22,5 @@ import Big from "big.js";
  */
 export const getItemTotalValue = (currentItem:InventoryItemFields):number => {
   const calcValue = new Big(currentItem.value);
-	return  parseFloat(calcValue.times(currentItem.quantity));
+	return  calcValue.times(currentItem.quantity).toNumber();
 };

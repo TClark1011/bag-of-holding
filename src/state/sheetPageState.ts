@@ -8,6 +8,7 @@ import { createState as createHookstate, useHookstate } from "@hookstate/core";
 import toggleArrayItem from "@lukeboyle/array-item-toggle";
 // import arrayUnion from "array-union";
 import unique from "uniq";
+import Big from "big.js";
 
 export type SheetDialogType =
 	| "item.new"
@@ -164,8 +165,8 @@ export const useSheetPageState = () => {
 			};
 
 			getProcessedItems(items).forEach(({ value, weight, quantity }) => {
-				result.value += value * quantity;
-				result.weight += weight * quantity;
+				result.value += Big(value).times(quantity).toNumber();
+				result.weight += Big(weight).times(quantity).toNumber();
 			});
 
 			return result;

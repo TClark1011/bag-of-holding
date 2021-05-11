@@ -35,14 +35,14 @@ const MemberCarryWeightTable: React.FC<TableProps> = ({ ...props }) => {
 						<Td>
 							{getCarriedItems(member).reduce<number>(
 								(total, current) =>
-									(total = Number(Big(total).plus(getItemTotalWeight(current)))),
+									(total = Big(total).plus(getItemTotalWeight(current)).toNumber()),
 								0
 							)}
 						</Td>
 						<Td>
 							{getCarriedItems(member).reduce<number>(
 								(total, current) =>
-								(total = Number(Big(total).plus(getItemTotalValue(current)))),
+								(total = Big(total).plus(getItemTotalValue(current)).toNumber()),
 								0
 							)}
 						</Td>
