@@ -39,6 +39,7 @@ import ItemGiveToSelect from "../ItemGiveToSelect";
 //TODO: Update existing party members
 //TODO: Rename "move" remove member method to "give"
 //TODO: Test delete methods
+//TODO: Analytics for different delete methods
 
 export type SheetOptionsDialogFormFields = Pick<
 	InventorySheetFields,
@@ -84,7 +85,6 @@ const SheetOptionsDialog: React.FC = () => {
 		selectedSheetMemberRemoveMethod,
 		selectNewSheetMemberRemoveMethod,
 		selectedSheetMemberRemovedMoveToMember,
-		selectNewSheetMemberRemovedMoveToMember,
 	} = useSheetPageState();
 
 	/**

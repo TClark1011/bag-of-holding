@@ -1,6 +1,9 @@
 import mapObject from "map-obj";
 import omit from "omit.js";
-import { InventorySheetPartialUpdateAction } from "../types/InventorySheetState";
+import {
+	InventoryMemberMoveDeleteMethod,
+	InventorySheetPartialUpdateAction,
+} from "../types/InventorySheetState";
 import getIds from "../utils/getIds";
 import SheetModel from "./SheetModel";
 
@@ -51,7 +54,7 @@ const dbReducer = async (
 				{
 					$set: mapObject(
 						omit(action.data, ["_id"]),
-						//? Data without the '_id' field (because we don't want to update the _id
+						//? Data without the '_id' field (because we don't want to update the _id)
 						(key: string, value: string | number) => [`items.$.${key}`, value]
 						//? Generate a valid mongoose update from the action data
 					),
@@ -98,6 +101,30 @@ const dbReducer = async (
 						},
 					},
 				});
+
+				const membersWithMoveMode = action.data.members.remove.filter(
+					(mem) => mem.deleteMethod.mode === "move"
+				);
+				//? Members in the delete queue with the "move" method mode
+				//? For some reason, Typescript infers that all items in this array have the "remove" mode when it is used in the code below
+
+				console.log("(dbReducer) membersWithMoveMode: ", membersWithMoveMode);
+
+				if (membersWithMoveMode.length) {
+					//# Move items from deleted members to other member
+					membersWithMoveMode.forEach((mem) => {
+						updateSheet(
+							{
+								$set: {
+									"items.$.carriedBy": (mem.deleteMethod as InventoryMemberMoveDeleteMethod)
+										.to,
+									//? Type casting cus Typescript inference is being a big meanie :<
+								},
+							},
+							{ "items.carriedBy": mem._id }
+						);
+					});
+				}
 			}
 			break;
 	}

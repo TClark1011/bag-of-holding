@@ -65,6 +65,16 @@ type UpdateSheetAction = InventorySheetStateActionTemplate<
 	Omit<InventorySheetFields, "_id">
 >;
 
+export type InventoryMemberDeleteMethodTemplate<ModeName extends string> = {
+	mode: ModeName;
+};
+
+export type InventoryMemberMoveDeleteMethod = InventoryMemberDeleteMethodTemplate<"move"> & {
+	to: string;
+};
+export type InventoryMemberRemoveDeleteMethod = InventoryMemberDeleteMethodTemplate<"remove">;
+export type InventoryMemberSetToNobodyDeleteMethod = InventoryMemberDeleteMethodTemplate<"setToNobody">;
+
 /**
  * Extra information on how items being carried
  * by a member that is being removed should be
@@ -81,17 +91,9 @@ type UpdateSheetAction = InventorySheetStateActionTemplate<
  * set to "nobody"
  */
 export type InventoryMemberDeleteMethodFields =
-	| {
-			mode: "move";
-			to: string;
-	  }
-	| {
-			mode: "remove";
-	  }
-	| {
-			mode: "setToNobody";
-	  };
-
+	| InventoryMemberMoveDeleteMethod
+	| InventoryMemberRemoveDeleteMethod
+	| InventoryMemberSetToNobodyDeleteMethod;
 export interface InventoryMemberFieldsDeleteAction
 	extends InventoryMemberFields {
 	deleteMethod: InventoryMemberDeleteMethodFields;

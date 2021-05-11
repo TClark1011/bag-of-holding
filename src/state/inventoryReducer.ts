@@ -3,6 +3,7 @@ import produce from "immer";
 import { merge } from "merge-anything";
 import InventorySheetFields from "../types/InventorySheetFields";
 import InventorySheetState, {
+	InventoryMemberDeleteMethodFields,
 	InventorySheetStateAction,
 } from "../types/InventorySheetState";
 import createInventoryItem from "../utils/createInventoryItem";
@@ -11,6 +12,7 @@ import { logEvent, logException } from "../utils/analyticsHooks";
 import codeToTitle from "code-to-title";
 import stringifyObject from "stringify-object";
 import getIds from "../utils/getIds";
+import { memberIsCarrying } from "../utils/inventoryItemUtils";
 
 /**
  * Reducer that handles updates to client state
@@ -114,15 +116,39 @@ const inventoryReducer = (
 				);
 
 				action.data.members.remove.forEach((removingMember) => {
+					console.log("(inventoryReducer) removingMember: ", removingMember);
 					switch (removingMember.deleteMethod.mode) {
 						case "remove":
 							draftState.items = draftState.items.filter(
-								(item) => item.carriedBy !== removingMember._id
+								(item) => !memberIsCarrying(removingMember, item)
 							);
 							break;
 						case "move":
-							console.warn("must implement item moving");
+							draftState.items = draftState.items.map((item) =>
+								memberIsCarrying(removingMember, item)
+									? {
+										...item,
+										carriedBy: (removingMember.deleteMethod as InventoryMemberDeleteMethodFields & {
+												to: string;
+											}).to,
+										/**
+										 * ? Have to use typecasting here even though it seems like I
+										 * ? shouldn't have to. When I write out
+										 * ? `removingMember.deleteMethod` underneath this case statement,
+										 * ? typescript recognises that it has mode "move" and as such
+										 * ? has a "to" field. But when I try to use "to" here, it insists,
+										 * ? that mode is "remove" and therefore does not have a "to" field.
+										 */
+									  }
+									: item
+							);
 							break;
+						case "setToNobody":
+							draftState.items = draftState.items.map((item) =>
+								memberIsCarrying(removingMember, item)
+									? { ...item, carriedBy: "Nobody" }
+									: item
+							);
 					}
 				});
 
