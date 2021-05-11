@@ -32,15 +32,21 @@ const dbReducer = async (
 	 * @param {object} [additionalQuery] Additional object that
 	 * is merged to the query object. Used to be able to make
 	 * use of the mongoose '$' index operator.
+	 * @param extraOptions
 	 */
 	const updateSheet = (
 		operation: Record<string, unknown>,
-		additionalQuery: Record<string, unknown> = {}
+		additionalQuery: Record<string, unknown> = {},
+		extraOptions: Record<string, unknown> = {}
 	) => {
-		SheetModel.updateOne({ _id: sheetId, ...additionalQuery } as unknown, {
-			...operation,
-			...metaUpdates,
-		}).exec();
+		SheetModel.updateOne(
+			{ _id: sheetId, ...additionalQuery } as unknown,
+			{
+				...operation,
+				...metaUpdates,
+			},
+			extraOptions
+		).exec();
 	};
 	switch (action.type) {
 		case "item_add":
@@ -116,9 +122,9 @@ const dbReducer = async (
 						updateSheet(
 							{
 								$set: {
-									"items.$.carriedBy": (mem.deleteMethod as InventoryMemberMoveDeleteMethod)
+									"items.$[].carriedBy": (mem.deleteMethod as InventoryMemberMoveDeleteMethod)
 										.to,
-									//? Type casting cus Typescript inference is being a big meanie :<
+									//? Type casting because Typescript inference is being a big meanie :<
 								},
 							},
 							{ "items.carriedBy": mem._id }
