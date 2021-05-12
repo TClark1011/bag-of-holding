@@ -13,6 +13,7 @@ import {
 import generateMember from "../../src/generators/generateMember";
 import InventoryMemberFields from "../../src/types/InventoryMemberFields";
 import { memberIsCarrying } from "../../src/utils/inventoryItemUtils";
+import { OmitId } from "../../src/types/UtilityTypes";
 
 let sheetId = "";
 //? Variable to store the id of the sheet we create for testing
@@ -48,6 +49,53 @@ afterAll(async () => {
 	mongoose.connection.close();
 	mockMongoose.killMongo();
 });
+
+/**
+ * Function for generating a new sheet for testing.
+ * Sheet is deleted once tests are completed
+ *
+ * @param {Function} testFn A callback containing tests
+ * to be executed. The callback is passed::
+ * - initialState: The state of sheet as it was created
+ * - update: A function to dispatch actions on that sheet
+ * and then return the updated state
+ * @param {object} [initialState] The state used to initialise
+ * the new sheet. Defaults to a sheet with a basic name and 
+ * no members or items.
+ */
+const testDbReducer = async (
+	testFn: (
+		initialState: InventorySheetFields,
+		update: (
+			action: InventorySheetPartialUpdateAction
+		) => Promise<InventorySheetFields>
+	) => Promise<void>,
+	initialState: OmitId<InventorySheetFields> = {
+		name: "name",
+		members: [],
+		items: [],
+	}
+): Promise<void> => {
+	const newSheet = await new SheetModel(initialState).save();
+
+	/**
+	 * Update the sheet via an action and return the
+	 * updated state
+	 *
+	 * @param {object} action The action to execute
+	 * upon th sheet.
+	 * @returns {Promise<object>} The state of the sheet
+	 * after the action has been executed.
+	 */
+	const update = async (action: InventorySheetPartialUpdateAction) => {
+		await dbReducer((newSheet._id as unknown) as string, action);
+		return (await (SheetModel.findById(
+			(newSheet._id as unknown) as string
+		) as unknown)) as InventorySheetFields;
+	};
+	await testFn((newSheet as unknown) as InventorySheetFields, update);
+	await newSheet.delete();
+};
 
 /**
  * @param data
@@ -128,24 +176,18 @@ describe("Metadata Member updates", () => {
 		generateMember("1"),
 		generateMember("1"),
 	];
-	test("Add member", async () => {
-		const originalState = await getSheet();
 
-		const addMember = testMembers[0];
-
-		await dispatchMetaDataUpdate({
-			name: originalState.name,
-			members: {
-				add: [addMember],
-				remove: [],
-				update: [],
-			},
-		});
-
-		const postUpdateState = await getSheet();
-
-		expect(postUpdateState.members.length).toEqual(1);
-	});
+	test("Add members", () =>
+		testDbReducer(async (originalState, update) => {
+			const updated = await update({
+				type: "sheet_metadataUpdate",
+				data: {
+					name: originalState.name,
+					members: { add: testMembers, remove: [], update: [] },
+				},
+			});
+			expect(updated.members.length).toEqual(2);
+		}));
 
 	test("Remove member - Delete Items", async () => {
 		const originalState = await getSheet();
