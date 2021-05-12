@@ -131,6 +131,22 @@ const dbReducer = async (
 						);
 					});
 				}
+
+				const membersWithNobodyMode = action.data.members.remove.filter(
+					(mem) => mem.deleteMethod.mode === "setToNobody"
+				);
+
+				membersWithNobodyMode.forEach((mem) => {
+					updateSheet(
+						{
+							$set: {
+								"items.$[].carriedBy": "Nobody",
+								//? Type casting because Typescript inference is being a big meanie :<
+							},
+						},
+						{ "items.carriedBy": mem._id }
+					);
+				});
 			}
 			break;
 	}
