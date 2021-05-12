@@ -32,21 +32,15 @@ const dbReducer = async (
 	 * @param {object} [additionalQuery] Additional object that
 	 * is merged to the query object. Used to be able to make
 	 * use of the mongoose '$' index operator.
-	 * @param extraOptions
 	 */
 	const updateSheet = (
 		operation: Record<string, unknown>,
-		additionalQuery: Record<string, unknown> = {},
-		extraOptions: Record<string, unknown> = {}
+		additionalQuery: Record<string, unknown> = {}
 	) => {
-		SheetModel.updateOne(
-			{ _id: sheetId, ...additionalQuery } as unknown,
-			{
-				...operation,
-				...metaUpdates,
-			},
-			extraOptions
-		).exec();
+		SheetModel.updateOne({ _id: sheetId, ...additionalQuery } as unknown, {
+			...operation,
+			...metaUpdates,
+		}).exec();
 	};
 	switch (action.type) {
 		case "item_add":
@@ -73,8 +67,6 @@ const dbReducer = async (
 				updateSheet({
 					$set: {
 						name: action.data.name,
-						// members: action.data.members.map((name) => generateMember(name)),
-						//? We have to write an arrow function because if we just pass the function then the index gets passed as the carry capacity
 					},
 				});
 			}
@@ -114,8 +106,6 @@ const dbReducer = async (
 				//? Members in the delete queue with the "move" method mode
 				//? For some reason, Typescript infers that all items in this array have the "remove" mode when it is used in the code below
 
-				console.log("(dbReducer) membersWithMoveMode: ", membersWithMoveMode);
-
 				if (membersWithMoveMode.length) {
 					//# Move items from deleted members to other member
 					membersWithMoveMode.forEach((mem) => {
@@ -141,7 +131,6 @@ const dbReducer = async (
 						{
 							$set: {
 								"items.$[].carriedBy": "Nobody",
-								//? Type casting because Typescript inference is being a big meanie :<
 							},
 						},
 						{ "items.carriedBy": mem._id }
