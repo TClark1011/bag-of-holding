@@ -5,6 +5,14 @@ import InventoryItemFields from "../../src/types/InventoryItemFields";
 import InventorySheetFields from "../../src/types/InventorySheetFields";
 import mongoose from "mongoose";
 import { MockMongoose } from "mock-mongoose";
+import {
+	AddItemAction,
+	InventorySheetPartialUpdateAction,
+	UpdateSheetMetaDataAction,
+} from "../../src/types/InventorySheetState";
+import generateMember from "../../src/generators/generateMember";
+import InventoryMemberFields from "../../src/types/InventoryMemberFields";
+import { memberIsCarrying } from "../../src/utils/inventoryItemUtils";
 
 let sheetId = "";
 //? Variable to store the id of the sheet we create for testing
@@ -40,6 +48,15 @@ afterAll(async () => {
 	mongoose.connection.close();
 	mockMongoose.killMongo();
 });
+
+/**
+ * @param data
+ */
+const dispatchMetaDataUpdate = (data: UpdateSheetMetaDataAction["data"]) =>
+	dbReducer(sheetId, {
+		type: "sheet_metadataUpdate",
+		data,
+	});
 
 describe("DB Reducer Actions", () => {
 	const testItem: InventoryItemFields = {
@@ -82,24 +99,189 @@ describe("DB Reducer Actions", () => {
 		expect((await getSheet()).items.length).toEqual(0);
 	});
 
-	test("Sheet Metadata Update", async () => {
+	test("Sheet Metadata Update (name only)", async () => {
 		const originalState = await getSheet();
-		const testUpdate = {
+
+		const testUpdate: UpdateSheetMetaDataAction["data"] = {
 			name: originalState.name + "+",
-			members: ["1", "2"],
+			members: {
+				add: [],
+				remove: [],
+				update: [],
+			},
 		};
 
-		await dbReducer(sheetId, {
-			type: "sheet_metadataUpdate",
-			data: testUpdate,
-		});
+		await dispatchMetaDataUpdate(testUpdate);
 
 		const postUpdateState = await getSheet();
 
 		expect(originalState).not.toMatchObject(postUpdateState);
-		expect(originalState.members.length).toBeLessThan(
-			postUpdateState.members.length
-		);
 		expect(originalState.name).not.toEqual(postUpdateState.name);
+		expect(postUpdateState.name).toEqual(testUpdate.name);
+	});
+});
+
+//TODO: Update Member
+
+describe("Metadata Member updates", () => {
+	const testMembers: InventoryMemberFields[] = [
+		generateMember("1"),
+		generateMember("1"),
+	];
+	test("Add member", async () => {
+		const originalState = await getSheet();
+
+		const addMember = testMembers[0];
+
+		await dispatchMetaDataUpdate({
+			name: originalState.name,
+			members: {
+				add: [addMember],
+				remove: [],
+				update: [],
+			},
+		});
+
+		const postUpdateState = await getSheet();
+
+		expect(postUpdateState.members.length).toEqual(1);
+	});
+
+	test("Remove member - Delete Items", async () => {
+		const originalState = await getSheet();
+
+		const removeMember = testMembers[0];
+
+		await dbReducer(sheetId, {
+			type: "item_add",
+			data: {
+				name: "item",
+				carriedBy: removeMember._id,
+			},
+		});
+		//? Adding an item that should then be removed when we delete the member
+
+		expect((await getSheet()).items.length).toEqual(1);
+		//? We check that the item was added correctly
+
+		await dispatchMetaDataUpdate({
+			name: originalState.name,
+			members: {
+				add: [],
+				remove: [
+					{
+						...removeMember,
+						deleteMethod: {
+							mode: "remove",
+						},
+					},
+				],
+				update: [],
+			},
+		});
+		//? Dispatch the update to remove the member
+
+		const updatedState = await getSheet();
+
+		expect(updatedState.members.length).toEqual(0);
+		expect(updatedState.items.length).toEqual(0);
+	});
+
+	test("Add multiple members in one update", async () => {
+		const originalState = await getSheet();
+
+		await dispatchMetaDataUpdate({
+			name: originalState.name,
+			members: {
+				add: testMembers,
+				remove: [],
+				update: [],
+			},
+		});
+
+		const updatedState = await getSheet();
+
+		expect(updatedState.members.length).toEqual(2);
+	});
+
+	test("Remove member - Move Items", async () => {
+		const originalState = await getSheet();
+
+		const [fromMember, toMember] = testMembers;
+
+		await dispatchMetaDataUpdate({
+			name: originalState.name,
+			members: {
+				add: [fromMember],
+				remove: [],
+				update: [],
+			},
+		});
+
+		const numberOfItemsToAdd = 3;
+		for (let i = 0; i < numberOfItemsToAdd; i++) {
+			await dbReducer(sheetId, {
+				type: "item_add",
+				data: {
+					name: "item" + i,
+					carriedBy: fromMember._id,
+				},
+			});
+		}
+
+		expect((await getSheet()).items.length).toEqual(numberOfItemsToAdd);
+
+		await dispatchMetaDataUpdate({
+			name: originalState.name,
+			members: {
+				add: [],
+				remove: [
+					{
+						...fromMember,
+						deleteMethod: {
+							mode: "move",
+							to: toMember._id,
+						},
+					},
+				],
+				update: [],
+			},
+		});
+
+		const multiUpdatedState = await getSheet();
+
+		expect(
+			multiUpdatedState.items.filter((item) => memberIsCarrying(toMember, item))
+				.length
+		).toEqual(numberOfItemsToAdd);
+	});
+
+	test("Remove Member - Set To Nobody", async () => {
+		const originalState = await getSheet();
+		await dispatchMetaDataUpdate({
+			name: originalState.name,
+			members: {
+				add: [],
+				remove: [
+					{
+						...testMembers[1],
+						deleteMethod: {
+							mode: "setToNobody",
+						},
+					},
+				],
+				update: [],
+			},
+		});
+
+		const updatedState = await getSheet();
+
+		expect(
+			updatedState.items.filter((item) => item.carriedBy === "Nobody").length
+		).toEqual(
+			originalState.items.filter((item) =>
+				memberIsCarrying(testMembers[1], item)
+			).length
+		);
 	});
 });
