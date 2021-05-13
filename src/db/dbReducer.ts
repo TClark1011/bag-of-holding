@@ -137,6 +137,23 @@ const dbReducer = async (
 					);
 				});
 			}
+
+			action.data.members.update.forEach((mem) => {
+				updateSheet(
+					{
+						$set: mapObject(
+							omit(mem, ["_id"]),
+							//? Data without the '_id' field (because we don't want to update the _id)
+							(key: string, value: string | number) => [
+								`members.$.${key}`,
+								value,
+							]
+							//? Generate a valid mongoose update from the action data
+						),
+					},
+					{ "members._id": mem._id }
+				);
+			});
 			break;
 	}
 };
