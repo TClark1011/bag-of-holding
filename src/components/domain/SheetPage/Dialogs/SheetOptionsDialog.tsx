@@ -36,9 +36,7 @@ import { Select } from "@chakra-ui/select";
 import ItemGiveToSelect from "../ItemGiveToSelect";
 
 //TODO: Fix validation sheet options dialog with the new inventory member objects;
-//TODO: Update existing party members
 //TODO: Rename "move" remove member method to "give"
-//TODO: Test delete methods
 //TODO: Analytics for different delete methods
 
 export type SheetOptionsDialogFormFields = Pick<
