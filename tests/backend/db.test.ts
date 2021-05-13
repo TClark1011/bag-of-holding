@@ -5,10 +5,7 @@ import InventoryItemFields from "../../src/types/InventoryItemFields";
 import InventorySheetFields from "../../src/types/InventorySheetFields";
 import mongoose from "mongoose";
 import { MockMongoose } from "mock-mongoose";
-import {
-	InventorySheetPartialUpdateAction,
-	UpdateSheetMetaDataAction,
-} from "../../src/types/InventorySheetState";
+import { InventorySheetPartialUpdateAction } from "../../src/types/InventorySheetState";
 import generateMember from "../../src/generators/generateMember";
 import InventoryMemberFields from "../../src/types/InventoryMemberFields";
 import { OmitId } from "../../src/types/UtilityTypes";
@@ -17,38 +14,15 @@ import {
 	longswordFixture,
 } from "../fixtures/itemFixtures";
 import { merge } from "merge-anything";
-import { memberIsCarrying } from "../../src/utils/inventoryItemUtils";
 import getCarriedItems from "../../src/utils/getCarriedItems";
 import tweakString from "../utils/tweakString";
 
-let sheetId = "";
-//? Variable to store the id of the sheet we create for testing
-
 const mockMongoose = new MockMongoose(mongoose);
-
-/**
- * Fetch the sheet at the id defined by the 'sheetId'
- * variable
- *
- * @returns {Document<InventorySheetFields>}The SheetModel fetched from mongodb
- */
-const getSheet = async () =>
-	((await SheetModel.findById(sheetId)) as unknown) as InventorySheetFields;
 
 beforeAll(async () => {
 	await mockMongoose.prepareStorage().then(() => {
 		connectToMongoose();
 	});
-
-	const newSheet = await new SheetModel({
-		name: "Sheet Name",
-		members: [],
-		items: [],
-	}).save();
-	//? Create a new sheet
-
-	sheetId = (newSheet._id as unknown) as string;
-	//? Save the id of the newly created sheet into the 'sheetId' variable
 });
 
 afterAll(async () => {
@@ -105,18 +79,13 @@ const testDbReducer = async (
 			(newSheet._id as unknown) as string
 		) as unknown)) as InventorySheetFields;
 	};
-	await testFn((newSheet as unknown) as InventorySheetFields, update);
-	await newSheet.delete();
-};
 
-/**
- * @param data
- */
-const dispatchMetaDataUpdate = (data: UpdateSheetMetaDataAction["data"]) =>
-	dbReducer(sheetId, {
-		type: "sheet_metadataUpdate",
-		data,
-	});
+	await testFn((newSheet as unknown) as InventorySheetFields, update);
+	//? Execute the test function
+
+	await newSheet.delete();
+	//? Delete the sheet
+};
 
 describe("DB Reducer Actions", () => {
 	const testItem: InventoryItemFields = {
@@ -125,63 +94,70 @@ describe("DB Reducer Actions", () => {
 		quantity: 1,
 		weight: 1,
 	};
-	test("Create item", async () => {
-		const originalState = await getSheet();
-		await dbReducer(sheetId, {
-			type: "item_add",
-			data: testItem,
-		});
-		const newState = await getSheet();
-		expect(originalState.items.length).toBeLessThan(newState.items.length);
-		expect(newState.items[0]).toMatchObject(testItem);
-	});
+	test("Create item", () =>
+		testDbReducer(async (originalState, update) => {
+			const updatedState = await update({
+				type: "item_add",
+				data: testItem,
+			});
+			expect(updatedState.items.length).toBeGreaterThan(
+				originalState.items.length
+			);
+			expect(updatedState.items[0]).toMatchObject(testItem);
+		}));
 
-	test("Update item", async () => {
-		const updateItemNameTest = "updated item name";
-		await dbReducer(sheetId, {
-			type: "item_update",
-			data: {
-				_id: testItem._id,
-				name: updateItemNameTest,
+	test("Update item", () =>
+		testDbReducer(
+			async (originalState, update) => {
+				const updatedState = await update({
+					type: "item_update",
+					data: {
+						_id: testItem._id,
+						name: tweakString(testItem.name),
+					},
+				});
+				expect(updatedState.items[0]).toMatchObject({
+					...testItem,
+					name: tweakString(testItem.name),
+				});
 			},
-		});
-		expect((await getSheet()).items[0]).toMatchObject({
-			...testItem,
-			name: updateItemNameTest,
-		});
-	});
+			{
+				items: [testItem],
+			}
+		));
 
-	test("Delete item", async () => {
-		await dbReducer(sheetId, {
-			type: "item_remove",
-			data: testItem._id,
-		});
-		expect((await getSheet()).items.length).toEqual(0);
-	});
-
-	test("Sheet Metadata Update (name only)", async () => {
-		const originalState = await getSheet();
-
-		const testUpdate: UpdateSheetMetaDataAction["data"] = {
-			name: originalState.name + "+",
-			members: {
-				add: [],
-				remove: [],
-				update: [],
+	test("Delete item", () =>
+		testDbReducer(
+			async (_, update) => {
+				const updatedState = await update({
+					type: "item_remove",
+					data: testItem._id,
+				});
+				expect(updatedState.items.length).toEqual(0);
 			},
-		};
+			{
+				items: [testItem],
+			}
+		));
 
-		await dispatchMetaDataUpdate(testUpdate);
-
-		const postUpdateState = await getSheet();
-
-		expect(originalState).not.toMatchObject(postUpdateState);
-		expect(originalState.name).not.toEqual(postUpdateState.name);
-		expect(postUpdateState.name).toEqual(testUpdate.name);
-	});
+	test("Sheet Metadata Update (name only)", async () =>
+		testDbReducer(async (originalState, update) => {
+			const updatedState = await update({
+				type: "sheet_metadataUpdate",
+				data: {
+					name: tweakString(originalState.name),
+					members: {
+						add: [],
+						remove: [],
+						update: [],
+					},
+				},
+			});
+			expect(updatedState).not.toMatchObject(originalState);
+			expect(updatedState.name).not.toEqual(originalState.name);
+			expect(updatedState.name).toEqual(tweakString(originalState.name));
+		}));
 });
-
-//TODO: Update Member
 
 describe("Metadata Member updates", () => {
 	const testMembers: InventoryMemberFields[] = [
@@ -190,8 +166,15 @@ describe("Metadata Member updates", () => {
 	];
 
 	/**
-	 * @param member
-	 * @param member2
+	 * Function to fetch test items. The test items are
+	 * pulled from the fixtures folder, with their
+	 * `carriedBy` field changed to match passed members.
+	 *
+	 * @param {object} member The member object, the `_id`
+	 * of which is passed to the first test item.
+	 * @param {object} [member2=member] The member to carry
+	 * the second item.
+	 * @returns {object[]} The items with altered `carriedBy`
 	 */
 	const getTestItems = (member: InventoryMemberFields, member2 = member) => [
 		{ ...longswordFixture, carriedBy: member._id },
@@ -224,7 +207,6 @@ describe("Metadata Member updates", () => {
 	test("Remove member - Remove item", () =>
 		testDbReducer(
 			async (originalState, update) => {
-				//FIXME: This test always passes even with `expect(false).toBeTruthy();`
 				expect(originalState.items.length).toEqual(1);
 
 				const updated = await update({
