@@ -1,6 +1,7 @@
 import { Select, SelectProps } from "@chakra-ui/select";
 import { useEffect } from "react";
 import { useSheetPageState } from "../../../state/sheetPageState";
+import { DeleteMemberItemHandlingMethods } from "../../../types/InventorySheetState";
 import getIds from "../../../utils/getIds";
 import { useInventoryState } from "../../contexts/InventoryStateContext";
 
@@ -52,7 +53,9 @@ const ItemGiveToSelect: React.FC<ItemGiveToSelectProps> = ({
 	return (
 		<Select
 			onChange={(e) => selectNewSheetMemberRemovedMoveToMember(e.target.value)}
-			onFocus={() => selectNewSheetMemberRemoveMethod("move")}
+			onFocus={() =>
+				selectNewSheetMemberRemoveMethod(DeleteMemberItemHandlingMethods.give)
+			}
 			{...props}
 		>
 			{membersAvailableToReceive.map((mem) => (

@@ -11,6 +11,7 @@ import {
 	InventoryMemberDeleteMethodFields,
 	SheetStateMembersUpdateQueue,
 	InventoryMemberFieldsDeleteAction,
+	DeleteMemberItemHandlingMethods,
 } from "../types/InventorySheetState";
 
 export type SheetDialogType =
@@ -79,7 +80,7 @@ const sheetPageState = createHookstate<SheetPageState>({
 		remove: [],
 		update: [],
 	},
-	selectedSheetMemberRemoveMethod: "remove",
+	selectedSheetMemberRemoveMethod: DeleteMemberItemHandlingMethods.delete,
 	selectedSheetMemberRemovedMoveToMember: "",
 });
 
