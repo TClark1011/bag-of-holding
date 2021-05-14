@@ -14,6 +14,7 @@ import codeToTitle from "code-to-title";
 import stringifyObject from "stringify-object";
 import getIds from "../utils/getIds";
 import { memberIsCarrying } from "../utils/inventoryItemUtils";
+import findObjectWithId from "../utils/findObjectWithId";
 
 /**
  * Reducer that handles updates to client state
@@ -73,7 +74,9 @@ const inventoryReducer = (
 			mutation(draftState);
 		});
 
-	logEvent("Sheet", codeToTitle(action.type));
+	if (action.type !== "sheet_metadataUpdate") {
+		logEvent("Sheet", codeToTitle(action.type));
+	}
 	//? Log the action in google analytics
 
 	switch (action.type) {
@@ -111,13 +114,22 @@ const inventoryReducer = (
 			return state;
 		case "sheet_metadataUpdate":
 			return produceNewState((draftState) => {
-				draftState.name = action.data.name;
+				if (action.data.name) {
+					logEvent("Sheet", "Changed Sheet Name");
+					draftState.name = action.data.name;
+				}
 				draftState.members = draftState.members.filter(
 					(member) => !getIds(action.data.members.remove).includes(member._id)
 				);
 
+				draftState.members = draftState.members.map((mem) =>
+					getIds(action.data.members.update).includes(mem._id)
+						? findObjectWithId(action.data.members.update, mem._id)
+						: mem
+				);
+
 				action.data.members.remove.forEach((removingMember) => {
-					console.log("(inventoryReducer) removingMember: ", removingMember);
+					logEvent("Sheet", "Deleted Sheet Member");
 					switch (removingMember.deleteMethod.mode) {
 						case DeleteMemberItemHandlingMethods.delete:
 							draftState.items = draftState.items.filter(
