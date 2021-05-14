@@ -1,6 +1,7 @@
 import mapObject from "map-obj";
 import omit from "omit.js";
 import {
+	DeleteMemberItemHandlingMethods,
 	InventoryMemberMoveDeleteMethod,
 	InventorySheetPartialUpdateAction,
 } from "../types/InventorySheetState";
@@ -92,7 +93,8 @@ const dbReducer = async (
 								$in: getIds(
 									action.data.members.remove.filter(
 										(removingMember) =>
-											removingMember.deleteMethod.mode === "remove"
+											removingMember.deleteMethod.mode ===
+											DeleteMemberItemHandlingMethods.delete
 									)
 								),
 							},
@@ -101,7 +103,8 @@ const dbReducer = async (
 				});
 
 				const membersWithMoveMode = action.data.members.remove.filter(
-					(mem) => mem.deleteMethod.mode === "move"
+					(mem) =>
+						mem.deleteMethod.mode === DeleteMemberItemHandlingMethods.give
 				);
 				//? Members in the delete queue with the "move" method mode
 				//? For some reason, Typescript infers that all items in this array have the "remove" mode when it is used in the code below
@@ -123,7 +126,9 @@ const dbReducer = async (
 				}
 
 				const membersWithNobodyMode = action.data.members.remove.filter(
-					(mem) => mem.deleteMethod.mode === "setToNobody"
+					(mem) =>
+						mem.deleteMethod.mode ===
+						DeleteMemberItemHandlingMethods.setToNobody
 				);
 
 				membersWithNobodyMode.forEach((mem) => {

@@ -5,7 +5,7 @@ import {
 	FormLabel,
 } from "@chakra-ui/form-control";
 import { Input } from "@chakra-ui/input";
-import { Center, Divider, Flex, Text, VStack } from "@chakra-ui/layout";
+import { Divider, Flex, Text, VStack } from "@chakra-ui/layout";
 import { ModalBody, ModalFooter } from "@chakra-ui/modal";
 import { Field, FieldArray, Formik, FormikHelpers } from "formik";
 import { InputControl } from "formik-chakra-ui";
@@ -21,7 +21,7 @@ import sheetOptionsValidation from "../../../../validation/sheetOptionsValidatio
 import { defaultFieldLength } from "../../../../constants/validationConstants";
 import { useDisclosure } from "@chakra-ui/hooks";
 import ConfirmationDialog from "../../../ui/ConfirmationDialog";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Paragraph } from "../../../ui/Typography";
 import generateMember from "../../../../generators/generateMember";
 import {
@@ -30,14 +30,14 @@ import {
 	RadioGroupProps,
 	RadioProps,
 } from "@chakra-ui/radio";
-import { InventoryMemberDeleteMethodFields } from "../../../../types/InventorySheetState";
+import {
+	InventoryMemberDeleteMethodFields,
+	DeleteMemberItemHandlingMethods,
+} from "../../../../types/InventorySheetState";
 import { chakra, ComponentWithAs } from "@chakra-ui/system";
-import { Select } from "@chakra-ui/select";
 import ItemGiveToSelect from "../ItemGiveToSelect";
 
 //TODO: Fix validation sheet options dialog with the new inventory member objects;
-//TODO: Rename "move" remove member method to "give"
-//TODO: Analytics for different delete methods
 
 export type SheetOptionsDialogFormFields = Pick<
 	InventorySheetFields,
@@ -236,16 +236,12 @@ const SheetOptionsDialog: React.FC = () => {
 												onCancel={deleteMemberConfirmOnClose}
 												header={`Remove "${deleteMemberTarget.name}" from sheet?`}
 												onConfirm={() => {
-													console.log(
-														"(SheetOptionsDialog) selectedSheetMemberRemovedMoveToMember: ",
-														selectedSheetMemberRemovedMoveToMember
-													);
 													queueMemberForRemove(
 														values.members[deleteMemberTarget.index]._id,
 														{
 															mode: selectedSheetMemberRemoveMethod,
 															...(selectedSheetMemberRemoveMethod ===
-																"move" && {
+																DeleteMemberItemHandlingMethods.give && {
 																to: selectedSheetMemberRemovedMoveToMember,
 															}),
 														}
@@ -274,7 +270,9 @@ const SheetOptionsDialog: React.FC = () => {
 															// ? Do not show "give to" option if there are no other members in the sheet that can receive items
 															// NOTE: Cannot currently move items to a character that was just created
 															<Flex justify="space-between" width="full">
-																<MemberDeleteMethodRadio value="move">
+																<MemberDeleteMethodRadio
+																	value={DeleteMemberItemHandlingMethods.give}
+																>
 																	<Flex align="center" marginRight={2}>
 																		Give To
 																	</Flex>
@@ -288,10 +286,16 @@ const SheetOptionsDialog: React.FC = () => {
 																/>
 															</Flex>
 														)}
-														<MemberDeleteMethodRadio value="remove">
+														<MemberDeleteMethodRadio
+															value={DeleteMemberItemHandlingMethods.delete}
+														>
 															Delete From Sheet
 														</MemberDeleteMethodRadio>
-														<MemberDeleteMethodRadio value="setToNobody">
+														<MemberDeleteMethodRadio
+															value={
+																DeleteMemberItemHandlingMethods.setToNobody
+															}
+														>
 															Set {"\"Carried By\""} to {"\"Nobody\""}
 														</MemberDeleteMethodRadio>
 													</VStack>

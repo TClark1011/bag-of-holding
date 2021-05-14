@@ -5,7 +5,10 @@ import InventoryItemFields from "../../src/types/InventoryItemFields";
 import InventorySheetFields from "../../src/types/InventorySheetFields";
 import mongoose from "mongoose";
 import { MockMongoose } from "mock-mongoose";
-import { InventorySheetPartialUpdateAction } from "../../src/types/InventorySheetState";
+import {
+	DeleteMemberItemHandlingMethods,
+	InventorySheetPartialUpdateAction,
+} from "../../src/types/InventorySheetState";
 import generateMember from "../../src/generators/generateMember";
 import InventoryMemberFields from "../../src/types/InventoryMemberFields";
 import { OmitId } from "../../src/types/UtilityTypes";
@@ -219,7 +222,7 @@ describe("Metadata Member updates", () => {
 								{
 									...testMembers[0],
 									deleteMethod: {
-										mode: "remove",
+										mode: DeleteMemberItemHandlingMethods.delete,
 									},
 								},
 							],
@@ -250,7 +253,7 @@ describe("Metadata Member updates", () => {
 								{
 									...testMembers[0],
 									deleteMethod: {
-										mode: "remove",
+										mode: DeleteMemberItemHandlingMethods.delete,
 									},
 								},
 							],
@@ -280,7 +283,7 @@ describe("Metadata Member updates", () => {
 								{
 									...testMembers[0],
 									deleteMethod: {
-										mode: "move",
+										mode: DeleteMemberItemHandlingMethods.give,
 										to: testMembers[1]._id,
 									},
 								},
@@ -320,7 +323,7 @@ describe("Metadata Member updates", () => {
 								{
 									...testMembers[1],
 									deleteMethod: {
-										mode: "move",
+										mode: DeleteMemberItemHandlingMethods.give,
 										to: testMembers[0]._id,
 									},
 								},
@@ -377,7 +380,7 @@ describe("Metadata Member updates", () => {
 								{
 									...testMembers[0],
 									deleteMethod: {
-										mode: "setToNobody",
+										mode: DeleteMemberItemHandlingMethods.setToNobody,
 									},
 								},
 							],
@@ -408,7 +411,7 @@ describe("Metadata Member updates", () => {
 								{
 									...testMembers[0],
 									deleteMethod: {
-										mode: "setToNobody",
+										mode: DeleteMemberItemHandlingMethods.setToNobody,
 									},
 								},
 							],

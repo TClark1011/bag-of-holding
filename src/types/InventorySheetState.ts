@@ -65,31 +65,37 @@ export type UpdateSheetAction = InventorySheetStateActionTemplate<
 	Omit<InventorySheetFields, "_id">
 >;
 
-export type InventoryMemberDeleteMethodTemplate<ModeName extends string> = {
-	mode: ModeName;
-};
-
-export type InventoryMemberMoveDeleteMethod = InventoryMemberDeleteMethodTemplate<"move"> & {
-	to: string;
-};
-export type InventoryMemberRemoveDeleteMethod = InventoryMemberDeleteMethodTemplate<"remove">;
-export type InventoryMemberSetToNobodyDeleteMethod = InventoryMemberDeleteMethodTemplate<"setToNobody">;
-
 /**
  * Extra information on how items being carried
  * by a member that is being removed should be
  * handled.
  *
  * Modes:
- * - "remove": Any items being carried by the
+ * - delete: Any items being carried by the
  * member being removed will be removed from
  * the sheet.
- * - "move": Move the items being carried by the
+ * - give: Move the items being carried by the
  * removed member to another member
- * - "setToNobody": Items being carried by the
+ * - setToNobody: Items being carried by the
  * removed user will have there "carriedBy" field
  * set to "nobody"
  */
+export enum DeleteMemberItemHandlingMethods {
+	delete = "delete",
+	give = "give",
+	setToNobody = "setToNobody",
+}
+
+export type InventoryMemberDeleteMethodTemplate<Mode extends string> = {
+	mode: Mode;
+};
+
+export type InventoryMemberMoveDeleteMethod = InventoryMemberDeleteMethodTemplate<DeleteMemberItemHandlingMethods.give> & {
+	to: string;
+};
+export type InventoryMemberRemoveDeleteMethod = InventoryMemberDeleteMethodTemplate<DeleteMemberItemHandlingMethods.delete>;
+export type InventoryMemberSetToNobodyDeleteMethod = InventoryMemberDeleteMethodTemplate<DeleteMemberItemHandlingMethods.setToNobody>;
+
 export type InventoryMemberDeleteMethodFields =
 	| InventoryMemberMoveDeleteMethod
 	| InventoryMemberRemoveDeleteMethod

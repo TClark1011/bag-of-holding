@@ -3,6 +3,7 @@ import produce from "immer";
 import { merge } from "merge-anything";
 import InventorySheetFields from "../types/InventorySheetFields";
 import InventorySheetState, {
+	DeleteMemberItemHandlingMethods,
 	InventoryMemberDeleteMethodFields,
 	InventorySheetStateAction,
 } from "../types/InventorySheetState";
@@ -118,12 +119,12 @@ const inventoryReducer = (
 				action.data.members.remove.forEach((removingMember) => {
 					console.log("(inventoryReducer) removingMember: ", removingMember);
 					switch (removingMember.deleteMethod.mode) {
-						case "remove":
+						case DeleteMemberItemHandlingMethods.delete:
 							draftState.items = draftState.items.filter(
 								(item) => !memberIsCarrying(removingMember, item)
 							);
 							break;
-						case "move":
+						case DeleteMemberItemHandlingMethods.give:
 							draftState.items = draftState.items.map((item) =>
 								memberIsCarrying(removingMember, item)
 									? {
@@ -143,7 +144,7 @@ const inventoryReducer = (
 									: item
 							);
 							break;
-						case "setToNobody":
+						case DeleteMemberItemHandlingMethods.setToNobody:
 							draftState.items = draftState.items.map((item) =>
 								memberIsCarrying(removingMember, item)
 									? { ...item, carriedBy: "Nobody" }
