@@ -37,8 +37,6 @@ import {
 import { chakra, ComponentWithAs } from "@chakra-ui/system";
 import ItemGiveToSelect from "../ItemGiveToSelect";
 
-//TODO: Fix validation sheet options dialog with the new inventory member objects;
-
 export type SheetOptionsDialogFormFields = Pick<
 	InventorySheetFields,
 	"name" | "members"
@@ -211,7 +209,8 @@ const SheetOptionsDialog: React.FC = () => {
 															</Flex>
 															<FormErrorMessage>
 																{form.errors.members &&
-																	form.errors.members[index]}
+																	form.errors.members[index] &&
+																	form.errors.members[index].name}
 															</FormErrorMessage>
 														</FormControl>
 													)}
