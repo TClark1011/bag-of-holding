@@ -21,15 +21,9 @@ import getCarriedItems from "../../src/utils/getCarriedItems";
 import tweakString from "../utils/tweakString";
 import { inGitHubAction } from "../../src/config/publicEnv";
 
-let sheetId = "";
-//? Variable to store the id of the sheet we create for testing
-
 const mockMongoose = new MockMongoose(mongoose);
 
 beforeAll(async () => {
-	await mockMongoose.prepareStorage().then(() => {
-		connectToMongoose();
-	});
 	if (!inGitHubAction) {
 		await mockMongoose.prepareStorage().then(async () => {
 			console.log(
@@ -40,16 +34,6 @@ beforeAll(async () => {
 	} else {
 		await connectToMongoose();
 	}
-
-	const newSheet = await new SheetModel({
-		name: "Sheet Name",
-		members: [],
-		items: [],
-	}).save();
-	//? Create a new sheet
-
-	sheetId = (newSheet._id as unknown) as string;
-	//? Save the id of the newly created sheet into the 'sheetId' variable
 });
 
 afterAll(async () => {
@@ -61,7 +45,7 @@ afterAll(async () => {
 		console.log("error with 'mongoose.connection.close'");
 		console.log(err);
 	});
-	if (inGitHubAction) {
+	if (!inGitHubAction) {
 		await mockMongoose.killMongo().catch((err) => {
 			console.log("error with 'mockMongoose.killMongo'");
 			console.log(err);
