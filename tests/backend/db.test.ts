@@ -19,6 +19,10 @@ import {
 import { merge } from "merge-anything";
 import getCarriedItems from "../../src/utils/getCarriedItems";
 import tweakString from "../utils/tweakString";
+import { inGitHubAction } from "../../src/config/publicEnv";
+
+let sheetId = "";
+//? Variable to store the id of the sheet we create for testing
 
 const mockMongoose = new MockMongoose(mongoose);
 
@@ -26,11 +30,43 @@ beforeAll(async () => {
 	await mockMongoose.prepareStorage().then(() => {
 		connectToMongoose();
 	});
+	if (!inGitHubAction) {
+		await mockMongoose.prepareStorage().then(async () => {
+			console.log(
+				"mockMongoose prepareStorage callback: will now start connecting to mongoose"
+			);
+			await connectToMongoose();
+		});
+	} else {
+		await connectToMongoose();
+	}
+
+	const newSheet = await new SheetModel({
+		name: "Sheet Name",
+		members: [],
+		items: [],
+	}).save();
+	//? Create a new sheet
+
+	sheetId = (newSheet._id as unknown) as string;
+	//? Save the id of the newly created sheet into the 'sheetId' variable
 });
 
 afterAll(async () => {
-	mongoose.connection.close();
-	mockMongoose.killMongo();
+	await mongoose.disconnect().catch((err) => {
+		console.log("error with 'mongoose.disconnect'");
+		console.log(err);
+	});
+	await mongoose.connection.close().catch((err) => {
+		console.log("error with 'mongoose.connection.close'");
+		console.log(err);
+	});
+	if (inGitHubAction) {
+		await mockMongoose.killMongo().catch((err) => {
+			console.log("error with 'mockMongoose.killMongo'");
+			console.log(err);
+		});
+	}
 });
 
 /**
