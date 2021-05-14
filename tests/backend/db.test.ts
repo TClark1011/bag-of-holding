@@ -24,16 +24,22 @@ import { inGitHubAction } from "../../src/config/publicEnv";
 const mockMongoose = new MockMongoose(mongoose);
 
 beforeAll(async () => {
-	if (!inGitHubAction) {
-		await mockMongoose.prepareStorage().then(async () => {
-			console.log(
-				"mockMongoose prepareStorage callback: will now start connecting to mongoose"
-			);
-			await connectToMongoose();
-		});
-	} else {
+	// 	if (!inGitHubAction) {
+	// 		await mockMongoose.prepareStorage().then(async () => {
+	// 			console.log(
+	// 				"mockMongoose prepareStorage callback: will now start connecting to mongoose"
+	// 			);
+	// 			await connectToMongoose();
+	// 		});
+	// 	} else {
+	// 		await connectToMongoose();
+	// 	}
+	await mockMongoose.prepareStorage().then(async () => {
+		console.log(
+			"mockMongoose prepareStorage callback: will now start connecting to mongoose"
+		);
 		await connectToMongoose();
-	}
+	});
 });
 
 afterAll(async () => {
