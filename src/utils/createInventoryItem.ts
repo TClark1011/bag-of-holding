@@ -27,37 +27,4 @@ const createInventoryItem = (
 	};
 };
 
-/**
- * Generate a random inventory item
- *
- * @param {Partial<OmitId<InventoryItemFields>>} [fields] Fields that user can provide
- * predetermined values for (incl)
- * @param {string[]} [members] Party members. When the 'carriedBy' field is generated,
- * the value is a randomly selected item from this array if it is provided. If no
- * 'members' array is provided, 'carriedBy' is left undefined.
- * @returns {InventoryItemFields} A randomly generated item
- */
-export const generateRandomInventoryItem = (
-	{ _id, ...fields }: Partial<InventoryItemFields>,
-	members?: string[]
-): InventoryItemFields => {
-	const randomCarriedBy = members ? { carriedBy: randomItem(members) } : {};
-	//? Set 'carriedBy' by selecting random item from the 'members' array
-	//? If 'members' array is not provided, 'carriedBy' is undefined
-	const generatedItem = createInventoryItem({
-		name: faker.commerce.productName(),
-		quantity: faker.random.number({ min: 1, max: 12 }),
-		value: faker.random.float({ min: 1, max: 300 }),
-		category: faker.commerce.productAdjective(),
-		description: faker.commerce.productDescription(),
-		weight: faker.random.number({ min: 1, max: 200 }),
-		...randomCarriedBy,
-		...fields,
-		//? All provided values from field will override randomly generated values
-	});
-	return { ...generatedItem, _id: _id || generatedItem._id };
-};
-
-//TODO: When generating random item, have random chance of optional fields being undefined
-
 export default createInventoryItem;
