@@ -5,12 +5,14 @@ import { inGitHubAction } from "../config/publicEnv";
 /**
  * Establish a connection to MongoDB via mongoose
  *
+ * @param {string} [url] The connection string to use. If not provided, uses
+ * the MONGO_URL env variable.
  * @returns {Promise<typeof mongoose>} Mongoose object connected to the MongoDB
  * database
  */
-const connectToMongoose = (): Promise<typeof mongoose> =>
+const connectToMongoose = (url = MONGO_URL): Promise<typeof mongoose> =>
 	mongoose
-		.connect(MONGO_URL, {
+		.connect(url, {
 			useUnifiedTopology: !inGitHubAction,
 			useNewUrlParser: true,
 			useFindAndModify: false,
