@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { MONGO_URL } from "../config/env";
-import { inGitHubAction } from "../config/publicEnv";
+// import { inGitHubAction } from "../config/publicEnv";
 
 /**
  * Establish a connection to MongoDB via mongoose
@@ -13,7 +13,8 @@ import { inGitHubAction } from "../config/publicEnv";
 const connectToMongoose = (url = MONGO_URL): Promise<typeof mongoose> =>
 	mongoose
 		.connect(url, {
-			useUnifiedTopology: !inGitHubAction,
+			// useUnifiedTopology: !inGitHubAction,
+			useUnifiedTopology: true,
 			useNewUrlParser: true,
 			useFindAndModify: false,
 		})
