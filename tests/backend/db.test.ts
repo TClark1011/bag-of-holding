@@ -4,7 +4,6 @@ import SheetModel from "../../src/db/SheetModel";
 import InventoryItemFields from "../../src/types/InventoryItemFields";
 import InventorySheetFields from "../../src/types/InventorySheetFields";
 import mongoose from "mongoose";
-import { MockMongoose } from "mock-mongoose";
 import {
 	DeleteMemberItemHandlingMethods,
 	InventorySheetPartialUpdateAction,
@@ -19,9 +18,13 @@ import {
 import { merge } from "merge-anything";
 import getCarriedItems from "../../src/utils/getCarriedItems";
 import tweakString from "../utils/tweakString";
-import { inGitHubAction } from "../../src/config/publicEnv";
+import { MongoMemoryServer } from "mongodb-memory-server";
 
-const mockMongoose = new MockMongoose(mongoose);
+// import { MockMongoose } from "mock-mongoose";
+// import { inGitHubAction } from "../../src/config/publicEnv";
+// const mockMongoose = new MockMongoose(mongoose);
+
+const mockedMongo = new MongoMemoryServer();
 
 beforeAll(async () => {
 	// 	if (!inGitHubAction) {
@@ -34,12 +37,14 @@ beforeAll(async () => {
 	// 	} else {
 	// 		await connectToMongoose();
 	// 	}
-	await mockMongoose.prepareStorage().then(async () => {
-		console.log(
-			"mockMongoose prepareStorage callback: will now start connecting to mongoose"
-		);
-		await connectToMongoose();
-	});
+	// await mockMongoose.prepareStorage().then(async () => {
+	// 	console.log(
+	// 		"mockMongoose prepareStorage callback: will now start connecting to mongoose"
+	// 	);
+	// 	await connectToMongoose();
+	// });
+
+	await connectToMongoose(await mockedMongo.getUri());
 });
 
 afterAll(async () => {
@@ -51,12 +56,13 @@ afterAll(async () => {
 		console.log("error with 'mongoose.connection.close'");
 		console.log(err);
 	});
-	if (!inGitHubAction) {
-		await mockMongoose.killMongo().catch((err) => {
-			console.log("error with 'mockMongoose.killMongo'");
-			console.log(err);
-		});
-	}
+	await mockedMongo.stop();
+	// if (!inGitHubAction) {
+	// 	await mockMongoose.killMongo().catch((err) => {
+	// 		console.log("error with 'mockMongoose.killMongo'");
+	// 		console.log(err);
+	// 	});
+	// }
 });
 
 /**
