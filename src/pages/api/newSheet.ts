@@ -1,6 +1,6 @@
 import { NextApiHandler } from "next";
 import SheetModel from "../../db/SheetModel";
-import OmitId from "../../utils/OmitId";
+import { OmitId } from "../../types/UtilityTypes";
 import InventorySheetFields from "../../types/InventorySheetFields";
 import connectToMongoose from "../../db/connectToMongoose";
 

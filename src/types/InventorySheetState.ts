@@ -1,4 +1,5 @@
 import { InventoryItemCreationFields } from "./InventoryItemFields";
+import InventoryMemberFields from "./InventoryMemberFields";
 import InventorySheetFields from "./InventorySheetFields";
 
 /**
@@ -36,7 +37,7 @@ export interface InventorySheetStateActionTemplate<T extends string, D> {
 /**
  * Action for adding an item to sheet inventory
  */
-type AddItemAction = InventorySheetStateActionTemplate<
+export type AddItemAction = InventorySheetStateActionTemplate<
 	"item_add",
 	InventoryItemCreationFields
 >;
@@ -44,14 +45,14 @@ type AddItemAction = InventorySheetStateActionTemplate<
 /**
  * Action for removing an item from sheet inventory
  */
-type RemoveItemAction = InventorySheetStateActionTemplate<
+export type RemoveItemAction = InventorySheetStateActionTemplate<
 	"item_remove",
 	string
 >;
 /**
  * Action for setting whether or not sheet state is ahead of server state
  */
-type UpdateItemAction = InventorySheetStateActionTemplate<
+export type UpdateItemAction = InventorySheetStateActionTemplate<
 	"item_update",
 	InventoryItemCreationFields
 >;
@@ -59,15 +60,61 @@ type UpdateItemAction = InventorySheetStateActionTemplate<
 /**
  * Action for completely updating a sheet's state
  */
-type UpdateSheetAction = InventorySheetStateActionTemplate<
+export type UpdateSheetAction = InventorySheetStateActionTemplate<
 	"sheet_update",
 	Omit<InventorySheetFields, "_id">
 >;
 
-type UpdateSheetMetaDataAction = InventorySheetStateActionTemplate<
+/**
+ * Extra information on how items being carried
+ * by a member that is being removed should be
+ * handled.
+ *
+ * Modes:
+ * - delete: Any items being carried by the
+ * member being removed will be removed from
+ * the sheet.
+ * - give: Move the items being carried by the
+ * removed member to another member
+ * - setToNobody: Items being carried by the
+ * removed user will have there "carriedBy" field
+ * set to "nobody"
+ */
+export enum DeleteMemberItemHandlingMethods {
+	delete = "delete",
+	give = "give",
+	setToNobody = "setToNobody",
+}
+
+export type InventoryMemberDeleteMethodTemplate<Mode extends string> = {
+	mode: Mode;
+};
+
+export type InventoryMemberMoveDeleteMethod = InventoryMemberDeleteMethodTemplate<DeleteMemberItemHandlingMethods.give> & {
+	to: string;
+};
+export type InventoryMemberRemoveDeleteMethod = InventoryMemberDeleteMethodTemplate<DeleteMemberItemHandlingMethods.delete>;
+export type InventoryMemberSetToNobodyDeleteMethod = InventoryMemberDeleteMethodTemplate<DeleteMemberItemHandlingMethods.setToNobody>;
+
+export type InventoryMemberDeleteMethodFields =
+	| InventoryMemberMoveDeleteMethod
+	| InventoryMemberRemoveDeleteMethod
+	| InventoryMemberSetToNobodyDeleteMethod;
+export interface InventoryMemberFieldsDeleteAction
+	extends InventoryMemberFields {
+	deleteMethod: InventoryMemberDeleteMethodFields;
+}
+
+export type SheetStateMembersUpdateQueue = {
+	add: InventoryMemberFields[];
+	remove: InventoryMemberFieldsDeleteAction[];
+	update: InventoryMemberFields[];
+};
+
+export type UpdateSheetMetaDataAction = InventorySheetStateActionTemplate<
 	"sheet_metadataUpdate",
 	{
-		members: string[];
+		members: SheetStateMembersUpdateQueue;
 		name: string;
 	}
 >;

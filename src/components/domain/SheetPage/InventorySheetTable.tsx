@@ -26,6 +26,7 @@ import { useInventoryState } from "../../contexts/InventoryStateContext";
 import { Tooltip } from "@chakra-ui/tooltip";
 import isUrl from "is-url-superb";
 import { testIdGeneratorFactory } from "../../../utils/testUtils";
+import PartyMemberData from "../../ui/PartyMemberData";
 
 const getTestId = testIdGeneratorFactory("InventoryTable");
 
@@ -218,7 +219,9 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 						<TableCell display={col4Display}>
 							{item.value * item.quantity}
 						</TableCell>
-						<TableCell display={col5Display}>{item.carriedBy}</TableCell>
+						<TableCell display={col5Display}>
+							<PartyMemberData memberId={item.carriedBy} property="name" />
+						</TableCell>
 						<TableCell display={col6Display}>{item.category}</TableCell>
 					</Tr>
 				))}

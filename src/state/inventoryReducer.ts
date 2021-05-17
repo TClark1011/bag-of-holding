@@ -3,6 +3,8 @@ import produce from "immer";
 import { merge } from "merge-anything";
 import InventorySheetFields from "../types/InventorySheetFields";
 import InventorySheetState, {
+	DeleteMemberItemHandlingMethods,
+	InventoryMemberDeleteMethodFields,
 	InventorySheetStateAction,
 } from "../types/InventorySheetState";
 import createInventoryItem from "../utils/createInventoryItem";
@@ -10,11 +12,12 @@ import sendSheetAction from "../services/sendSheetAction";
 import { logEvent, logException } from "../utils/analyticsHooks";
 import codeToTitle from "code-to-title";
 import stringifyObject from "stringify-object";
-
-//TODO: Create separate 'server' reducer that processes how to update mongo state
+import getIds from "../utils/getIds";
+import { memberIsCarrying } from "../utils/inventoryItemUtils";
+import findObjectWithId from "../utils/findObjectWithId";
 
 /**
- * The reducer for a sheet's inventory state
+ * Reducer that handles updates to client state
  *
  * @param {InventoryItemFields[]} state The current  state of the inventory
  * @param {InventoryStateAction} action The action to be performed upon the state
@@ -71,7 +74,9 @@ const inventoryReducer = (
 			mutation(draftState);
 		});
 
-	logEvent("Sheet", codeToTitle(action.type));
+	if (action.type !== "sheet_metadataUpdate") {
+		logEvent("Sheet", codeToTitle(action.type));
+	}
 	//? Log the action in google analytics
 
 	switch (action.type) {
@@ -109,8 +114,58 @@ const inventoryReducer = (
 			return state;
 		case "sheet_metadataUpdate":
 			return produceNewState((draftState) => {
-				draftState.name = action.data.name;
-				draftState.members = action.data.members;
+				if (action.data.name) {
+					logEvent("Sheet", "Changed Sheet Name");
+					draftState.name = action.data.name;
+				}
+				draftState.members = draftState.members.filter(
+					(member) => !getIds(action.data.members.remove).includes(member._id)
+				);
+
+				draftState.members = draftState.members.map((mem) =>
+					getIds(action.data.members.update).includes(mem._id)
+						? findObjectWithId(action.data.members.update, mem._id)
+						: mem
+				);
+
+				action.data.members.remove.forEach((removingMember) => {
+					logEvent("Sheet", "Deleted Sheet Member");
+					switch (removingMember.deleteMethod.mode) {
+						case DeleteMemberItemHandlingMethods.delete:
+							draftState.items = draftState.items.filter(
+								(item) => !memberIsCarrying(removingMember, item)
+							);
+							break;
+						case DeleteMemberItemHandlingMethods.give:
+							draftState.items = draftState.items.map((item) =>
+								memberIsCarrying(removingMember, item)
+									? {
+										...item,
+										carriedBy: (removingMember.deleteMethod as InventoryMemberDeleteMethodFields & {
+												to: string;
+											}).to,
+										/**
+										 * ? Have to use typecasting here even though it seems like I
+										 * ? shouldn't have to. When I write out
+										 * ? `removingMember.deleteMethod` underneath this case statement,
+										 * ? typescript recognises that it has mode "move" and as such
+										 * ? has a "to" field. But when I try to use "to" here, it insists,
+										 * ? that mode is "remove" and therefore does not have a "to" field.
+										 */
+									  }
+									: item
+							);
+							break;
+						case DeleteMemberItemHandlingMethods.setToNobody:
+							draftState.items = draftState.items.map((item) =>
+								memberIsCarrying(removingMember, item)
+									? { ...item, carriedBy: "Nobody" }
+									: item
+							);
+					}
+				});
+
+				draftState.members = draftState.members.concat(action.data.members.add);
 			}, true);
 	}
 };

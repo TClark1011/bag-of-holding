@@ -6,8 +6,13 @@ import InventoryItemFields, {
 } from "../types/InventoryItemFields";
 import { createState as createHookstate, useHookstate } from "@hookstate/core";
 import toggleArrayItem from "@lukeboyle/array-item-toggle";
-// import arrayUnion from "array-union";
 import unique from "uniq";
+import {
+	InventoryMemberDeleteMethodFields,
+	SheetStateMembersUpdateQueue,
+	InventoryMemberFieldsDeleteAction,
+	DeleteMemberItemHandlingMethods,
+} from "../types/InventorySheetState";
 
 export type SheetDialogType =
 	| "item.new"
@@ -22,6 +27,11 @@ export const emptyFilters: InventoryFilters = {
 	category: [],
 	carriedBy: [],
 };
+
+export type ClientStateMemberUpdateQueue = {
+	[Property in keyof Omit<SheetStateMembersUpdateQueue, "remove">]: string[];
+} & { remove: InventoryMemberFieldsDeleteAction[] };
+//? A version of 'SheetStateMembersUpdateQueue' with all field types except for 'remove' changed to 'string[]'
 
 export interface SheetPageState {
 	dialog: {
@@ -38,6 +48,9 @@ export interface SheetPageState {
 		property: ProcessableItemProperty;
 		direction: "ascending" | "descending";
 	};
+	sheetMemberOptionsQueue: ClientStateMemberUpdateQueue;
+	selectedSheetMemberRemoveMethod: InventoryMemberDeleteMethodFields["mode"];
+	selectedSheetMemberRemovedMoveToMember: string;
 }
 
 const sheetPageState = createHookstate<SheetPageState>({
@@ -62,6 +75,13 @@ const sheetPageState = createHookstate<SheetPageState>({
 		searchbarValue: "",
 		openFilter: "none",
 	},
+	sheetMemberOptionsQueue: {
+		add: [],
+		remove: [],
+		update: [],
+	},
+	selectedSheetMemberRemoveMethod: DeleteMemberItemHandlingMethods.delete,
+	selectedSheetMemberRemovedMoveToMember: "",
 });
 
 /**
@@ -119,6 +139,14 @@ export const useSheetPageState = () => {
 		sorting: { ...state.sorting.value },
 		searchbarValue: state.ui.searchbarValue.value,
 		activeItem: { ...state.dialog.activeItem.value },
+		sheetMembersQueue: JSON.parse(
+			JSON.stringify({ ...state.sheetMemberOptionsQueue.value })
+		) as SheetPageState["sheetMemberOptionsQueue"],
+		//? Not performing a stringify/parse copy here causes the app to crash
+		selectedSheetMemberRemoveMethod:
+			state.selectedSheetMemberRemoveMethod.value,
+		selectedSheetMemberRemovedMoveToMember:
+			state.selectedSheetMemberRemovedMoveToMember.value,
 
 		/**
 		 * Check if a specific dialog is open
@@ -205,7 +233,15 @@ export const useSheetPageState = () => {
 		 * Close dialog
 		 */
 		closeDialog: () => {
-			state.dialog.merge({ isOpen: false });
+			state.dialog.isOpen.set(false);
+			if (state.dialog.type.value === "sheetOptions") {
+				//? Reset the sheet member options queue if it was the sheet options dialog that was closed
+				state.sheetMemberOptionsQueue.set({
+					add: [],
+					remove: [],
+					update: [],
+				});
+			}
 		},
 
 		/**
@@ -287,6 +323,74 @@ export const useSheetPageState = () => {
 				state.sorting.direction.set("ascending");
 			}
 		},
+
+		/**
+		 * We 'queue' a party member in the sheet to be deleted.
+		 * When the 'SheetOptions' dialog form is submitted, all
+		 * members stored in the 'delete' queue will be deleted.
+		 * If a member is queued to be removed, we first check if
+		 * it is queued to be added, and if it is, we just remove
+		 * it from the 'add' queue rather than adding it to the
+		 * 'remove' queue
+		 *
+		 * @param {string} _id The'_id' of the member to remove
+		 * @param {object} deleteMethod The method for handling
+		 * items that were being carried by the member to be
+		 * deleted
+		 */
+		queueMemberForRemove: (
+			_id: string,
+			deleteMethod: InventoryMemberDeleteMethodFields
+		) => {
+			let inPositiveQueue = false;
+			[
+				state.sheetMemberOptionsQueue.add,
+				state.sheetMemberOptionsQueue.update,
+			].forEach((positiveQueue) => {
+				if (positiveQueue.value.includes(_id)) {
+					inPositiveQueue = true;
+					positiveQueue.set((value) =>
+						value.filter((queuedMember) => queuedMember !== _id)
+					);
+				}
+			});
+			if (!inPositiveQueue) {
+				state.sheetMemberOptionsQueue.remove.set((state) => [
+					...state,
+					{
+						_id,
+						carryCapacity: 0,
+						name: "",
+						deleteMethod,
+					},
+				]);
+			}
+		},
+
+		/**
+		 * Add a member to the queue to be added. When the sheet
+		 * options dialog form is submitted, members in that form
+		 * with '_id' values in this queue are sent to be added to
+		 * the sheet.
+		 *
+		 * @param {string} _id Thw '_id' of the member to add to the
+		 * sheet
+		 */
+		queueMemberForAdd: (_id: string) => {
+			state.sheetMemberOptionsQueue.add.set((value) => [...value, _id]);
+		},
+
+		/**
+		 * Set the 'removeMethod' that is currently selected within the SheetOptions UI
+		 */
+		selectNewSheetMemberRemoveMethod: state.selectedSheetMemberRemoveMethod.set,
+
+		/**
+		 * Select the member that is currently selected to move an item to when a member
+		 * is removed via the SheetOptions UI
+		 */
+		selectNewSheetMemberRemovedMoveToMember:
+			state.selectedSheetMemberRemovedMoveToMember.set,
 	};
 };
 

@@ -1,8 +1,8 @@
-import OmitId from "../utils/OmitId";
+import { IdentifiedObject, OmitId } from "./UtilityTypes";
 
 /**
  * @typedef {object} InventoryItemFields The fields for an inventory item
- * @property {string} _id The unique identifier
+ * @augments IdentifiedObject
  * @property {string} name The name of the item (max length: 24 chars)
  * @property {number} quantity The quantity of the item
  * @property {number} weight How much the item weights (assumed to be in 'lb')
@@ -12,8 +12,7 @@ import OmitId from "../utils/OmitId";
  * @property {number} [value] The monetary value of the item
  * @property {string} [infoLink] A link to a document that contains more information about the item
  */
-interface InventoryItemFields {
-	readonly _id: string;
+interface InventoryItemFields extends IdentifiedObject {
 	name: string;
 	quantity: number;
 	weight: number;

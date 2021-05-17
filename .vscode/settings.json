@@ -41,6 +41,14 @@
 	"conventionalCommits.scopes": [
 		"workspace",
 		"backend",
-		"scripts"
-	]
+		"scripts",
+		"fullstack",
+		"frontend"
+	],
+	"[typescriptreact]": {
+		"editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
+	},
+	"[typescript]": {
+		"editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
+	}
 }

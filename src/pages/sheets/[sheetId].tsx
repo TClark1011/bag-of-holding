@@ -153,7 +153,9 @@ const Sheet: React.FC<SheetPageProps> = ({ isNew = false, ...sheetFields }) => {
 							</Flex>
 							<LightMode>
 								{members.length ? (
-									<PartyMemberTagList members={members} />
+									<PartyMemberTagList
+										members={members.map((member) => member.name)}
+									/>
 								) : (
 									<Tag
 										_hover={{ backgroundColor: "gray.300" }}

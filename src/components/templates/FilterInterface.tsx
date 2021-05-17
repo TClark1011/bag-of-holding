@@ -7,6 +7,7 @@ import { Checkbox } from "@chakra-ui/checkbox";
 import { Button, ButtonGroup } from "@chakra-ui/button";
 import { useColorModeValue } from "@chakra-ui/color-mode";
 import { useSheetPageState } from "../../state/sheetPageState";
+import PartyMemberData from "../ui/PartyMemberData";
 
 interface Props extends Omit<BoxProps, "onChange"> {
 	property: FilterableItemProperty;
@@ -30,7 +31,7 @@ const FilterInterface: React.FC<Props> = ({
 	heading = codeToTitle(property),
 	...props
 }) => {
-	//FIXME: Opening a filter popover, changing some values, then clicking the 'Filters' button exceeds maximum callstack.
+	//POSSIBLE ERROR: Opening a filter popover, changing some values, then clicking the 'Filters' button exceeds maximum callstack.
 	const { items } = useInventoryState();
 
 	const propertyValues = items.map((item) => item[property] + "");
@@ -110,7 +111,7 @@ const FilterInterface: React.FC<Props> = ({
 							isChecked={!filter.includes(item)}
 							onChange={() => onChange(item)}
 						/>
-						{item}
+						<PartyMemberData memberId={item} property="name" />
 					</ListItem>
 				))}
 			</List>

@@ -12,11 +12,11 @@ const MemberCarryWeightTable: React.FC<TableProps> = ({ ...props }) => {
 	/**
 	 * Fetch the items carried by a certain member
 	 *
-	 * @param {string} member The name of the member to fetch the items of
+	 * @param {string} memberId The '_id' of the member to fetch the items of
 	 * @returns {InventoryItemFields[]} The items carried by te specified character
 	 */
-	const getCarriedItems = (member: string) =>
-		items.filter((item) => item.carriedBy === member);
+	const getCarriedItems = (memberId: string) =>
+		items.filter((item) => item.carriedBy === memberId);
 	return (
 		<Table {...props}>
 			<Thead>
@@ -27,18 +27,18 @@ const MemberCarryWeightTable: React.FC<TableProps> = ({ ...props }) => {
 				</Tr>
 			</Thead>
 			<Tbody>
-				{members.map((member) => (
-					<Tr key={member}>
-						<Td>{member}</Td>
+				{members.map(({ _id, name }) => (
+					<Tr key={_id}>
+						<Td>{name}</Td>
 						<Td>
-							{getCarriedItems(member).reduce<number>(
+							{getCarriedItems(_id).reduce<number>(
 								(total, current) =>
 									(total += current.weight * current.quantity),
 								0
 							)}
 						</Td>
 						<Td>
-							{getCarriedItems(member).reduce<number>(
+							{getCarriedItems(_id).reduce<number>(
 								(total, current) => (total += current.value * current.quantity),
 								0
 							)}

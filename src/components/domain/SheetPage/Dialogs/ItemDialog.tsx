@@ -206,9 +206,9 @@ const ItemDialog: React.FC<Props> = ({ mode }) => {
 								</SimpleGrid>
 								<SelectControl name="carriedBy" label="Carried By">
 									<option value="Nobody">Nobody</option>
-									{members.map((item, index) => (
-										<option value={item} key={index}>
-											{item}
+									{members.map((member) => (
+										<option value={member._id} key={member._id}>
+											{member.name}
 										</option>
 									))}
 								</SelectControl>
