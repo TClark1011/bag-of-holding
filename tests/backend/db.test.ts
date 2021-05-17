@@ -20,30 +20,9 @@ import getCarriedItems from "../../src/utils/getCarriedItems";
 import tweakString from "../utils/tweakString";
 import { MongoMemoryServer } from "mongodb-memory-server";
 
-// import { MockMongoose } from "mock-mongoose";
-// import { inGitHubAction } from "../../src/config/publicEnv";
-// const mockMongoose = new MockMongoose(mongoose);
-
 const mockedMongo = new MongoMemoryServer();
 
 beforeAll(async () => {
-	// 	if (!inGitHubAction) {
-	// 		await mockMongoose.prepareStorage().then(async () => {
-	// 			console.log(
-	// 				"mockMongoose prepareStorage callback: will now start connecting to mongoose"
-	// 			);
-	// 			await connectToMongoose();
-	// 		});
-	// 	} else {
-	// 		await connectToMongoose();
-	// 	}
-	// await mockMongoose.prepareStorage().then(async () => {
-	// 	console.log(
-	// 		"mockMongoose prepareStorage callback: will now start connecting to mongoose"
-	// 	);
-	// 	await connectToMongoose();
-	// });
-
 	await connectToMongoose(await mockedMongo.getUri());
 });
 
@@ -57,12 +36,6 @@ afterAll(async () => {
 		console.log(err);
 	});
 	await mockedMongo.stop();
-	// if (!inGitHubAction) {
-	// 	await mockMongoose.killMongo().catch((err) => {
-	// 		console.log("error with 'mockMongoose.killMongo'");
-	// 		console.log(err);
-	// 	});
-	// }
 });
 
 /**
