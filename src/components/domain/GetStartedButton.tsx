@@ -1,5 +1,7 @@
 import { ButtonProps } from "@chakra-ui/button";
+import { MAINTENANCE_MODE } from "../../config/publicEnv";
 import ButtonLink from "../ui/ButtonLink";
+import { H3 } from "../ui/Typography";
 
 /**
  * Button to create a new sheet.
@@ -11,7 +13,9 @@ import ButtonLink from "../ui/ButtonLink";
  * @returns {React.ReactElement} The rendered button
  */
 const GetStartedButton: React.FC<ButtonProps> = (props) => {
-	return (
+	return MAINTENANCE_MODE ? (
+		<H3>Currently Undergoing Maintenance</H3>
+	) : (
 		<ButtonLink href="/new" colorScheme="primary" {...props}>
 			Get Started
 		</ButtonLink>
