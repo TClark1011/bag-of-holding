@@ -5,6 +5,7 @@ import { inventoryTableTestIds } from "../../../src/components/domain/SheetPage/
 import { basicSheetFixture } from "../../fixtures/sheetFixtures";
 import Sheet, { sheetPageTestIds } from "../../../src/pages/sheets/[sheetId]";
 import { checkTestIdsRender, renderTest } from "../../../src/utils/testUtils";
+import createInventoryItem from "../../../src/utils/createInventoryItem";
 
 const basicSheetJsx = <Sheet {...basicSheetFixture} />;
 
@@ -55,5 +56,115 @@ describe("Elements render", () => {
 			expect(screen.getAllByText(value * quantity + "")).toBeTruthy();
 			expect(screen.getAllByText(quantity + "")).toBeTruthy();
 		});
+	});
+});
+
+describe("Computed values are correct", () => {
+	/**
+	 * Fetch the item cells that contain item data
+	 *
+	 * @returns {Element} The cell elements
+	 */
+	const getCells = () =>
+		document.querySelectorAll(
+			`[data-testid="${inventoryTableTestIds.tableRoot}"] tbody tr td`
+		);
+
+	test("All 1s", () => {
+		act(() => {
+			renderTest(
+				<Sheet
+					_id=""
+					name=""
+					items={[
+						createInventoryItem({
+							name: "",
+							quantity: 1,
+							weight: 1,
+							value: 1,
+						}),
+					]}
+					members={[]}
+				/>
+			);
+		});
+
+		const cells = getCells();
+		expect(cells[1].textContent).toEqual(1 + "");
+		expect(cells[2].textContent).toEqual(1 + "");
+		expect(cells[3].textContent).toEqual(1 + "");
+	});
+	test("Basic Integers", () => {
+		act(() => {
+			renderTest(
+				<Sheet
+					_id=""
+					name=""
+					items={[
+						createInventoryItem({
+							name: "",
+							quantity: 2,
+							weight: 4,
+							value: 6,
+						}),
+					]}
+					members={[]}
+				/>
+			);
+		});
+
+		const cells = getCells();
+		expect(cells[1].textContent).toEqual(2 + "");
+		expect(cells[2].textContent).toEqual(8 + "");
+		expect(cells[3].textContent).toEqual(12 + "");
+	});
+	test("Basic Floats", () => {
+		act(() => {
+			renderTest(
+				<Sheet
+					_id=""
+					name=""
+					items={[
+						createInventoryItem({
+							name: "",
+							quantity: 2,
+							weight: 0.1,
+							value: 0.5,
+						}),
+					]}
+					members={[]}
+				/>
+			);
+		});
+
+		const cells = getCells();
+		expect(cells[1].textContent).toEqual(2 + "");
+		expect(cells[2].textContent).toEqual(0.2 + "");
+		expect(cells[3].textContent).toEqual(1 + "");
+	});
+
+	test("Problematic floats", () => {
+		act(() => {
+			renderTest(
+				<Sheet
+					_id=""
+					name=""
+					items={[
+						createInventoryItem({
+							name: "",
+							quantity: 3,
+							weight: 0.15,
+							value: 0.2,
+						}),
+					]}
+					members={[]}
+				/>
+			);
+		});
+
+		const cells = getCells();
+		expect(cells[1].textContent).toEqual(3 + "");
+		expect(cells[2].textContent).toEqual(0.45 + "");
+		expect(cells[3].textContent).toEqual(0.6 + "");
 	});
 });
