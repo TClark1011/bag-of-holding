@@ -1,3 +1,7 @@
+import {
+	getItemTotalValue,
+	getItemTotalWeight,
+} from "./../utils/deriveItemProperties";
 import sort from "fast-sort";
 import InventoryItemFields, {
 	FilterableItemProperty,
@@ -13,6 +17,7 @@ import {
 	InventoryMemberFieldsDeleteAction,
 	DeleteMemberItemHandlingMethods,
 } from "../types/InventorySheetState";
+import Big from "big.js";
 
 export type SheetDialogType =
 	| "item.new"
@@ -114,7 +119,9 @@ export const useSheetPageState = () => {
 		const sorted = sortFn([
 			(item) =>
 				sorting.property === "quantity" || sorting.property === "weight"
-					? (item[sorting.property] as number) * item.quantity
+					? new Big(item[sorting.property] as number).mul(
+						new Big(item.quantity)
+					  ).toNumber
 					: //? If 'quantity' or 'weight' are being sorted by, multiply them by the quantity
 					  item[sorting.property],
 			(item) => item.name,
@@ -185,19 +192,34 @@ export const useSheetPageState = () => {
 		 */
 		getColumnSums: (
 			items: InventoryItemFields[]
-		): Record<SummableItemProperty, number> => {
-			const result = {
-				weight: 0,
-				value: 0,
-			};
+		): Record<SummableItemProperty, number> =>
+			getProcessedItems(items).reduce<Record<SummableItemProperty, number>>(
+				(current, item) => ({
+					weight: new Big(current.weight || 0)
+						.add(new Big(getItemTotalWeight(item)))
+						.toNumber(),
+					value: new Big(current.value || 0)
+						.add(new Big(getItemTotalValue(item)))
+						.toNumber(),
+				}),
+				{
+					weight: 0,
+					value: 0,
+				}
+			),
+		// {
+		// 	const result = {
+		// 		weight: 0,
+		// 		value: 0,
+		// 	};
 
-			getProcessedItems(items).forEach(({ value, weight, quantity }) => {
-				result.value += value * quantity;
-				result.weight += weight * quantity;
-			});
+		// 	getProcessedItems(items).forEach(item => {
+		// 		result.value += value * quantity;
+		// 		result.weight += weight * quantity;
+		// 	});
 
-			return result;
-		},
+		// 	return result;
+		// },
 
 		/**
 		 * Fetch all the different values of item categories in
