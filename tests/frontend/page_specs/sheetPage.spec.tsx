@@ -6,7 +6,10 @@ import { basicSheetFixture } from "../../fixtures/sheetFixtures";
 import Sheet, { sheetPageTestIds } from "../../../src/pages/sheets/[sheetId]";
 import { checkTestIdsRender, renderTest } from "../../../src/utils/testUtils";
 import createInventoryItem from "../../../src/utils/createInventoryItem";
-import { getItemTotalValue, getItemTotalWeight } from "../../../src/utils/deriveItemProperties";
+import {
+	getItemTotalValue,
+	getItemTotalWeight,
+} from "../../../src/utils/deriveItemProperties";
 
 const basicSheetJsx = <Sheet {...basicSheetFixture} />;
 
@@ -62,7 +65,7 @@ describe("Elements render", () => {
 
 describe("Computed values are correct", () => {
 	/**
-	 * Fetch the item cells that contain item data
+	 * Fetch the table cells that contain item data
 	 *
 	 * @returns {Element} The cell elements
 	 */
