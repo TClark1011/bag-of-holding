@@ -6,6 +6,7 @@ import { basicSheetFixture } from "../../fixtures/sheetFixtures";
 import Sheet, { sheetPageTestIds } from "../../../src/pages/sheets/[sheetId]";
 import { checkTestIdsRender, renderTest } from "../../../src/utils/testUtils";
 import createInventoryItem from "../../../src/utils/createInventoryItem";
+import { getItemTotalValue, getItemTotalWeight } from "../../../src/utils/deriveItemProperties";
 
 const basicSheetJsx = <Sheet {...basicSheetFixture} />;
 
@@ -50,11 +51,11 @@ describe("Elements render", () => {
 		act(() => {
 			renderTest(basicSheetJsx);
 		});
-		items.forEach(({ name, weight, quantity, value }) => {
-			expect(screen.getByText(name)).toBeInTheDocument();
-			expect(screen.getAllByText(weight * quantity + "")).toBeTruthy();
-			expect(screen.getAllByText(value * quantity + "")).toBeTruthy();
-			expect(screen.getAllByText(quantity + "")).toBeTruthy();
+		items.forEach((item) => {
+			expect(screen.getByText(item.name)).toBeInTheDocument();
+			expect(screen.getAllByText(getItemTotalValue(item))).toBeTruthy();
+			expect(screen.getAllByText(getItemTotalWeight(item))).toBeTruthy();
+			expect(screen.getAllByText(item.quantity + "")).toBeTruthy();
 		});
 	});
 });
