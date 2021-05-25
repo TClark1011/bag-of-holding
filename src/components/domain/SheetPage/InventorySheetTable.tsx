@@ -27,10 +27,15 @@ import { Tooltip } from "@chakra-ui/tooltip";
 import isUrl from "is-url-superb";
 import { testIdGeneratorFactory } from "../../../utils/testUtils";
 import PartyMemberData from "../../ui/PartyMemberData";
+import {
+	getItemTotalValue,
+	getItemTotalWeight,
+} from "../../../utils/deriveItemProperties";
 
 const getTestId = testIdGeneratorFactory("InventoryTable");
 
 export const inventoryTableTestIds = {
+	tableRoot: getTestId("TableRoot"),
 	nameColumnHeader: getTestId("NameColumnHeader"),
 	weightColumnHeader: getTestId("WeightColumnHeader"),
 	valueColumnHeader: getTestId("ValueColumnHeader"),
@@ -134,6 +139,7 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 			{...props}
 			borderTopWidth={1}
 			borderTopColor={hoverBg}
+			data-testid={inventoryTableTestIds.tableRoot}
 		>
 			<Thead>
 				<Tr>
@@ -201,6 +207,7 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 						cursor="pointer"
 						_hover={{ backgroundColor: hoverBg }}
 					>
+						{/* Item Name */}
 						<TableCell textAlign="left">
 							{item.reference && isUrl(item.reference) ? (
 								<Link
@@ -214,14 +221,19 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 								item.name
 							)}
 						</TableCell>
+						{/* Item Quantity */}
 						<TableCell>{item.quantity}</TableCell>
-						<TableCell>{item.weight * item.quantity}</TableCell>
+						{/* Item Total Weight */}
+						<TableCell>{getItemTotalWeight(item)}</TableCell>
+						{/* Item Total Value */}
 						<TableCell display={col4Display}>
-							{item.value * item.quantity}
+							{getItemTotalValue(item)}
 						</TableCell>
+						{/* Item "carriedBy" */}
 						<TableCell display={col5Display}>
 							<PartyMemberData memberId={item.carriedBy} property="name" />
 						</TableCell>
+						{/* Item Category */}
 						<TableCell display={col6Display}>{item.category}</TableCell>
 					</Tr>
 				))}
