@@ -10,6 +10,8 @@ import {
 	getItemTotalValue,
 	getItemTotalWeight,
 } from "../../../src/utils/deriveItemProperties";
+import getTestIdQuery from "../../utils/getTestIdQuery";
+import { memberCarryWeightTableTestIds } from "../../../src/components/domain/SheetPage/MemberCarryWeightTable";
 
 const basicSheetJsx = <Sheet {...basicSheetFixture} />;
 
@@ -71,7 +73,7 @@ describe("Computed values are correct", () => {
 	 */
 	const getCells = () =>
 		document.querySelectorAll(
-			`[data-testid="${inventoryTableTestIds.tableRoot}"] tbody tr td`
+			`${getTestIdQuery(inventoryTableTestIds.tableRoot)} tbody tr td`
 		);
 
 	test("All 1s", () => {
@@ -170,5 +172,161 @@ describe("Computed values are correct", () => {
 		expect(cells[1].textContent).toEqual(3 + "");
 		expect(cells[2].textContent).toEqual(0.45 + "");
 		expect(cells[3].textContent).toEqual(0.6 + "");
+	});
+});
+
+describe("Sheet Member Carry Weights", () => {
+	const testMemberId = "id";
+
+	/**
+	 * Fetch the weight/value cells of the first member in the "MemberCarryWeightTable"
+	 *
+	 * @returns {object} An object containing the weight/value cell text contents
+	 */
+	const getCells = () => {
+		const queryResult = document.querySelectorAll(
+			`${getTestIdQuery(memberCarryWeightTableTestIds.root)} tbody tr td`
+		);
+		return {
+			weight: queryResult[1].textContent,
+			value: queryResult[2].textContent,
+		};
+	};
+
+	test("Single Item (weight, value, quantity = 1)", () => {
+		act(() => {
+			renderTest(
+				<Sheet
+					_id=""
+					name=""
+					members={[
+						{
+							_id: testMemberId,
+							carryCapacity: 1,
+							name: "test name",
+						},
+					]}
+					items={[
+						createInventoryItem({
+							name: "",
+							weight: 1,
+							value: 1,
+							carriedBy: testMemberId,
+						}),
+					]}
+				/>
+			);
+		});
+
+		const { weight, value } = getCells();
+
+		expect(weight).toEqual("1");
+		expect(value).toEqual("1");
+	});
+	test("Single Item (weight, value = 0,  quantity = 1)", () => {
+		act(() => {
+			renderTest(
+				<Sheet
+					_id=""
+					name=""
+					members={[
+						{
+							_id: testMemberId,
+							carryCapacity: 1,
+							name: "test name",
+						},
+					]}
+					items={[
+						createInventoryItem({
+							name: "",
+							weight: 0,
+							value: 0,
+							carriedBy: testMemberId,
+						}),
+					]}
+				/>
+			);
+		});
+
+		const { weight, value } = getCells();
+
+		expect(weight).toEqual("0");
+		expect(value).toEqual("0");
+	});
+	test("Single Item (weight = 0.15, value = 1.25,  quantity = 3)", () => {
+		act(() => {
+			renderTest(
+				<Sheet
+					_id=""
+					name=""
+					members={[
+						{
+							_id: testMemberId,
+							carryCapacity: 1,
+							name: "test name",
+						},
+					]}
+					items={[
+						createInventoryItem({
+							name: "",
+							weight: 0.15,
+							value: 1.25,
+							quantity: 3,
+							carriedBy: testMemberId,
+						}),
+					]}
+				/>
+			);
+		});
+
+		const { weight, value } = getCells();
+
+		expect(weight).toEqual("0.45");
+		expect(value).toEqual("3.75");
+	});
+	test("3 Items (All problematic floats with multiple quantities)", () => {
+		act(() => {
+			renderTest(
+				<Sheet
+					_id=""
+					name=""
+					members={[
+						{
+							_id: testMemberId,
+							carryCapacity: 1,
+							name: "test name",
+						},
+					]}
+					items={[
+						createInventoryItem({
+							name: "",
+							weight: 0.15,
+							value: 1.25,
+							quantity: 3,
+							carriedBy: testMemberId,
+						}),
+						createInventoryItem({
+							name: "",
+							weight: 2.27,
+							value: 0.31,
+							quantity: 5,
+							carriedBy: testMemberId,
+						}),
+						createInventoryItem({
+							name: "",
+							weight: 1.27,
+							value: 0.68,
+							quantity: 7,
+							carriedBy: testMemberId,
+						}),
+					]}
+				/>
+			);
+		});
+
+		const { weight, value } = getCells();
+
+		expect(weight).toEqual("20.69");
+		expect(value).toEqual("10.06");
 	});
 });
