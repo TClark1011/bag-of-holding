@@ -34,7 +34,6 @@ import { useSheetPageState } from "../../state/sheetPageState";
 import { LightMode } from "@chakra-ui/color-mode";
 import { DarkMode } from "@chakra-ui/color-mode";
 import PartyMemberTagList from "../../components/templates/PartyMemberTagList";
-import Meta from "../../components/templates/Meta";
 import getSheetLink from "../../utils/getSheetLink";
 import { H3 } from "../../components/ui/Typography";
 import fetchSheetFromDb from "../../db/fetchSheetFromDb";
@@ -43,6 +42,7 @@ import { Tag, TagLabel, TagLeftIcon } from "@chakra-ui/tag";
 import WelcomeDialog from "../../components/domain/SheetPage/Dialogs/WelcomeDialog";
 import { testIdGeneratorFactory } from "../../utils/testUtils";
 import { useAnalyticsPageView } from "../../utils/analyticsHooks";
+import View from "../../components/templates/View";
 
 const getTestId = testIdGeneratorFactory("SheetPage");
 
@@ -111,11 +111,11 @@ const Sheet: React.FC<SheetPageProps> = ({ isNew = false, ...sheetFields }) => {
 	}, REFETCH_INTERVAL);
 
 	return (
-		<>
-			<Meta
-				title={appName + " - " + name}
-				url={getSheetLink(sheetFields._id, true)}
-			/>
+		<View
+			showTopNav={false}
+			title={appName + " - " + name}
+			url={getSheetLink(sheetFields._id, true)}
+		>
 			<SheetStateProvider
 				dispatch={inventoryDispatch}
 				state={{ items, members, name, _id }}
@@ -247,7 +247,7 @@ const Sheet: React.FC<SheetPageProps> = ({ isNew = false, ...sheetFields }) => {
 					</main>
 				</Box>
 			</SheetStateProvider>
-		</>
+		</View>
 	);
 };
 
