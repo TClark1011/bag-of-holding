@@ -1,4 +1,4 @@
-![](/assets/images/GitHub_Banner.png?raw=true)
+![](/public/GitHub_Banner.png?raw=true)
 
 # Bag of Holding
 
