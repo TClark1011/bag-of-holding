@@ -1,11 +1,16 @@
 import { Flex, HStack } from "@chakra-ui/layout";
-import { HelpOutlineIcon, MailOutlineIcon } from "chakra-ui-ionicons";
+import {
+	HelpOutlineIcon,
+	MailOutlineIcon,
+	LogoRedditIcon,
+} from "chakra-ui-ionicons";
 import React from "react";
 import { contactPageUrl, infoPageUrl } from "../../constants/urls";
 import BagOfHoldingIcon from "../icons/BagOfHoldingIcon";
 import ColorModeSwitch from "../ui/ColorModeSwitch";
 import GitLink from "../ui/GitLink";
 import IconLink from "../ui/IconLink";
+import { appSubredditLink } from "../../constants/branding";
 
 export const topNavHeight = 16;
 
@@ -38,6 +43,12 @@ const TopNav: React.FC<TopNavProps> = ({ showHomeLink = true }) => (
 				/>
 			)}
 			<GitLink />
+			<IconLink
+				href={appSubredditLink}
+				aria-label="link to info page"
+				icon={<LogoRedditIcon boxSize="icon" />}
+				variant="ghost"
+			/>
 			<IconLink
 				href={contactPageUrl}
 				aria-label="link to contact page"

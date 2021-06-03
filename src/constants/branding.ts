@@ -7,5 +7,6 @@ export const appDescription =
 
 export const appDomain = "https://www.bagofholding.cloud";
 export const appGitLink = "https://github.com/TClark1011/bag-of-holding";
+export const appSubredditLink = "https://www.reddit.com/r/bagofholding/";
 
 export const contactEmailAddress = "contact@bagofholding.cloud";
