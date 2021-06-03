@@ -84,7 +84,7 @@ const InfoPage: React.FC = () => {
 							sheets that have not been edited in a long time.
 						</Paragraph>
 						<Paragraph>
-							If a sheet is created but has not items added to it for a week,
+							If a sheet is created but has no items added to it for a week,
 							that sheet will be deleted.
 						</Paragraph>
 						<Paragraph>
