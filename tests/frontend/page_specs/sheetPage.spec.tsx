@@ -4,7 +4,7 @@ import React from "react";
 import { inventoryTableTestIds } from "../../../src/components/domain/SheetPage/InventorySheetTable";
 import { basicSheetFixture } from "../../fixtures/sheetFixtures";
 import Sheet, { sheetPageTestIds } from "../../../src/pages/sheets/[sheetId]";
-import { checkTestIdsRender, renderTest } from "../../../src/utils/testUtils";
+import { checkTestIdsRender, renderTest } from "../../utils/testUtils";
 import createInventoryItem from "../../../src/utils/createInventoryItem";
 import {
 	getItemTotalValue,

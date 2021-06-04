@@ -1,7 +1,7 @@
 import { act, screen } from "@testing-library/react";
 import { contactEmailAddress } from "../../../src/constants/branding";
 import ContactPage, { contactPageTitle } from "../../../src/pages/contact";
-import { renderTest } from "../../../src/utils/testUtils";
+import { renderTest } from "../../utils/testUtils";
 
 test("Elements Render", () => {
 	act(() => {

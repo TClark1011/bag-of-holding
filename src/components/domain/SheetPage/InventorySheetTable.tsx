@@ -25,7 +25,7 @@ import { useSheetPageState } from "../../../state/sheetPageState";
 import { useInventoryState } from "../../contexts/InventoryStateContext";
 import { Tooltip } from "@chakra-ui/tooltip";
 import isUrl from "is-url-superb";
-import { testIdGeneratorFactory } from "../../../utils/testUtils";
+import { testIdGeneratorFactory } from "../../../../tests/utils/testUtils";
 import PartyMemberData from "../../ui/PartyMemberData";
 import {
 	getItemTotalValue,

@@ -40,7 +40,7 @@ import fetchSheetFromDb from "../../db/fetchSheetFromDb";
 import fetchSheet from "../../services/fetchSheet";
 import { Tag, TagLabel, TagLeftIcon } from "@chakra-ui/tag";
 import WelcomeDialog from "../../components/domain/SheetPage/Dialogs/WelcomeDialog";
-import { testIdGeneratorFactory } from "../../utils/testUtils";
+import { testIdGeneratorFactory } from "../../../tests/utils/testUtils";
 import { useAnalyticsPageView } from "../../utils/analyticsHooks";
 import View from "../../components/templates/View";
 

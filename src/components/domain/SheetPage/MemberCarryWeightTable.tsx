@@ -4,7 +4,7 @@ import {
 	getItemTotalValue,
 	getItemTotalWeight,
 } from "../../../utils/deriveItemProperties";
-import { testIdGeneratorFactory } from "../../../utils/testUtils";
+import { testIdGeneratorFactory } from "../../../../tests/utils/testUtils";
 import { useInventoryState } from "../../contexts/InventoryStateContext";
 
 const getTestId = testIdGeneratorFactory("MemberCarryWeightTable");

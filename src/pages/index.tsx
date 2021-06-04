@@ -4,7 +4,7 @@ import WelcomeBack from "../components/domain/Home/WelcomeBack";
 import BagOfHoldingIcon from "../components/icons/BagOfHoldingIcon";
 import ButtonLink from "../components/ui/ButtonLink";
 import { H1, H2 } from "../components/ui/Typography";
-import { testIdGeneratorFactory } from "../utils/testUtils";
+import { testIdGeneratorFactory } from "../../tests/utils/testUtils";
 import View from "../components/templates/View";
 import { infoPageUrl } from "../constants/urls";
 import GetStartedButton from "../components/domain/GetStartedButton";
