@@ -23,3 +23,5 @@ const getEnvOrThrow = (key: string): string => {
 };
 
 export const MONGO_URL = getEnvOrThrow("MONGO_URL");
+
+export const UNDERGOING_MIGRATION = process.env.UNDERGOING_MIGRATION === "true";
