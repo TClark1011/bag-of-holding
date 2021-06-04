@@ -1,32 +1,43 @@
 import { inProduction } from "../config/publicEnv";
 import mongoose, { Model, Document } from "mongoose";
 import InventorySheetFields from "../types/InventorySheetFields";
+import mapObject from "map-obj";
+import { UNDERGOING_MIGRATION } from "../config/env";
+
+const sheetSchema = {
+	name: { type: String, required: true },
+	members: [
+		{
+			_id: { type: String, required: true },
+			name: { type: String, required: true },
+			carryCapacity: { type: Number, default: 0 },
+		},
+	],
+	items: [
+		{
+			_id: { type: String, required: true },
+			name: { type: String, required: true },
+			description: { type: String },
+			category: { type: String },
+			value: { type: Number },
+			weight: { type: Number },
+			quantity: { type: Number },
+			carriedBy: { type: String },
+			reference: { type: String },
+		},
+	],
+};
 
 const SheetSchema = new mongoose.Schema(
+	UNDERGOING_MIGRATION
+		? mapObject(sheetSchema, (key) => [key, {}])
+		: sheetSchema,
+	//? If the application is undergoing data migration, all fields are set to type "mixed" so that mongoose does not attempt to auto migrate old data to new format
 	{
-		name: { type: String, required: true },
-		members: [
-			{
-				_id: { type: String, required: true },
-				name: { type: String, required: true },
-				carryCapacity: { type: Number, default: 0 },
-			},
-		],
-		items: [
-			{
-				_id: { type: String, required: true },
-				name: { type: String, required: true },
-				description: { type: String },
-				category: { type: String },
-				value: { type: Number },
-				weight: { type: Number },
-				quantity: { type: Number },
-				carriedBy: { type: String },
-				reference: { type: String },
-			},
-		],
-	},
-	{ timestamps: true }
+		timestamps: true,
+		strict: !UNDERGOING_MIGRATION,
+		//? Allow keys not specified in the schema if application is undergoing data migration
+	}
 );
 
 /**
