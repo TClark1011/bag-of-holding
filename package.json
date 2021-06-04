@@ -50,6 +50,7 @@
 		"react-ga": "^3.3.0",
 		"stringify-object": "^3.3.0",
 		"uniq": "^1.0.1",
+		"yesno": "^0.3.1",
 		"yup": "^0.32.9"
 	},
 	"devDependencies": {
