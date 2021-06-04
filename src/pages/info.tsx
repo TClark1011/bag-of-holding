@@ -7,7 +7,7 @@ import { H3, Paragraph, SectionTitle } from "../components/ui/Typography";
 import { appGitLink } from "../constants/branding";
 import { infoPageUrl } from "../constants/urls";
 import createPageTitle from "../utils/createPageTitle";
-import { testIdGeneratorFactory } from "../utils/testUtils";
+import { testIdGeneratorFactory } from "../../tests/utils/testUtils";
 import { chakra } from "@chakra-ui/system";
 
 const getTestId = testIdGeneratorFactory("TestPage");
