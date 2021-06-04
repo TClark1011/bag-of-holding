@@ -23,7 +23,7 @@ import { useDisclosure } from "@chakra-ui/hooks";
 import ConfirmationDialog from "../../../ui/ConfirmationDialog";
 import { useState } from "react";
 import { Paragraph } from "../../../ui/Typography";
-import generateMember from "../../../../generators/generateMember";
+import generateMember from "../../../../utils/generateMember";
 import {
 	Radio,
 	RadioGroup,

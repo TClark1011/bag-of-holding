@@ -8,7 +8,7 @@ import {
 	DeleteMemberItemHandlingMethods,
 	InventorySheetPartialUpdateAction,
 } from "../../src/types/InventorySheetState";
-import generateMember from "../../src/generators/generateMember";
+import generateMember from "../../src/utils/generateMember";
 import InventoryMemberFields from "../../src/types/InventoryMemberFields";
 import { OmitId } from "../../src/types/UtilityTypes";
 import {
