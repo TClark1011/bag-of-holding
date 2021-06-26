@@ -9,11 +9,11 @@
 ### Features
 * new/altered features *
 
-### Backend
-* non user-facing stuff *
-
 ### Bug Fixes
 * bug fixes *
+
+### Backend
+* non user-facing stuff *
 
 ### Documentation
 * changes to documentation *
@@ -27,9 +27,14 @@
 - Added links to home, contact and info pages as well as to the GitHub repository to the top navigation bar
 - Confirmation prompts are used when deleting an item or a party member from a sheet
 
+### Bug Fixes
+- Multiplication and division performed when calculating weight and value totals will no longer occasionally output incorrect and very long decimals
+- Consecutive edits to party member names/the sheet title will no longer result in the first edit being completely overridden
+
 ### Backend
 
 - Implemented Google Analytics
+- Added maintenance mode that will redirect all users to landing page which will display a message explaining that the site is undergoing maintenance
 
 ### Documentation
 
