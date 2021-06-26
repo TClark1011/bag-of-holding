@@ -47,7 +47,9 @@
 
 ### Tests
 
-- Added basic render testing to home and sheet page
+- Basic render testing for all website pages
+- Functionality tests for state reducers
+- Integration tests for sheet data displays
 
 ## Version 1.0.1
 
