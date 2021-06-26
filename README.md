@@ -1,36 +1,52 @@
-![](/assets/images/GitHub_Banner.png?raw=true)
+![](/public/GitHub_Banner.png?raw=true)
 
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Bag of Holding
 
-## Getting Started
+Bag of Holding is a web app that lets all the players in a tabletop RPG session track their inventory in one central location. Inventory sheets are created without requiring any account creation or authentication and update in real time, allowing for easy and convenient collaboration between players, as well as offering advanced filters and searching that makes it suitable for tracking both the group inventory and the inventory of individual players.
 
-First, run the development server:
+[Live Site](https://www.bagofholding.cloud/)
 
-```bash
-npm run dev
-# or
-yarn dev
-```
+![](/public/ogImages/ogSheet.png?raw=true)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**Stack:** Bag of Holding is built primarily using the following technologies:
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+- Typescript
+- [React](https://github.com/facebook/react), bootstrapped with [Next.js](https://github.com/vercel/next.js/) via `create-next-app` and [Chakra UI](https://github.com/chakra-ui/chakra-ui/) for styling
+- [MongoDB Cloud](https://www.mongodb.com/cloud) with [Mongoose](https://github.com/Automattic/mongoose)
+- Hosted on [Vercel](https://vercel.com/)
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+**Status:** Bag of Holding is currently on version 1.0.1
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+## Installation
 
-## Learn More
+How to install and locally host your own installation of Bag of Holding:
 
-To learn more about Next.js, take a look at the following resources:
+1. Fork + Clone this repository
+2. Run the `yarn` command (yarn must be installed) and wait for installation of packages to finish
+3. Create a MongoDB Atlas collection and get the connection string (for help, follow [this guide](https://dev.to/dalalrohit/how-to-connect-to-mongodb-atlas-using-node-js-k9i) up to the point that you get the connection string in step 4)
+4. Create a file named `.env` in the root directory of your forked repository. In that file, write `MONGO_URL=*your connection string*`
+5. Run `yarn start:dev` to run the development server, or just `yarn start` for the production server.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Development
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+We will gladly accept any help you want to offer us. If you want to contribute to Bag of Holding, please read this section and follow any instructions.
 
-## Deploy on Vercel
+### Extensions
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+It is recommended that you install the following extensions before starting work on Bag of Holding:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- **Prettier (esbenp.prettier-vscode):** An extension for formatting your code.
+- **Prettier ESLint (rvest.vs-code-prettier-eslint):** An extension that allows the `Prettier` extension operate in conjunction with `ESlint`. By using both of these extensions we can make sure we are following a consistent code style which goes a long way to making the codebase consistent and predictable.
+- **Conventional Commits (vivaxy.vscode-conventional-commits):** Helps you generate commit messages in the standard `conventional-commits` format. It is recommended that you use this tool when you make commits. This repository uses `commitlint` to enforce high quality commit messages, and this extension makes it extremely easy to generate commit messages that will be accepted by `commitlint`.
+
+### Workflow
+
+When making commits to this repository, it is recommended you do so using the `Conventional Commits` vscode extension, or failing that, run `yarn commit` in your terminal to open up the command line tool for writing high quality commit messages.
+
+### Configuration
+
+- **Fetch Intervals:** By default, inventory sheets will request new data from the server once every 30000 milliseconds. The regularity of this can be customized. To do this, add `NEXT_PUBLIC_REFETCH_INTERVAL=*desired refetch intervals in milliseconds*`
+
+## License
+
+MIT

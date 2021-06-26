@@ -1,26 +1,11 @@
-# CHANGELOG
+# Changelog
 
-<!-- VERSION CHANGELOG TEMPLATE -->
-<!--
-## Version *VERSION NUMBER*
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-### Features
-* features *
+### 1.0.3 (2021-04-23)
 
-### Backend
-* non user-facing stuff *
 
-### Bug Fixes -->
+### Bug Fixes
 
-## Version 1.0.1a (Hotfix)
-
-### Bug Fixes:
-
-- Fixed a problem where dialog action buttons could sometimes be covered by the safari bottom navigation bar when viewed on certain models of iPhone
-
-## Version 1.0.1
-
-### Features
-
-- If an item's reference is a valid URL, the name becomes a clickable link to that URL
-- The category item field will now auto suggest other category values from items in the sheet
+* **workspace:** :bug: moved assets folder inside src folder ([f61079b](https://github.com/TClark1011/bag-of-holding/commit/f61079be84d2a67348af77abd9bf1023c7b5a688))
+* **workspace:** :wrench: setup pre install hook to run husky ([6e3012f](https://github.com/TClark1011/bag-of-holding/commit/6e3012fcaa994f6d47491c155f811ba4c1c9b9e2))
