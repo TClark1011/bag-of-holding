@@ -7,9 +7,9 @@ import {
 import { testIdGeneratorFactory } from "../../../../tests/utils/testUtils";
 import { useInventoryState } from "../../contexts/InventoryStateContext";
 
-const getTestId = testIdGeneratorFactory("MemberCarryWeightTable");
+const getTestId = testIdGeneratorFactory("MemberTotalsTable");
 
-export const memberCarryWeightTableTestIds = {
+export const memberTotalsTableTestIds = {
 	root: getTestId("root"),
 };
 
@@ -19,7 +19,7 @@ export const memberCarryWeightTableTestIds = {
  * @param {chakra.TableProps} props The props to pass to the table
  * @returns {React.ReactElement} The rendered stuff
  */
-const MemberCarryWeightTable: React.FC<TableProps> = ({ ...props }) => {
+const MemberTotalsTable: React.FC<TableProps> = ({ ...props }) => {
 	const { members, items } = useInventoryState();
 	/**
 	 * Fetch the items carried by a certain member
@@ -30,7 +30,7 @@ const MemberCarryWeightTable: React.FC<TableProps> = ({ ...props }) => {
 	const getCarriedItems = (memberId: string) =>
 		items.filter((item) => item.carriedBy === memberId);
 	return (
-		<Table {...props} data-testid={memberCarryWeightTableTestIds.root}>
+		<Table {...props} data-testid={memberTotalsTableTestIds.root}>
 			<Thead>
 				<Tr>
 					<Th>Character</Th>
@@ -65,4 +65,4 @@ const MemberCarryWeightTable: React.FC<TableProps> = ({ ...props }) => {
 	);
 };
 
-export default MemberCarryWeightTable;
+export default MemberTotalsTable;

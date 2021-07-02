@@ -11,7 +11,7 @@ import {
 	getItemTotalWeight,
 } from "../../../src/utils/deriveItemProperties";
 import getTestIdQuery from "../../utils/getTestIdQuery";
-import { memberCarryWeightTableTestIds } from "../../../src/components/domain/SheetPage/MemberCarryWeightTable";
+import { memberTotalsTableTestIds } from "../../../src/components/domain/SheetPage/MemberTotalsTable";
 
 const basicSheetJsx = <Sheet {...basicSheetFixture} />;
 
@@ -179,13 +179,13 @@ describe("Sheet Member Carry Weights", () => {
 	const testMemberId = "id";
 
 	/**
-	 * Fetch the weight/value cells of the first member in the "MemberCarryWeightTable"
+	 * Fetch the weight/value cells of the first member in the "MemberTotalsTable"
 	 *
 	 * @returns {object} An object containing the weight/value cell text contents
 	 */
 	const getCells = () => {
 		const queryResult = document.querySelectorAll(
-			`${getTestIdQuery(memberCarryWeightTableTestIds.root)} tbody tr td`
+			`${getTestIdQuery(memberTotalsTableTestIds.root)} tbody tr td`
 		);
 		return {
 			weight: queryResult[1].textContent,
