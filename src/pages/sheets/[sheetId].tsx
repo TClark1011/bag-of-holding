@@ -21,7 +21,7 @@ import { REFETCH_INTERVAL } from "../../config/publicEnv";
 import { GetServerSideProps } from "next";
 import SheetOptionsDialog from "../../components/domain/SheetPage/Dialogs/SheetOptionsDialog";
 import { AddIcon, CreateOutlineIcon } from "chakra-ui-ionicons";
-import MemberCarryWeightTable from "../../components/domain/SheetPage/MemberCarryWeightTable";
+import MemberTotalsTable from "../../components/domain/SheetPage/MemberTotalsTable";
 import ColorModeSwitch from "../../components/ui/ColorModeSwitch";
 import { Input } from "@chakra-ui/input";
 import deepEqual from "deep-equal";
@@ -237,7 +237,7 @@ const Sheet: React.FC<SheetPageProps> = ({ isNew = false, ...sheetFields }) => {
 								<Divider />
 							</Center>
 						</Flex>
-						<MemberCarryWeightTable />
+						<MemberTotalsTable />
 						{/* Dialogs */}
 						<ItemDialog mode="new" />
 						<ItemDialog mode="edit" />
