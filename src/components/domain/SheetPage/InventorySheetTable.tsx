@@ -83,21 +83,21 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 		getColumnSums,
 	} = useSheetPageState();
 
-	const { items } = useInventoryState();
-	const processedItems = getProcessedItems(items);
+	const { items, members } = useInventoryState();
+	const processedItems = getProcessedItems(items, members);
 	const columnSums = getColumnSums(items);
 
 	/**
 	 * A component to be used as the column headers
 	 *
-	 * @param {object} props The props
-	 * @param {ProcessableItemProperty} props.property The property that
+	 * @param props The props
+	 * @param props.property The property that
 	 * the column represents
-	 * @param {boolean} [props.allowFilter] Whether or not to show a button
+	 * @param [props.allowFilter] Whether or not to show a button
 	 * to open the filter interface for the column. If not specified, defaults
 	 * to not showing the filter button.
-	 * @param {React.ReactElement} props.children The children
-	 * @returns {React.ReactElement} The rendered stuff
+	 * @param props.children The children
+	 * @returns The rendered stuff
 	 */
 	const TableHeader: React.FC<
 		TableCellProps & {
