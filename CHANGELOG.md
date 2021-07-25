@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.2](https://github.com/TClark1011/bag-of-holding/compare/v1.1.1...v1.1.2) (2021-07-25)
+
+
+### Bug Fixes
+
+* **frontend:** :bug: fixed my bad fix ([cc6433d](https://github.com/TClark1011/bag-of-holding/commit/cc6433df44d0038e9e28a1438ccfe32ce24b7852))
+
 ### 1.1.1 (2021-07-25)
 
 
