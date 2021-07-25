@@ -207,19 +207,6 @@ export const useSheetPageState = () => {
 					value: 0,
 				}
 			),
-		// {
-		// 	const result = {
-		// 		weight: 0,
-		// 		value: 0,
-		// 	};
-
-		// 	getProcessedItems(items).forEach(item => {
-		// 		result.value += value * quantity;
-		// 		result.weight += weight * quantity;
-		// 	});
-
-		// 	return result;
-		// },
 
 		/**
 		 * Fetch all the different values of item categories in

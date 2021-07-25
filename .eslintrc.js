@@ -22,6 +22,10 @@ module.exports = {
 	rules: {
 		"react/react-in-jsx-scope": "off",
 		"react/prop-types": "off",
+		"jsdoc/require-param-type": "off",
+		"jsdoc/require-returns-type": "off",
+		"jsdoc/require-param": ["warn", { checkRestProperty: false }],
+		"jsdoc/check-param-names": ["error" | "warn", { checkRestProperty: false }],
 		"no-warning-comments": "warn",
 	},
 };
