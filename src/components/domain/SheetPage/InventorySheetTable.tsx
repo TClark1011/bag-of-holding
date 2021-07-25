@@ -27,7 +27,6 @@ import { Tooltip } from "@chakra-ui/tooltip";
 import isUrl from "is-url-superb";
 import { testIdGeneratorFactory } from "../../../../tests/utils/testUtils";
 import PartyMemberData from "../../ui/PartyMemberData";
-import { getCarrier } from "../../../utils/deriveItemProperties";
 import {
 	getItemTotalValue,
 	getItemTotalWeight,
@@ -85,12 +84,7 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 	} = useSheetPageState();
 
 	const { items, members } = useInventoryState();
-	const processedItems = getProcessedItems(
-		items.map((item) => ({
-			...item,
-			carriedBy: getCarrier(item, members)?.name,
-		}))
-	);
+	const processedItems = getProcessedItems(items, members);
 	const columnSums = getColumnSums(items);
 
 	/**

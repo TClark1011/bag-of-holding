@@ -18,6 +18,8 @@ import {
 	DeleteMemberItemHandlingMethods,
 } from "../types/InventorySheetState";
 import Big from "big.js";
+import InventoryMemberFields from "../types/InventoryMemberFields";
+import { getCarrier } from "../utils/deriveItemProperties";
 
 export type SheetDialogType =
 	| "item.new"
@@ -102,12 +104,16 @@ export const useSheetPageState = () => {
 	/**
 	 * Sort/filter items according to the sort/filter state
 	 *
-	 * @param {InventoryItemFields[]} items The items in
+	 * @param items The items in
 	 * the sheet inventory
-	 * @returns {InventoryItemFields[]} Sorted/filtered inventory
+	 * @param members The party members in the sheet
+	 * @returns Sorted/filtered inventory
 	 * items
 	 */
-	const getProcessedItems = (items: InventoryItemFields[]) => {
+	const getProcessedItems = (
+		items: InventoryItemFields[],
+		members: InventoryMemberFields[]
+	) => {
 		const sorting = state.sorting.value;
 		const sortFn =
 			sorting.direction === "ascending"
@@ -117,13 +123,20 @@ export const useSheetPageState = () => {
 
 		//* Sort Items
 		const sorted = sortFn([
-			(item) =>
-				sorting.property === "quantity" || sorting.property === "weight"
-					? new Big(item[sorting.property] as number).mul(
-						new Big(item.quantity)
-					  ).toNumber
-					: //? If 'quantity' or 'weight' are being sorted by, multiply them by the quantity
-					  item[sorting.property],
+			(item) => {
+				switch (sorting.property) {
+					case "carriedBy":
+						return getCarrier(item, members)?.name;
+					case "quantity":
+					case "weight":
+						//? If 'quantity' or 'weight' are being sorted by, multiply them by the quantity
+						return new Big(item[sorting.property] as number).mul(
+							new Big(item.quantity)
+						).toNumber;
+					default:
+						return item[sorting.property];
+				}
+			},
 			(item) => item.name,
 			//? We add a second layer of sorting in the name property to ensure consistency when duplicate values exist in the same column
 		]);
@@ -193,7 +206,7 @@ export const useSheetPageState = () => {
 		getColumnSums: (
 			items: InventoryItemFields[]
 		): Record<SummableItemProperty, number> =>
-			getProcessedItems(items).reduce<Record<SummableItemProperty, number>>(
+			getProcessedItems(items, []).reduce<Record<SummableItemProperty, number>>(
 				(current, item) => ({
 					weight: new Big(current.weight || 0)
 						.add(new Big(getItemTotalWeight(item)))
