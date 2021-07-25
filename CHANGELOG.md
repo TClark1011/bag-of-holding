@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.3](https://github.com/TClark1011/bag-of-holding/compare/v1.1.2...v1.1.3) (2021-07-25)
+
+
+### Bug Fixes
+
+* **frontend:** :bug: searching is no longer case sensitive ([f706411](https://github.com/TClark1011/bag-of-holding/commit/f706411380218b40061de07920a57338977a3921))
+
 ### [1.1.2](https://github.com/TClark1011/bag-of-holding/compare/v1.1.1...v1.1.2) (2021-07-25)
 
 
