@@ -143,7 +143,9 @@ export const useSheetPageState = () => {
 
 		//* Filter items
 		let result = [...sorted].filter((item) =>
-			item.name.includes(state.ui.searchbarValue.value)
+			item.name
+				.toLowerCase()
+				.includes(state.ui.searchbarValue.value.toLowerCase())
 		);
 		for (const [property, filter] of Object.entries(state.filters.value)) {
 			result = result.filter((item) => !filter.includes(item[property]));
