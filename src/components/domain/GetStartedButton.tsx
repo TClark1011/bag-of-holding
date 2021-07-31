@@ -8,9 +8,9 @@ import { H3 } from "../ui/Typography";
  * Links to the 'new' page which triggers the sheet
  * creation process.
  *
- * @param {object} props The props of a Chakra UI
+ * @param props The props of a Chakra UI
  * button props.
- * @returns {React.ReactElement} The rendered button
+ * @returns The rendered button
  */
 const GetStartedButton: React.FC<ButtonProps> = (props) => {
 	return MAINTENANCE_MODE ? (

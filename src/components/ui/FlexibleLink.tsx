@@ -18,17 +18,17 @@ export interface FlexibleLinkProps {
  * provided by the NextJS link component, or the more standard
  * link capabilities of the chakra ui 'Link' component
  *
- * @param {object} props The props
- * @param {string} props.href The link destination
- * @param {boolean} [props.useNextLink=false] If true, the
+ * @param props The props
+ * @param props.href The link destination
+ * @param [props.useNextLink=false] If true, the
  * component used will be the 'Link' component exported from
  * 'next/link'. Otherwise the 'Link' component from chakra ui
  * is used.
- * @param {object} [props.nextLinkProps] The props to provide to
+ * @param [props.nextLinkProps] The props to provide to
  * the link if it is using the NextJS link
- * @param {object} [props.chakraLinkProps] The props to provide to
+ * @param [props.chakraLinkProps] The props to provide to
  * the link if it is using the Chakra UI link
- * @returns {React.ReactElement} Component stuff
+ * @returns Component stuff
  */
 const FlexibleLink: React.FC<FlexibleLinkProps> = ({
 	href,

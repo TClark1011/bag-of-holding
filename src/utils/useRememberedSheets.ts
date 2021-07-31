@@ -11,7 +11,7 @@ import { InventorySheetMenuItemFields } from "../types/InventorySheetFields";
  * the function is only activated once the component is rendered in
  * the frontend.
  *
- * @returns {InventorySheetMenuItemFields[]} All the remembered sheets
+ * @returns All the remembered sheets
  */
 const useRememberedSheets = (): InventorySheetMenuItemFields[] => {
 	const [rememberedSheets, setRememberedSheets] = useState<

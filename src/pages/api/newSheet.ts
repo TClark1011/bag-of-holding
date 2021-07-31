@@ -9,8 +9,8 @@ connectToMongoose();
 /**
  * Handle HTTP requests to the route
  *
- * @param {NextApiRequest} req The HTTP request object
- * @param {NextApiResponse} res The HTTP response object
+ * @param req The HTTP request object
+ * @param res The HTTP response object
  */
 const routeHandler: NextApiHandler = async (req, res) => {
 	if (req.method === "GET") {

@@ -6,9 +6,9 @@ import { AxiosResponse } from "axios";
 /**
  * Fetch a sheet from the server
  *
- * @param {string} _id The '_id' if the sheet
+ * @param _id The '_id' if the sheet
  * to fetch
- * @returns {Promise<InventorySheetFields>} The
+ * @returns The
  * fetched sheet
  */
 const fetchSheet = (

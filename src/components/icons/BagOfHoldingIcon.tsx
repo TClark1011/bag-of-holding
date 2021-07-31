@@ -12,14 +12,14 @@ interface BagOfHoldingIconProps extends IconProps {
 /**
  * Icon of a bag of holding
  *
- * @param {object} props The props
- * @param {boolean} [props.showCreaseLines=false] If true,
+ * @param props The props
+ * @param [props.showCreaseLines=false] If true,
  * shows two extra lines in the icons that represent creases
  * in the bag
- * @param {boolean} [props.thickStroke=false] If true, applies
+ * @param [props.thickStroke=false] If true, applies
  * a thick stroke to the icon. Should be used when showing a
  * small version of the icon, eg; The home link in the top nav
- * @returns {React.ReactElement} Component stuff
+ * @returns Component stuff
  */
 const BagOfHoldingIcon: React.FC<BagOfHoldingIconProps> = ({
 	showCreaseLines = false,

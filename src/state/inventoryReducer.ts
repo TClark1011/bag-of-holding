@@ -19,12 +19,12 @@ import findObjectWithId from "../utils/findObjectWithId";
 /**
  * Reducer that handles updates to client state
  *
- * @param {InventoryItemFields[]} state The current  state of the inventory
- * @param {InventoryStateAction} action The action to be performed upon the state
- * @param {InventoryStateActionType} action.type The type of action being performed
- * @param {InventoryStateActionValidData} action.data Supplementary information
+ * @param state The current  state of the inventory
+ * @param action The action to be performed upon the state
+ * @param action.type The type of action being performed
+ * @param action.data Supplementary information
  * about how the action should be executed
- * @returns {InventoryItemFields[]} The state updated by the passed action
+ * @returns The state updated by the passed action
  */
 const inventoryReducer = (
 	state: InventorySheetState,
@@ -54,11 +54,11 @@ const inventoryReducer = (
 	 * Shorthand for calling the immer 'produce' function,
 	 * passing the state as the first parameter
 	 *
-	 * @param {Function} mutation The function to execute
+	 * @param mutation The function to execute
 	 * to produce the next state via mutation
-	 * @param {boolean} [blockRefetch=false] Whether or not
+	 * @param [blockRefetch=false] Whether or not
 	 * to start blocking refetching
-	 * @returns {InventorySheetState} The next state
+	 * @returns The next state
 	 */
 	const produceNewState = (
 		mutation: (p: typeof state) => void,

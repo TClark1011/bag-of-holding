@@ -19,6 +19,7 @@ module.exports = {
 		sourceType: "module",
 	},
 	plugins: ["react", "@typescript-eslint"],
+	ignorePatterns: ["src/assets/**", "node_modules/**"],
 	rules: {
 		"react/react-in-jsx-scope": "off",
 		"react/prop-types": "off",
@@ -26,6 +27,7 @@ module.exports = {
 		"jsdoc/require-returns-type": "off",
 		"jsdoc/require-param": ["warn", { checkRestProperty: false }],
 		"jsdoc/check-param-names": ["error" | "warn", { checkRestProperty: false }],
+		"jsdoc/no-types": "error",
 		"no-warning-comments": "warn",
 	},
 };

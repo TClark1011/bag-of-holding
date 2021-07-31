@@ -5,7 +5,7 @@ const sheetMemoryKey = "previously-visited-sheets";
 /**
  * Fetch sheets that are 'remembered' in localStorage
  *
- * @returns {InventorySheetMenuItemFields[]} The sheets
+ * @returns The sheets
  */
 export const fetchRememberedSheets = (): InventorySheetMenuItemFields[] =>
 	JSON.parse(localStorage.getItem(sheetMemoryKey) || "[]");
@@ -13,7 +13,7 @@ export const fetchRememberedSheets = (): InventorySheetMenuItemFields[] =>
 /**
  * Update the 'remembered' sheets
  *
- * @param {InventorySheetMenuItemFields[]} items The
+ * @param items The
  * items to update the stored 'rememberedItems' sheet
  * with
  */
@@ -26,10 +26,10 @@ export const saveRememberedSheets = (
 /**
  * Add a sheet to the 'remembered' sheets field in localStorage
  *
- * @param {object} sheet The sheet
- * @param {string} sheet._id Sheet id
- * @param {string} sheet.name Sheet name
- * @param {string[]} sheet.members The party members from the sheet
+ * @param sheet The sheet
+ * @param sheet._id Sheet id
+ * @param sheet.name Sheet name
+ * @param sheet.members The party members from the sheet
  */
 export const addToRememberedSheets = ({
 	_id,

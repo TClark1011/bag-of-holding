@@ -8,11 +8,11 @@ import { sheetsUrlPrefix } from "../constants/urls";
  * to be processed and acted upon by the database
  * reducer.
  *
- * @param {string} _id The id of the sheet to be
+ * @param _id The id of the sheet to be
  * acted upon
- * @param {InventorySheetStateAction} action The
+ * @param action The
  * action to be sent to the server
- * @returns {Promise<void | AxiosResponse<void>>} The
+ * @returns The
  * resulting promise
  */
 const sendSheetAction = (

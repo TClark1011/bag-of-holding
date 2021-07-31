@@ -58,12 +58,12 @@ export interface SheetPageProps extends InventorySheetFields {
 /**
  * The page for a specific sheet
  *
- * @param {InventorySheetFields} sheetFields The component sheetFields
- * @param {boolean} [sheetFields.isNew=false] Whether or not the sheet is newly created
- * @param {string} sheetFields.name The name of the sheet
- * @param {InventoryItemFields[]} sheetFields.items The items in the sheet
- * @param {string[]} sheetFields.members Members
- * @returns {React.ReactElement} Sheet component
+ * @param sheetFields The component sheetFields
+ * @param [sheetFields.isNew=false] Whether or not the sheet is newly created
+ * @param sheetFields.name The name of the sheet
+ * @param sheetFields.items The items in the sheet
+ * @param sheetFields.members Members
+ * @returns Sheet component
  */
 const Sheet: React.FC<SheetPageProps> = ({ isNew = false, ...sheetFields }) => {
 	useAnalyticsPageView({ title: "Sheet", url: "/sheets/[sheetId]" });
@@ -254,10 +254,10 @@ const Sheet: React.FC<SheetPageProps> = ({ isNew = false, ...sheetFields }) => {
 /**
  * Get the props rendered by the server
  *
- * @param {object} context Path context data
- * @param {object} context.params Path url parameters
- * @param {string | string[]} context.params.sheetId The sheet id in the ur;
- * @returns {GetStaticPropsResult<InventorySheetFields>} The props for the sheet
+ * @param context Path context data
+ * @param context.params Path url parameters
+ * @param context.params.sheetId The sheet id in the ur;
+ * @returns The props for the sheet
  */
 export const getServerSideProps: GetServerSideProps<InventorySheetFields> = async (
 	context

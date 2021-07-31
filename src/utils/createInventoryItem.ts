@@ -9,8 +9,8 @@ import randomItem from "random-item";
  * Takes all the required files, excluding "_id"
  * Creates new object with randomly generated "_id" along with the provided fields
  *
- * @param {InventoryItemCreationFields} fields The data used to generate the new item
- * @returns {InventoryItemFields} A newly generated item
+ * @param fields The data used to generate the new item
+ * @returns A newly generated item
  */
 const createInventoryItem = (
 	fields: InventoryItemCreationFields

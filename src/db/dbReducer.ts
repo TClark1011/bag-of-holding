@@ -11,9 +11,9 @@ import SheetModel from "./SheetModel";
 /**
  * Reducer for controlling database
  *
- * @param {string} sheetId The id of the sheet to
+ * @param sheetId The id of the sheet to
  * update
- * @param {object} action The action used to update
+ * @param action The action used to update
  * the sheet
  */
 const dbReducer = async (
@@ -28,9 +28,9 @@ const dbReducer = async (
 	 * Execute a provided update on the target sheet in
 	 * mongodb
 	 *
-	 * @param {object} operation The mongoose operation to
+	 * @param operation The mongoose operation to
 	 * execute upon the sheet document
-	 * @param {object} [additionalQuery] Additional object that
+	 * @param [additionalQuery] Additional object that
 	 * is merged to the query object. Used to be able to make
 	 * use of the mongoose '$' index operator.
 	 */

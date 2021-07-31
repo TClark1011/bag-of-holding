@@ -9,7 +9,7 @@ import SheetDialog from "../../../templates/SheetDialog";
 /**
  * Dialog for filtering the table on mobile devices
  *
- * @returns {React.ReactElement} Component stuff
+ * @returns Component stuff
  */
 const FilterDialog: React.FC = () => {
 	const { filters, closeDialog } = useSheetPageState();

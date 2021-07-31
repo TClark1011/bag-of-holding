@@ -21,10 +21,10 @@ export interface TopNavProps {
 /**
  * The top navigation bar
  *
- * @param {object} props The props
- * @param {boolean} [props.showHomeLink=true] Whether or not
+ * @param props The props
+ * @param [props.showHomeLink=true] Whether or not
  * to show a link to the app's home page
- * @returns {React.ReactElement} The rendered top navigation bar
+ * @returns The rendered top navigation bar
  */
 const TopNav: React.FC<TopNavProps> = ({ showHomeLink = true }) => (
 	<Flex

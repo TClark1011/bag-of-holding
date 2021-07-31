@@ -25,7 +25,7 @@ import View from "../components/templates/View";
  * sheet. Once the server responds with the id of the new sheet,
  * the user is redirected to that sheet's page.
  *
- * @returns {React.ReactElement} Component stuff
+ * @returns Component stuff
  */
 const New: React.FC = () => {
 	const router = useRouter();

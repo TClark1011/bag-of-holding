@@ -11,18 +11,18 @@ export interface MetaProps {
 /**
  * Component for conveniently generating metadata
  *
- * @param {object} props The props
- * @param {string} [props.title] The title of the page.
+ * @param props The props
+ * @param [props.title] The title of the page.
  * Defaults to the 'appDescription' title.
- * @param {string} [props.description] The description of
+ * @param [props.description] The description of
  * the page. Defaults to the 'appDescription' constant.
- * @param {string} [props.image] The path to the image to
+ * @param [props.image] The path to the image to
  * appear in link previews. Defaults to the path of the
  * 'ogIndex' file.
- * @param {string} [props.url] The url to use for the
+ * @param [props.url] The url to use for the
  * 'og:url' and 'canonical' meta data tags. These tags
  * will not be used if this parameter is not provided.
- * @returns {React.ReactElement} Metadata tags
+ * @returns Metadata tags
  */
 const Meta: React.FC<MetaProps> = ({
 	description = appDescription,

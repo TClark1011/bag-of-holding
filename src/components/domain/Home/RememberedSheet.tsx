@@ -7,11 +7,11 @@ import getSheetLink from "../../../utils/getSheetLink";
 /**
  * Component displaying a remembered sheet on the homepage
  *
- * @param {object} props The props
- * @param {string} props.name The name of the sheet
- * @param {string} props._id The id of the sheet used to
+ * @param props The props
+ * @param props.name The name of the sheet
+ * @param props._id The id of the sheet used to
  * generate the link to the sheet
- * @returns {React.ReactElement} Component stuff
+ * @returns Component stuff
  */
 const RememberedSheet: React.FC<BoxProps & InventorySheetMenuItemFields> = ({
 	name,

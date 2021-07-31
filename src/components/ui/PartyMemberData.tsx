@@ -14,16 +14,16 @@ export interface PartyMemberDataProps extends Omit<TextProps, "children"> {
  * Display a single property of a member with the _id
  * that matches a provided id string.
  *
- * @param {object} props The props
- * @param {string} props.memberId The id of the member to get the
+ * @param props The props
+ * @param props.memberId The id of the member to get the
  * data of
- * @param {string} props.property The data property to display
- * @param {string | false} [props.fallback=props.memberId] The
+ * @param props.property The data property to display
+ * @param [props.fallback=props.memberId] The
  * fallback value to use if member with the passed `_id` is not
  * found. If passed boolean `false`, then this component will
  * return `null` if the member is not found. Defaults to the
  * passed `memberId` value
- * @returns {React.ReactNode} The fetched data inside a 'Text'
+ * @returns The fetched data inside a 'Text'
  * component. If no matching member is found, null is returned
  */
 const PartyMemberData: React.FC<PartyMemberDataProps> = ({
