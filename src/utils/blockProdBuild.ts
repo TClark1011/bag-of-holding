@@ -6,7 +6,7 @@ import { isBuildingForProd } from "../config/publicEnv";
  * Used to create reminders to add or test new features
  * before the application is deployed to production.
  *
- * @param {string} msg The message to attach to the error
+ * @param msg The message to attach to the error
  * or warning
  */
 const blockProdBuild = (msg: string): void => {

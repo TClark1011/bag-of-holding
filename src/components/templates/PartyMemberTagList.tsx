@@ -9,11 +9,11 @@ export interface PartyMemberTagListProps extends StackProps {
 /**
  * A stack of tags showing the members of a party
  *
- * @param {object} props The props
- * @param {string[]} props.members The party members
- * @param {TagProps} props.tagProps The props to pass
+ * @param props The props
+ * @param props.members The party members
+ * @param props.tagProps The props to pass
  * to the tags
- * @returns {React.ReactElement} Component stuff
+ * @returns Component stuff
  */
 const PartyMemberTagList: React.FC<PartyMemberTagListProps> = ({
 	members,

@@ -8,8 +8,8 @@ connectToMongoose();
 /**
  * Fetch a sheet with the provided ID from mongodb
  *
- * @param {string} _id The '_id' of the sheet to fetch
- * @returns {Promise<InventorySheetFields>} The fetched
+ * @param _id The '_id' of the sheet to fetch
+ * @returns The fetched
  * sheet
  */
 const fetchSheetFromDb = async (_id: string): Promise<InventorySheetFields> =>

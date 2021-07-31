@@ -12,7 +12,7 @@ export const contactPageTitle = "Contact";
 /**
  * The page containing contact information
  *
- * @returns {React.ReactElement} The contact pageobsiob
+ * @returns The contact pageobsiob
  */
 const ContactPage: React.FC = () => {
 	return (

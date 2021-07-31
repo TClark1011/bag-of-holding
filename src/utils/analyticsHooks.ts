@@ -16,11 +16,11 @@ export interface AnalyticsPageViewProps {
 /**
  * Log a page view in Google Analytics
  *
- * @param {object} pageViewProps Props to pass to the analytics
+ * @param pageViewProps Props to pass to the analytics
  * page view event
- * @param {string} [pageViewProps.url] The url of the
+ * @param [pageViewProps.url] The url of the
  * page. If not provided, use `window.location.pathname`
- * @param {string} [pageViewProps.title] The title of the
+ * @param [pageViewProps.title] The title of the
  * page. If not provided, uses `document.title`
  */
 export const logPageView = ({
@@ -44,12 +44,12 @@ export const logPageView = ({
 /**
  * Log an exception in analytics
  *
- * @param {string} description A description of the exception
- * @param {object} [optionalProps] Extra props that can be
+ * @param description A description of the exception
+ * @param [optionalProps] Extra props that can be
  * optionally provided
- * @param {false} [optionalProps.fatal=false] Whether or not
+ * @param [optionalProps.fatal=false] Whether or not
  * the exception was fatal
- * @param {string} [optionalProps.extraData] Extra data that can
+ * @param [optionalProps.extraData] Extra data that can
  * be provided to give extra context
  */
 export const logException = (
@@ -68,8 +68,8 @@ export type AnalyticsEventCategory = "Sheet";
 /**
  * Log an event in Google Analytics
  *
- * @param {string} category The category of the event
- * @param {string} action The action of the event
+ * @param category The category of the event
+ * @param action The action of the event
  */
 export const logEvent = (
 	category: AnalyticsEventCategory,
@@ -86,7 +86,7 @@ export const analyticsInitialisedState = createHookstate<boolean>(false);
 /**
  * A hook for checking the status of analytics reporting
  *
- * @returns {boolean} Whether or not analytics have been
+ * @returns Whether or not analytics have been
  * initialised
  */
 export const useAnalyticsInitStatus = (): boolean =>
@@ -111,7 +111,7 @@ export const useAnalyticsInit = (): void => {
  * Log a Page View with analytics.
  * Will only execute on component mount.
  *
- * @param {object} [pageViewProps] The props to pass to
+ * @param [pageViewProps] The props to pass to
  * 'logPageView'
  */
 export const useAnalyticsPageView: typeof logPageView = (pageViewProps) => {
@@ -124,7 +124,7 @@ export const useAnalyticsPageView: typeof logPageView = (pageViewProps) => {
 /**
  * Return a function to log an analytics event.
  *
- * @returns {Function} a function to log an
+ * @returns a function to log an
  * analytics event
  */
 export const useAnalyticsEvent = (): typeof logEvent => {
@@ -135,7 +135,7 @@ export const useAnalyticsEvent = (): typeof logEvent => {
 /**
  * Return a function to log an analytics exception.
  *
- * @returns {Function} a function to log an
+ * @returns a function to log an
  * analytics exception
  */
 export const useAnalyticsException = (): typeof logException => {

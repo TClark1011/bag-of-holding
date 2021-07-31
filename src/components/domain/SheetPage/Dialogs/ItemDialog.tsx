@@ -39,10 +39,10 @@ interface Props {
 /**
  * Modal dialog for creating a new item
  *
- * @param {object} props props
- * @param {ItemDialogMode} props.mode The mode the dialog is in. Eg; "new" if being used to
+ * @param props props
+ * @param props.mode The mode the dialog is in. Eg; "new" if being used to
  * create a new item or "edit" if being used to edit an existing item.
- * @returns {React.ReactElement} The rendered HTML
+ * @returns The rendered HTML
  */
 const ItemDialog: React.FC<Props> = ({ mode }) => {
 	const inEditMode = mode === "edit";
@@ -77,10 +77,10 @@ const ItemDialog: React.FC<Props> = ({ mode }) => {
 	 * Handle the submitting of the new item form
 	 * Sends data in a 'PATCH' http request to the api.
 	 *
-	 * @param {InventoryItemCreationFields} data The form data
-	 * @param {object} formFunctions Object containing functions for controlling
+	 * @param data The form data
+	 * @param formFunctions Object containing functions for controlling
 	 * formik behaviour
-	 * @param {Function} formFunctions.setSubmitting Set whether or not the form is
+	 * @param formFunctions.setSubmitting Set whether or not the form is
 	 * currently submitting
 	 */
 	const onSubmit = (data: InventoryItemCreationFields, { setSubmitting }) => {
@@ -110,7 +110,7 @@ const ItemDialog: React.FC<Props> = ({ mode }) => {
 	/**
 	 * Function to execute when delete button is clicked
 	 *
-	 * @param {Function} setSubmitting Function set the
+	 * @param setSubmitting Function set the
 	 * 'isSubmitting' status of the form
 	 */
 	const onDelete = (setSubmitting: (a: boolean) => void): void => {

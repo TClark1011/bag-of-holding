@@ -9,8 +9,8 @@ import { H3 } from "../../ui/Typography";
 /**
  * The 'welcome back' section in the homepage
  *
- * @param {object} props The props
- * @returns {React.ReactElement} Component stuff
+ * @param props The props
+ * @returns Component stuff
  */
 const WelcomeBack: React.FC<BoxProps> = (props) => {
 	const rememberedSheets = useRememberedSheets();
@@ -19,9 +19,9 @@ const WelcomeBack: React.FC<BoxProps> = (props) => {
 	 * Calculate how many columns to use in the SheetCard
 	 * grid
 	 *
-	 * @param {number} columns The maximum number of columns
+	 * @param columns The maximum number of columns
 	 * to use
-	 * @returns {number} Either the provided columns number,
+	 * @returns Either the provided columns number,
 	 * or the length of the 'rememberedSheets' length, whichever
 	 * is lower
 	 */

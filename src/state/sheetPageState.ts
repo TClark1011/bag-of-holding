@@ -94,7 +94,7 @@ const sheetPageState = createHookstate<SheetPageState>({
 /**
  * Hook to access sheet page state
  *
- * @returns {object} Selectors and actions for sheet page
+ * @returns Selectors and actions for sheet page
  * state
  */
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -173,8 +173,8 @@ export const useSheetPageState = () => {
 		/**
 		 * Check if a specific dialog is open
 		 *
-		 * @param {SheetDialogType} dialog The dialog to check the status of
-		 * @returns {boolean} If the specified dialog is currently open
+		 * @param dialog The dialog to check the status of
+		 * @returns If the specified dialog is currently open
 		 */
 		isDialogOpen: (dialog: SheetDialogType): boolean =>
 			state.value.dialog.type === dialog && state.value.dialog.isOpen,
@@ -183,9 +183,9 @@ export const useSheetPageState = () => {
 		 * Check whether or not the filter Popover interface for a specific
 		 * property is currently open
 		 *
-		 * @param {FilterableItemProperty} filter The property to check the
+		 * @param filter The property to check the
 		 * filter of
-		 * @returns {boolean} If the specified filter popover is currently open
+		 * @returns If the specified filter popover is currently open
 		 */
 		isFilterPopoverOpen: (filter: FilterableItemProperty): boolean =>
 			state.ui.openFilter.value === filter,
@@ -200,9 +200,9 @@ export const useSheetPageState = () => {
 		 * will be shown in the bottom column of the item
 		 * table.
 		 *
-		 * @param {InventoryItemFields[]} items The items in
+		 * @param items The items in
 		 * the sheet inventory
-		 * @returns {Record<SummableItemProperty, number>} An
+		 * @returns An
 		 * object containing the sums
 		 */
 		getColumnSums: (
@@ -227,8 +227,8 @@ export const useSheetPageState = () => {
 		 * Fetch all the different values of item categories in
 		 * the inventory
 		 *
-		 * @param {InventoryItemFields[]} items The inventory items
-		 * @returns {string[]} An array of all the unique category
+		 * @param items The inventory items
+		 * @returns An array of all the unique category
 		 * values
 		 */
 		getUniqueCategories: (items: InventoryItemFields[]) =>
@@ -238,8 +238,8 @@ export const useSheetPageState = () => {
 		/**
 		 * Open a dialog
 		 *
-		 * @param {SheetDialogType} dialog The name of the dialog to open
-		 * @param {InventoryItemFields} [item] The item to set as the active
+		 * @param dialog The name of the dialog to open
+		 * @param [item] The item to set as the active
 		 * item. If not provided, activeItem remains the same
 		 */
 		openDialog: (
@@ -271,9 +271,9 @@ export const useSheetPageState = () => {
 		/**
 		 * Update the sheet filter
 		 *
-		 * @param {FilterableItemProperty} property The property of which
+		 * @param property The property of which
 		 * to update the filter
-		 * @param {string} value The value to update the filter with
+		 * @param value The value to update the filter with
 		 */
 		updateFilter: (property: FilterableItemProperty, value: string) => {
 			state.filters[property].set(
@@ -292,7 +292,7 @@ export const useSheetPageState = () => {
 		/**
 		 * Reset the filter for an individual property
 		 *
-		 * @param {FilterableItemProperty} property The property of which
+		 * @param property The property of which
 		 * to reset the filter.
 		 */
 		resetPropertyFilter: (property: FilterableItemProperty) => {
@@ -304,7 +304,7 @@ export const useSheetPageState = () => {
 		 * the state's 'searchBarValue' ui field with new
 		 * value
 		 *
-		 * @param {React.ChangeEvent<HTMLInputElement>} e The
+		 * @param e The
 		 * change event fired by input into the search bar
 		 */
 		searchbarOnChange: (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -314,7 +314,7 @@ export const useSheetPageState = () => {
 		/**
 		 * Open a filter Popover
 		 *
-		 * @param {FilterableItemProperty} filter The filter of which
+		 * @param filter The filter of which
 		 * to open the Popover
 		 */
 		openFilterPopover: (filter: FilterableItemProperty) => {
@@ -331,7 +331,7 @@ export const useSheetPageState = () => {
 		/**
 		 * Sort the inventory
 		 *
-		 * @param {ProcessableItemProperty} column The column
+		 * @param column The column
 		 * to sort.
 		 */
 		sortInventory: (column: ProcessableItemProperty) => {
@@ -357,8 +357,8 @@ export const useSheetPageState = () => {
 		 * it from the 'add' queue rather than adding it to the
 		 * 'remove' queue
 		 *
-		 * @param {string} _id The'_id' of the member to remove
-		 * @param {object} deleteMethod The method for handling
+		 * @param _id The'_id' of the member to remove
+		 * @param deleteMethod The method for handling
 		 * items that were being carried by the member to be
 		 * deleted
 		 */
@@ -397,7 +397,7 @@ export const useSheetPageState = () => {
 		 * with '_id' values in this queue are sent to be added to
 		 * the sheet.
 		 *
-		 * @param {string} _id Thw '_id' of the member to add to the
+		 * @param _id Thw '_id' of the member to add to the
 		 * sheet
 		 */
 		queueMemberForAdd: (_id: string) => {

@@ -12,11 +12,11 @@ export interface SheetDialogProps extends SpecialDialogProps {
  * Template component for quickly composing Dialogs
  * containing information related to Sheet data
  *
- * @param {Omit<DialogProps, "onClose" | "isOpen">} props
+ * @param props
  * The props
- * @param {SheetDialogType} props.dialogType The
+ * @param props.dialogType The
  * dialog type
- * @returns {React.ReactElement} Component stuff
+ * @returns Component stuff
  */
 const SheetDialog: React.FC<SheetDialogProps> = ({ dialogType, ...props }) => {
 	const { isDialogOpen, closeDialog } = useSheetPageState();

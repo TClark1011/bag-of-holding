@@ -14,10 +14,10 @@ import Meta from "../components/templates/Meta";
 /**
  * Core app component
  *
- * @param {AppProps} props The application props
- * @param {React.ComponentType} props.Component The page component to be rendered
- * @param {object} props.pageProps The props to pass to the page component
- * @returns {React.ReactElement} The application
+ * @param props The application props
+ * @param props.Component The page component to be rendered
+ * @param props.pageProps The props to pass to the page component
+ * @returns The application
  */
 const MyApp = ({ Component, pageProps }: AppProps): React.ReactElement => {
 	return (

@@ -9,12 +9,12 @@ import { sheetsUrlPrefix } from "../constants/urls";
  * want to shuffle around page routes at a later date
  * we can very easily adjust all sheet links.
  *
- * @param {string} sheetId The id of the sheet to generate
+ * @param sheetId The id of the sheet to generate
  * the link to
- * @param {boolean} [fullLink=false] If true, we generate a
+ * @param [fullLink=false] If true, we generate a
  * 'full' link that includes the root domain, as opposed to
  * a relative link
- * @returns {string} The generated link
+ * @returns The generated link
  */
 const getSheetLink = (sheetId: string, fullLink = false): string =>
 	(fullLink ? appDomain : "") + sheetsUrlPrefix + sheetId;

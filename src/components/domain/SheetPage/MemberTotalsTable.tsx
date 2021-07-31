@@ -16,16 +16,16 @@ export const memberTotalsTableTestIds = {
 /**
  * Component for showing the total carry weight/value of each party member's inventory
  *
- * @param {chakra.TableProps} props The props to pass to the table
- * @returns {React.ReactElement} The rendered stuff
+ * @param props The props to pass to the table
+ * @returns The rendered stuff
  */
 const MemberTotalsTable: React.FC<TableProps> = ({ ...props }) => {
 	const { members, items } = useInventoryState();
 	/**
 	 * Fetch the items carried by a certain member
 	 *
-	 * @param {string} memberId The '_id' of the member to fetch the items of
-	 * @returns {InventoryItemFields[]} The items carried by te specified character
+	 * @param memberId The '_id' of the member to fetch the items of
+	 * @returns The items carried by te specified character
 	 */
 	const getCarriedItems = (memberId: string) =>
 		items.filter((item) => item.carriedBy === memberId);

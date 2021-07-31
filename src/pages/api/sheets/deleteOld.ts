@@ -7,8 +7,8 @@ import SheetModel from "../../../db/SheetModel";
  * Handle a 'DELETE' request and delete all sheets that are more than
  * a month old and have no items
  *
- * @param {object} req HTTP request object
- * @param {object} res HTTP response object
+ * @param req HTTP request object
+ * @param res HTTP response object
  */
 const routeHandler: NextApiHandler = async (req, res) => {
 	if (req.method !== "DELETE") {

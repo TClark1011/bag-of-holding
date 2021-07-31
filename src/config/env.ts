@@ -10,9 +10,9 @@ if (!process.env.NODE_ENV) {
  * Fetch environment variables, throwing an error if they are
  * not present
  *
- * @param {string} key The key used to access the environment
+ * @param key The key used to access the environment
  * data.
- * @returns {string} The raw data pulled from the environment
+ * @returns The raw data pulled from the environment
  */
 const getEnvOrThrow = (key: string): string => {
 	const data = process.env[key];

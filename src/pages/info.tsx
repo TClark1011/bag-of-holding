@@ -26,7 +26,7 @@ const InfoPageQuestion = chakra(H3, {
 /**
  * The info page
  *
- * @returns {React.ReactElement} The info page content
+ * @returns The info page content
  */
 const InfoPage: React.FC = () => {
 	return (

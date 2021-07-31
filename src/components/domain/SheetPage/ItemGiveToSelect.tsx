@@ -21,10 +21,10 @@ export interface ItemGiveToSelectProps extends SpecialSelectProps {
  * the items of a member who has been targeted for removal
  * from the sheet.
  *
- * @param {object} props The props
- * @param {string} props.removingMemberId The `_id` of the
+ * @param props The props
+ * @param props.removingMemberId The `_id` of the
  * member targeted for removal from the sheet.
- * @returns {React.ReactNode} A dropdown box
+ * @returns A dropdown box
  */
 const ItemGiveToSelect: React.FC<ItemGiveToSelectProps> = ({
 	removingMemberId,

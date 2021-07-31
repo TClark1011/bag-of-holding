@@ -5,12 +5,12 @@ import InventoryMemberFields from "../types/InventoryMemberFields";
  * Fetch the items from a list of inventory items that are
  * carried by a passed member.
  *
- * @param {object[]} items A list of inventory items
- * @param {object | string} member Can take either a member
+ * @param items A list of inventory items
+ * @param member Can take either a member
  * object, or a string. If provided a member object, then the
  * _id is pulled from the object, if provided a string, that string
  * is used as the `_id` field of the member.
- * @returns {object[]} The inventory items that are carried by
+ * @returns The inventory items that are carried by
  */
 const getCarriedItems = (
 	items: InventoryItemFields[],

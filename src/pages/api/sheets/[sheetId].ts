@@ -8,16 +8,16 @@ import fetchSheetFromDb from "../../../db/fetchSheetFromDb";
 /**
  * Pull the sheetId url parameter for a requests url
  *
- * @param {NextApiRequest} req The request object
- * @returns {string} The sheetId url parameter
+ * @param req The request object
+ * @returns The sheetId url parameter
  */
 const getSheetId = (req: NextApiRequest): string => req.query.sheetId as string;
 
 /**
  * handle GET request
  *
- * @param {NextApiRequest} req The HTTP request object
- * @param {NextApiResponse} res The HTTP response object
+ * @param req The HTTP request object
+ * @param res The HTTP response object
  */
 const handleGET: NextApiHandler = async (req, res) => {
 	try {
@@ -31,8 +31,8 @@ const handleGET: NextApiHandler = async (req, res) => {
 /**
  * handle GET request
  *
- * @param {NextApiRequest} req The HTTP request object
- * @param {NextApiResponse} res The HTTP response object
+ * @param req The HTTP request object
+ * @param res The HTTP response object
  */
 const handlePATCH: NextApiHandler = async (req, res) => {
 	dbReducer(getSheetId(req), req.body);
@@ -42,8 +42,8 @@ const handlePATCH: NextApiHandler = async (req, res) => {
 /**
  * Handle HTTP requests to the route
  *
- * @param {NextApiRequest} req The HTTP request object
- * @param {NextApiResponse} res The HTTP response object
+ * @param req The HTTP request object
+ * @param res The HTTP response object
  */
 const routeHandler: NextApiHandler = (req, res) => {
 	switch (req.method) {

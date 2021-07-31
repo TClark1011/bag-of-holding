@@ -9,7 +9,7 @@ import { Paragraph } from "../../../ui/Typography";
  * Dialog that will be displayed the first time a newly
  * created sheet is viewed
  *
- * @returns {React.ReactElement} Component stuff
+ * @returns Component stuff
  */
 const WelcomeDialog: React.FC = () => {
 	const { closeDialog, openDialog } = useSheetPageState();

@@ -18,13 +18,13 @@ interface Props extends Omit<BoxProps, "onChange"> {
  * The interface for a filter, containing the checkboxes for
  * all unique values and a header.
  *
- * @param {object} props The props
- * @param {FilterableItemProperty} props.property The property to filter
- * @param {string} [props.heading] The heading of the interface. If
+ * @param props The props
+ * @param props.property The property to filter
+ * @param [props.heading] The heading of the interface. If
  * not supplied, defaults to formatted version of the property string
- * @param {string[]} props.filter The filters currently being applied
- * @param {Function} props.onChange Callback to run when the filter is changed
- * @returns {React.ReactElement} Component stuff
+ * @param props.filter The filters currently being applied
+ * @param props.onChange Callback to run when the filter is changed
+ * @returns Component stuff
  */
 const FilterInterface: React.FC<Props> = ({
 	property,
@@ -49,7 +49,7 @@ const FilterInterface: React.FC<Props> = ({
 	 * Callback to be executed when a filter is changed.
 	 * Executes 'updateFilter', providing the property
 	 *
-	 * @param {string} value The value to pass to the filter
+	 * @param value The value to pass to the filter
 	 */
 	const onChange = (value: string) => {
 		updateFilter(property, value);

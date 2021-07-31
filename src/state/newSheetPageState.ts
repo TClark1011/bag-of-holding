@@ -11,7 +11,7 @@ const newSheetPageState = createHookstate<NewSheetPageState>({
 /**
  * Hook to use the state values of the new sheet page
  *
- * @returns {object} The values/selectors/actions for
+ * @returns The values/selectors/actions for
  * the state
  */
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types

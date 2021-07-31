@@ -67,7 +67,7 @@ const MemberDeleteMethodRadioGroup = chakra<
 /**
  * Component for sheet settings dialog
  *
- * @returns {React.ReactElement} The rendered component
+ * @returns The rendered component
  */
 const SheetOptionsDialog: React.FC = () => {
 	const { name, members } = useInventoryState();
@@ -86,10 +86,10 @@ const SheetOptionsDialog: React.FC = () => {
 	/**
 	 * Handle submission of formik form
 	 *
-	 * @param {object} data The form data
-	 * @param {object} formikHelpers Object with functions for
+	 * @param data The form data
+	 * @param formikHelpers Object with functions for
 	 * controlling formik
-	 * @param {Function} formikHelpers.setSubmitting  Set whether
+	 * @param formikHelpers.setSubmitting  Set whether
 	 * or not the form is currently submitting
 	 * */
 	const onSubmit = (

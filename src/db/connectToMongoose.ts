@@ -5,9 +5,9 @@ import { MONGO_URL } from "../config/env";
 /**
  * Establish a connection to MongoDB via mongoose
  *
- * @param {string} [url] The connection string to use. If not provided, uses
+ * @param [url] The connection string to use. If not provided, uses
  * the MONGO_URL env variable.
- * @returns {Promise<typeof mongoose>} Mongoose object connected to the MongoDB
+ * @returns Mongoose object connected to the MongoDB
  * database
  */
 const connectToMongoose = (url = MONGO_URL): Promise<typeof mongoose> =>

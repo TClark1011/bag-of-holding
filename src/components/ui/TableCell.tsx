@@ -3,8 +3,8 @@ import { TableCellProps, Td } from "@chakra-ui/table";
 /**
  * A component to be used as a table cell
  *
- * @param {chakra.TableCellProps} props TableCell props
- * @returns {React.ReactElement} Rendered stuff
+ * @param props TableCell props
+ * @returns Rendered stuff
  */
 const TableCell: React.FC<TableCellProps> = (props) => (
 	<Td paddingX={2} textAlign="center" {...props} />

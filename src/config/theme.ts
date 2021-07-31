@@ -6,9 +6,9 @@ import { extendTheme, theme as defaultTheme } from "@chakra-ui/react";
  * for values in order to override default styles
  * at all breakpoints
  *
- * @param {string | number} value The value to fill
+ * @param value The value to fill
  * the array with
- * @returns {string[] | number[]} The values
+ * @returns The values
  */
 const getResponsiveValues = <T>(value: T) => new Array(4).fill(value, 0);
 

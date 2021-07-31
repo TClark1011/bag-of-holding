@@ -44,10 +44,10 @@ const SheetSchema = new mongoose.Schema(
  * Get the name to use for the sheet model depending on if
  * the application is being run in production mode or not
  *
- * @param {boolean} useLiveCollection Whether or not to get
+ * @param useLiveCollection Whether or not to get
  * the name of the collection used in the live version of
  * the application. Defaults to the value of 'inProduction'
- * @returns {string} The name to use for the sheet collection
+ * @returns The name to use for the sheet collection
  * in mongodb
  */
 export const getSheetModelName = (useLiveCollection: boolean): string =>
@@ -56,11 +56,11 @@ export const getSheetModelName = (useLiveCollection: boolean): string =>
 /**
  * Fetch the sheet model controller object from MongoDB
  *
- * @param {boolean} [useLiveCollection] Whether or not to get
+ * @param [useLiveCollection] Whether or not to get
  * the name of the collection used in the live version of
  * the application. Defaults to the value of 'inProduction'.
  * Gets passed to 'getSheetModelName'
- * @returns {object} The object for controlling the sheet collection
+ * @returns The object for controlling the sheet collection
  */
 const getSheetModel = (useLiveCollection: boolean = inProduction) =>
 	(mongoose.models[getSheetModelName(useLiveCollection)] as Model<

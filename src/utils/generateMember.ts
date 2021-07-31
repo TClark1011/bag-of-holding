@@ -6,11 +6,11 @@ import InventoryMemberFields from "../types/InventoryMemberFields";
  * the name of the member and optionally the carry
  * capacity
  *
- * @param {string} name The name of the member to
+ * @param name The name of the member to
  * generate
- * @param {number} [carryCapacity=0] The carrying
+ * @param [carryCapacity=0] The carrying
  * capacity of the member
- * @returns {object} The member object
+ * @returns The member object
  */
 const generateMember = (
 	name: string,

@@ -19,7 +19,7 @@ export const homePageTestIds = {
 /**
  * Home component
  *
- * @returns {React.ReactElement} The home page
+ * @returns The home page
  */
 const Home: React.FC = () => {
 	return (

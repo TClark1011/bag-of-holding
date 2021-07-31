@@ -8,9 +8,9 @@ interface IconLinkProps extends IconButtonProps {
 /**
  * An IconButton that acts as a link
  *
- * @param {object} props The props
- * @param {string} props.href The link destination
- * @returns {React.ReactElement} Component stuff
+ * @param props The props
+ * @param props.href The link destination
+ * @returns Component stuff
  */
 const IconLink: React.FC<IconLinkProps> = ({ href, ...props }) => (
 	<Link href={href}>

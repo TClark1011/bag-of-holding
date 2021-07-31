@@ -55,14 +55,14 @@ export interface InventorySheetTableProps extends TableProps {
 /**
  * Table that shows items in a sheet inventory
  *
- * @param {object} props Component props
- * @param {InventoryItemFields[]} props.items The items in the inventory
- * @param {Function} props.onRowClick Callback to execute when an item row is clicked.
+ * @param props Component props
+ * @param props.items The items in the inventory
+ * @param props.onRowClick Callback to execute when an item row is clicked.
  * The item's fields are passed as a parameter
- * @param {InventoryFilters} props.filters The currently active filters
- * @param {Function} props.onFilterChange Callback to execute when a filter is edited
- * @param {string} props.search The active search query
- * @returns {React.ReactElement} The rendered html components
+ * @param props.filters The currently active filters
+ * @param props.onFilterChange Callback to execute when a filter is edited
+ * @param props.search The active search query
+ * @returns The rendered html components
  */
 const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 	onRowClick,

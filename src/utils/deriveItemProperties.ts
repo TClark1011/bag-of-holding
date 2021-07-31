@@ -21,8 +21,8 @@ export const getItemTotalWeight: ItemDerivation<number> = (item) =>
  * Calculate the total value of all the instances of an item
  * (value * quantity)
  *
- * @param {object} item The item to calculate the value of
- * @returns {number} The calculated value
+ * @param item The item to calculate the value of
+ * @returns The calculated value
  */
 export const getItemTotalValue: ItemDerivation<number> = (item) =>
 	new Big(item.value || 0).mul(new Big(item.quantity)).toNumber();
@@ -34,6 +34,7 @@ export const getItemTotalValue: ItemDerivation<number> = (item) =>
  *
  * @param item The item which you want to get the carrier
  * of
+ * @param item.carriedBy
  * @param members The party members in the sheets
  * @returns The data of the party member who is carrying
  * the passed item
