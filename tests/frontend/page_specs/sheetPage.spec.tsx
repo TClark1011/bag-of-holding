@@ -69,7 +69,7 @@ describe("Computed values are correct", () => {
 	/**
 	 * Fetch the table cells that contain item data
 	 *
-	 * @returns {Element} The cell elements
+	 * @returns The cell elements
 	 */
 	const getCells = () =>
 		document.querySelectorAll(
@@ -181,7 +181,7 @@ describe("Sheet Member Carry Weights", () => {
 	/**
 	 * Fetch the weight/value cells of the first member in the "MemberTotalsTable"
 	 *
-	 * @returns {object} An object containing the weight/value cell text contents
+	 * @returns An object containing the weight/value cell text contents
 	 */
 	const getCells = () => {
 		const queryResult = document.querySelectorAll(

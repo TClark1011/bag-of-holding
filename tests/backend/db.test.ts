@@ -42,12 +42,12 @@ afterAll(async () => {
  * Function for generating a new sheet for testing.
  * Sheet is deleted once tests are completed
  *
- * @param {Function} testFn A callback containing tests
+ * @param testFn A callback containing tests
  * to be executed. The callback is passed::
  * - initialState: The state of sheet as it was created
  * - update: A function to dispatch actions on that sheet
  * and then return the updated state
- * @param {object} [initialStateTweaks={}] An object which
+ * @param [initialStateTweaks={}] An object which
  * is merged with a basic sheet inventory state to derive
  * derive the starting state of the sheet. The basic initial
  * sheet has the name "name" and no members or items.
@@ -76,9 +76,9 @@ const testDbReducer = async (
 	 * Update the sheet via an action and return the
 	 * updated state
 	 *
-	 * @param {object} action The action to execute
+	 * @param action The action to execute
 	 * upon th sheet.
-	 * @returns {Promise<object>} The state of the sheet
+	 * @returns The state of the sheet
 	 * after the action has been executed.
 	 */
 	const update = async (action: InventorySheetPartialUpdateAction) => {
@@ -178,11 +178,11 @@ describe("Metadata Member updates", () => {
 	 * pulled from the fixtures folder, with their
 	 * `carriedBy` field changed to match passed members.
 	 *
-	 * @param {object} member The member object, the `_id`
+	 * @param member The member object, the `_id`
 	 * of which is passed to the first test item.
-	 * @param {object} [member2=member] The member to carry
+	 * @param [member2=member] The member to carry
 	 * the second item.
-	 * @returns {object[]} The items with altered `carriedBy`
+	 * @returns The items with altered `carriedBy`
 	 */
 	const getTestItems = (member: InventoryMemberFields, member2 = member) => [
 		{ ...longswordFixture, carriedBy: member._id },

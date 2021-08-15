@@ -15,15 +15,15 @@ export type RandomEntityGenerator<Entity extends IdentifiedObject> = (
 /**
  * Randomly generate an inventory item
  *
- * @param {object} [fields={}] An object that can contain
+ * @param [fields={}] An object that can contain
  * any of the fields for inventory items. Any fields that
  * are not provided are randomly generated
- * @param {object[]} [members] Array of inventory members.
+ * @param [members] Array of inventory members.
  * If provided, the item's `carriedBy` field is set to
  * the `_id` of a member randomly selected from this array.
  * If this is not provided and a `carriedBy` value is not
  * found in `fields`, then carriedBy is set to `Nobody`.
- * @returns {object} Randomly Generated Inventory Item
+ * @returns Randomly Generated Inventory Item
  */
 export const generateRandomInventoryItem: RandomEntityGenerator<InventoryItemFields> = (
 	fields = {},
@@ -44,10 +44,10 @@ export const generateRandomInventoryItem: RandomEntityGenerator<InventoryItemFie
 /**
  * Randomly generate a party member
  *
- * @param {object} [fields={}] An object that can contain
+ * @param [fields={}] An object that can contain
  * any of the fields for party members. Any fields that
  * are not provided are randomly generated
- * @returns {object} Randomly generated party member
+ * @returns Randomly generated party member
  */
 export const generateRandomPartyMember: RandomEntityGenerator<InventoryMemberFields> = (
 	fields = {}

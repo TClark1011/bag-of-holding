@@ -12,9 +12,9 @@ import theme from "../../src/config/theme";
 /**
  * Component containing all providers required for the application
  *
- * @param {object} props Component Props
- * @param {ReactNode} props.children Component children
- * @returns {ReactNode} The rendered ReactNode
+ * @param props Component Props
+ * @param props.children Component children
+ * @returns The rendered ReactNode
  */
 const AllProviders: React.FC = ({ children }) => (
 	<ChakraProvider theme={theme}>
@@ -27,9 +27,9 @@ const AllProviders: React.FC = ({ children }) => (
  * A function for rendering tests
  * All required providers are passed as the wrapper
  *
- * @param {ReactElement} jsx The jsx code to render in the test
- * @param {RenderOptions} options The options to pass to the render function
- * @returns {RenderResult} The result of running the render, passing 'AllProviders'
+ * @param jsx The jsx code to render in the test
+ * @param options The options to pass to the render function
+ * @returns The result of running the render, passing 'AllProviders'
  * as the wrapper option as well as all other provided options
  */
 export const renderTest = (
@@ -80,10 +80,10 @@ export interface StateMergeMockProps<
 /**
  * A component that merges passed data with a provided state object
  *
- * @param {object} props The props
- * @param {StateMethods} props.stateObject The hookstate state object to merge into
- * @param {unknown} props.data The object to merge into the hookstate object
- * @returns {null} Renders nothing
+ * @param props The props
+ * @param props.stateObject The hookstate state object to merge into
+ * @param props.data The object to merge into the hookstate object
+ * @returns Renders nothing
  */
 export const StateMergeMock: React.FC<StateMergeMockProps> = ({
 	stateObject,
@@ -98,9 +98,9 @@ export const StateMergeMock: React.FC<StateMergeMockProps> = ({
  * Generate a component that will generate test-ids to pass
  * to element
  *
- * @param {string} componentName The name of the component to generate
+ * @param componentName The name of the component to generate
  * test ids for
- * @returns {Function} A function that generates a test-id using a provided
+ * @returns A function that generates a test-id using a provided
  * label string
  */
 export const testIdGeneratorFactory = (
@@ -111,7 +111,7 @@ export const testIdGeneratorFactory = (
  * Check that components with provided test ids are
  * rendering
  *
- * @param {Record<string,string>} testIds Object containing testIds as
+ * @param testIds Object containing testIds as
  * the values.
  */
 export const checkTestIdsRender = (testIds: Record<string, string>): void => {
