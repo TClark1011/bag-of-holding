@@ -35,9 +35,7 @@
 			"bold": false
 		}
 	],
-	"cSpell.words": [
-		"pageview"
-	],
+	"cSpell.words": ["pageview"],
 	"conventionalCommits.scopes": [
 		"workspace",
 		"backend",
@@ -54,5 +52,6 @@
 	},
 	"[javascript]": {
 		"editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
-	}
+	},
+	"typescript.tsdk": "node_modules\\typescript\\lib"
 }
