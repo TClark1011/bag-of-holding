@@ -37,11 +37,10 @@ It is recommended that you install the following extensions before starting work
 
 - **Prettier (esbenp.prettier-vscode):** An extension for formatting your code.
 - **Prettier ESLint (rvest.vs-code-prettier-eslint):** An extension that allows the `Prettier` extension operate in conjunction with `ESlint`. By using both of these extensions we can make sure we are following a consistent code style which goes a long way to making the codebase consistent and predictable.
-- **Conventional Commits (vivaxy.vscode-conventional-commits):** Helps you generate commit messages in the standard `conventional-commits` format. It is recommended that you use this tool when you make commits. This repository uses `commitlint` to enforce high quality commit messages, and this extension makes it extremely easy to generate commit messages that will be accepted by `commitlint`.
 
 ### Workflow
 
-When making commits to this repository, it is recommended you do so using the `Conventional Commits` vscode extension, or failing that, run `yarn commit` in your terminal to open up the command line tool for writing high quality commit messages.
+When making commits to this repository run `yarn commit` in your terminal and follow the prompts to generate a high quality message that will be accepted.
 
 ### Configuration
 
