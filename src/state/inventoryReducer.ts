@@ -129,7 +129,10 @@ const inventoryReducer = (
 				);
 
 				action.data.members.remove.forEach((removingMember) => {
-					logEvent("Sheet", "Deleted Sheet Member");
+					logEvent(
+						"Sheet",
+						`Deleted Sheet Member (${removingMember.deleteMethod.mode})`
+					);
 					switch (removingMember.deleteMethod.mode) {
 						case DeleteMemberItemHandlingMethods.delete:
 							draftState.items = draftState.items.filter(

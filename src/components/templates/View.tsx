@@ -14,6 +14,7 @@ export type ViewProps = ExtraProps & {
 	minFullHeight?: boolean;
 	accountForTopNav?: boolean;
 	analyticsPageViewProps?: AnalyticsPageViewProps;
+	doNotLogPageView?: boolean;
 };
 
 /**
@@ -33,11 +34,13 @@ export type ViewProps = ExtraProps & {
  * @param [props.accountForTopNav=true] If true, top padding
  * is added to the element containing the page content to account for
  * the height of the "absolute" position top navigation bar
- * @param props.children The main content
  * of the view
  * @param [props.analyticsPageViewProps={}] Props for defining
  * the page view event that will be sent to the analytics tracker when
  * this page is viewed
+ * @param [props.doNotLogPageView=false] If true, a pageView event will not
+ * be logged in analytics.
+ * @param props.children The main content
  * @returns Rendered view
  */
 const View: React.FC<ViewProps> = ({
@@ -47,11 +50,13 @@ const View: React.FC<ViewProps> = ({
 	accountForTopNav = showTopNav,
 	children,
 	analyticsPageViewProps = {},
+	doNotLogPageView = false,
 	...metaProps
 }) => {
 	useAnalyticsPageView({
 		...(metaProps.title && { title: metaProps.title }),
 		...analyticsPageViewProps,
+		shouldLogPageView: !doNotLogPageView,
 	});
 
 	const screenHeight = use100vh();

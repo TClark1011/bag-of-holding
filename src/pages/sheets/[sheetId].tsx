@@ -41,7 +41,6 @@ import fetchSheet from "../../services/fetchSheet";
 import { Tag, TagLabel, TagLeftIcon } from "@chakra-ui/tag";
 import WelcomeDialog from "../../components/domain/SheetPage/Dialogs/WelcomeDialog";
 import { testIdGeneratorFactory } from "../../../tests/utils/testUtils";
-import { useAnalyticsPageView } from "../../utils/analyticsHooks";
 import View from "../../components/templates/View";
 
 const getTestId = testIdGeneratorFactory("SheetPage");
@@ -66,7 +65,6 @@ export interface SheetPageProps extends InventorySheetFields {
  * @returns Sheet component
  */
 const Sheet: React.FC<SheetPageProps> = ({ isNew = false, ...sheetFields }) => {
-	useAnalyticsPageView({ title: "Sheet", url: "/sheets/[sheetId]" });
 	const [{ items, name, members, _id }, inventoryDispatch] = useReducer<
 		Reducer<InventorySheetState, InventorySheetStateAction>
 	>(inventoryReducer, {
@@ -115,6 +113,7 @@ const Sheet: React.FC<SheetPageProps> = ({ isNew = false, ...sheetFields }) => {
 			showTopNav={false}
 			title={appName + " - " + name}
 			url={getSheetLink(sheetFields._id, true)}
+			analyticsPageViewProps={{ title: "Sheet", url: "/sheets/[sheetId]" }}
 		>
 			<SheetStateProvider
 				dispatch={inventoryDispatch}

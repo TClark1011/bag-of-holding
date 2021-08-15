@@ -113,11 +113,19 @@ export const useAnalyticsInit = (): void => {
  *
  * @param [pageViewProps] The props to pass to
  * 'logPageView'
+ * @param pageViewProps.shouldLogPageView Whether or not the
+ * pageView should be logged. Allows for this hook to be used
+ * conditionally.
  */
-export const useAnalyticsPageView: typeof logPageView = (pageViewProps) => {
+export const useAnalyticsPageView = ({
+	shouldLogPageView = true,
+	...pageViewProps
+}: AnalyticsPageViewProps & { shouldLogPageView?: boolean }): void => {
 	useAnalyticsInit();
 	useEffect(() => {
-		logPageView(pageViewProps);
+		if (shouldLogPageView) {
+			logPageView(pageViewProps);
+		}
 	}, []);
 };
 
