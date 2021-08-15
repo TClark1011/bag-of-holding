@@ -8,7 +8,11 @@ import InventoryItemFields, {
 	ProcessableItemProperty,
 	SummableItemProperty,
 } from "../types/InventoryItemFields";
-import { createState as createHookstate, useHookstate } from "@hookstate/core";
+import {
+	createState as createHookstate,
+	DevTools,
+	useHookstate,
+} from "@hookstate/core";
 import toggleArrayItem from "@lukeboyle/array-item-toggle";
 import unique from "uniq";
 import {
@@ -20,6 +24,7 @@ import {
 import Big from "big.js";
 import InventoryMemberFields from "../types/InventoryMemberFields";
 import { getCarrier } from "../utils/deriveItemProperties";
+import { SortingDirection } from "../types/miscTypes";
 
 export type SheetDialogType =
 	| "item.new"
@@ -53,7 +58,7 @@ export interface SheetPageState {
 	};
 	sorting: {
 		property: ProcessableItemProperty;
-		direction: "ascending" | "descending";
+		direction: SortingDirection;
 	};
 	sheetMemberOptionsQueue: ClientStateMemberUpdateQueue;
 	selectedSheetMemberRemoveMethod: InventoryMemberDeleteMethodFields["mode"];
@@ -90,6 +95,7 @@ const sheetPageState = createHookstate<SheetPageState>({
 	selectedSheetMemberRemoveMethod: DeleteMemberItemHandlingMethods.delete,
 	selectedSheetMemberRemovedMoveToMember: "",
 });
+DevTools(sheetPageState).label("sheetPageState");
 
 /**
  * Hook to access sheet page state
@@ -127,12 +133,12 @@ export const useSheetPageState = () => {
 				switch (sorting.property) {
 					case "carriedBy":
 						return getCarrier(item, members)?.name;
-					case "quantity":
+					case "value":
 					case "weight":
 						//? If 'quantity' or 'weight' are being sorted by, multiply them by the quantity
-						return new Big(item[sorting.property] as number).mul(
-							new Big(item.quantity)
-						).toNumber;
+						return new Big(item[sorting.property] as number)
+							.mul(new Big(item.quantity))
+							.toNumber();
 					default:
 						return item[sorting.property];
 				}
@@ -331,20 +337,29 @@ export const useSheetPageState = () => {
 		/**
 		 * Sort the inventory
 		 *
-		 * @param column The column
-		 * to sort.
+		 * @param column The column to sort.
+		 * @param [direction="auto"] The direction to sort in.
+		 * If set to "auto" then the direction will be the inverse
+		 * of the direction the item is currently being sorted by.
 		 */
-		sortInventory: (column: ProcessableItemProperty) => {
+		sortInventory: (
+			column: ProcessableItemProperty,
+			direction: SortingDirection | "auto" = "auto"
+		) => {
 			if (state.sorting.property.value === column) {
 				state.sorting.direction.set(
-					state.sorting.direction.value === "ascending"
-						? "descending"
-						: "ascending"
+					direction === "auto"
+						? state.sorting.direction.value === "ascending"
+							? "descending"
+							: "ascending"
+						: direction
 					//? If sorting the column that is already being sorted, flip the sort direction
 				);
 			} else {
 				state.sorting.property.set(column);
-				state.sorting.direction.set("ascending");
+				state.sorting.direction.set(
+					direction === "auto" ? "ascending" : direction
+				);
 			}
 		},
 
