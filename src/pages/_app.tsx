@@ -10,6 +10,7 @@ import "@fontsource/roboto/700.css";
 import Head from "next/head";
 import { appName } from "../constants/branding";
 import Meta from "../components/templates/Meta";
+import "@hookstate/devtools";
 
 /**
  * Core app component
