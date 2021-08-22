@@ -1,6 +1,7 @@
 import "@testing-library/jest-dom";
 import { cleanup } from "@testing-library/react";
 import { loadEnvConfig } from "@next/env";
+import "jest-extended";
 
 loadEnvConfig(process.cwd());
 //? Load env variables
