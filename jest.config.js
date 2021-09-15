@@ -6,6 +6,7 @@ module.exports = {
 			displayName: "frontend",
 			rootDir: "tests/frontend",
 			setupFilesAfterEnv: ["../../jest.setup.ts"],
+			testEnvironment: "jsdom",
 		},
 		{
 			displayName: "backend",
