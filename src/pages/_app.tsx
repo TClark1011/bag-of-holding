@@ -1,5 +1,4 @@
 import { ChakraProvider, ColorModeScript } from "@chakra-ui/react";
-import { AppProps } from "next/dist/next-server/lib/router/router";
 import React from "react";
 import theme from "../config/theme";
 import "../assets/fonts/Coves/stylesheet.css";
@@ -11,6 +10,7 @@ import Head from "next/head";
 import { appName } from "../constants/branding";
 import Meta from "../components/templates/Meta";
 import "@hookstate/devtools";
+import { AppProps } from "next/dist/shared/lib/router/router";
 
 /**
  * Core app component
