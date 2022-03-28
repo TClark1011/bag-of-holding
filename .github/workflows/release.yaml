@@ -1,0 +1,23 @@
+name: release
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+jobs:
+  release:
+    if: github.event.pull_request.merged == true && !contains(github.event.pull_request.labels.*.name, 'force-release:none')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: "0"
+      - run: git config --global user.email "thomassiclark@gmail.com"
+      - run: git config --global user.name "version bot"
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "14"
+      - run: yarn install
+      - run: yarn release
+      - run: git push --follow-tags origin main
