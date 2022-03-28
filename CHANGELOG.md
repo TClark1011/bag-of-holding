@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.2.0](https://github.com/TClark1011/bag-of-holding/compare/v1.1.3...v1.2.0) (2022-03-28)
+
+
+### Features
+
+* **frontend:** 🎸 setup hookstate devtools ([28ac5a4](https://github.com/TClark1011/bag-of-holding/commit/28ac5a4a4b82e5584691ca645395972685deafd2))
+
+
+### Bug Fixes
+
+* **frontend:** 🐛 all numeric fields should now sort correctly ([3e0a482](https://github.com/TClark1011/bag-of-holding/commit/3e0a482e456edbe3782a99c3b764e286f1217e1d))
+* **workspace:** fixed next.js config ([e11005e](https://github.com/TClark1011/bag-of-holding/commit/e11005eecd150adacf6354c3b4243216a9bcc594))
+
 ### [1.1.4](https://github.com/TClark1011/bag-of-holding/compare/v1.1.3...v1.1.4) (2021-08-15)
 
 ### [1.1.3](https://github.com/TClark1011/bag-of-holding/compare/v1.1.2...v1.1.3) (2021-07-25)
