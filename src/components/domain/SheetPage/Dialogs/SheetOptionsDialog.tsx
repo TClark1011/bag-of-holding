@@ -176,7 +176,6 @@ const SheetOptionsDialog: React.FC = () => {
 												<Field name={"members." + index + ".name"} key={index}>
 													{({ field, form }) => (
 														<FormControl
-															name={"members." + index}
 															isInvalid={
 																form.errors.members &&
 																form.touched.members &&
