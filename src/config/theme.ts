@@ -15,6 +15,7 @@ const getResponsiveValues = <T>(value: T) => new Array(4).fill(value, 0);
 const theme = extendTheme({
 	config: {
 		initialColorMode: "light",
+		useSystemColorMode: true,
 	},
 	fonts: {
 		heading: "Roboto, sans-serif",
