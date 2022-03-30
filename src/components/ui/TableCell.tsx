@@ -1,4 +1,4 @@
-import { TableCellProps, Td } from "@chakra-ui/table";
+import { TableCellProps, Td } from "@chakra-ui/react";
 
 /**
  * A component to be used as a table cell

@@ -1,14 +1,16 @@
-import { Box, Center, Divider, Link, VStack } from "@chakra-ui/layout";
+import { Box, Center, Divider, Link, VStack, chakra } from "@chakra-ui/react";
 import React from "react";
-import PageContentContainer from "../components/domain/PageContentContainer";
-import GetStartedButton from "../components/domain/GetStartedButton";
-import View from "../components/templates/View";
-import { H3, Paragraph, SectionTitle } from "../components/ui/Typography";
-import { appGitLink } from "../constants/branding";
-import { infoPageUrl } from "../constants/urls";
-import createPageTitle from "../utils/createPageTitle";
-import { testIdGeneratorFactory } from "../../tests/utils/testUtils";
-import { chakra } from "@chakra-ui/system";
+import { appGitLink, infoPageUrl } from "$root/constants";
+import { createPageTitle } from "$root/utils";
+import { testIdGeneratorFactory } from "$tests/utils/testUtils";
+import {
+	H3,
+	Paragraph,
+	SectionTitle,
+	View,
+	GetStartedButton,
+	PageContentContainer,
+} from "$root/components";
 
 const getTestId = testIdGeneratorFactory("TestPage");
 export const infoPageTestIds = {

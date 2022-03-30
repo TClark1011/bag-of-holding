@@ -1,8 +1,7 @@
-import { Button } from "@chakra-ui/button";
-import { BoxProps } from "@chakra-ui/layout";
-import { InventorySheetMenuItemFields } from "../../../types/InventorySheetFields";
+import { Button, BoxProps } from "@chakra-ui/react";
+import { InventorySheetMenuItemFields } from "$sheets/types";
 import Link from "next/link";
-import getSheetLink from "../../../utils/getSheetLink";
+import { getSheetLink } from "$root/utils";
 
 /**
  * Component displaying a remembered sheet on the homepage

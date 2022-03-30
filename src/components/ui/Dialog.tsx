@@ -5,7 +5,7 @@ import {
 	ModalHeader,
 	ModalOverlay,
 	ModalProps,
-} from "@chakra-ui/modal";
+} from "@chakra-ui/react";
 
 export interface DialogProps extends ModalProps {
 	header?: React.ReactChild;

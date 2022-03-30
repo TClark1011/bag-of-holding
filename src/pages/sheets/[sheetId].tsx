@@ -1,5 +1,3 @@
-import { Button, IconButton } from "@chakra-ui/button";
-import { useInterval } from "@chakra-ui/hooks";
 import {
 	Box,
 	Center,
@@ -8,40 +6,48 @@ import {
 	Heading,
 	SimpleGrid,
 	Stack,
-} from "@chakra-ui/layout";
+	useInterval,
+	Button,
+	IconButton,
+	DarkMode,
+	LightMode,
+	Tag,
+	TagLabel,
+	TagLeftIcon,
+	Input,
+} from "@chakra-ui/react";
 import { Reducer, useEffect, useReducer } from "react";
-import ItemDialog from "../../components/domain/SheetPage/Dialogs/ItemDialog";
-import InventorySheetFields from "../../types/InventorySheetFields";
-import InventorySheetState, {
-	InventorySheetStateAction,
-} from "../../types/InventorySheetState";
-import getUrlParam from "../../utils/getUrlParam";
-import SheetStateProvider from "../../components/contexts/InventoryStateContext";
-import { REFETCH_INTERVAL } from "../../config/publicEnv";
+import { InventoryStateProvider } from "$sheets/providers";
+import { REFETCH_INTERVAL } from "$root/config";
 import { GetServerSideProps } from "next";
-import SheetOptionsDialog from "../../components/domain/SheetPage/Dialogs/SheetOptionsDialog";
 import { AddIcon, CreateOutlineIcon } from "chakra-ui-ionicons";
-import MemberTotalsTable from "../../components/domain/SheetPage/MemberTotalsTable";
-import ColorModeSwitch from "../../components/ui/ColorModeSwitch";
-import { Input } from "@chakra-ui/input";
 import deepEqual from "deep-equal";
-import { appName } from "../../constants/branding";
-import FilterDialog from "../../components/domain/SheetPage/Dialogs/FilterDialog";
-import InventorySheetTable from "../../components/domain/SheetPage/InventorySheetTable";
-import { addToRememberedSheets } from "../../utils/rememberSheets";
-import inventoryReducer from "../../state/inventoryReducer";
-import { useSheetPageState } from "../../state/sheetPageState";
-import { LightMode } from "@chakra-ui/color-mode";
-import { DarkMode } from "@chakra-ui/color-mode";
-import PartyMemberTagList from "../../components/templates/PartyMemberTagList";
-import getSheetLink from "../../utils/getSheetLink";
-import { H3 } from "../../components/ui/Typography";
+import { appName } from "$root/constants";
+import { getUrlParam, getSheetLink } from "$root/utils";
+import { useSheetPageState, inventoryReducer } from "$sheets/store";
+import {
+	WelcomeDialog,
+	MemberTotalsTable,
+	FilterDialog,
+	InventorySheetTable,
+	SheetOptionsDialog,
+	ItemDialog,
+} from "$sheets/components";
 import fetchSheetFromDb from "../../db/fetchSheetFromDb";
-import fetchSheet from "../../services/fetchSheet";
-import { Tag, TagLabel, TagLeftIcon } from "@chakra-ui/tag";
-import WelcomeDialog from "../../components/domain/SheetPage/Dialogs/WelcomeDialog";
-import { testIdGeneratorFactory } from "../../../tests/utils/testUtils";
-import View from "../../components/templates/View";
+import { testIdGeneratorFactory } from "$tests/utils/testUtils";
+import {
+	InventorySheetFields,
+	InventorySheetStateAction,
+	InventorySheetState,
+} from "$sheets/types";
+import { fetchSheet } from "$sheets/api";
+import {
+	H3,
+	PartyMemberTagList,
+	ColorModeSwitch,
+	View,
+} from "$root/components";
+import { addToRememberedSheets } from "$sheets/utils";
 
 const getTestId = testIdGeneratorFactory("SheetPage");
 
@@ -115,7 +121,7 @@ const Sheet: React.FC<SheetPageProps> = ({ isNew = false, ...sheetFields }) => {
 			url={getSheetLink(sheetFields._id, true)}
 			analyticsPageViewProps={{ title: "Sheet", url: "/sheets/[sheetId]" }}
 		>
-			<SheetStateProvider
+			<InventoryStateProvider
 				dispatch={inventoryDispatch}
 				state={{ items, members, name, _id }}
 			>
@@ -244,7 +250,7 @@ const Sheet: React.FC<SheetPageProps> = ({ isNew = false, ...sheetFields }) => {
 						<WelcomeDialog />
 					</main>
 				</Box>
-			</SheetStateProvider>
+			</InventoryStateProvider>
 		</View>
 	);
 };

@@ -1,5 +1,4 @@
-import { Stack, StackProps } from "@chakra-ui/layout";
-import { Tag, TagProps } from "@chakra-ui/tag";
+import { Stack, StackProps, Tag, TagProps } from "@chakra-ui/react";
 
 export interface PartyMemberTagListProps extends StackProps {
 	members: string[];

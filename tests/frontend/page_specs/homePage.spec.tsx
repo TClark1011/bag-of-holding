@@ -1,6 +1,6 @@
 import { act, screen } from "@testing-library/react";
-import { appDisplayTitle, appSlogan } from "../../../src/constants/branding";
-import Home, { homePageTestIds } from "../../../src/pages";
+import { appDisplayTitle, appSlogan } from "$root/constants";
+import Home, { homePageTestIds } from "$root/pages/index";
 import { checkTestIdsRender, renderTest } from "../../utils/testUtils";
 
 test("Contains required elements", () => {

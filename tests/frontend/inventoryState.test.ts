@@ -1,16 +1,17 @@
-import inventoryReducer from "../../src/state/inventoryReducer";
-import InventoryItemFields from "../../src/types/InventoryItemFields";
-import InventorySheetState, {
+import {
 	DeleteMemberItemHandlingMethods,
-} from "../../src/types/InventorySheetState";
-import getCarriedItems from "../../src/utils/getCarriedItems";
-import getIds from "../../src/utils/getIds";
+	InventorySheetState,
+	InventoryItemFields,
+} from "$sheets/types";
+import { inventoryReducer } from "$sheets/store";
+import { getCarriedItems } from "$sheets/utils";
 import { averageMembersFixture } from "../fixtures/membersFixtures";
 import {
 	generateRandomInventoryItem,
 	generateRandomPartyMember,
 } from "../utils/randomGenerators";
 import tweakString from "../utils/tweakString";
+import { getIds } from "$root/utils";
 
 const testState: InventorySheetState = {
 	_id: "0",

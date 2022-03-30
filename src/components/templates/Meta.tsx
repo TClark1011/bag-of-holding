@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { appDescription, appName } from "../../constants/branding";
+import { appDescription, appName } from "$root/constants";
 
 export interface MetaProps {
 	description?: string;

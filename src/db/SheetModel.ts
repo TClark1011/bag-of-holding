@@ -1,8 +1,7 @@
-import { inProduction } from "../config/publicEnv";
 import mongoose, { Model, Document } from "mongoose";
-import InventorySheetFields from "../types/InventorySheetFields";
+import { InventorySheetFields } from "$sheets/types";
 import mapObject from "map-obj";
-import { UNDERGOING_MIGRATION } from "../config/env";
+import { UNDERGOING_MIGRATION, inProduction } from "$root/config";
 
 const sheetSchema = {
 	name: { type: String, required: true },

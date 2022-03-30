@@ -1,11 +1,13 @@
-import { Center } from "@chakra-ui/layout";
-import PageContentContainer from "../components/domain/PageContentContainer";
-import View from "../components/templates/View";
-import ButtonLink from "../components/ui/ButtonLink";
-import { Paragraph, SectionTitle } from "../components/ui/Typography";
-import { appName, contactEmailAddress } from "../constants/branding";
-import { contactPageUrl } from "../constants/urls";
-import createPageTitle from "../utils/createPageTitle";
+import { Center } from "@chakra-ui/react";
+import { createPageTitle } from "$root/utils";
+import { contactPageUrl, appName, contactEmailAddress } from "$root/constants";
+import {
+	Paragraph,
+	SectionTitle,
+	ButtonLink,
+	PageContentContainer,
+	View,
+} from "$root/components";
 
 export const contactPageTitle = "Contact";
 

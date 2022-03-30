@@ -1,5 +1,9 @@
-import generateMember from "../../src/utils/generateMember";
+import { InventoryMemberFields } from "$sheets/types";
+import { generateMember } from "$sheets/utils";
 
-export const averageMembersFixture = ["Vincent", "Archie", "Sen", "Seath"].map(
-	generateMember
-);
+export const averageMembersFixture: InventoryMemberFields[] = [
+	"Vincent",
+	"Archie",
+	"Sen",
+	"Seath",
+].map(generateMember);

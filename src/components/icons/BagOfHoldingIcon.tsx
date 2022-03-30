@@ -1,8 +1,6 @@
-import { useColorModeValue } from "@chakra-ui/color-mode";
-import Icon, { IconProps } from "@chakra-ui/icon";
-import { useToken } from "@chakra-ui/system";
-
 //Icon Source: https://www.iconfinder.com/icons/2711191/christmas_gift_line_sack_santa_icon
+
+import { Icon, IconProps, useColorModeValue, useToken } from "@chakra-ui/react";
 
 interface BagOfHoldingIconProps extends IconProps {
 	thickStroke?: boolean;

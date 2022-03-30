@@ -1,4 +1,4 @@
-import { isBuildingForProd } from "../config/publicEnv";
+import { isBuildingForProd } from "$root/config";
 
 /**
  * Throw an error if the application is being built for

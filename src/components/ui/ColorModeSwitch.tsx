@@ -3,13 +3,11 @@ import {
 	ButtonProps,
 	IconButton,
 	IconButtonProps,
-} from "@chakra-ui/button";
-import {
 	DarkMode,
 	LightMode,
 	useColorMode,
 	useColorModeValue,
-} from "@chakra-ui/color-mode";
+} from "@chakra-ui/react";
 import { SunnyOutlineIcon, MoonOutlineIcon } from "chakra-ui-ionicons";
 import codeToTitle from "code-to-title";
 

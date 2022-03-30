@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { MONGO_URL } from "../config/env";
+import { MONGO_URL } from "$root/config";
 // import { inGitHubAction } from "../config/publicEnv";
 
 /**

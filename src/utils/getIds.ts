@@ -1,4 +1,4 @@
-import { IdentifiedObject } from "../types/UtilityTypes";
+import { IdentifiedObject } from "$root/types";
 
 /**
  * Take an array of objects that have '_id' fields and

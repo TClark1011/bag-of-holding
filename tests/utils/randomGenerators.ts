@@ -1,8 +1,7 @@
-import InventoryItemFields from "../../src/types/InventoryItemFields";
+import { InventoryItemFields, InventoryMemberFields } from "$sheets/types";
 import faker from "faker";
-import InventoryMemberFields from "../../src/types/InventoryMemberFields";
 import randomItem from "random-item";
-import { IdentifiedObject } from "../../src/types/UtilityTypes";
+import { IdentifiedObject } from "$root/types";
 
 /**
  * A Function type for functions that return randomly
