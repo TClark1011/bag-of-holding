@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.2.1](https://github.com/TClark1011/bag-of-holding/compare/v1.2.0...v1.2.1) (2022-03-30)
+
+
+### Bug Fixes
+
+* **frontend:** 🐛 color mode button now uses correct icons ([7e63a91](https://github.com/TClark1011/bag-of-holding/commit/7e63a91f8fc6361e82453935020fb9c6d7b98b0e))
+* **frontend:** 🐛 default color mode now uses client preferences ([37f1d38](https://github.com/TClark1011/bag-of-holding/commit/37f1d381571101713d5d486ad4eb53619b45d971))
+* **frontend:** 🐛 fixed (or at least improved) color mode flash ([66cf91c](https://github.com/TClark1011/bag-of-holding/commit/66cf91cf9e396ba1b979e3f7083668b57ee68c27)), closes [#127](https://github.com/TClark1011/bag-of-holding/issues/127)
+* **frontend:** 🐛 fixed how system color mode is applied ([468c028](https://github.com/TClark1011/bag-of-holding/commit/468c028f0baf745dfb870d22621997e702a1060b))
+
 ## [1.2.0](https://github.com/TClark1011/bag-of-holding/compare/v1.1.3...v1.2.0) (2022-03-28)
 
 
