@@ -29,5 +29,6 @@ module.exports = {
 		"jsdoc/check-param-names": ["error" | "warn", { checkRestProperty: false }],
 		"jsdoc/no-types": "error",
 		"no-warning-comments": "warn",
+		"@typescript-eslint/no-explicit-any": "off",
 	},
 };
