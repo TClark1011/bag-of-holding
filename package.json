@@ -18,7 +18,9 @@
 		"release:major": "yarn release --release-as major",
 		"test:auto": "jest --runInBand --forceExit",
 		"lint": "eslint --fix src tests scripts",
-		"prepare": "husky install && chmod ug+x .husky/*"
+		"prepare": "husky install && chmod ug+x .husky/*",
+		"clean-deps": "yarn flush-deps && yarn",
+		"flush-deps": "npx rimraf node_modules"
 	},
 	"dependencies": {
 		"@chakra-ui/react": "^1.3.4",
@@ -34,7 +36,6 @@
 		"compare-func": "^2.0.0",
 		"date-fns": "^2.19.0",
 		"deep-equal": "^2.0.5",
-		"dotenv-flow": "^3.2.0",
 		"faker": "^5.4.0",
 		"fast-sort": "^3.1.3",
 		"formik": "^2.2.6",

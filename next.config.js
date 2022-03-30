@@ -4,7 +4,10 @@ const maintenanceRedirectDestination = "/";
 
 module.exports = {
 	webpack5: true,
-
+	env: {
+		MONGO_URL: "_",
+		// Default value so tests dont throw an error
+	},
 	redirects: async () => {
 		return process.env.NEXT_PUBLIC_MAINTENANCE_MODE === "true"
 			? [
