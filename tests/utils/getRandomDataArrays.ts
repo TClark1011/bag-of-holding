@@ -1,4 +1,4 @@
-import InventoryItemFields from "../../src/types/InventoryItemFields";
+import { InventoryItemFields } from "$sheets/types";
 import { generateRandomInventoryItem } from "./randomGenerators";
 
 /**

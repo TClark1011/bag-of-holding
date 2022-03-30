@@ -7,7 +7,7 @@ import {
 import React from "react";
 import { StateMethods, useHookstate } from "@hookstate/core";
 import { ChakraProvider, ColorModeScript } from "@chakra-ui/react";
-import theme from "../../src/config/theme";
+import { theme } from "$root/config";
 
 /**
  * Component containing all providers required for the application

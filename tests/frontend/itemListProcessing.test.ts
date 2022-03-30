@@ -6,12 +6,13 @@ import {
 } from "@testing-library/react-hooks";
 import shuffle from "just-shuffle";
 import { ChangeEvent } from "react";
-import { useSheetPageState } from "../../src/state/sheetPageState";
-import InventoryItemFields, {
+import { useSheetPageState } from "$sheets/store";
+import {
+	InventoryMemberFields,
 	FilterableItemProperty,
 	ProcessableItemProperty,
-} from "../../src/types/InventoryItemFields";
-import InventoryMemberFields from "../../src/types/InventoryMemberFields";
+	InventoryItemFields,
+} from "$sheets/types";
 import { alphabet } from "../fixtures/testingConstants";
 import { getArrayOfRandomItems } from "../utils/getRandomDataArrays";
 import { generateRandomInventoryItem } from "../utils/randomGenerators";

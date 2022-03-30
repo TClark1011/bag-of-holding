@@ -1,6 +1,6 @@
 import { NextApiHandler, NextApiRequest } from "next";
-import dbReducer from "../../../db/dbReducer";
-import fetchSheetFromDb from "../../../db/fetchSheetFromDb";
+import dbReducer from "$root/db/dbReducer";
+import fetchSheetFromDb from "$root/db/fetchSheetFromDb";
 
 //NOTE: Apparently the NextJS 'API resolved without sending a response for..." errors are false positives and can be ignored.
 // As seen here "https://github.com/vercel/next.js/issues/10439" it is a known issue with NextJS/Mongoose compatibility

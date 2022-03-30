@@ -1,13 +1,20 @@
-import { Box, Center, VStack } from "@chakra-ui/layout";
-import { appDisplayTitle, appDomain, appSlogan } from "../constants/branding";
-import WelcomeBack from "../components/domain/Home/WelcomeBack";
-import BagOfHoldingIcon from "../components/icons/BagOfHoldingIcon";
-import ButtonLink from "../components/ui/ButtonLink";
-import { H1, H2 } from "../components/ui/Typography";
-import { testIdGeneratorFactory } from "../../tests/utils/testUtils";
-import View from "../components/templates/View";
-import { infoPageUrl } from "../constants/urls";
-import GetStartedButton from "../components/domain/GetStartedButton";
+import { Box, Center, VStack } from "@chakra-ui/react";
+import { testIdGeneratorFactory } from "$tests/utils/testUtils";
+import {
+	infoPageUrl,
+	appDisplayTitle,
+	appDomain,
+	appSlogan,
+} from "$root/constants";
+import {
+	GetStartedButton,
+	View,
+	H1,
+	H2,
+	ButtonLink,
+	BagOfHoldingIcon,
+	WelcomeBack,
+} from "$root/components";
 
 const getTestId = testIdGeneratorFactory("Home");
 

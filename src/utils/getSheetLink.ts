@@ -1,5 +1,4 @@
-import { appDomain } from "../constants/branding";
-import { sheetsUrlPrefix } from "../constants/urls";
+import { appDomain, sheetsUrlPrefix } from "$root/constants";
 
 /**
  * Generate a link to a sheet.

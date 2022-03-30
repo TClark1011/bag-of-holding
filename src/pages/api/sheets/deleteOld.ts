@@ -1,7 +1,7 @@
 import { subMonths } from "date-fns";
 import { NextApiHandler } from "next";
-import connectToMongoose from "../../../db/connectToMongoose";
-import SheetModel from "../../../db/SheetModel";
+import connectToMongoose from "$root/db/connectToMongoose";
+import SheetModel from "$root/db/SheetModel";
 
 /**
  * Handle a 'DELETE' request and delete all sheets that are more than

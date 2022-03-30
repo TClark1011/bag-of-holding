@@ -1,4 +1,4 @@
-import { IdentifiedObject } from "../types/UtilityTypes";
+import { IdentifiedObject } from "$root/types";
 
 /**
  * Call the `.find` method on an array of objects that

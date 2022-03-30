@@ -1,16 +1,17 @@
-import { Flex, HStack } from "@chakra-ui/layout";
+import { Flex, HStack } from "@chakra-ui/react";
 import {
 	HelpOutlineIcon,
 	MailOutlineIcon,
 	LogoRedditIcon,
 } from "chakra-ui-ionicons";
 import React from "react";
-import { contactPageUrl, infoPageUrl } from "../../constants/urls";
-import BagOfHoldingIcon from "../icons/BagOfHoldingIcon";
-import ColorModeSwitch from "../ui/ColorModeSwitch";
-import GitLink from "../ui/GitLink";
-import IconLink from "../ui/IconLink";
-import { appSubredditLink } from "../../constants/branding";
+import {
+	BagOfHoldingIcon,
+	ColorModeSwitch,
+	GitLink,
+	IconLink,
+} from "$root/components";
+import { appSubredditLink, contactPageUrl, infoPageUrl } from "$root/constants";
 
 export const topNavHeight = 16;
 

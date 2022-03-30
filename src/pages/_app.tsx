@@ -1,17 +1,18 @@
 import { ChakraProvider, ColorModeScript } from "@chakra-ui/react";
 import React from "react";
-import theme from "../config/theme";
-import "../assets/fonts/Coves/stylesheet.css";
+import { theme } from "$root/config";
+import Head from "next/head";
+import { appName } from "$root/constants";
+import { Meta } from "$root/components";
+import { AppProps } from "next/dist/shared/lib/router/router";
+import { css, Global } from "@emotion/react";
+
+import "@hookstate/devtools";
+import "$root/assets/fonts/Coves/stylesheet.css";
 import "@fontsource/roboto";
 import "@fontsource/roboto/100.css";
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/700.css";
-import Head from "next/head";
-import { appName } from "../constants/branding";
-import Meta from "../components/templates/Meta";
-import "@hookstate/devtools";
-import { AppProps } from "next/dist/shared/lib/router/router";
-import { css, Global } from "@emotion/react";
 
 /**
  * Generate a selector to add a background color

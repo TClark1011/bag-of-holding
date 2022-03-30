@@ -1,5 +1,4 @@
-import { IconButton, IconButtonProps } from "@chakra-ui/button";
-import { Link } from "@chakra-ui/layout";
+import { IconButton, IconButtonProps, Link } from "@chakra-ui/react";
 
 interface IconLinkProps extends IconButtonProps {
 	href: string;

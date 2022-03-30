@@ -1,10 +1,14 @@
-import { Box, BoxProps, Divider, SimpleGrid } from "@chakra-ui/layout";
-import { useBreakpointValue } from "@chakra-ui/media-query";
-import sort from "fast-sort";
-import RememberedSheet from "./RememberedSheet";
-import { useColorModeValue } from "@chakra-ui/color-mode";
-import useRememberedSheets from "../../../utils/useRememberedSheets";
-import { H3 } from "../../ui/Typography";
+import {
+	Box,
+	BoxProps,
+	Divider,
+	SimpleGrid,
+	useBreakpointValue,
+	useColorModeValue,
+} from "@chakra-ui/react";
+import { sort } from "fast-sort";
+import { useRememberedSheets } from "$sheets/hooks";
+import { H3, RememberedSheet } from "$root/components";
 
 /**
  * The 'welcome back' section in the homepage

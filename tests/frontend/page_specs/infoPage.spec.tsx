@@ -1,5 +1,5 @@
 import { act, screen } from "@testing-library/react";
-import InfoPage, { infoPageTestIds } from "../../../src/pages/info";
+import InfoPage, { infoPageTestIds } from "$root/pages/info";
 import { renderTest } from "../../utils/testUtils";
 
 test("Renders required elements", () => {

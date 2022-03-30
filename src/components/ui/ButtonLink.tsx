@@ -1,5 +1,5 @@
-import { Button, ButtonProps } from "@chakra-ui/button";
-import FlexibleLink, { FlexibleLinkProps } from "./FlexibleLink";
+import { Button, ButtonProps } from "@chakra-ui/react";
+import { FlexibleLinkProps, FlexibleLink } from "$root/components";
 
 /**
  * A button that acts as a link

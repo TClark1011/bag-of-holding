@@ -1,32 +1,33 @@
-import connectToMongoose from "../../src/db/connectToMongoose";
-import dbReducer from "../../src/db/dbReducer";
-import SheetModel from "../../src/db/SheetModel";
-import InventoryItemFields from "../../src/types/InventoryItemFields";
-import InventorySheetFields from "../../src/types/InventorySheetFields";
-import mongoose from "mongoose";
+import dbReducer from "$root/db/dbReducer";
+import SheetModel from "$root/db/SheetModel";
 import {
+	InventorySheetFields,
+	InventoryItemFields,
 	DeleteMemberItemHandlingMethods,
 	InventorySheetPartialUpdateAction,
-} from "../../src/types/InventorySheetState";
-import generateMember from "../../src/utils/generateMember";
-import InventoryMemberFields from "../../src/types/InventoryMemberFields";
-import { OmitId } from "../../src/types/UtilityTypes";
+	InventoryMemberFields,
+} from "$sheets/types";
+import { generateMember, getCarriedItems } from "$sheets/utils";
+import mongoose from "mongoose";
+import { OmitId } from "$root/types";
 import {
 	healthPotionFixture,
 	longswordFixture,
 } from "../fixtures/itemFixtures";
 import { merge } from "merge-anything";
-import getCarriedItems from "../../src/utils/getCarriedItems";
 import tweakString from "../utils/tweakString";
 import { MongoMemoryServer } from "mongodb-memory-server";
+import connectToMongoose from "$root/db/connectToMongoose";
 
-const mockedMongo = new MongoMemoryServer();
+const mockedMongo = MongoMemoryServer.create();
 
 beforeAll(async () => {
-	await connectToMongoose(await mockedMongo.getUri());
+	const mongoInstance = await mockedMongo;
+	await connectToMongoose(mongoInstance.getUri());
 });
 
 afterAll(async () => {
+	const mongoInstance = await mockedMongo;
 	await mongoose.disconnect().catch((err) => {
 		console.log("error with 'mongoose.disconnect'");
 		console.log(err);
@@ -35,7 +36,7 @@ afterAll(async () => {
 		console.log("error with 'mongoose.connection.close'");
 		console.log(err);
 	});
-	await mockedMongo.stop();
+	await mongoInstance.stop();
 });
 
 /**
@@ -61,6 +62,9 @@ const testDbReducer = async (
 	) => Promise<void>,
 	initialStateTweaks: Partial<OmitId<InventorySheetFields>> = {}
 ): Promise<void> => {
+	/**
+	 *
+	 */
 	const newSheet = await new SheetModel(
 		merge(
 			{
@@ -96,6 +100,9 @@ const testDbReducer = async (
 };
 
 describe("DB Reducer Actions", () => {
+	/**
+	 *
+	 */
 	const testItem: InventoryItemFields = {
 		_id: "id",
 		name: "name",
@@ -104,6 +111,9 @@ describe("DB Reducer Actions", () => {
 	};
 	test("Create item", () =>
 		testDbReducer(async (originalState, update) => {
+			/**
+			 *
+			 */
 			const updatedState = await update({
 				type: "item_add",
 				data: testItem,
@@ -117,6 +127,9 @@ describe("DB Reducer Actions", () => {
 	test("Update item", () =>
 		testDbReducer(
 			async (originalState, update) => {
+				/**
+				 *
+				 */
 				const updatedState = await update({
 					type: "item_update",
 					data: {
@@ -137,6 +150,9 @@ describe("DB Reducer Actions", () => {
 	test("Delete item", () =>
 		testDbReducer(
 			async (_, update) => {
+				/**
+				 *
+				 */
 				const updatedState = await update({
 					type: "item_remove",
 					data: testItem._id,
@@ -150,6 +166,9 @@ describe("DB Reducer Actions", () => {
 
 	test("Sheet Metadata Update (name only)", async () =>
 		testDbReducer(async (originalState, update) => {
+			/**
+			 *
+			 */
 			const updatedState = await update({
 				type: "sheet_metadataUpdate",
 				data: {
@@ -168,6 +187,9 @@ describe("DB Reducer Actions", () => {
 });
 
 describe("Metadata Member updates", () => {
+	/**
+	 *
+	 */
 	const testMembers: InventoryMemberFields[] = [
 		generateMember("1"),
 		generateMember("1"),
@@ -191,6 +213,9 @@ describe("Metadata Member updates", () => {
 
 	test("Add member", () =>
 		testDbReducer(async (originalState, update) => {
+			/**
+			 *
+			 */
 			const updated = await update({
 				type: "sheet_metadataUpdate",
 				data: {
@@ -202,6 +227,9 @@ describe("Metadata Member updates", () => {
 		}));
 	test("Add multiple members", () =>
 		testDbReducer(async (originalState, update) => {
+			/**
+			 *
+			 */
 			const updated = await update({
 				type: "sheet_metadataUpdate",
 				data: {
@@ -217,6 +245,9 @@ describe("Metadata Member updates", () => {
 			async (originalState, update) => {
 				expect(originalState.items.length).toEqual(1);
 
+				/**
+				 *
+				 */
 				const updated = await update({
 					type: "sheet_metadataUpdate",
 					data: {
@@ -248,6 +279,9 @@ describe("Metadata Member updates", () => {
 			async (originalState, update) => {
 				expect(originalState.items.length).toEqual(2);
 
+				/**
+				 *
+				 */
 				const updated = await update({
 					type: "sheet_metadataUpdate",
 					data: {
@@ -278,6 +312,9 @@ describe("Metadata Member updates", () => {
 			async (originalState, update) => {
 				expect(originalState.items.length).toEqual(2);
 
+				/**
+				 *
+				 */
 				const updated = await update({
 					type: "sheet_metadataUpdate",
 					data: {
@@ -318,6 +355,9 @@ describe("Metadata Member updates", () => {
 					getCarriedItems(originalState.items, testMembers[1]).length
 				).toEqual(2);
 
+				/**
+				 *
+				 */
 				const updated = await update({
 					type: "sheet_metadataUpdate",
 					data: {
@@ -375,6 +415,9 @@ describe("Metadata Member updates", () => {
 			async (originalState, update) => {
 				expect(originalState.items.length).toEqual(1);
 
+				/**
+				 *
+				 */
 				const updated = await update({
 					type: "sheet_metadataUpdate",
 					data: {
@@ -406,6 +449,9 @@ describe("Metadata Member updates", () => {
 			async (originalState, update) => {
 				expect(originalState.items.length).toEqual(2);
 
+				/**
+				 *
+				 */
 				const updated = await update({
 					type: "sheet_metadataUpdate",
 					data: {
@@ -435,6 +481,9 @@ describe("Metadata Member updates", () => {
 	test("Update member", () =>
 		testDbReducer(
 			async (originalState, update) => {
+				/**
+				 *
+				 */
 				const updated = await update({
 					type: "sheet_metadataUpdate",
 					data: {
@@ -464,6 +513,9 @@ describe("Metadata Member updates", () => {
 	test("Update multiple members", () =>
 		testDbReducer(
 			async (originalState, update) => {
+				/**
+				 *
+				 */
 				const updated = await update({
 					type: "sheet_metadataUpdate",
 					data: {

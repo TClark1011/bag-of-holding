@@ -1,8 +1,13 @@
 /* eslint-disable jsdoc/require-jsdoc  */
 /* eslint-disable jsdoc/require-param  */
 /* eslint-disable jsdoc/require-returns  */
-import { Heading, HeadingProps, Text, TextProps } from "@chakra-ui/layout";
-import { chakra } from "@chakra-ui/system";
+import {
+	Heading,
+	HeadingProps,
+	Text,
+	TextProps,
+	chakra,
+} from "@chakra-ui/react";
 
 type HeadingComponent = React.FC<HeadingProps>;
 

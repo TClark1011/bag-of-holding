@@ -1,7 +1,7 @@
-import InventorySheetFields from "../types/InventorySheetFields";
-import connectToMongoose from "./connectToMongoose";
-import stringifyCopy from "../utils/stringifyCopy";
-import SheetModel from "./SheetModel";
+import { InventorySheetFields } from "$sheets/types";
+import connectToMongoose from "$root/db/connectToMongoose";
+import { stringifyCopy } from "$root/utils";
+import SheetModel from "$root/db/SheetModel";
 
 connectToMongoose();
 

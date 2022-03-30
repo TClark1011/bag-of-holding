@@ -1,23 +1,23 @@
-import { Box, Center } from "@chakra-ui/layout";
-import { useEffect } from "react";
-import { use100vh } from "react-div-100vh";
-import { useRouter } from "next/router";
-import getSheetLink from "../utils/getSheetLink";
-import { H3 } from "../components/ui/Typography";
-import { Spinner } from "@chakra-ui/spinner";
-import { useNewSheetPageState } from "../state/newSheetPageState";
 import {
+	Box,
+	Center,
 	Alert,
 	AlertDescription,
 	AlertIcon,
 	AlertTitle,
-} from "@chakra-ui/alert";
-import requestNewSheet from "../services/requestNewSheet";
+	Spinner,
+} from "@chakra-ui/react";
+import { useEffect } from "react";
+import { use100vh } from "react-div-100vh";
+import { useRouter } from "next/router";
+import { useNewSheetPageState } from "$sheets/store";
+import { requestNewSheet } from "$sheets/api";
 import {
+	getSheetLink,
 	useAnalyticsEvent,
 	useAnalyticsException,
-} from "../utils/analyticsHooks";
-import View from "../components/templates/View";
+} from "$root/utils";
+import { H3, View } from "$root/components";
 
 /**
  * Page to take user to when they want to make a new sheet.

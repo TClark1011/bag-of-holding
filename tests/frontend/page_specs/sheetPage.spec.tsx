@@ -1,17 +1,19 @@
+import React from "react";
 import { screen } from "@testing-library/dom";
 import { act } from "@testing-library/react";
-import React from "react";
-import { inventoryTableTestIds } from "../../../src/components/domain/SheetPage/InventorySheetTable";
 import { basicSheetFixture } from "../../fixtures/sheetFixtures";
-import Sheet, { sheetPageTestIds } from "../../../src/pages/sheets/[sheetId]";
+import Sheet, { sheetPageTestIds } from "$root/pages/sheets/[sheetId]";
 import { checkTestIdsRender, renderTest } from "../../utils/testUtils";
-import createInventoryItem from "../../../src/utils/createInventoryItem";
 import {
 	getItemTotalValue,
 	getItemTotalWeight,
-} from "../../../src/utils/deriveItemProperties";
+	createInventoryItem,
+} from "$sheets/utils";
 import getTestIdQuery from "../../utils/getTestIdQuery";
-import { memberTotalsTableTestIds } from "../../../src/components/domain/SheetPage/MemberTotalsTable";
+import {
+	memberTotalsTableTestIds,
+	inventoryTableTestIds,
+} from "$sheets/components";
 
 const basicSheetJsx = <Sheet {...basicSheetFixture} />;
 

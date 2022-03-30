@@ -1,12 +1,14 @@
 import { Box, BoxProps } from "@chakra-ui/layout";
 import React from "react";
 import { use100vh } from "react-div-100vh";
-import TopNav, { topNavHeight, TopNavProps } from "../domain/TopNav";
-import Meta, { MetaProps } from "./Meta";
 import {
-	AnalyticsPageViewProps,
-	useAnalyticsPageView,
-} from "../../utils/analyticsHooks";
+	Meta,
+	MetaProps,
+	topNavHeight,
+	TopNavProps,
+	TopNav,
+} from "$root/components";
+import { AnalyticsPageViewProps, useAnalyticsPageView } from "$root/utils";
 
 type ExtraProps = MetaProps & TopNavProps;
 export type ViewProps = ExtraProps & {

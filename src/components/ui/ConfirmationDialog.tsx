@@ -1,6 +1,10 @@
-import { Button, ButtonProps } from "@chakra-ui/button";
-import { Flex } from "@chakra-ui/layout";
-import { ModalBody, ModalFooter } from "@chakra-ui/modal";
+import {
+	Button,
+	ButtonProps,
+	Flex,
+	ModalBody,
+	ModalFooter,
+} from "@chakra-ui/react";
 import React from "react";
 import Dialog, { DialogProps } from "./Dialog";
 
