@@ -7,7 +7,7 @@ const config = {
 	moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {
 		prefix: "<rootDir>/../../",
 	}),
-	setupFilesAfterEnv: ["../../jest.setup.ts"],
+	setupFilesAfterEnv: ["<rootDir>/../../jest.setup.ts"],
 };
 
 module.exports = {
