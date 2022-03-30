@@ -18,7 +18,7 @@
 		"release:major": "yarn release --release-as major",
 		"test:auto": "jest --runInBand --forceExit",
 		"lint": "eslint --fix src tests scripts",
-		"prepare": "husky install"
+		"prepare": "husky install && chmod ug+x .husky/*"
 	},
 	"dependencies": {
 		"@chakra-ui/react": "^1.3.4",
