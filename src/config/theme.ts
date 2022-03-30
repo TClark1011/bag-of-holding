@@ -10,11 +10,11 @@ import { extendTheme, theme as defaultTheme } from "@chakra-ui/react";
  * the array with
  * @returns The values
  */
-const getResponsiveValues = <T>(value: T) => new Array(4).fill(value, 0);
+const getResponsiveValues = <T>(value: T) => new Array<T>(4).fill(value, 0);
 
 const theme = extendTheme({
 	config: {
-		initialColorMode: "light",
+		initialColorMode: "system",
 	},
 	fonts: {
 		heading: "Roboto, sans-serif",

@@ -169,7 +169,6 @@ const Sheet: React.FC<SheetPageProps> = ({ isNew = false, ...sheetFields }) => {
 						</Box>
 						<Stack
 							minHeight={16}
-							columns={3}
 							padding="group"
 							direction={["column-reverse", "column-reverse", "row"]}
 						>

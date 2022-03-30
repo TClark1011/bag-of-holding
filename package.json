@@ -46,7 +46,7 @@
 		"map-obj": "^4.2.1",
 		"merge-anything": "^4.0.1",
 		"mongoose": "^5.12.1",
-		"next": "^11.1.2",
+		"next": "^12.1.2",
 		"omit.js": "^2.0.2",
 		"random-item": "^3.1.0",
 		"react": "17.0.1",

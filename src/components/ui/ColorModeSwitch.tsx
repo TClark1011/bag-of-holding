@@ -45,7 +45,7 @@ const ColorModeSwitch: React.FC<ColorModeSwitchProps> = ({
 	...props
 }) => {
 	const { colorMode, toggleColorMode } = useColorMode();
-	const SwitchIcon = useColorModeValue(MoonOutlineIcon, SunnyOutlineIcon);
+	const SwitchIcon = useColorModeValue(SunnyOutlineIcon, MoonOutlineIcon);
 	const oppositeColorMode = useColorModeValue("dark", "light");
 
 	const commonProps: Pick<
