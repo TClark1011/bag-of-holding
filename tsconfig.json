@@ -18,7 +18,7 @@
 		"paths": {
 			"$root/*": ["./src/*"],
 			"$tests/*": ["./tests/*"],
-			"$*": ["./src/features/*"]
+			"$*": ["./src/features/*", "./src/lib/*"]
 		}
 	},
 	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
