@@ -1,7 +1,7 @@
 import { NextApiHandler } from "next";
-import SheetModel from "$root/db/SheetModel";
+import { SheetModel } from "$backend/models";
 import { OmitId } from "$root/types";
-import connectToMongoose from "$root/db/connectToMongoose";
+import { connectToMongoose } from "$backend/utils";
 import { InventorySheetFields } from "$sheets/types";
 
 connectToMongoose();

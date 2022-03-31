@@ -8,7 +8,8 @@ import {
 	TopNavProps,
 	TopNav,
 } from "$root/components";
-import { AnalyticsPageViewProps, useAnalyticsPageView } from "$root/utils";
+import { useAnalyticsPageView } from "$analytics/hooks";
+import { AnalyticsPageViewProps } from "$analytics/types";
 
 type ExtraProps = MetaProps & TopNavProps;
 export type ViewProps = ExtraProps & {

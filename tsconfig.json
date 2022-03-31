@@ -16,9 +16,9 @@
 		"incremental": true,
 		"baseUrl": ".",
 		"paths": {
-			"$root/*": ["./src/*"],
 			"$tests/*": ["./tests/*"],
-			"$*": ["./src/features/*"]
+			"$*": ["./src/features/*", "./src/lib/*"],
+			"$root/*": ["./src/*"]
 		}
 	},
 	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],

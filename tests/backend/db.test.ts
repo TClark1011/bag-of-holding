@@ -1,5 +1,5 @@
-import dbReducer from "$root/db/dbReducer";
-import SheetModel from "$root/db/SheetModel";
+import { dbReducer, connectToMongoose } from "$backend/utils";
+import { SheetModel } from "$backend/models";
 import {
 	InventorySheetFields,
 	InventoryItemFields,
@@ -17,7 +17,6 @@ import {
 import { merge } from "merge-anything";
 import tweakString from "../utils/tweakString";
 import { MongoMemoryServer } from "mongodb-memory-server";
-import connectToMongoose from "$root/db/connectToMongoose";
 
 const mockedMongo = MongoMemoryServer.create();
 
@@ -100,9 +99,6 @@ const testDbReducer = async (
 };
 
 describe("DB Reducer Actions", () => {
-	/**
-	 *
-	 */
 	const testItem: InventoryItemFields = {
 		_id: "id",
 		name: "name",
@@ -111,9 +107,6 @@ describe("DB Reducer Actions", () => {
 	};
 	test("Create item", () =>
 		testDbReducer(async (originalState, update) => {
-			/**
-			 *
-			 */
 			const updatedState = await update({
 				type: "item_add",
 				data: testItem,
@@ -127,9 +120,6 @@ describe("DB Reducer Actions", () => {
 	test("Update item", () =>
 		testDbReducer(
 			async (originalState, update) => {
-				/**
-				 *
-				 */
 				const updatedState = await update({
 					type: "item_update",
 					data: {
@@ -150,9 +140,6 @@ describe("DB Reducer Actions", () => {
 	test("Delete item", () =>
 		testDbReducer(
 			async (_, update) => {
-				/**
-				 *
-				 */
 				const updatedState = await update({
 					type: "item_remove",
 					data: testItem._id,
@@ -166,9 +153,6 @@ describe("DB Reducer Actions", () => {
 
 	test("Sheet Metadata Update (name only)", async () =>
 		testDbReducer(async (originalState, update) => {
-			/**
-			 *
-			 */
 			const updatedState = await update({
 				type: "sheet_metadataUpdate",
 				data: {
@@ -187,9 +171,6 @@ describe("DB Reducer Actions", () => {
 });
 
 describe("Metadata Member updates", () => {
-	/**
-	 *
-	 */
 	const testMembers: InventoryMemberFields[] = [
 		generateMember("1"),
 		generateMember("1"),
@@ -213,9 +194,6 @@ describe("Metadata Member updates", () => {
 
 	test("Add member", () =>
 		testDbReducer(async (originalState, update) => {
-			/**
-			 *
-			 */
 			const updated = await update({
 				type: "sheet_metadataUpdate",
 				data: {
@@ -227,9 +205,6 @@ describe("Metadata Member updates", () => {
 		}));
 	test("Add multiple members", () =>
 		testDbReducer(async (originalState, update) => {
-			/**
-			 *
-			 */
 			const updated = await update({
 				type: "sheet_metadataUpdate",
 				data: {
@@ -245,9 +220,6 @@ describe("Metadata Member updates", () => {
 			async (originalState, update) => {
 				expect(originalState.items.length).toEqual(1);
 
-				/**
-				 *
-				 */
 				const updated = await update({
 					type: "sheet_metadataUpdate",
 					data: {
@@ -279,9 +251,6 @@ describe("Metadata Member updates", () => {
 			async (originalState, update) => {
 				expect(originalState.items.length).toEqual(2);
 
-				/**
-				 *
-				 */
 				const updated = await update({
 					type: "sheet_metadataUpdate",
 					data: {
@@ -312,9 +281,6 @@ describe("Metadata Member updates", () => {
 			async (originalState, update) => {
 				expect(originalState.items.length).toEqual(2);
 
-				/**
-				 *
-				 */
 				const updated = await update({
 					type: "sheet_metadataUpdate",
 					data: {
@@ -355,9 +321,6 @@ describe("Metadata Member updates", () => {
 					getCarriedItems(originalState.items, testMembers[1]).length
 				).toEqual(2);
 
-				/**
-				 *
-				 */
 				const updated = await update({
 					type: "sheet_metadataUpdate",
 					data: {
@@ -415,9 +378,6 @@ describe("Metadata Member updates", () => {
 			async (originalState, update) => {
 				expect(originalState.items.length).toEqual(1);
 
-				/**
-				 *
-				 */
 				const updated = await update({
 					type: "sheet_metadataUpdate",
 					data: {
@@ -449,9 +409,6 @@ describe("Metadata Member updates", () => {
 			async (originalState, update) => {
 				expect(originalState.items.length).toEqual(2);
 
-				/**
-				 *
-				 */
 				const updated = await update({
 					type: "sheet_metadataUpdate",
 					data: {
@@ -481,9 +438,6 @@ describe("Metadata Member updates", () => {
 	test("Update member", () =>
 		testDbReducer(
 			async (originalState, update) => {
-				/**
-				 *
-				 */
 				const updated = await update({
 					type: "sheet_metadataUpdate",
 					data: {
@@ -513,9 +467,6 @@ describe("Metadata Member updates", () => {
 	test("Update multiple members", () =>
 		testDbReducer(
 			async (originalState, update) => {
-				/**
-				 *
-				 */
 				const updated = await update({
 					type: "sheet_metadataUpdate",
 					data: {

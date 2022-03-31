@@ -5,6 +5,5 @@ export { default as getIds } from "./getIds";
 export { default as getSheetLink } from "./getSheetLink";
 export { default as getUrlParam } from "./getUrlParam";
 export { default as stringifyCopy } from "./stringifyCopy";
-
-export * from "./analyticsHooks";
-export * from "./analyticsHooks";
+export { default as getUrlSlug } from "./getUrlSlug";
+export { default as makeWritable } from "./makeWritable";

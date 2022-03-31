@@ -6,7 +6,6 @@ import {
 	Heading,
 	SimpleGrid,
 	Stack,
-	useInterval,
 	Button,
 	IconButton,
 	DarkMode,
@@ -16,15 +15,12 @@ import {
 	TagLeftIcon,
 	Input,
 } from "@chakra-ui/react";
-import { Reducer, useEffect, useReducer } from "react";
 import { InventoryStateProvider } from "$sheets/providers";
-import { REFETCH_INTERVAL } from "$root/config";
 import { GetServerSideProps } from "next";
 import { AddIcon, CreateOutlineIcon } from "chakra-ui-ionicons";
-import deepEqual from "deep-equal";
 import { appName } from "$root/constants";
 import { getUrlParam, getSheetLink } from "$root/utils";
-import { useSheetPageState, inventoryReducer } from "$sheets/store";
+import { useSheetPageState, useInventoryReducer } from "$sheets/store";
 import {
 	WelcomeDialog,
 	MemberTotalsTable,
@@ -33,21 +29,15 @@ import {
 	SheetOptionsDialog,
 	ItemDialog,
 } from "$sheets/components";
-import fetchSheetFromDb from "../../db/fetchSheetFromDb";
 import { testIdGeneratorFactory } from "$tests/utils/testUtils";
-import {
-	InventorySheetFields,
-	InventorySheetStateAction,
-	InventorySheetState,
-} from "$sheets/types";
-import { fetchSheet } from "$sheets/api";
+import { InventorySheetFields } from "$sheets/types";
 import {
 	H3,
 	PartyMemberTagList,
 	ColorModeSwitch,
 	View,
 } from "$root/components";
-import { addToRememberedSheets } from "$sheets/utils";
+import { useOnMountEffect } from "$root/hooks";
 
 const getTestId = testIdGeneratorFactory("SheetPage");
 
@@ -71,27 +61,17 @@ export interface SheetPageProps extends InventorySheetFields {
  * @returns Sheet component
  */
 const Sheet: React.FC<SheetPageProps> = ({ isNew = false, ...sheetFields }) => {
-	const [{ items, name, members, _id }, inventoryDispatch] = useReducer<
-		Reducer<InventorySheetState, InventorySheetStateAction>
-	>(inventoryReducer, {
-		...sheetFields,
-		blockRefetch: {
-			for: 0,
-			from: new Date(),
-		},
-	});
+	const [
+		{ items, name, members, _id },
+		inventoryDispatch,
+	] = useInventoryReducer(sheetFields);
 
-	useEffect(() => {
+	useOnMountEffect(() => {
 		if (isNew) {
 			openDialog("welcome");
 			//? Open the welcome dialog if the sheet is new
 		}
-	}, []);
-
-	useEffect(() => {
-		addToRememberedSheets({ _id, name, members });
-		//? Store the sheet to the list of 'remembered' sheets
-	}, [_id, name, members]);
+	});
 
 	const {
 		openDialog,
@@ -100,24 +80,10 @@ const Sheet: React.FC<SheetPageProps> = ({ isNew = false, ...sheetFields }) => {
 		resetFilters,
 	} = useSheetPageState();
 
-	/**
-	 * Refetch the data regularly
-	 */
-	useInterval(() => {
-		fetchSheet(sheetFields._id).then(({ data }) => {
-			if (
-				!deepEqual(items, data.items) ||
-				!deepEqual(name, data.name) ||
-				!deepEqual(members, data.members)
-			)
-				inventoryDispatch({ type: "sheet_update", data });
-		});
-	}, REFETCH_INTERVAL);
-
 	return (
 		<View
 			showTopNav={false}
-			title={appName + " - " + name}
+			title={`${appName} - ${name}`}
 			url={getSheetLink(sheetFields._id, true)}
 			analyticsPageViewProps={{ title: "Sheet", url: "/sheets/[sheetId]" }}
 		>
@@ -266,6 +232,11 @@ const Sheet: React.FC<SheetPageProps> = ({ isNew = false, ...sheetFields }) => {
 export const getServerSideProps: GetServerSideProps<InventorySheetFields> = async (
 	context
 ) => {
+	const { fetchSheetFromDb } = await import("$backend/services");
+	// We import like this because importing backend code
+	// into a frontend file causes an error in testing.
+	// This way we are only importing the backend code
+	// when this function actually runs.
 	const sheetData = await fetchSheetFromDb(getUrlParam(context.params.sheetId));
 	return {
 		props: { ...sheetData, isNew: typeof context.query.new !== "undefined" },

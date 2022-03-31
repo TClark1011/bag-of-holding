@@ -12,12 +12,12 @@ import { use100vh } from "react-div-100vh";
 import { useRouter } from "next/router";
 import { useNewSheetPageState } from "$sheets/store";
 import { requestNewSheet } from "$sheets/api";
-import {
-	getSheetLink,
-	useAnalyticsEvent,
-	useAnalyticsException,
-} from "$root/utils";
+import { getSheetLink } from "$root/utils";
 import { H3, View } from "$root/components";
+import {
+	useAnalyticsEventLogger,
+	useAnalyticsExceptionLogger,
+} from "$analytics/hooks";
 
 /**
  * Page to take user to when they want to make a new sheet.
@@ -30,8 +30,8 @@ import { H3, View } from "$root/components";
 const New: React.FC = () => {
 	const router = useRouter();
 	const { errorHasOccurred, turnOnError } = useNewSheetPageState();
-	const logAnalyticsEvent = useAnalyticsEvent();
-	const logAnalyticsException = useAnalyticsException();
+	const logAnalyticsEvent = useAnalyticsEventLogger();
+	const logAnalyticsException = useAnalyticsExceptionLogger();
 
 	useEffect(() => {
 		requestNewSheet()
