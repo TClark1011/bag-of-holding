@@ -13,6 +13,7 @@
 		"setupDevDb": "ts-node scripts/setupDevDb.ts",
 		"commit": "git cz",
 		"release": "standard-version",
+		"check-types": "tsc --noEmit",
 		"release:patch": "yarn release --release-as patch",
 		"release:minor": "yarn release --release-as minor",
 		"release:major": "yarn release --release-as major",
@@ -57,7 +58,8 @@
 		"stringify-object": "^3.3.0",
 		"uniq": "^1.0.1",
 		"yesno": "^0.3.1",
-		"yup": "^0.32.9"
+		"yup": "^0.32.9",
+		"zustand": "^3.7.1"
 	},
 	"devDependencies": {
 		"@commitlint/cli": "^12.1.1",
