@@ -22,7 +22,6 @@ export const logPageView = ({
 	try {
 		const location = url || window.location.pathname;
 		Analytics.set({ page: location });
-		console.log("(analyticsHooks) title: ", title);
 		if (title) {
 			Analytics.pageview(location, [], title);
 		} else {

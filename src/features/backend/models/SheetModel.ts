@@ -1,9 +1,10 @@
-import mongoose, { Model, Document } from "mongoose";
+import mongoose, { Schema, model, Model } from "mongoose";
 import { InventorySheetFields } from "$sheets/types";
-import mapObject from "map-obj";
 import { UNDERGOING_MIGRATION, inProduction } from "$root/config";
+import { composeAllMixedSchema } from "$backend/utils";
+import { SchemaDefinition } from "mongoose";
 
-const sheetSchema = {
+const sheetSchemaDefinition: SchemaDefinition<InventorySheetFields> = {
 	name: { type: String, required: true },
 	members: [
 		{
@@ -27,17 +28,20 @@ const sheetSchema = {
 	],
 };
 
-const SheetSchema = new mongoose.Schema(
-	UNDERGOING_MIGRATION
-		? mapObject(sheetSchema, (key) => [key, {}])
-		: sheetSchema,
-	//? If the application is undergoing data migration, all fields are set to type "mixed" so that mongoose does not attempt to auto migrate old data to new format
-	{
-		timestamps: true,
-		strict: !UNDERGOING_MIGRATION,
-		//? Allow keys not specified in the schema if application is undergoing data migration
-	}
-);
+const schemaToUse = UNDERGOING_MIGRATION
+	? composeAllMixedSchema(sheetSchemaDefinition)
+	: sheetSchemaDefinition;
+// When undergoing migration, we want to set types to "mixed",
+// otherwise mongoose will attempt to parse the data we are
+// are migrating using its own parsing logic, which will damage
+// the data.
+
+const SheetSchema = new Schema<InventorySheetFields>(schemaToUse, {
+	timestamps: true,
+	strict: !UNDERGOING_MIGRATION,
+	// Allow additional keys not specified in the schema if
+	// the application is undergoing data migration
+});
 
 /**
  * Get the name to use for the sheet model depending on if
@@ -61,20 +65,25 @@ export const getSheetModelName = (useLiveCollection: boolean): string =>
  * Gets passed to 'getSheetModelName'
  * @returns The object for controlling the sheet collection
  */
-const getSheetModel = (useLiveCollection: boolean = inProduction) =>
-	(mongoose.models[getSheetModelName(useLiveCollection)] as Model<
-		Document<InventorySheetFields>
-	>) ||
-	mongoose.model<Document<InventorySheetFields>>(
-		getSheetModelName(useLiveCollection),
-		SheetSchema
-	);
+const getSheetModel = (useLiveCollection: boolean = inProduction) => {
+	const modelName = getSheetModelName(useLiveCollection);
+
+	const result =
+		(mongoose.models[modelName] as Model<InventorySheetFields>) ||
+		model(modelName, SheetSchema);
+	// Get the existing model, if it doesn't exist create a fresh
+	// one
+
+	return result;
+};
 
 //* Model for accessing the production database
 export const ProductionSheetModel = getSheetModel(true);
 //? Will always be the production sheet collection regardless of execution environment
 
+const SheetModel = getSheetModel();
 //* The sheet model that will be used while the application is running
-export default getSheetModel();
 //? Will be the production model when the application is in production
 //? If not in production it will be a detached development database
+
+export default SheetModel;

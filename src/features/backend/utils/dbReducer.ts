@@ -1,12 +1,12 @@
 import mapObject from "map-obj";
-import omit from "omit.js";
 import {
 	DeleteMemberItemHandlingMethods,
 	InventoryMemberMoveDeleteMethod,
 	InventorySheetPartialUpdateAction,
 } from "$sheets/types";
 import { getIds } from "$root/utils";
-import SheetModel from "$root/db/SheetModel";
+import { SheetModel } from "$backend/models";
+import { D } from "$fp";
 
 /**
  * Reducer for controlling database
@@ -54,9 +54,9 @@ const dbReducer = async (
 			updateSheet(
 				{
 					$set: mapObject(
-						omit(action.data, ["_id"]),
+						D.deleteKeys(action.data, ["_id"]),
 						//? Data without the '_id' field (because we don't want to update the _id)
-						(key: string, value: string | number) => [`items.$.${key}`, value]
+						(key, value: string | number) => [`items.$.${key}`, value]
 						//? Generate a valid mongoose update from the action data
 					),
 				},
@@ -147,7 +147,7 @@ const dbReducer = async (
 				updateSheet(
 					{
 						$set: mapObject(
-							omit(mem, ["_id"]),
+							D.deleteKeys(mem, ["_id"]),
 							//? Data without the '_id' field (because we don't want to update the _id)
 							(key: string, value: string | number) => [
 								`members.$.${key}`,

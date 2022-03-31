@@ -1,7 +1,7 @@
 import { inProduction } from "../src/config/publicEnv";
-import connectToMongoose from "../src/db/connectToMongoose";
-import SheetModel, { ProductionSheetModel } from "../src/db/SheetModel";
+import connectToMongoose from "../src/features/backend/utils/connectToMongoose";
 import mongoose from "mongoose";
+import { ProductionSheetModel, SheetModel } from "$backend/models";
 
 (async () => {
 	if (!inProduction) {
