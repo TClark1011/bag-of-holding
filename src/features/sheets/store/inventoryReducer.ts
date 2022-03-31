@@ -9,7 +9,8 @@ import {
 } from "$sheets/types";
 import codeToTitle from "code-to-title";
 import stringifyObject from "stringify-object";
-import { findObjectWithId, getIds, logEvent, logException } from "$root/utils";
+import { findObjectWithId, getIds } from "$root/utils";
+import { logEvent, logException } from "$analytics/utils";
 import { memberIsCarrying, createInventoryItem } from "$sheets/utils";
 import { sendSheetAction } from "$sheets/api";
 import { REFETCH_INTERVAL } from "$root/config";
