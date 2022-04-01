@@ -60,7 +60,13 @@ const ColorModeSwitch: React.FC<ColorModeSwitchProps> = ({
 	const switchElement = iconOnly ? (
 		<IconButton isRound {...commonProps} {...props} icon={iconElement} />
 	) : (
-		<Button {...commonProps} width={32} {...props} leftIcon={iconElement}>
+		<Button
+			{...commonProps}
+			width={32}
+			{...props}
+			leftIcon={iconElement}
+			id="color-switch"
+		>
 			{codeToTitle(colorMode)} Mode
 		</Button>
 	);

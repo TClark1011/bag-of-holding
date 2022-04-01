@@ -11,8 +11,14 @@ jobs:
         with:
           node-version: "14"
       - run: yarn
-      - run: yarn test --coverage
+        name: Install dependencies
+      - run: yarn test:unit --coverage
+        name: Run unit tests
       - uses: romeovs/lcov-reporter-action@v0.2.16
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+        name: Unit test coverage comment
+      - run: yarn test:integration
+        name: Run integration tests
       - run: yarn build
+        name: Build

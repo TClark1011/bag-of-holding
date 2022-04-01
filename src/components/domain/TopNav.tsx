@@ -38,24 +38,28 @@ const TopNav: React.FC<TopNavProps> = ({ showHomeLink = true }) => (
 		<HStack justify="flex-end">
 			{showHomeLink && (
 				<IconLink
+					id="home-link"
 					href="/"
 					aria-label="link to home page"
 					icon={<BagOfHoldingIcon boxSize={5} thickStroke />}
 				/>
 			)}
-			<GitLink />
+			<GitLink id="git-link" />
 			<IconLink
+				id="reddit-link"
 				href={appSubredditLink}
 				aria-label="link to info page"
 				icon={<LogoRedditIcon boxSize="icon" />}
 				variant="ghost"
 			/>
 			<IconLink
+				id="contact-link"
 				href={contactPageUrl}
 				aria-label="link to contact page"
 				icon={<MailOutlineIcon boxSize="icon" />}
 			/>
 			<IconLink
+				id="info-link"
 				href={infoPageUrl}
 				aria-label="link to info page"
 				icon={<HelpOutlineIcon boxSize="icon" />}
