@@ -3,6 +3,9 @@ import connectToMongoose from "../src/features/backend/utils/connectToMongoose";
 import mongoose from "mongoose";
 import { ProductionSheetModel, SheetModel } from "$backend/models";
 
+// Copy over data from production database into
+// development database that is used when running
+// on localhost
 (async () => {
 	if (!inProduction) {
 		await connectToMongoose();
@@ -15,10 +18,10 @@ import { ProductionSheetModel, SheetModel } from "$backend/models";
 				);
 			})
 			.catch((err) => {
-				console.log(
+				console.error(
 					"An error ocurred while attempting to copy production data into the development database"
 				);
-				console.log(err);
+				console.error(err);
 			})
 			.finally(() => {
 				mongoose.connection.close();

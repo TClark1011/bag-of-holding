@@ -7,3 +7,5 @@ export { default as getUrlParam } from "./getUrlParam";
 export { default as stringifyCopy } from "./stringifyCopy";
 export { default as getUrlSlug } from "./getUrlSlug";
 export { default as makeWritable } from "./makeWritable";
+export { default as takeRandom } from "./takeRandom";
+export { default as countOccurrences } from "./countOccurrences";

@@ -115,11 +115,11 @@ const FilterInterface: React.FC<Props> = ({
 				{uniquePropertyValues.map((item) => (
 					<ListItem key={item} display="flex" alignItems="center">
 						<Checkbox
-							marginRight="group"
 							isChecked={!filter.includes(item)}
 							onChange={() => onChange(item)}
-						/>
-						<PartyMemberData memberId={item} property="name" />
+						>
+							<PartyMemberData memberId={item} property="name" fontSize="xs" />
+						</Checkbox>
 					</ListItem>
 				))}
 			</List>

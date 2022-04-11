@@ -1,6 +1,7 @@
 import { fetchRememberedSheets } from "$sheets/utils";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { InventorySheetMenuItemFields } from "$sheets/types";
+import { useOnMountEffect } from "$root/hooks";
 
 /**
  * Fetch the remembered sheets.
@@ -16,11 +17,12 @@ import { InventorySheetMenuItemFields } from "$sheets/types";
 const useRememberedSheets = (): InventorySheetMenuItemFields[] => {
 	const [rememberedSheets, setRememberedSheets] = useState<
 		InventorySheetMenuItemFields[]
-	>([]);
+	>([]); //init as empty because `fetchRememberedSheets` does not work on server
 
-	useEffect(() => {
+	useOnMountEffect(() => {
 		setRememberedSheets(fetchRememberedSheets());
-	}, []);
+		// Update with correct values once we are on the client
+	});
 
 	return rememberedSheets;
 };

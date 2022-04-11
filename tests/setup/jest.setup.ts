@@ -1,15 +1,14 @@
+/* eslint-disable jsdoc/require-jsdoc */
 import "@testing-library/jest-dom";
 import { cleanup } from "@testing-library/react";
 import { loadEnvConfig } from "@next/env";
 import "jest-extended";
 
-loadEnvConfig(process.cwd());
-//? Load env variables
+loadEnvConfig(process.cwd()); // Load env variables
 
 afterEach(() => {
 	cleanup();
-});
-//? Run react testing library's "cleanup" function after every test to prevent flow-on effects from consecutive renders
+}); // Run react testing library's "cleanup" function after every test to prevent flow-on effects from consecutive renders
 
 try {
 	Object.defineProperty(window, "matchMedia", {
@@ -24,9 +23,7 @@ try {
 			removeEventListener: jest.fn(),
 			dispatchEvent: jest.fn(),
 		})),
-	});
-	//? We mock the "matchMedia" window method
+	}); // We mock the "matchMedia" window method
 } catch (e) {
 	console.log("Skipped window property mock because of testing environment");
 }
-//? We mock the 'matchMedia' media method in a try/catch as it will throw an error if the testing environment is not "jsdom"

@@ -15,3 +15,5 @@ export type ReactEffect = Parameters<typeof useEffect>[0];
 export type Writable<T extends Record<string, any> | any[]> = {
 	-readonly [Key in keyof T]: Writable<T[Key]>;
 };
+
+export type NonEmptyArray<T> = [T, ...T[]];
