@@ -21,7 +21,12 @@ const PartyMemberTagList: React.FC<PartyMemberTagListProps> = ({
 }) => (
 	<Stack direction="row" spacing="group" {...props}>
 		{members.map((item, index) => (
-			<Tag key={index} {...tagProps}>
+			<Tag
+				key={index}
+				{...tagProps}
+				data-testid="member-tag"
+				data-member-name={item}
+			>
 				{item}
 			</Tag>
 		))}

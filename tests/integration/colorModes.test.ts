@@ -2,11 +2,11 @@ import formatColorString from "$tests/utils/formatColorString";
 import { flow } from "@mobily/ts-belt";
 import { test, expect } from "@playwright/test";
 
-test.describe("Color Modes", () => {
-	// Background colors used in the light/dark color schemes
-	const DARK = "#1A202C";
-	const LIGHT = "#FFFFFF";
+// Background colors used in the light/dark color schemes
+const DARK = "#1A202C";
+const LIGHT = "#FFFFFF";
 
+test.describe("Color Modes", () => {
 	test("No Preference", async ({ page }) => {
 		// Light theme colors should be used if user has no preference
 		await page.emulateMedia({ colorScheme: "no-preference" });

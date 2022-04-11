@@ -1,7 +1,7 @@
 name: check
 on: pull_request
 env:
-  MONGO_URL: _
+  MONGO_URL: mongodb://127.0.0.1:3002/
 jobs:
   test-and-build:
     runs-on: ubuntu-latest

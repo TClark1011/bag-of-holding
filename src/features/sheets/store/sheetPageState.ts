@@ -23,6 +23,7 @@ import {
 	getCarrier,
 	getItemTotalValue,
 	getItemTotalWeight,
+	searchComparison,
 } from "$sheets/utils";
 
 export type SheetDialogType =
@@ -147,10 +148,12 @@ export const useSheetPageState = () => {
 		]);
 
 		//* Filter items
+		// let result = [...sorted].filter((item) =>
+		// 	item.name
+		// 		.toLowerCase()
+		// 		.includes(state.ui.searchbarValue.value.toLowerCase())
 		let result = [...sorted].filter((item) =>
-			item.name
-				.toLowerCase()
-				.includes(state.ui.searchbarValue.value.toLowerCase())
+			searchComparison(item.name, state.ui.searchbarValue.value)
 		);
 		for (const [property, filter] of Object.entries(state.filters.value)) {
 			result = result.filter((item) => !filter.includes(item[property]));

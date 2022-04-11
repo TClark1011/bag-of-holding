@@ -36,7 +36,7 @@ import { SortingDirection } from "$root/types";
 
 const getTestId = testIdGeneratorFactory("InventoryTable");
 
-const inventoryTableTestIds = {
+export const inventoryTableTestIds = {
 	tableRoot: getTestId("TableRoot"),
 	nameColumnHeader: getTestId("NameColumnHeader"),
 	weightColumnHeader: getTestId("WeightColumnHeader"),

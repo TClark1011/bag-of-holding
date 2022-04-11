@@ -19,7 +19,7 @@ const config = {
 	moduleNameMapper: pathsToModuleNameMapper(orderedKeys, {
 		prefix: "<rootDir>/../../",
 	}),
-	setupFilesAfterEnv: ["<rootDir>/../../jest.setup.ts"],
+	setupFilesAfterEnv: ["<rootDir>/../setup/jest.setup.ts"],
 };
 
 module.exports = {
