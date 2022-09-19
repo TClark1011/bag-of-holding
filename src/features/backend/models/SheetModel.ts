@@ -78,7 +78,9 @@ const getSheetModel = (useLiveCollection: boolean = inProduction) => {
 };
 
 //* Model for accessing the production database
-export const ProductionSheetModel = getSheetModel(true);
+export const ProductionSheetModel = getSheetModel(true) as ReturnType<
+	typeof getSheetModel
+>;
 //? Will always be the production sheet collection regardless of execution environment
 
 const SheetModel = getSheetModel();

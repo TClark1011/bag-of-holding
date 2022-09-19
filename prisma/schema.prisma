@@ -1,0 +1,45 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Sheet {
+  id String @id @default(cuid())
+  name String
+  characters Character[]
+  items Item[]
+}
+
+model Character {
+  id String @id @default(cuid())
+  name String
+  carryCapacity Float @default(0)
+  carriedItems Item[]
+
+  sheet Sheet @relation(fields: [sheetId], references: [id])
+  sheetId String
+}
+
+model Item {
+  id String @id @default(cuid())
+  name String
+  description String?
+  weight Float?
+  quantity Float @default(1)
+  referenceLink String? // Usually a link to the rules for the item
+  category String?
+  value Float?
+
+  carriedByCharacter Character? @relation(fields: [carriedByCharacterId], references: [id])
+  carriedByCharacterId String?
+
+  sheet Sheet @relation(fields: [sheetId], references: [id])
+  sheetId String
+}
