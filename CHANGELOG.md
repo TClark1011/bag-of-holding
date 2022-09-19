@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.2.5](https://github.com/TClark1011/bag-of-holding/compare/v1.2.4...v1.2.5) (2022-09-19)
+
+
+### Bug Fixes
+
+* **frontend:** 🐛 changed sorting icons ([04520ef](https://github.com/TClark1011/bag-of-holding/commit/04520ef90956a6fd682be4551d608f575e201454))
+
 ### [1.2.4](https://github.com/TClark1011/bag-of-holding/compare/v1.2.3...v1.2.4) (2022-04-01)
 
 ### [1.2.3](https://github.com/TClark1011/bag-of-holding/compare/v1.2.2...v1.2.3) (2022-03-31)
