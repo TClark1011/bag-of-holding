@@ -1,4 +1,4 @@
-name: check
+name: integration-tests
 on: pull_request
 env:
   MONGO_URL: mongodb://127.0.0.1:3002
