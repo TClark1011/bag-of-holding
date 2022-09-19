@@ -96,14 +96,21 @@ export const screenshot = async (
  * we are waiting for
  * @param expectedState What state we wait for
  * the modal to be in
+ * @param text Optional text to look for in the
+ * modal
  */
 export const waitForModalState = async (
 	client: Page,
-	expectedState: "attached" | "detached" | "visible" | "hidden"
+	expectedState: "attached" | "detached" | "visible" | "hidden",
+	text?: string
 ) => {
-	await client.locator("data-testid=dialog-content").waitFor({
-		state: expectedState,
-	});
+	await client
+		.locator("data-testid=dialog-content", {
+			hasText: text,
+		})
+		.waitFor({
+			state: expectedState,
+		});
 };
 
 /**

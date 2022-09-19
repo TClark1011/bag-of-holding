@@ -70,7 +70,7 @@ test("Create New Sheet, Close Welcome", async ({ page, baseURL }) => {
 		url: "**/sheets/*",
 	});
 
-	await waitForModalState(page, "visible");
+	await waitForModalState(page, "visible", "Welcome!");
 	await page.click(cssSelectorWithText("button", "Close"));
 	await page.waitForSelector("text=Sheet Options");
 	await page.keyboard.press("Escape");
