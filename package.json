@@ -21,7 +21,8 @@
 		"lint": "eslint --fix src tests scripts",
 		"prepare": "husky install && chmod ug+x .husky/* && is-ci || playwright install",
 		"clean-deps": "yarn flush-deps && yarn",
-		"flush-deps": "npx rimraf node_modules"
+		"flush-deps": "npx rimraf node_modules",
+		"ci": "yarn install --freeze-lockfile"
 	},
 	"dependencies": {
 		"@chakra-ui/react": "^1.3.4",
