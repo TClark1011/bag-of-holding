@@ -104,9 +104,10 @@ const Sheet: React.FC<SheetPageProps> = ({ isNew = false, ...sheetFields }) => {
 								<Flex>
 									{/* Sheet Title */}
 									<Heading marginRight={1}>{name}</Heading>
-									{/* Sheet Options Button */}
 									<DarkMode>
+										{/* Sheet Options Button */}
 										<IconButton
+											id="options-button"
 											aria-label="edit sheet settings"
 											icon={<CreateOutlineIcon boxSize={6} />}
 											onClick={() => openDialog("sheetOptions")}
@@ -147,6 +148,7 @@ const Sheet: React.FC<SheetPageProps> = ({ isNew = false, ...sheetFields }) => {
 							<Box>
 								{/* Add new Item Button */}
 								<Button
+									data-testid="add-item-button"
 									colorScheme="primary"
 									onClick={() => openDialog("item.new")}
 									width="full"

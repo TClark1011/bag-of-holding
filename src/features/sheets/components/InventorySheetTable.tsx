@@ -13,20 +13,26 @@ import {
 	Tooltip,
 	useColorModeValue,
 } from "@chakra-ui/react";
-import {
-	ArrowDownIcon,
-	ArrowUpIcon,
-	BookOutlineIcon,
-	FilterOutlineIcon,
-} from "chakra-ui-ionicons";
+import { BookOutlineIcon, FilterOutlineIcon } from "chakra-ui-ionicons";
 import isUrl from "is-url-superb";
 import { getItemTotalValue, getItemTotalWeight } from "$sheets/utils";
 import { testIdGeneratorFactory } from "$tests/utils/testUtils";
-import { InventoryItemFields, ProcessableItemProperty } from "$sheets/types";
+import {
+	FilterableItemProperty,
+	InventoryItemFields,
+	ProcessableItemProperty,
+} from "$sheets/types";
 import { useSheetPageState } from "$sheets/store";
 import { useInventoryState } from "$sheets/providers";
-import { TableCell } from "$root/components";
+import {
+	NumericAscendingSortIcon,
+	NumericDescendingSortIcon,
+	TextAscendingSortIcon,
+	TextDescendingSortIcon,
+	TableCell,
+} from "$root/components";
 import { TableFilter, PartyMemberData } from "$sheets/components";
+import { SortingDirection } from "$root/types";
 
 const getTestId = testIdGeneratorFactory("InventoryTable");
 
@@ -47,6 +53,107 @@ const col6Display = ["none", "none", "none", "table-cell"];
 export interface InventorySheetTableProps extends TableProps {
 	onRowClick: (item?: InventoryItemFields) => void;
 }
+
+const filterableProperties: FilterableItemProperty[] = [
+	"carriedBy",
+	"category",
+];
+
+const numericProperties: ProcessableItemProperty[] = [
+	"quantity",
+	"weight",
+	"value",
+];
+
+/**
+ * A set of icons used for sorting. Provides icons for
+ * when sorting is ascending and descending.
+ */
+type SortingIconSet = Record<SortingDirection, JSX.Element>;
+const numericSortingIconSet: SortingIconSet = {
+	ascending: <NumericAscendingSortIcon />,
+	descending: <NumericDescendingSortIcon />,
+};
+const defaultSortingIconSet: SortingIconSet = {
+	ascending: <TextAscendingSortIcon />,
+	descending: <TextDescendingSortIcon />,
+};
+
+/**
+ * Determine which set of sorting icons to use based
+ * on the property being sorted.
+ *
+ * @param property The property being sorted
+ * @returns The icon set to use for the property
+ */
+const determineIconSet = (property: ProcessableItemProperty) =>
+	numericProperties.includes(property)
+		? numericSortingIconSet
+		: defaultSortingIconSet;
+
+const determineIfPropertyIsFilterable = (
+	property: ProcessableItemProperty
+): property is FilterableItemProperty =>
+	filterableProperties.includes(property as any);
+
+/**
+ * A component to be used as the column headers
+ *
+ * @param props The props
+ * @param props.property The property that
+ * the column represents
+ * @param [props.allowFilter] Whether or not to show a button
+ * to open the filter interface for the column. If not specified, defaults
+ * to not showing the filter button.
+ * @param props.children The children
+ * @returns The rendered stuff
+ */
+const TableHeader: React.FC<
+	TableCellProps & {
+		property: ProcessableItemProperty;
+	}
+> = ({ property, children, ...props }) => {
+	const {
+		sorting,
+		sortInventory,
+		closeFilterPopover,
+		openFilterPopover,
+		isFilterPopoverOpen,
+	} = useSheetPageState();
+
+	const sortingIcons = determineIconSet(property);
+	const isFilterable = determineIfPropertyIsFilterable(property);
+	const isBeingSorted = sorting.property === property;
+	const filterPopoverIsOpen = isFilterable && isFilterPopoverOpen(property);
+
+	const onSort = () => sortInventory(property);
+	const onPopoverOpen = () => isFilterable && openFilterPopover(property);
+
+	return (
+		<TableCell {...props} as={Th}>
+			<Button variant="ghost" onClick={onSort}>
+				<Text marginRight="group">{children}</Text>
+				{isBeingSorted && sortingIcons[sorting.direction]}
+			</Button>
+			{isFilterable && (
+				<TableFilter
+					isOpen={filterPopoverIsOpen}
+					onClose={closeFilterPopover}
+					property={property}
+				>
+					<IconButton
+						aria-label="filter"
+						icon={<FilterOutlineIcon />}
+						onClick={onPopoverOpen}
+						variant="ghost"
+						isRound
+						marginLeft="group"
+					/>
+				</TableFilter>
+			)}
+		</TableCell>
+	);
+};
 
 /**
  * Table that shows items in a sheet inventory
@@ -69,65 +176,11 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 
 	//? Destructure after initializer so that full state object can be easily passed to selectors
 
-	const {
-		getProcessedItems,
-		sorting,
-		sortInventory,
-		closeFilterPopover,
-		openFilterPopover,
-		isFilterPopoverOpen,
-		getColumnSums,
-	} = useSheetPageState();
+	const { getProcessedItems, getColumnSums } = useSheetPageState();
 
 	const { items, members } = useInventoryState();
 	const processedItems = getProcessedItems(items, members);
 	const columnSums = getColumnSums(items);
-
-	/**
-	 * A component to be used as the column headers
-	 *
-	 * @param props The props
-	 * @param props.property The property that
-	 * the column represents
-	 * @param [props.allowFilter] Whether or not to show a button
-	 * to open the filter interface for the column. If not specified, defaults
-	 * to not showing the filter button.
-	 * @param props.children The children
-	 * @returns The rendered stuff
-	 */
-	const TableHeader: React.FC<
-		TableCellProps & {
-			property: ProcessableItemProperty;
-		}
-	> = ({ property, children, ...props }) => (
-		<TableCell {...props} as={Th}>
-			<Button variant="ghost" onClick={() => sortInventory(property)}>
-				<Text marginRight="group">{children}</Text>
-				{sorting.property === property &&
-					(sorting.direction === "ascending" ? (
-						<ArrowUpIcon />
-					) : (
-						<ArrowDownIcon />
-					))}
-			</Button>
-			{(property === "carriedBy" || property === "category") && (
-				<TableFilter
-					isOpen={isFilterPopoverOpen(property)}
-					onClose={closeFilterPopover}
-					property={property}
-				>
-					<IconButton
-						aria-label="filter"
-						icon={<FilterOutlineIcon />}
-						onClick={() => openFilterPopover(property)}
-						variant="ghost"
-						isRound
-						marginLeft="group"
-					/>
-				</TableFilter>
-			)}
-		</TableCell>
-	);
 
 	return (
 		<Table
@@ -136,6 +189,7 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 			borderTopWidth={1}
 			borderTopColor={hoverBg}
 			data-testid={inventoryTableTestIds.tableRoot}
+			id="items-table"
 		>
 			<Thead>
 				<Tr>
@@ -202,14 +256,16 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 						onClick={() => onRowClick(item)}
 						cursor="pointer"
 						_hover={{ backgroundColor: hoverBg }}
+						data-testid={`item-row-${item.name}`}
 					>
 						{/* Item Name */}
-						<TableCell textAlign="left">
+						<TableCell textAlign="left" data-column="name">
 							{item.reference && isUrl(item.reference) ? (
 								<Link
 									href={item.reference}
 									isExternal
 									onClick={(e) => e.stopPropagation()}
+									data-testid="reference-link"
 								>
 									{item.name} <BookOutlineIcon marginLeft={1} />
 								</Link>
@@ -218,19 +274,23 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 							)}
 						</TableCell>
 						{/* Item Quantity */}
-						<TableCell>{item.quantity}</TableCell>
+						<TableCell data-column="quantity">{item.quantity}</TableCell>
 						{/* Item Total Weight */}
-						<TableCell>{getItemTotalWeight(item)}</TableCell>
+						<TableCell data-column="weight">
+							{getItemTotalWeight(item)}
+						</TableCell>
 						{/* Item Total Value */}
-						<TableCell display={col4Display}>
+						<TableCell data-column="value" display={col4Display}>
 							{getItemTotalValue(item)}
 						</TableCell>
 						{/* Item "carriedBy" */}
-						<TableCell display={col5Display}>
+						<TableCell data-column="carriedBy" display={col5Display}>
 							<PartyMemberData memberId={item.carriedBy} property="name" />
 						</TableCell>
 						{/* Item Category */}
-						<TableCell display={col6Display}>{item.category}</TableCell>
+						<TableCell data-column="category" display={col6Display}>
+							{item.category}
+						</TableCell>
 					</Tr>
 				))}
 				<Tr>
