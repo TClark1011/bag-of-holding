@@ -74,7 +74,7 @@ test("Create New Sheet, Close Welcome", async ({ page, baseURL }) => {
 	await page.click(cssSelectorWithText("button", "Close"));
 	await page.waitForSelector("text=Sheet Options");
 	await page.keyboard.press("Escape");
-	await waitForModalState(page, "hidden");
+	await waitForModalState(page, "hidden", "Welcome!");
 
 	expect(await getSheetTitle(page)).toBe("New Sheet");
 });
