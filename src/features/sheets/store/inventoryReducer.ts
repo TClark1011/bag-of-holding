@@ -10,10 +10,14 @@ import codeToTitle from "code-to-title";
 import stringifyObject from "stringify-object";
 import { findObjectWithId, getIds } from "$root/utils";
 import { logEvent, logException } from "$analytics/utils";
-import { characterIsCarrying, createInventoryItem } from "$sheets/utils";
+import {
+	characterIsCarrying,
+	createInventoryItem,
+	generateCharacter,
+} from "$sheets/utils";
 import { sendSheetAction } from "$sheets/api";
 import { REFETCH_INTERVAL } from "$root/config";
-import { Sheet } from "@prisma/client";
+import { Character, Sheet } from "@prisma/client";
 
 /**
  * Reducer that handles updates to client state
@@ -121,11 +125,23 @@ const inventoryReducer = (
 					(member) => !getIds(action.data.characters.remove).includes(member.id)
 				);
 
-				draftState.characters = draftState.characters.map((mem) =>
-					getIds(action.data.characters.update).includes(mem.id)
-						? findObjectWithId(action.data.characters.update, mem.id)
-						: mem
-				);
+				const updateIds = getIds(action.data.characters.update);
+				draftState.characters.forEach((character, index) => {
+					if (updateIds.includes(character.id)) {
+						draftState.characters[index] = {
+							...character,
+							...action.data.characters.update.find(
+								(member) => member.id === character.id
+							),
+						};
+					}
+				});
+
+				// draftState.characters = draftState.characters.map((mem) =>
+				// 	getIds(action.data.characters.update).includes(mem.id)
+				// 		? findObjectWithId(action.data.characters.update, mem.id)
+				// 		: mem
+				// );
 
 				action.data.characters.remove.forEach((removingMember) => {
 					logEvent(
@@ -166,10 +182,13 @@ const inventoryReducer = (
 							);
 					}
 				});
-
-				draftState.characters = draftState.characters.concat(
-					action.data.characters.add
+				const addedCharacters: Character[] = (
+					action.data.characters?.add ?? []
+				).map((addUpdate) =>
+					generateCharacter(addUpdate.name ?? "", addUpdate.carryCapacity ?? 0)
 				);
+
+				draftState.characters = draftState.characters.concat(addedCharacters);
 			}, true);
 	}
 };

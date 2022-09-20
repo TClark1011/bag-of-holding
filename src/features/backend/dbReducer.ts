@@ -57,16 +57,21 @@ const dbReducer = async (
 					},
 				});
 			}
-			if (action.data.characters.add.length) {
+
+			if (action.data?.characters?.add?.length) {
 				await prisma.character.createMany({
-					data: action.data.characters.add.map((character) => ({
+					data: action.data?.characters?.add.map((character) => ({
 						name: character.name,
 						sheetId,
 					})),
 				});
 			}
-			if (action.data.characters.remove.length) {
-				const moveModeActions = action.data.characters.remove.filter((mem) =>
+
+			if (action.data?.characters?.remove?.length) {
+				// NOTE: The DB's default behaviour when a character is deleted is to set the
+				// carriedByCharacterId field to null, so we don't have to do that manually
+
+				const moveModeActions = action.data?.characters?.remove.filter((mem) =>
 					isMoveDeleteMethod(mem.deleteMethod)
 				);
 
@@ -85,30 +90,56 @@ const dbReducer = async (
 					)
 				);
 
-				const charactersWithNobodyMode = action.data.characters.remove.filter(
-					(mem) =>
-						mem.deleteMethod.mode ===
-						DeleteCharacterItemHandlingMethods.setToNobody
+				const deleteModeItems = action.data?.characters?.remove.filter(
+					(i) =>
+						i.deleteMethod.mode === DeleteCharacterItemHandlingMethods.delete
 				);
 
-				await prisma.item.updateMany({
+				await prisma.item.deleteMany({
 					where: {
 						carriedByCharacterId: {
-							in: getIds(charactersWithNobodyMode),
+							in: getIds(deleteModeItems),
 						},
 					},
-					data: {
-						carriedByCharacterId: null,
-					},
 				});
+
+				// const charactersWithNobodyMode = action.data?.characters?.remove.filter(
+				// 	(mem) =>
+				// 		mem.deleteMethod.mode ===
+				// 		DeleteCharacterItemHandlingMethods.setToNobody
+				// );
+
+				// await prisma.item.updateMany({
+				// 	where: {
+				// 		carriedByCharacterId: {
+				// 			in: getIds(charactersWithNobodyMode),
+				// 		},
+				// 	},
+				// 	data: {
+				// 		carriedByCharacterId: null,
+				// 	},
+				// });
 
 				await prisma.character.deleteMany({
 					where: {
 						id: {
-							in: getIds(action.data.characters.remove),
+							in: getIds(action.data?.characters?.remove),
 						},
 					},
 				});
+			}
+
+			if (action.data?.characters?.update?.length) {
+				await Promise.all(
+					action.data.characters.update.map((characterUpdate) =>
+						prisma.character.update({
+							where: {
+								id: characterUpdate.id,
+							},
+							data: characterUpdate,
+						})
+					)
+				);
 			}
 
 			break;

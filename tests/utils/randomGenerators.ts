@@ -34,7 +34,7 @@ export const generateRandomInventoryItem = (
 		id: faker.datatype.uuid(),
 		name: faker.commerce.productName().substring(0, 23),
 		weight: Number(faker.datatype.number(200).toFixed(2)),
-		carriedByCharacterId: members ? randomItem(members).id : "Nobody",
+		carriedByCharacterId: members ? randomItem(members).id : null,
 		quantity: Number(faker.datatype.number(200).toFixed(0)),
 		description: faker.commerce.productDescription(),
 		category: faker.commerce.productAdjective(),

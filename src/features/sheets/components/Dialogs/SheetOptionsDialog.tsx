@@ -231,7 +231,7 @@ const SheetOptionsDialog: React.FC = () => {
 													queueCharacterForAdd(newCharacter.id);
 												}}
 											>
-												Add Party Character
+												Add Party Member
 											</Button>
 											{/* //# Character Delete Confirmation */}
 											<ConfirmationDialog

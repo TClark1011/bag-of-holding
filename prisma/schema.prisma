@@ -24,7 +24,7 @@ model Character {
   carryCapacity Float @default(0)
   carriedItems Item[]
 
-  sheet Sheet @relation(fields: [sheetId], references: [id])
+  sheet Sheet @relation(fields: [sheetId], references: [id], onDelete: Cascade)
   sheetId String
 }
 
@@ -38,7 +38,7 @@ model Item {
   category String?
   value Float?
 
-  carriedByCharacter Character? @relation(fields: [carriedByCharacterId], references: [id])
+  carriedByCharacter Character? @relation(fields: [carriedByCharacterId], references: [id], onDelete: SetNull)
   carriedByCharacterId String?
 
   sheet Sheet @relation(fields: [sheetId], references: [id])

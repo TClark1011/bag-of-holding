@@ -1,7 +1,6 @@
 import {
 	DeleteCharacterItemHandlingMethods,
 	FullSheet,
-	SheetState,
 	SheetStatePartialUpdateAction,
 } from "$sheets/types";
 import { generateCharacter, getCarriedItems } from "$sheets/utils";
@@ -10,12 +9,17 @@ import {
 	healthPotionFixture,
 	longswordFixture,
 } from "../fixtures/itemFixtures";
-import { merge } from "merge-anything";
 import tweakString from "../utils/tweakString";
 import prisma from "$prisma";
 import dbReducer from "$backend/dbReducer";
 import { Character, Item } from "@prisma/client";
 import createSheetFromFlatData from "$backend/createSheetFromFlatData";
+import { D, flow } from "@mobily/ts-belt";
+import { expectParam } from "$fp";
+import faker from "faker";
+import { generateRandomInventoryItem } from "$tests/utils/randomGenerators";
+
+const omitSheetId = flow(expectParam<Item>(), D.deleteKey("sheetId"));
 
 /**
  * Function for generating a new sheet for testing.
@@ -91,82 +95,135 @@ const testDbReducer = async (
 };
 
 describe("DB Reducer Actions", () => {
-	const testItem: Item = {
-		id: "id",
-		name: "name",
-		quantity: 1,
-		weight: 1,
-		description: null,
-		carriedByCharacterId: null,
-		category: null,
-		referenceLink: null,
-		sheetId: "",
-		value: 1,
-	};
-
-	test("Create item", () =>
-		testDbReducer(async (originalState, update) => {
-			const updatedState = await update({
-				type: "item_add",
-				data: testItem,
-			});
-			expect(updatedState.items.length).toBeGreaterThan(
-				originalState.items.length
-			);
-			expect(updatedState.items[0]).toMatchObject(testItem);
-		}));
-
-	test("Update item", () =>
-		testDbReducer(
-			async (originalState, update) => {
-				const updatedState = await update({
-					type: "item_update",
-					data: {
-						id: testItem.id,
-						name: tweakString(testItem.name),
-					},
-				});
-				expect(updatedState.items[0]).toMatchObject({
-					...testItem,
-					name: tweakString(testItem.name),
-				});
+	test("Create item", async () => {
+		const baseSheet = await prisma.sheet.create({
+			data: {
+				name: "name",
 			},
-			{
-				items: [testItem],
-			}
-		));
-
-	test("Delete item", () =>
-		testDbReducer(
-			async (_, update) => {
-				const updatedState = await update({
-					type: "item_remove",
-					data: testItem.id,
-				});
-				expect(updatedState.items.length).toEqual(0);
+			include: {
+				items: true,
 			},
-			{
-				items: [testItem],
-			}
-		));
+		});
+		const { id, ...newItem } = generateRandomInventoryItem({
+			sheetId: baseSheet.id,
+		});
+		await dbReducer(baseSheet.id, {
+			type: "item_add",
+			data: newItem,
+		});
+		const updatedSheet = await prisma.sheet.findFirstOrThrow({
+			where: {
+				id: baseSheet.id,
+			},
+			include: {
+				items: true,
+			},
+		});
+		expect(baseSheet.items).toHaveLength(0);
+		expect(updatedSheet.items).toHaveLength(1);
+		expect(newItem).toMatchObject(D.deleteKey(updatedSheet.items[0], "id"));
+	});
 
-	test("Sheet Metadata Update (name only)", async () =>
-		testDbReducer(async (originalState, update) => {
-			const updatedState = await update({
-				type: "sheet_metadataUpdate",
-				data: {
-					name: tweakString(originalState.name),
-					characters: {
-						add: [],
-						remove: [],
-						update: [],
-					},
+	test("Update item", async () => {
+		const baseItemName = "Item Name";
+		const updatedItemName = tweakString(baseItemName);
+
+		const { sheetId, id, ...testItem } = generateRandomInventoryItem({
+			name: baseItemName,
+		});
+
+		const baseSheet = await prisma.sheet.create({
+			data: {
+				name: "name",
+				items: {
+					create: [testItem],
 				},
-			});
-			expect(updatedState).not.toMatchObject(originalState);
-			expect(updatedState.name).not.toEqual(originalState.name);
-			expect(updatedState.name).toEqual(tweakString(originalState.name));
-		}));
+			},
+			include: {
+				items: true,
+			},
+		});
+
+		await dbReducer(baseSheet.id, {
+			type: "item_update",
+			data: {
+				id: baseSheet.items[0].id,
+				name: updatedItemName,
+			},
+		});
+
+		const updatedSheet = await prisma.sheet.findFirstOrThrow({
+			where: {
+				id: baseSheet.id,
+			},
+			include: {
+				items: true,
+			},
+		});
+
+		expect(baseSheet.items).toHaveLength(1);
+		expect(updatedSheet.items).toHaveLength(1);
+
+		expect(baseSheet.items[0].name).toBe(baseItemName);
+		expect(updatedSheet.items[0].name).toBe(updatedItemName);
+	});
+
+	test("Delete item", async () => {
+		const { sheetId, id, ...testItem } = generateRandomInventoryItem();
+		const baseSheet = await prisma.sheet.create({
+			data: {
+				name: "name",
+				items: {
+					create: [testItem],
+				},
+			},
+			include: {
+				items: true,
+			},
+		});
+
+		await dbReducer(baseSheet.id, {
+			type: "item_remove",
+			data: baseSheet.items[0].id,
+		});
+
+		const updatedSheet = await prisma.sheet.findFirstOrThrow({
+			where: {
+				id: baseSheet.id,
+			},
+			include: {
+				items: true,
+			},
+		});
+
+		expect(baseSheet.items).toHaveLength(1);
+		expect(updatedSheet.items).toHaveLength(0);
+		expect(D.deleteKeys(updatedSheet.items[0], ["id", "sheetId"]));
+	});
+
+	test("Sheet Metadata Update (name only)", async () => {
+		const baseSheet = await prisma.sheet.create({
+			data: {
+				name: "name",
+			},
+		});
+
+		await dbReducer(baseSheet.id, {
+			type: "sheet_metadataUpdate",
+			data: {
+				name: "name+",
+			},
+		});
+
+		const updatedSheet = await prisma.sheet.findFirstOrThrow({
+			where: {
+				id: baseSheet.id,
+			},
+		});
+
+		expect(baseSheet.name).toBe("name");
+		expect(updatedSheet.name).toBe("name+");
+	});
 });
 
 describe("Metadata Member updates", () => {
@@ -191,323 +248,622 @@ describe("Metadata Member updates", () => {
 		{ ...healthPotionFixture, carriedByCharacterId: member2.id },
 	];
 
-	test("Add member", () =>
-		testDbReducer(async (originalState, update) => {
-			const updated = await update({
-				type: "sheet_metadataUpdate",
-				data: {
-					name: originalState.name,
-					characters: { add: [testMembers[0]], remove: [], update: [] },
+	test("Add member", async () => {
+		const baseSheet = await prisma.sheet.create({
+			data: {
+				name: "name",
+			},
+			include: {
+				characters: true,
+			},
+		});
+
+		await dbReducer(baseSheet.id, {
+			type: "sheet_metadataUpdate",
+			data: {
+				characters: {
+					add: [
+						{
+							carryCapacity: 0,
+							name: "character name",
+						},
+					],
 				},
-			});
-			expect(updated.characters.length).toEqual(1);
-		}));
-	test("Add multiple characters", () =>
-		testDbReducer(async (originalState, update) => {
-			const updated = await update({
-				type: "sheet_metadataUpdate",
-				data: {
-					name: originalState.name,
-					characters: { add: testMembers, remove: [], update: [] },
+			},
+		});
+
+		const updatedSheet = await prisma.sheet.findFirstOrThrow({
+			where: {
+				id: baseSheet.id,
+			},
+			include: {
+				characters: true,
+			},
+		});
+
+		expect(baseSheet.characters).toHaveLength(0);
+		expect(updatedSheet.characters).toHaveLength(1);
+		expect(updatedSheet.characters[0].name).toBe("character name");
+	});
+
+	test("Add multiple characters", async () => {
+		const baseSheet = await prisma.sheet.create({
+			data: {
+				name: "name",
+			},
+			include: {
+				characters: true,
+			},
+		});
+
+		await dbReducer(baseSheet.id, {
+			type: "sheet_metadataUpdate",
+			data: {
+				characters: {
+					add: [
+						{
+							carryCapacity: 0,
+							name: "character name",
+						},
+						{
+							carryCapacity: 0,
+							name: "character name 2",
+						},
+					],
 				},
-			});
-			expect(updated.characters.length).toEqual(testMembers.length);
-		}));
+			},
+		});
 
-	test("Remove member - Remove item", () =>
-		testDbReducer(
-			async (originalState, update) => {
-				expect(originalState.items.length).toEqual(1);
+		const updatedSheet = await prisma.sheet.findFirstOrThrow({
+			where: {
+				id: baseSheet.id,
+			},
+			include: {
+				characters: true,
+			},
+		});
 
-				const updated = await update({
-					type: "sheet_metadataUpdate",
-					data: {
-						name: originalState.name,
-						characters: {
-							add: [],
-							remove: [
-								{
-									...testMembers[0],
-									deleteMethod: {
-										mode: DeleteCharacterItemHandlingMethods.delete,
+		expect(baseSheet.characters).toHaveLength(0);
+		expect(updatedSheet.characters).toHaveLength(2);
+		expect(updatedSheet.characters[0].name).toBe("character name");
+		expect(updatedSheet.characters[1].name).toBe("character name 2");
+	});
+
+	test("Remove member - Remove item", async () => {
+		const id = faker.datatype.uuid();
+		const baseSheet = await prisma.sheet.create({
+			data: {
+				name: "name",
+				id,
+				characters: {
+					create: [
+						{
+							name: "character name",
+							carriedItems: {
+								create: [
+									{
+										name: "item name",
+										sheetId: id,
 									},
-								},
-							],
-							update: [],
+								],
+							},
 						},
-					},
-				});
-				expect(updated.items.length).toEqual(0);
+					],
+				},
 			},
-			{
-				characters: [testMembers[0]],
-				items: [getTestItems(testMembers[0])[0]],
-			}
-		));
+			include: {
+				characters: true,
+				items: true,
+			},
+		});
 
-	test("Remove member - Remove multiple items", () =>
-		testDbReducer(
-			async (originalState, update) => {
-				expect(originalState.items.length).toEqual(2);
+		await dbReducer(baseSheet.id, {
+			type: "sheet_metadataUpdate",
+			data: {
+				characters: {
+					remove: [
+						{
+							id: baseSheet.characters[0].id,
+							deleteMethod: {
+								mode: DeleteCharacterItemHandlingMethods.delete,
+							},
+						} as never,
+					],
+				},
+			},
+		});
 
-				const updated = await update({
-					type: "sheet_metadataUpdate",
-					data: {
-						name: originalState.name,
-						characters: {
-							add: [],
-							remove: [
-								{
-									...testMembers[0],
-									deleteMethod: {
-										mode: DeleteCharacterItemHandlingMethods.delete,
+		const updatedSheet = await prisma.sheet.findFirstOrThrow({
+			where: {
+				id: baseSheet.id,
+			},
+			include: {
+				characters: true,
+				items: true,
+			},
+		});
+
+		expect(baseSheet.items).toHaveLength(1);
+		expect(baseSheet.characters).toHaveLength(1);
+
+		expect(updatedSheet.items).toHaveLength(0);
+		expect(updatedSheet.characters).toHaveLength(0);
+	});
+
+	test("Remove member - Remove multiple items", async () => {
+		const id = faker.datatype.uuid();
+
+		const itemId1 = faker.datatype.uuid();
+		const itemId2 = faker.datatype.uuid();
+		const baseSheet = await prisma.sheet.create({
+			data: {
+				name: "name",
+				id,
+				characters: {
+					create: [
+						{
+							name: "character name",
+							carriedItems: {
+								create: [
+									{
+										name: "item name 1",
+										sheetId: id,
+										id: itemId1,
 									},
-								},
-							],
-							update: [],
-						},
-					},
-				});
-				expect(updated.items.length).toEqual(0);
-			},
-			{
-				characters: [testMembers[0]],
-				items: getTestItems(testMembers[0]),
-			}
-		));
-	test("Remove member - Move item to another member", () =>
-		testDbReducer(
-			async (originalState, update) => {
-				expect(originalState.items.length).toEqual(2);
-
-				const updated = await update({
-					type: "sheet_metadataUpdate",
-					data: {
-						name: originalState.name,
-						characters: {
-							add: [],
-							remove: [
-								{
-									...testMembers[0],
-									deleteMethod: {
-										mode: DeleteCharacterItemHandlingMethods.give,
-										to: testMembers[1].id,
+									{
+										name: "item name 2",
+										sheetId: id,
+										id: itemId2,
 									},
-								},
-							],
-							update: [],
+								],
+							},
 						},
-					},
-				});
-				expect(updated.items.length).toEqual(2);
-				expect(updated.items).toEqual(
-					getCarriedItems(updated.items, testMembers[1])
-				);
+					],
+				},
+				items: {
+					create: [
+						{
+							name: "item name 3",
+						},
+					],
+				},
 			},
-			{
-				characters: [testMembers[0], testMembers[1]],
-				items: getTestItems(testMembers[0], testMembers[1]),
-			}
-		));
-	test("Remove member - Move multiple items to another member", () =>
-		testDbReducer(
-			async (originalState, update) => {
-				expect(originalState.items.length).toEqual(3);
-				expect(
-					getCarriedItems(originalState.items, testMembers[0]).length
-				).toEqual(1);
-				expect(
-					getCarriedItems(originalState.items, testMembers[1]).length
-				).toEqual(2);
+			include: {
+				characters: true,
+				items: true,
+			},
+		});
 
-				const updated = await update({
-					type: "sheet_metadataUpdate",
-					data: {
-						name: originalState.name,
-						characters: {
-							add: [],
-							remove: [
-								{
-									...testMembers[1],
-									deleteMethod: {
-										mode: DeleteCharacterItemHandlingMethods.give,
-										to: testMembers[0].id,
+		await dbReducer(baseSheet.id, {
+			type: "sheet_metadataUpdate",
+			data: {
+				characters: {
+					remove: [
+						{
+							id: baseSheet.characters[0].id,
+							deleteMethod: {
+								mode: DeleteCharacterItemHandlingMethods.delete,
+							},
+						} as never,
+					],
+				},
+			},
+		});
+
+		const updatedSheet = await prisma.sheet.findFirstOrThrow({
+			where: {
+				id: baseSheet.id,
+			},
+			include: {
+				characters: true,
+				items: true,
+			},
+		});
+
+		expect(baseSheet.items).toHaveLength(3);
+		expect(baseSheet.characters).toHaveLength(1);
+
+		expect(updatedSheet.items).toHaveLength(1);
+		expect(updatedSheet.characters).toHaveLength(0);
+
+		expect(updatedSheet.items[0].name).toBe("item name 3");
+	});
+
+	test("Remove member - Move item to another member", async () => {
+		const id = faker.datatype.uuid();
+		const baseSheet = await prisma.sheet.create({
+			data: {
+				name: "name",
+				id,
+				characters: {
+					create: [
+						{
+							name: "character name",
+							carriedItems: {
+								create: [
+									{
+										name: "item name",
+										sheetId: id,
 									},
-								},
-							],
-							update: [],
+								],
+							},
 						},
-					},
-				});
-				expect(updated.items.length).toEqual(3);
-				expect(updated.items).toEqual(
-					getCarriedItems(updated.items, testMembers[0])
-				);
+						{
+							name: "character name 2",
+						},
+					],
+				},
 			},
-			{
-				characters: [testMembers[0], testMembers[1]],
-				items: [
-					{
-						id: "1",
-						name: " ",
-						quantity: 1,
-						weight: 1,
-						carriedByCharacterId: testMembers[0].id,
-						category: null,
-						description: null,
-						referenceLink: null,
-						sheetId: "",
-						value: 1,
-					},
-					{
-						id: "2",
-						name: " ",
-						quantity: 1,
-						weight: 1,
-						carriedByCharacterId: testMembers[1].id,
-						category: null,
-						description: null,
-						referenceLink: null,
-						sheetId: "",
-						value: 1,
-					},
-					{
-						id: "3",
-						name: " ",
-						quantity: 1,
-						weight: 1,
-						carriedByCharacterId: testMembers[1].id,
-						category: null,
-						description: null,
-						referenceLink: null,
-						sheetId: "",
-						value: 1,
-					},
-				],
-			}
-		));
+			include: {
+				characters: true,
+				items: true,
+			},
+		});
 
-	test("Remove member - Set to nobody", () =>
-		testDbReducer(
-			async (originalState, update) => {
-				expect(originalState.items.length).toEqual(1);
+		await dbReducer(baseSheet.id, {
+			type: "sheet_metadataUpdate",
+			data: {
+				characters: {
+					remove: [
+						{
+							id: baseSheet.characters[0].id,
+							deleteMethod: {
+								mode: DeleteCharacterItemHandlingMethods.give,
+								to: baseSheet.characters[1].id,
+							},
+						} as never,
+					],
+				},
+			},
+		});
 
-				const updated = await update({
-					type: "sheet_metadataUpdate",
-					data: {
-						name: originalState.name,
-						characters: {
-							add: [],
-							remove: [
-								{
-									...testMembers[0],
-									deleteMethod: {
-										mode: DeleteCharacterItemHandlingMethods.setToNobody,
+		const updatedSheet = await prisma.sheet.findFirstOrThrow({
+			where: {
+				id: baseSheet.id,
+			},
+			include: {
+				characters: {
+					include: {
+						carriedItems: true,
+					},
+				},
+				items: true,
+			},
+		});
+
+		expect(baseSheet.items).toHaveLength(1);
+		expect(baseSheet.characters).toHaveLength(2);
+
+		expect(updatedSheet.items).toHaveLength(1);
+		expect(updatedSheet.characters).toHaveLength(1);
+
+		expect(updatedSheet.characters[0].carriedItems).toHaveLength(1);
+		expect(updatedSheet.characters[0].carriedItems[0].name).toBe("item name");
+	});
+
+	test("Remove member - Move multiple items to another member", async () => {
+		const id = faker.datatype.uuid();
+		const itemId1 = faker.datatype.uuid();
+		const itemId2 = faker.datatype.uuid();
+		const baseSheet = await prisma.sheet.create({
+			data: {
+				name: "name",
+				id,
+				characters: {
+					create: [
+						{
+							name: "character name",
+							carriedItems: {
+								create: [
+									{
+										name: "item name 1",
+										sheetId: id,
+										id: itemId1,
 									},
-								},
-							],
-							update: [],
-						},
-					},
-				});
-				expect(updated.items.length).toEqual(1);
-				expect(updated.items).toEqual(getCarriedItems(updated.items, "Nobody"));
-			},
-			{
-				characters: [testMembers[0]],
-				items: [getTestItems(testMembers[0])[0]],
-			}
-		));
-	test("Remove member - Set multiple to nobody", () =>
-		testDbReducer(
-			async (originalState, update) => {
-				expect(originalState.items.length).toEqual(2);
-
-				const updated = await update({
-					type: "sheet_metadataUpdate",
-					data: {
-						name: originalState.name,
-						characters: {
-							add: [],
-							remove: [
-								{
-									...testMembers[0],
-									deleteMethod: {
-										mode: DeleteCharacterItemHandlingMethods.setToNobody,
+									{
+										name: "item name 2",
+										sheetId: id,
+										id: itemId2,
 									},
-								},
-							],
-							update: [],
+								],
+							},
 						},
-					},
-				});
-				expect(updated.items.length).toEqual(originalState.items.length);
-				expect(updated.items).toEqual(getCarriedItems(updated.items, "Nobody"));
+						{
+							name: "character name 2",
+						},
+					],
+				},
 			},
-			{
-				characters: [testMembers[0]],
-				items: getTestItems(testMembers[0]),
-			}
-		));
-	test("Update member", () =>
-		testDbReducer(
-			async (originalState, update) => {
-				const updated = await update({
-					type: "sheet_metadataUpdate",
-					data: {
-						name: originalState.name,
-						characters: {
-							add: [],
-							remove: [],
-							update: [
-								{
-									...testMembers[0],
-									name: tweakString(testMembers[0].name),
-								},
-							],
-						},
-					},
-				});
-				expect(updated.characters).not.toEqual(originalState.characters);
-				expect(updated.characters.length).toEqual(
-					originalState.characters.length
-				);
-				expect(updated.characters[0].name).toEqual(
-					tweakString(testMembers[0].name)
-				);
+			include: {
+				characters: true,
+				items: true,
 			},
-			{
-				characters: [testMembers[0]],
-			}
-		));
-	test("Update multiple characters", () =>
-		testDbReducer(
-			async (originalState, update) => {
-				const updated = await update({
-					type: "sheet_metadataUpdate",
-					data: {
-						name: originalState.name,
-						characters: {
-							add: [],
-							remove: [],
-							update: testMembers.map(({ name, ...mem }) => ({
-								...mem,
-								name: tweakString(name),
-							})),
-						},
-					},
-				});
+		});
 
-				expect(updated.characters).not.toEqual(originalState.characters);
-				expect(updated.characters.length).toEqual(
-					originalState.characters.length
-				);
-				expect(updated.characters.map((m) => m.name)).toEqual(
-					originalState.characters.map((m) => tweakString(m.name))
-				);
+		await dbReducer(baseSheet.id, {
+			type: "sheet_metadataUpdate",
+			data: {
+				characters: {
+					remove: [
+						{
+							id: baseSheet.characters[0].id,
+							deleteMethod: {
+								mode: DeleteCharacterItemHandlingMethods.give,
+								to: baseSheet.characters[1].id,
+							},
+						} as never,
+					],
+				},
 			},
-			{
-				characters: testMembers,
-			}
-		));
+		});
+
+		const updatedSheet = await prisma.sheet.findFirstOrThrow({
+			where: {
+				id: baseSheet.id,
+			},
+			include: {
+				characters: {
+					include: {
+						carriedItems: true,
+					},
+				},
+				items: true,
+			},
+		});
+
+		expect(baseSheet.items).toHaveLength(2);
+		expect(baseSheet.characters).toHaveLength(2);
+
+		expect(updatedSheet.items).toHaveLength(2);
+		expect(updatedSheet.characters).toHaveLength(1);
+
+		expect(updatedSheet.characters[0].carriedItems).toHaveLength(2);
+		expect(updatedSheet.characters[0].carriedItems[0].name).toBe("item name 1");
+		expect(updatedSheet.characters[0].carriedItems[1].name).toBe("item name 2");
+	});
+
+	test("Remove member - Set to nobody", async () => {
+		const id = faker.datatype.uuid();
+		const baseSheet = await prisma.sheet.create({
+			data: {
+				name: "name",
+				id,
+				characters: {
+					create: [
+						{
+							name: "character name",
+							carriedItems: {
+								create: [
+									{
+										name: "item name 1",
+										sheetId: id,
+									},
+								],
+							},
+						},
+					],
+				},
+			},
+			include: {
+				characters: true,
+				items: true,
+			},
+		});
+
+		await dbReducer(baseSheet.id, {
+			type: "sheet_metadataUpdate",
+			data: {
+				characters: {
+					remove: [
+						{
+							id: baseSheet.characters[0].id,
+							deleteMethod: {
+								mode: DeleteCharacterItemHandlingMethods.setToNobody,
+							},
+						} as never,
+					],
+				},
+			},
+		});
+
+		const updatedSheet = await prisma.sheet.findFirstOrThrow({
+			where: {
+				id: baseSheet.id,
+			},
+			include: {
+				characters: true,
+				items: true,
+			},
+		});
+
+		expect(baseSheet.items).toHaveLength(1);
+		expect(baseSheet.characters).toHaveLength(1);
+
+		expect(updatedSheet.items).toHaveLength(1);
+		expect(updatedSheet.characters).toHaveLength(0);
+
+		expect(updatedSheet.items[0].carriedByCharacterId).toBeNull();
+	});
+
+	test("Remove member - Set multiple to nobody", async () => {
+		const id = faker.datatype.uuid();
+		const baseSheet = await prisma.sheet.create({
+			data: {
+				name: "name",
+				id,
+				characters: {
+					create: [
+						{
+							name: "character name",
+							carriedItems: {
+								create: [
+									{
+										name: "item name 1",
+										sheetId: id,
+									},
+									{
+										name: "item name 2",
+										sheetId: id,
+									},
+								],
+							},
+						},
+					],
+				},
+			},
+			include: {
+				characters: true,
+				items: true,
+			},
+		});
+
+		await dbReducer(baseSheet.id, {
+			type: "sheet_metadataUpdate",
+			data: {
+				characters: {
+					remove: [
+						{
+							id: baseSheet.characters[0].id,
+							deleteMethod: {
+								mode: DeleteCharacterItemHandlingMethods.setToNobody,
+							},
+						} as never,
+					],
+				},
+			},
+		});
+
+		const updatedSheet = await prisma.sheet.findFirstOrThrow({
+			where: {
+				id: baseSheet.id,
+			},
+			include: {
+				characters: true,
+				items: true,
+			},
+		});
+
+		expect(baseSheet.items).toHaveLength(2);
+		expect(baseSheet.characters).toHaveLength(1);
+
+		expect(updatedSheet.items).toHaveLength(2);
+		expect(updatedSheet.characters).toHaveLength(0);
+
+		expect(updatedSheet.items[0].carriedByCharacterId).toBeNull();
+		expect(updatedSheet.items[1].carriedByCharacterId).toBeNull();
+	});
+
+	test("Update member", async () => {
+		const id = faker.datatype.uuid();
+		const baseSheet = await prisma.sheet.create({
+			data: {
+				name: "name",
+				id,
+				characters: {
+					create: [
+						{
+							name: "character name",
+						},
+					],
+				},
+			},
+			include: {
+				characters: true,
+			},
+		});
+
+		await dbReducer(baseSheet.id, {
+			type: "sheet_metadataUpdate",
+			data: {
+				characters: {
+					update: [
+						{
+							id: baseSheet.characters[0].id,
+							name: "new name",
+						},
+					],
+				},
+			},
+		});
+
+		const updatedSheet = await prisma.sheet.findFirstOrThrow({
+			where: {
+				id: baseSheet.id,
+			},
+			include: {
+				characters: true,
+			},
+		});
+
+		expect(baseSheet.characters).toHaveLength(1);
+		expect(updatedSheet.characters).toHaveLength(1);
+
+		expect(updatedSheet.characters[0].name).toBe("new name");
+	});
+
+	test("Update multiple characters", async () => {
+		const id = faker.datatype.uuid();
+		const baseSheet = await prisma.sheet.create({
+			data: {
+				name: "name",
+				id,
+				characters: {
+					create: [
+						{
+							name: "character name",
+						},
+						{
+							name: "character name 2",
+						},
+					],
+				},
+			},
+			include: {
+				characters: true,
+			},
+		});
+
+		await dbReducer(baseSheet.id, {
+			type: "sheet_metadataUpdate",
+			data: {
+				characters: {
+					update: [
+						{
+							id: baseSheet.characters[0].id,
+							name: "new name",
+						},
+						{
+							id: baseSheet.characters[1].id,
+							name: "new name 2",
+						},
+					],
+				},
+			},
+		});
+
+		const updatedSheet = await prisma.sheet.findFirstOrThrow({
+			where: {
+				id: baseSheet.id,
+			},
+			include: {
+				characters: true,
+			},
+		});
+
+		expect(baseSheet.characters).toHaveLength(2);
+		expect(updatedSheet.characters).toHaveLength(2);
+
+		expect(updatedSheet.characters).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					id: baseSheet.characters[0].id,
+					name: "new name",
+				}),
+				expect.objectContaining({
+					id: baseSheet.characters[1].id,
+					name: "new name 2",
+				}),
+			])
+		);
+	});
 });

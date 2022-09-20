@@ -2,8 +2,6 @@
 const { pipe, D, A } = require("@mobily/ts-belt");
 const { pathsToModuleNameMapper } = require("ts-jest");
 const { compilerOptions } = require("./tsconfig");
-const { config: configureEnv } = require("dotenv-flow");
-// configureEnv({});
 
 // The order that the "paths" keys need to be in
 // order for jest to be able to resolve the imports
@@ -26,6 +24,14 @@ const config = {
 
 module.exports = {
 	testTimeout: 10000,
+	reporters: [
+		[
+			"jest-compact-reporter",
+			{
+				showPassingTests: true,
+			},
+		],
+	],
 	projects: [
 		{
 			displayName: "frontend",

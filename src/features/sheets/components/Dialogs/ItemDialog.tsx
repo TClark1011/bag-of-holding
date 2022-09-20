@@ -95,16 +95,18 @@ const ItemDialog: React.FC<Props> = ({ mode }) => {
 		if (!data.category) {
 			data.category = "None";
 		}
+
 		const action: SheetStateAction = {
 			type: inEditMode ? "item_update" : "item_add",
-			data,
+			data: {
+				id: data.id ?? "",
+				...data,
+			},
 			sendToServer: true,
 			/**
 			 * Close the dialog if the server responded positively
 			 */
-			onThen: () => {
-				closeDialog();
-			},
+			onThen: closeDialog,
 			/**
 			 * Set submitting to false when the server responds
 			 */

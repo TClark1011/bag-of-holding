@@ -50,7 +50,9 @@ export type RemoveItemAction = SheetStateActionTemplate<"item_remove", string>;
  */
 export type UpdateItemAction = SheetStateActionTemplate<
 	"item_update",
-	Partial<ItemCreationFields>
+	Partial<ItemCreationFields> & {
+		id: string;
+	}
 >;
 
 /**
@@ -82,11 +84,8 @@ export enum DeleteCharacterItemHandlingMethods {
 	setToNobody = "setToNobody",
 }
 
-export type CharacterDeleteMethodTemplate<Mode extends string> = {
-	mode: Mode;
-};
-
-export type CharacterMoveDeleteMethod = CharacterDeleteMethodTemplate<DeleteCharacterItemHandlingMethods.give> & {
+export type CharacterMoveDeleteMethod = {
+	mode: DeleteCharacterItemHandlingMethods.give;
 	to: string;
 };
 
@@ -95,13 +94,18 @@ export type CharacterMoveDeleteMethod = CharacterDeleteMethodTemplate<DeleteChar
  * method
  *
  * @param deleteMethod the delete method to check
+ * @param deleteMethod.mode the mode
  */
-export const isMoveDeleteMethod = (
-	deleteMethod: CharacterDeleteMethodTemplate<string>
-): deleteMethod is CharacterMoveDeleteMethod => "to" in deleteMethod;
+export const isMoveDeleteMethod = (deleteMethod: {
+	mode: DeleteCharacterItemHandlingMethods;
+}): deleteMethod is CharacterMoveDeleteMethod => "to" in deleteMethod;
 
-export type CharacterRemoveDeleteMethod = CharacterDeleteMethodTemplate<DeleteCharacterItemHandlingMethods.delete>;
-export type CharacterSetToNobodyDeleteMethod = CharacterDeleteMethodTemplate<DeleteCharacterItemHandlingMethods.setToNobody>;
+export type CharacterRemoveDeleteMethod = {
+	mode: DeleteCharacterItemHandlingMethods.delete;
+};
+export type CharacterSetToNobodyDeleteMethod = {
+	mode: DeleteCharacterItemHandlingMethods.setToNobody;
+};
 
 export type CharacterDeleteMethodFields =
 	| CharacterMoveDeleteMethod
@@ -112,18 +116,21 @@ export interface CharacterDeleteAction extends Character {
 	deleteMethod: CharacterDeleteMethodFields;
 }
 
+type CharacterActionQueueItem = Partial<Omit<Character, "sheetId">> & {
+	id: string;
+};
 export type SheetStateCharactersUpdateQueue = {
-	add: Character[];
+	add: Omit<CharacterActionQueueItem, "id">[];
 	remove: CharacterDeleteAction[];
-	update: Character[];
+	update: CharacterActionQueueItem[];
 };
 
 export type UpdateSheetMetaDataAction = SheetStateActionTemplate<
 	"sheet_metadataUpdate",
-	{
-		characters: SheetStateCharactersUpdateQueue;
+	Partial<{
+		characters: Partial<SheetStateCharactersUpdateQueue>;
 		name: string;
-	}
+	}>
 >;
 
 /**

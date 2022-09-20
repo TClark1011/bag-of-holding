@@ -11,7 +11,7 @@ export * from "@mobily/ts-belt";
  * @returns A function that takes one parameter
  * and returns that parameter.
  */
-export const expect = <T>() => (value: T) => value;
+export const expectParam = <T>() => (value: T) => value;
 
 /**
  * Create a function that will return the passed

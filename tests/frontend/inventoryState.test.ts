@@ -71,7 +71,11 @@ describe("Inventory State Reducer Actions", () => {
 			})
 		).toMatchObject({
 			...testState,
-			items: [{ ...testItem, name: newName }],
+			items: [
+				expect.objectContaining({
+					name: newName,
+				}),
+			],
 		});
 	});
 
@@ -118,7 +122,8 @@ describe("Metadata updates", () => {
 			name: tweakString(testState.name),
 		});
 	});
-	test("Add member", () => {
+
+	test("Add character", () => {
 		const updatedState = inventoryReducer(testState, {
 			type: "sheet_metadataUpdate",
 			data: {
@@ -130,8 +135,16 @@ describe("Metadata updates", () => {
 				},
 			},
 		});
-		expect(updatedState.characters).toEqual([averageMembersFixture[0]]);
+		expect(updatedState.characters).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					name: averageMembersFixture[0].name,
+					carryCapacity: averageMembersFixture[0].carryCapacity,
+				}),
+			])
+		);
 	});
+
 	test("Add multiple characters", () => {
 		const updatedState = inventoryReducer(testState, {
 			type: "sheet_metadataUpdate",
@@ -144,7 +157,17 @@ describe("Metadata updates", () => {
 				},
 			},
 		});
-		expect(updatedState.characters).toEqual(averageMembersFixture);
+
+		expect(updatedState.characters).toEqual(
+			expect.arrayContaining(
+				averageMembersFixture.map((c) =>
+					expect.objectContaining({
+						name: c.name,
+						carryCapacity: c.carryCapacity,
+					})
+				)
+			)
+		);
 	});
 	test("Remove member (delete item)", () => {
 		const updatedState = inventoryReducer(
@@ -180,6 +203,7 @@ describe("Metadata updates", () => {
 		expect(updatedState.characters).toEqual([]);
 		expect(updatedState.items).toEqual([]);
 	});
+
 	test("Remove member (delete multiple items)", () => {
 		const updatedState = inventoryReducer(
 			{
@@ -214,6 +238,7 @@ describe("Metadata updates", () => {
 		expect(updatedState.characters).toEqual([]);
 		expect(updatedState.items).toEqual([]);
 	});
+
 	test("Remove member (give item)", () => {
 		const updatedState = inventoryReducer(
 			{
@@ -252,6 +277,7 @@ describe("Metadata updates", () => {
 			averageMembersFixture[0].id
 		);
 	});
+
 	test("Remove member (give multiple items)", () => {
 		const updatedState = inventoryReducer(
 			{
@@ -289,6 +315,7 @@ describe("Metadata updates", () => {
 			getCarriedItems(updatedState.items, averageMembersFixture[0])
 		);
 	});
+
 	test("Remove member (mark item as carried by nobody)", () => {
 		const updatedState = inventoryReducer(
 			{
@@ -384,8 +411,14 @@ describe("Metadata updates", () => {
 				},
 			}
 		);
-		expect(updatedState.characters).toEqual([randomUpdate]);
+		expect(updatedState.characters).toEqual([
+			expect.objectContaining({
+				name: randomUpdate.name,
+				id: randomUpdate.id,
+			}),
+		]);
 	});
+
 	test("Update multiple characters", () => {
 		const randomUpdates = getIds([
 			averageMembersFixture[0],

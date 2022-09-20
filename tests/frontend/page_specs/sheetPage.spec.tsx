@@ -17,7 +17,7 @@ import {
 
 const basicSheetJsx = <SheetPage {...basicSheetFixture} />;
 
-const addCharactersButtonText = "Add Characters";
+const addCharactersButtonText = "Add Members";
 describe("Elements render", () => {
 	const { items, name, characters, id } = basicSheetFixture;
 
