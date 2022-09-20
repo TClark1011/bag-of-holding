@@ -1,14 +1,10 @@
-import { dbReducer, connectToMongoose } from "$backend/utils";
-import { SheetModel } from "$backend/models";
 import {
-	InventorySheetFields,
-	InventoryItemFields,
-	DeleteMemberItemHandlingMethods,
-	InventorySheetPartialUpdateAction,
-	InventoryMemberFields,
+	DeleteCharacterItemHandlingMethods,
+	FullSheet,
+	SheetState,
+	SheetStatePartialUpdateAction,
 } from "$sheets/types";
-import { generateMember, getCarriedItems } from "$sheets/utils";
-import mongoose from "mongoose";
+import { generateCharacter, getCarriedItems } from "$sheets/utils";
 import { OmitId } from "$root/types";
 import {
 	healthPotionFixture,
@@ -16,27 +12,10 @@ import {
 } from "../fixtures/itemFixtures";
 import { merge } from "merge-anything";
 import tweakString from "../utils/tweakString";
-import { MongoMemoryServer } from "mongodb-memory-server";
-
-const mockedMongo = MongoMemoryServer.create();
-
-beforeAll(async () => {
-	const mongoInstance = await mockedMongo;
-	await connectToMongoose(mongoInstance.getUri());
-});
-
-afterAll(async () => {
-	const mongoInstance = await mockedMongo;
-	await mongoose.disconnect().catch((err) => {
-		console.log("error with 'mongoose.disconnect'");
-		console.log(err);
-	});
-	await mongoose.connection.close().catch((err) => {
-		console.log("error with 'mongoose.connection.close'");
-		console.log(err);
-	});
-	await mongoInstance.stop();
-});
+import prisma from "$prisma";
+import dbReducer from "$backend/dbReducer";
+import { Character, Item } from "@prisma/client";
+import createSheetFromFlatData from "$backend/createSheetFromFlatData";
 
 /**
  * Function for generating a new sheet for testing.
@@ -50,30 +29,31 @@ afterAll(async () => {
  * @param [initialStateTweaks={}] An object which
  * is merged with a basic sheet inventory state to derive
  * derive the starting state of the sheet. The basic initial
- * sheet has the name "name" and no members or items.
+ * sheet has the name "name" and no characters or items.
  */
 const testDbReducer = async (
 	testFn: (
-		initialState: InventorySheetFields,
-		update: (
-			action: InventorySheetPartialUpdateAction
-		) => Promise<InventorySheetFields>
+		initialState: FullSheet,
+		update: (action: SheetStatePartialUpdateAction) => Promise<FullSheet>
 	) => Promise<void>,
-	initialStateTweaks: Partial<OmitId<InventorySheetFields>> = {}
+	initialStateTweaks: Partial<OmitId<FullSheet>> = {}
 ): Promise<void> => {
-	/**
-	 *
-	 */
-	const newSheet = await new SheetModel(
-		merge(
-			{
-				name: "name",
-				members: [],
-				items: [],
-			},
-			initialStateTweaks
-		)
-	).save();
+	const newSheet = await createSheetFromFlatData({
+		characters: [],
+		items: [],
+		name: "name",
+		...initialStateTweaks,
+	});
+	// const newSheet = await new SheetModel(
+	// 	merge(
+	// 		{
+	// 			name: "name",
+	// 			characters: [],
+	// 			items: [],
+	// 		},
+	// 		initialStateTweaks
+	// 	)
+	// ).save();
 
 	/**
 	 * Update the sheet via an action and return the
@@ -84,27 +64,46 @@ const testDbReducer = async (
 	 * @returns The state of the sheet
 	 * after the action has been executed.
 	 */
-	const update = async (action: InventorySheetPartialUpdateAction) => {
-		await dbReducer((newSheet._id as unknown) as string, action);
-		return (await (SheetModel.findById(
-			(newSheet._id as unknown) as string
-		) as unknown)) as InventorySheetFields;
+	const update = async (action: SheetStatePartialUpdateAction) => {
+		await dbReducer(newSheet.id, action);
+		const updatedSheet = await prisma.sheet.findFirstOrThrow({
+			where: {
+				id: newSheet.id,
+			},
+			include: {
+				characters: true,
+				items: true,
+			},
+		});
+		return updatedSheet;
 	};
 
-	await testFn((newSheet as unknown) as InventorySheetFields, update);
+	await testFn(newSheet, update);
 	//? Execute the test function
 
-	await newSheet.delete();
+	await prisma.sheet.delete({
+		where: {
+			id: newSheet.id,
+		},
+	});
+
 	//? Delete the sheet
 };
 
 describe("DB Reducer Actions", () => {
-	const testItem: InventoryItemFields = {
-		_id: "id",
+	const testItem: Item = {
+		id: "id",
 		name: "name",
 		quantity: 1,
 		weight: 1,
+		description: null,
+		carriedByCharacterId: null,
+		category: null,
+		referenceLink: null,
+		sheetId: "",
+		value: 1,
 	};
+
 	test("Create item", () =>
 		testDbReducer(async (originalState, update) => {
 			const updatedState = await update({
@@ -123,7 +122,7 @@ describe("DB Reducer Actions", () => {
 				const updatedState = await update({
 					type: "item_update",
 					data: {
-						_id: testItem._id,
+						id: testItem.id,
 						name: tweakString(testItem.name),
 					},
 				});
@@ -142,7 +141,7 @@ describe("DB Reducer Actions", () => {
 			async (_, update) => {
 				const updatedState = await update({
 					type: "item_remove",
-					data: testItem._id,
+					data: testItem.id,
 				});
 				expect(updatedState.items.length).toEqual(0);
 			},
@@ -157,7 +156,7 @@ describe("DB Reducer Actions", () => {
 				type: "sheet_metadataUpdate",
 				data: {
 					name: tweakString(originalState.name),
-					members: {
+					characters: {
 						add: [],
 						remove: [],
 						update: [],
@@ -171,25 +170,25 @@ describe("DB Reducer Actions", () => {
 });
 
 describe("Metadata Member updates", () => {
-	const testMembers: InventoryMemberFields[] = [
-		generateMember("1"),
-		generateMember("1"),
+	const testMembers: Character[] = [
+		generateCharacter("1"),
+		generateCharacter("1"),
 	];
 
 	/**
 	 * Function to fetch test items. The test items are
 	 * pulled from the fixtures folder, with their
-	 * `carriedBy` field changed to match passed members.
+	 * `carriedByCharacterId` field changed to match passed characters.
 	 *
-	 * @param member The member object, the `_id`
+	 * @param member The member object, the `id`
 	 * of which is passed to the first test item.
 	 * @param [member2=member] The member to carry
 	 * the second item.
-	 * @returns The items with altered `carriedBy`
+	 * @returns The items with altered `carriedByCharacterId`
 	 */
-	const getTestItems = (member: InventoryMemberFields, member2 = member) => [
-		{ ...longswordFixture, carriedBy: member._id },
-		{ ...healthPotionFixture, carriedBy: member2._id },
+	const getTestItems = (member: Character, member2 = member): Item[] => [
+		{ ...longswordFixture, carriedByCharacterId: member.id },
+		{ ...healthPotionFixture, carriedByCharacterId: member2.id },
 	];
 
 	test("Add member", () =>
@@ -198,21 +197,21 @@ describe("Metadata Member updates", () => {
 				type: "sheet_metadataUpdate",
 				data: {
 					name: originalState.name,
-					members: { add: [testMembers[0]], remove: [], update: [] },
+					characters: { add: [testMembers[0]], remove: [], update: [] },
 				},
 			});
-			expect(updated.members.length).toEqual(1);
+			expect(updated.characters.length).toEqual(1);
 		}));
-	test("Add multiple members", () =>
+	test("Add multiple characters", () =>
 		testDbReducer(async (originalState, update) => {
 			const updated = await update({
 				type: "sheet_metadataUpdate",
 				data: {
 					name: originalState.name,
-					members: { add: testMembers, remove: [], update: [] },
+					characters: { add: testMembers, remove: [], update: [] },
 				},
 			});
-			expect(updated.members.length).toEqual(testMembers.length);
+			expect(updated.characters.length).toEqual(testMembers.length);
 		}));
 
 	test("Remove member - Remove item", () =>
@@ -224,13 +223,13 @@ describe("Metadata Member updates", () => {
 					type: "sheet_metadataUpdate",
 					data: {
 						name: originalState.name,
-						members: {
+						characters: {
 							add: [],
 							remove: [
 								{
 									...testMembers[0],
 									deleteMethod: {
-										mode: DeleteMemberItemHandlingMethods.delete,
+										mode: DeleteCharacterItemHandlingMethods.delete,
 									},
 								},
 							],
@@ -241,7 +240,7 @@ describe("Metadata Member updates", () => {
 				expect(updated.items.length).toEqual(0);
 			},
 			{
-				members: [testMembers[0]],
+				characters: [testMembers[0]],
 				items: [getTestItems(testMembers[0])[0]],
 			}
 		));
@@ -255,13 +254,13 @@ describe("Metadata Member updates", () => {
 					type: "sheet_metadataUpdate",
 					data: {
 						name: originalState.name,
-						members: {
+						characters: {
 							add: [],
 							remove: [
 								{
 									...testMembers[0],
 									deleteMethod: {
-										mode: DeleteMemberItemHandlingMethods.delete,
+										mode: DeleteCharacterItemHandlingMethods.delete,
 									},
 								},
 							],
@@ -272,7 +271,7 @@ describe("Metadata Member updates", () => {
 				expect(updated.items.length).toEqual(0);
 			},
 			{
-				members: [testMembers[0]],
+				characters: [testMembers[0]],
 				items: getTestItems(testMembers[0]),
 			}
 		));
@@ -285,14 +284,14 @@ describe("Metadata Member updates", () => {
 					type: "sheet_metadataUpdate",
 					data: {
 						name: originalState.name,
-						members: {
+						characters: {
 							add: [],
 							remove: [
 								{
 									...testMembers[0],
 									deleteMethod: {
-										mode: DeleteMemberItemHandlingMethods.give,
-										to: testMembers[1]._id,
+										mode: DeleteCharacterItemHandlingMethods.give,
+										to: testMembers[1].id,
 									},
 								},
 							],
@@ -306,7 +305,7 @@ describe("Metadata Member updates", () => {
 				);
 			},
 			{
-				members: [testMembers[0], testMembers[1]],
+				characters: [testMembers[0], testMembers[1]],
 				items: getTestItems(testMembers[0], testMembers[1]),
 			}
 		));
@@ -325,14 +324,14 @@ describe("Metadata Member updates", () => {
 					type: "sheet_metadataUpdate",
 					data: {
 						name: originalState.name,
-						members: {
+						characters: {
 							add: [],
 							remove: [
 								{
 									...testMembers[1],
 									deleteMethod: {
-										mode: DeleteMemberItemHandlingMethods.give,
-										to: testMembers[0]._id,
+										mode: DeleteCharacterItemHandlingMethods.give,
+										to: testMembers[0].id,
 									},
 								},
 							],
@@ -346,28 +345,43 @@ describe("Metadata Member updates", () => {
 				);
 			},
 			{
-				members: [testMembers[0], testMembers[1]],
+				characters: [testMembers[0], testMembers[1]],
 				items: [
 					{
-						_id: "1",
+						id: "1",
 						name: " ",
 						quantity: 1,
 						weight: 1,
-						carriedBy: testMembers[0]._id,
+						carriedByCharacterId: testMembers[0].id,
+						category: null,
+						description: null,
+						referenceLink: null,
+						sheetId: "",
+						value: 1,
 					},
 					{
-						_id: "2",
+						id: "2",
 						name: " ",
 						quantity: 1,
 						weight: 1,
-						carriedBy: testMembers[1]._id,
+						carriedByCharacterId: testMembers[1].id,
+						category: null,
+						description: null,
+						referenceLink: null,
+						sheetId: "",
+						value: 1,
 					},
 					{
-						_id: "3",
+						id: "3",
 						name: " ",
 						quantity: 1,
 						weight: 1,
-						carriedBy: testMembers[1]._id,
+						carriedByCharacterId: testMembers[1].id,
+						category: null,
+						description: null,
+						referenceLink: null,
+						sheetId: "",
+						value: 1,
 					},
 				],
 			}
@@ -382,13 +396,13 @@ describe("Metadata Member updates", () => {
 					type: "sheet_metadataUpdate",
 					data: {
 						name: originalState.name,
-						members: {
+						characters: {
 							add: [],
 							remove: [
 								{
 									...testMembers[0],
 									deleteMethod: {
-										mode: DeleteMemberItemHandlingMethods.setToNobody,
+										mode: DeleteCharacterItemHandlingMethods.setToNobody,
 									},
 								},
 							],
@@ -400,7 +414,7 @@ describe("Metadata Member updates", () => {
 				expect(updated.items).toEqual(getCarriedItems(updated.items, "Nobody"));
 			},
 			{
-				members: [testMembers[0]],
+				characters: [testMembers[0]],
 				items: [getTestItems(testMembers[0])[0]],
 			}
 		));
@@ -413,13 +427,13 @@ describe("Metadata Member updates", () => {
 					type: "sheet_metadataUpdate",
 					data: {
 						name: originalState.name,
-						members: {
+						characters: {
 							add: [],
 							remove: [
 								{
 									...testMembers[0],
 									deleteMethod: {
-										mode: DeleteMemberItemHandlingMethods.setToNobody,
+										mode: DeleteCharacterItemHandlingMethods.setToNobody,
 									},
 								},
 							],
@@ -431,7 +445,7 @@ describe("Metadata Member updates", () => {
 				expect(updated.items).toEqual(getCarriedItems(updated.items, "Nobody"));
 			},
 			{
-				members: [testMembers[0]],
+				characters: [testMembers[0]],
 				items: getTestItems(testMembers[0]),
 			}
 		));
@@ -442,7 +456,7 @@ describe("Metadata Member updates", () => {
 					type: "sheet_metadataUpdate",
 					data: {
 						name: originalState.name,
-						members: {
+						characters: {
 							add: [],
 							remove: [],
 							update: [
@@ -454,24 +468,26 @@ describe("Metadata Member updates", () => {
 						},
 					},
 				});
-				expect(updated.members).not.toEqual(originalState.members);
-				expect(updated.members.length).toEqual(originalState.members.length);
-				expect(updated.members[0].name).toEqual(
+				expect(updated.characters).not.toEqual(originalState.characters);
+				expect(updated.characters.length).toEqual(
+					originalState.characters.length
+				);
+				expect(updated.characters[0].name).toEqual(
 					tweakString(testMembers[0].name)
 				);
 			},
 			{
-				members: [testMembers[0]],
+				characters: [testMembers[0]],
 			}
 		));
-	test("Update multiple members", () =>
+	test("Update multiple characters", () =>
 		testDbReducer(
 			async (originalState, update) => {
 				const updated = await update({
 					type: "sheet_metadataUpdate",
 					data: {
 						name: originalState.name,
-						members: {
+						characters: {
 							add: [],
 							remove: [],
 							update: testMembers.map(({ name, ...mem }) => ({
@@ -482,14 +498,16 @@ describe("Metadata Member updates", () => {
 					},
 				});
 
-				expect(updated.members).not.toEqual(originalState.members);
-				expect(updated.members.length).toEqual(originalState.members.length);
-				expect(updated.members.map((m) => m.name)).toEqual(
-					originalState.members.map((m) => tweakString(m.name))
+				expect(updated.characters).not.toEqual(originalState.characters);
+				expect(updated.characters.length).toEqual(
+					originalState.characters.length
+				);
+				expect(updated.characters.map((m) => m.name)).toEqual(
+					originalState.characters.map((m) => tweakString(m.name))
 				);
 			},
 			{
-				members: testMembers,
+				characters: testMembers,
 			}
 		));
 });

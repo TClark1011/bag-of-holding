@@ -1,5 +1,5 @@
 import { SheetModel } from "$backend/models";
-import { connectToMongoose } from "$backend/utils";
+import connectToMongoose from "$backend/utils/connectToMongoose";
 import { getCarriedItems } from "$sheets/utils";
 import { PrismaClient } from "@prisma/client";
 import ora from "ora";
@@ -46,7 +46,7 @@ const prisma = new PrismaClient();
 											value: oldItem.value,
 											weight: oldItem.weight,
 											quantity: oldItem.quantity,
-											referenceLink: oldItem.reference,
+											referenceLink: oldItem.referenceLink,
 										})
 									),
 								},
@@ -59,7 +59,7 @@ const prisma = new PrismaClient();
 			// Generate Items
 			await Promise.all(
 				oldSheet.items
-					.filter((item) => !item.carriedBy)
+					.filter((item) => !item.carriedByCharacterId)
 					.map(async (oldItem) =>
 						prisma.item.create({
 							data: {
@@ -70,7 +70,7 @@ const prisma = new PrismaClient();
 								value: oldItem.value,
 								weight: oldItem.weight,
 								quantity: oldItem.quantity,
-								referenceLink: oldItem.reference,
+								referenceLink: oldItem.referenceLink,
 							},
 						})
 					)

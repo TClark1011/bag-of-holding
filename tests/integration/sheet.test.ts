@@ -1,7 +1,7 @@
 import { appGitLink } from "$root/constants";
 import { NonEmptyArray } from "$root/types";
 import { takeRandom } from "$root/utils";
-import { InventoryItemFields, InventoryMemberFields } from "$sheets/types";
+import { Item, Character } from "@prisma/client";
 import { getItemTotalValue, searchComparison } from "$sheets/utils";
 import {
 	testWithNewSheet,
@@ -143,19 +143,17 @@ testWithExistingSheet(
 			A.uniq
 		) as NonEmptyArray<string>;
 		const memberToFilterOut = takeRandom(
-			sheet.members as NonEmptyArray<InventoryMemberFields>
+			sheet.characters as NonEmptyArray<Character>
 		);
 		const isCarriedByFilteredOutMember = flow(
-			(val: InventoryItemFields) => val,
-			D.get("carriedBy"),
-			F.equals(memberToFilterOut._id)
+			(val: Item) => val,
+			D.getUnsafe("carriedByCharacterId"),
+			F.equals(memberToFilterOut.id)
 		);
-		const getNumberOfItemRowsCarriedByMember = async ({
-			name,
-		}: InventoryMemberFields) => {
+		const getNumberOfItemRowsCarriedByMember = async ({ name }: Character) => {
 			const rows = await page.$$(
 				selectWithinTable(
-					`tbody >> tr >> td[data-column="carriedBy"]:has-text("${name}")`
+					`tbody >> tr >> td[data-column="carriedByCharacterId"]:has-text("${name}")`
 				)
 			);
 			return rows.length;
@@ -224,7 +222,7 @@ testWithExistingSheet(
 
 		// ### Filter out all members
 		const categoryToFilterOut = takeRandom(itemCategories);
-		const itemIsCarriedByFilteredOutMember = (item: InventoryItemFields) =>
+		const itemIsCarriedByFilteredOutMember = (item: Item) =>
 			pipe(item, D.get("category"), F.equals(categoryToFilterOut));
 
 		await page.click(selectWithinColumnHeader("Category", columnFilterButton));
@@ -320,11 +318,11 @@ testWithNewSheet(
 
 		// # INVENTORY ITEMS
 		const item = generateRandomInventoryItem({
-			reference: appGitLink,
-			carriedBy: updatedMemberName,
+			referenceLink: appGitLink,
+			carriedByCharacterId: updatedMemberName,
 		});
 		const updatedItem = generateRandomInventoryItem({
-			carriedBy: secondMemberName,
+			carriedByCharacterId: secondMemberName,
 		});
 
 		// ## Creating An Item
@@ -342,15 +340,15 @@ testWithNewSheet(
 		// clientB can see new data
 		await checkItemFieldVisibility(clientB, item);
 
-		// ## Clicking item reference link
+		// ## Clicking item referenceLink link
 
 		// We create a new browser context for when
-		// the reference links open in a new tab
+		// the referenceLink links open in a new tab
 		const [referenceLinkPageTab] = await Promise.all([
 			context.waitForEvent("page"),
 			clientB.click(`data-testid=item-row-${item.name} >> css=a`),
 		]);
-		expect(referenceLinkPageTab.url()).toEqual(item.reference);
+		expect(referenceLinkPageTab.url()).toEqual(item.referenceLink);
 		await referenceLinkPageTab.close();
 
 		// ## Editing An Item
@@ -436,8 +434,8 @@ test.describe("Simultaneous Updates", () => {
 	testWithNewSheet("2 clients add items", async ({ clientA, clientB }) => {
 		const bothClients = [clientA, clientB];
 		const items = bothClients.map(() => generateRandomInventoryItem()) as [
-			InventoryItemFields,
-			InventoryItemFields
+			Item,
+			Item
 		];
 
 		await performActionOnMultipleClients(bothClients, (client) =>

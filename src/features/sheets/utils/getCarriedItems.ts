@@ -1,4 +1,4 @@
-import { InventoryItemFields, InventoryMemberFields } from "$sheets/types";
+import { Character, Item } from "@prisma/client";
 
 /**
  * Fetch the items from a list of inventory items that are
@@ -7,16 +7,13 @@ import { InventoryItemFields, InventoryMemberFields } from "$sheets/types";
  * @param items A list of inventory items
  * @param member Can take either a member
  * object, or a string. If provided a member object, then the
- * _id is pulled from the object, if provided a string, that string
- * is used as the `_id` field of the member.
+ * id is pulled from the object, if provided a string, that string
+ * is used as the `id` field of the member.
  * @returns The inventory items that are carried by
  */
-const getCarriedItems = (
-	items: InventoryItemFields[],
-	member: InventoryMemberFields | string
-): InventoryItemFields[] => {
-	const memberId = typeof member === "string" ? member : member._id;
-	return items.filter((item) => item.carriedBy === memberId);
+const getCarriedItems = (items: Item[], member: Character | string): Item[] => {
+	const memberId = typeof member === "string" ? member : member.id;
+	return items.filter((item) => item.carriedByCharacterId === memberId);
 };
 
 export default getCarriedItems;

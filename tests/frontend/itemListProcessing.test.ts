@@ -7,19 +7,15 @@ import {
 import shuffle from "just-shuffle";
 import { ChangeEvent } from "react";
 import { useSheetPageState } from "$sheets/store";
-import {
-	InventoryMemberFields,
-	FilterableItemProperty,
-	ProcessableItemProperty,
-	InventoryItemFields,
-} from "$sheets/types";
+import { FilterableItemProperty, ProcessableItemProperty } from "$sheets/types";
 import { alphabet } from "../fixtures/testingConstants";
 import { getArrayOfRandomItems } from "../utils/getRandomDataArrays";
 import { generateRandomInventoryItem } from "../utils/randomGenerators";
+import { Character, Item } from "@prisma/client";
 
 const testSorting = (
-	items: InventoryItemFields[],
-	members: InventoryMemberFields[],
+	items: Item[],
+	members: Character[],
 	column: ProcessableItemProperty
 ): void => {
 	test(column, () => {
@@ -39,27 +35,31 @@ const testSorting = (
 };
 
 describe("Sorting ", () => {
-	const items: InventoryItemFields[] = alphabet.map((letter, index) => ({
-		_id: letter,
+	const items: Item[] = alphabet.map((letter, index) => ({
+		id: letter,
 		quantity: index,
 		weight: index,
 		value: index,
-		carriedBy: index < alphabet.length / 2 ? "1" : "2",
+		carriedByCharacterId: index < alphabet.length / 2 ? "1" : "2",
 		category: letter,
 		description: letter,
 		name: letter,
+		referenceLink: null,
+		sheetId: "",
 	}));
 	const columns = Object.keys(items[0]);
-	const members: InventoryMemberFields[] = [
+	const members: Character[] = [
 		{
-			_id: "1",
+			id: "1",
 			name: "a",
 			carryCapacity: 0,
+			sheetId: "",
 		},
 		{
-			_id: "2",
+			id: "2",
 			name: "b",
 			carryCapacity: 0,
+			sheetId: "",
 		},
 	];
 
@@ -68,7 +68,7 @@ describe("Sorting ", () => {
 	});
 });
 
-const getId = (item: InventoryItemFields) => item._id;
+const getId = (item: Item) => item.id;
 
 describe("Filter", () => {
 	const itemAmounts = {
@@ -87,13 +87,13 @@ describe("Filter", () => {
 			if (typeof property === "string") {
 				return generateRandomInventoryItem({
 					[property]: value,
-					_id: value + index,
+					id: value + index,
 				});
 			} else {
 				return generateRandomInventoryItem({
 					[property[0]]: value,
 					[property[1]]: value,
-					_id: value + index,
+					id: value + index,
 				});
 			}
 		});
@@ -102,7 +102,7 @@ describe("Filter", () => {
 		property: FilterableItemProperty,
 		letters: (keyof typeof itemAmounts)[]
 	) =>
-		letters.reduce<InventoryItemFields[]>(
+		letters.reduce<Item[]>(
 			(result, letter) => [
 				...result,
 				...getItemsWithProperty(property, letter),
@@ -110,10 +110,10 @@ describe("Filter", () => {
 			[]
 		);
 
-	const items = Object.keys(itemAmounts).reduce<InventoryItemFields[]>(
+	const items = Object.keys(itemAmounts).reduce<Item[]>(
 		(result, letter: keyof typeof itemAmounts) => [
 			...result,
-			...getItemsWithProperty(["category", "carriedBy"], letter),
+			...getItemsWithProperty(["category", "carriedByCharacterId"], letter),
 		],
 		[]
 	);
@@ -128,7 +128,7 @@ describe("Filter", () => {
 
 		expect(result.current.filters).toEqual({
 			category: ["a"],
-			carriedBy: [],
+			carriedByCharacterId: [],
 		});
 		expect(getProcessed().map(getId)).toIncludeSameMembers(
 			getItemsWithProperties("category", ["b", "c", "d"]).map(getId)
@@ -187,11 +187,11 @@ describe("Filter", () => {
 
 		act(() => {
 			result.current.resetFilters();
-			result.current.updateFilter("carriedBy", "a");
+			result.current.updateFilter("carriedByCharacterId", "a");
 		});
 
 		expect(getProcessed().map(getId)).toIncludeSameMembers(
-			getItemsWithProperties("carriedBy", ["b", "c", "d"]).map(getId)
+			getItemsWithProperties("carriedByCharacterId", ["b", "c", "d"]).map(getId)
 		);
 	});
 
@@ -201,12 +201,12 @@ describe("Filter", () => {
 
 		act(() => {
 			result.current.resetFilters();
-			result.current.updateFilter("carriedBy", "a");
-			result.current.updateFilter("carriedBy", "b");
+			result.current.updateFilter("carriedByCharacterId", "a");
+			result.current.updateFilter("carriedByCharacterId", "b");
 		});
 
 		expect(getProcessed().map(getId)).toIncludeSameMembers(
-			getItemsWithProperties("carriedBy", ["c", "d"]).map(getId)
+			getItemsWithProperties("carriedByCharacterId", ["c", "d"]).map(getId)
 		);
 	});
 
@@ -216,10 +216,10 @@ describe("Filter", () => {
 
 		act(() => {
 			result.current.resetFilters();
-			result.current.updateFilter("carriedBy", "a");
-			result.current.updateFilter("carriedBy", "b");
-			result.current.updateFilter("carriedBy", "c");
-			result.current.updateFilter("carriedBy", "d");
+			result.current.updateFilter("carriedByCharacterId", "a");
+			result.current.updateFilter("carriedByCharacterId", "b");
+			result.current.updateFilter("carriedByCharacterId", "c");
+			result.current.updateFilter("carriedByCharacterId", "d");
 		});
 
 		expect(getProcessed()).toEqual([]);
@@ -231,10 +231,10 @@ describe("Filter", () => {
 
 		act(() => {
 			result.current.resetFilters();
-			result.current.updateFilter("carriedBy", "a");
-			result.current.updateFilter("carriedBy", "b");
-			result.current.updateFilter("carriedBy", "c");
-			result.current.updateFilter("carriedBy", "d");
+			result.current.updateFilter("carriedByCharacterId", "a");
+			result.current.updateFilter("carriedByCharacterId", "b");
+			result.current.updateFilter("carriedByCharacterId", "c");
+			result.current.updateFilter("carriedByCharacterId", "d");
 		});
 
 		expect(getProcessed()).toEqual([]);
@@ -248,10 +248,10 @@ describe("Filter", () => {
 
 		act(() => {
 			result.current.resetFilters();
-			result.current.updateFilter("carriedBy", "a");
-			result.current.updateFilter("carriedBy", "b");
-			result.current.updateFilter("carriedBy", "c");
-			result.current.updateFilter("carriedBy", "d");
+			result.current.updateFilter("carriedByCharacterId", "a");
+			result.current.updateFilter("carriedByCharacterId", "b");
+			result.current.updateFilter("carriedByCharacterId", "c");
+			result.current.updateFilter("carriedByCharacterId", "d");
 			result.current.updateFilter("category", "a");
 		});
 

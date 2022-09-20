@@ -1,8 +1,8 @@
 import { inProduction } from "../src/config/publicEnv";
-import connectToMongoose from "../src/features/backend/utils/connectToMongoose";
 import mongoose from "mongoose";
 import { ProductionSheetModel, SheetModel } from "$backend/models";
 import ora from "ora";
+import connectToMongoose from "$backend/utils/connectToMongoose";
 
 // Copy over data from production database into
 // development database that is used when running

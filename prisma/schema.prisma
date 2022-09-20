@@ -11,6 +11,7 @@ datasource db {
 }
 
 model Sheet {
+  updatedAt DateTime @updatedAt
   id String @id @default(cuid())
   name String
   characters Character[]

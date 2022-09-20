@@ -25,7 +25,7 @@
 	"exclude": ["node_modules"],
 
 	"ts-node": {
-		"require": ["tsconfig-paths/register", "./scripts/loadEnv.ts"],
+		"require": ["tsconfig-paths/register", "scripts/loadEnv.ts"],
 		"compilerOptions": {
 			"module": "CommonJS",
 			"resolveJsonModule": true

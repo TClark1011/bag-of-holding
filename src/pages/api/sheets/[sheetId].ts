@@ -1,6 +1,6 @@
+import dbReducer from "$backend/dbReducer";
+import prisma from "$prisma";
 import { NextApiHandler, NextApiRequest } from "next";
-import { dbReducer } from "$backend/utils";
-import { fetchSheetFromDb } from "$backend/services";
 
 //NOTE: Apparently the NextJS 'API resolved without sending a response for..." errors are false positives and can be ignored.
 // As seen here "https://github.com/vercel/next.js/issues/10439" it is a known issue with NextJS/Mongoose compatibility
@@ -21,7 +21,15 @@ const getSheetId = (req: NextApiRequest): string => req.query.sheetId as string;
  */
 const handleGET: NextApiHandler = async (req, res) => {
 	try {
-		const data = await fetchSheetFromDb(getSheetId(req));
+		const data = await prisma.sheet.findFirstOrThrow({
+			where: {
+				id: getSheetId(req),
+			},
+			select: {
+				items: true,
+				characters: true,
+			},
+		});
 		res.status(200).json(data);
 	} catch {
 		res.status(500).send("There was an error");

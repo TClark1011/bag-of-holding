@@ -1,5 +1,5 @@
 import { Button, BoxProps } from "@chakra-ui/react";
-import { InventorySheetMenuItemFields } from "$sheets/types";
+import { SheetMenuItemFields } from "$sheets/types";
 import Link from "next/link";
 import { getSheetLink } from "$root/utils";
 
@@ -8,16 +8,16 @@ import { getSheetLink } from "$root/utils";
  *
  * @param props The props
  * @param props.name The name of the sheet
- * @param props._id The id of the sheet used to
+ * @param props.id The id of the sheet used to
  * generate the link to the sheet
  * @returns Component stuff
  */
-const RememberedSheet: React.FC<BoxProps & InventorySheetMenuItemFields> = ({
+const RememberedSheet: React.FC<BoxProps & SheetMenuItemFields> = ({
 	name,
-	_id,
+	id,
 }) => {
 	return (
-		<Link href={getSheetLink(_id)}>
+		<Link href={getSheetLink(id)}>
 			<Button
 				variant="outline"
 				colorScheme="primary"

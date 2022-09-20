@@ -1,7 +1,7 @@
 import { IdentifiedObject } from "$root/types";
 
 /**
- * Take an array of objects that have '_id' fields and
+ * Take an array of objects that have 'id' fields and
  * return just the ids. Used in reducers when removing
  * items from lists.
  *
@@ -11,6 +11,6 @@ import { IdentifiedObject } from "$root/types";
  * the entities
  */
 const getIds = <T extends IdentifiedObject>(entities: T[]): string[] =>
-	entities.map((item) => item._id);
+	entities.map((item) => item.id);
 
 export default getIds;

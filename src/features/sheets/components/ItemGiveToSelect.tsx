@@ -1,7 +1,7 @@
 import { getIds } from "$root/utils";
 import { useInventoryState } from "$sheets/providers";
 import { useSheetPageState } from "$sheets/store";
-import { DeleteMemberItemHandlingMethods } from "$sheets/types";
+import { DeleteCharacterItemHandlingMethods } from "$sheets/types";
 import { Select, SelectProps } from "@chakra-ui/react";
 import { useEffect } from "react";
 
@@ -13,53 +13,59 @@ type SpecialSelectProps = Omit<
 //? Makes sure the component will work while still allowing style props to work
 
 export interface ItemGiveToSelectProps extends SpecialSelectProps {
-	removingMemberId: string;
+	removingCharacterId: string;
 }
 
 /**
- * Dropdown box for selecting which member should receive
- * the items of a member who has been targeted for removal
+ * Dropdown box for selecting which character should receive
+ * the items of a character who has been targeted for removal
  * from the sheet.
  *
  * @param props The props
- * @param props.removingMemberId The `_id` of the
- * member targeted for removal from the sheet.
+ * @param props.removingCharacterId The `id` of the
+ * character targeted for removal from the sheet.
  * @returns A dropdown box
  */
 const ItemGiveToSelect: React.FC<ItemGiveToSelectProps> = ({
-	removingMemberId,
+	removingCharacterId,
 	...props
 }) => {
 	const {
-		selectNewSheetMemberRemovedMoveToMember,
-		selectNewSheetMemberRemoveMethod,
-		sheetMembersQueue,
+		selectNewSheetCharacterRemovedMoveToCharacter,
+		selectNewSheetCharacterRemoveMethod,
+		sheetCharactersQueue,
 	} = useSheetPageState();
 
-	const { members } = useInventoryState();
+	const { characters } = useInventoryState();
 
-	const membersAvailableToReceive = members.filter(
+	const charactersAvailableToReceive = characters.filter(
 		(mem) =>
-			![removingMemberId, ...getIds(sheetMembersQueue.remove)].includes(mem._id)
+			![removingCharacterId, ...getIds(sheetCharactersQueue.remove)].includes(
+				mem.id
+			)
 	);
-	//? Members that are available to receive items (all members that are not the removal target or are in queue to be removed)
+	//? Characters that are available to receive items (all characters that are not the removal target or are in queue to be removed)
 
 	useEffect(() => {
-		selectNewSheetMemberRemovedMoveToMember(
-			membersAvailableToReceive[0]._id || ""
+		selectNewSheetCharacterRemovedMoveToCharacter(
+			charactersAvailableToReceive[0].id || ""
 		);
 	}, []);
 
 	return (
 		<Select
-			onChange={(e) => selectNewSheetMemberRemovedMoveToMember(e.target.value)}
+			onChange={(e) =>
+				selectNewSheetCharacterRemovedMoveToCharacter(e.target.value)
+			}
 			onFocus={() =>
-				selectNewSheetMemberRemoveMethod(DeleteMemberItemHandlingMethods.give)
+				selectNewSheetCharacterRemoveMethod(
+					DeleteCharacterItemHandlingMethods.give
+				)
 			}
 			{...props}
 		>
-			{membersAvailableToReceive.map((mem) => (
-				<option value={mem._id} key={mem._id}>
+			{charactersAvailableToReceive.map((mem) => (
+				<option value={mem.id} key={mem.id}>
 					{mem.name}
 				</option>
 			))}

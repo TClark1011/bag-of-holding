@@ -11,8 +11,8 @@ const itemValidation = yup.object({
 	quantity: yup.number().min(1).required(),
 	weight: yup.number().min(0).required(),
 	value: yup.number().min(0).required(),
-	carriedBy: yup.string().required().label("carried by"),
-	reference: yup.string().max(referenceLength),
+	carriedByCharacterId: yup.string().required().label("carried by"),
+	referenceLink: yup.string().max(referenceLength),
 });
 
 export default itemValidation;

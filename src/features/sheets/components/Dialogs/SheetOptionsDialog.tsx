@@ -25,9 +25,9 @@ import { RemoveIcon } from "chakra-ui-ionicons";
 import { useState } from "react";
 import { SheetDialog, ItemGiveToSelect } from "$sheets/components";
 import {
-	DeleteMemberItemHandlingMethods,
-	InventoryMemberDeleteMethodFields,
-	InventorySheetFields,
+	DeleteCharacterItemHandlingMethods,
+	CharacterDeleteMethodFields,
+	FullSheet,
 } from "$sheets/types";
 import {
 	useInventoryState,
@@ -36,33 +36,33 @@ import {
 import { useSheetPageState } from "$sheets/store";
 import { sheetOptionsValidation } from "$sheets/validation";
 import { defaultFieldLength } from "$root/constants";
-import { generateMember } from "$sheets/utils";
+import { generateCharacter } from "$sheets/utils";
 import { ConfirmationDialog, Paragraph } from "$root/components";
 
 export type SheetOptionsDialogFormFields = Pick<
-	InventorySheetFields,
-	"name" | "members"
+	FullSheet,
+	"name" | "characters"
 >;
 
-const MemberDeleteMethodRadio = chakra<
+const CharacterDeleteMethodRadio = chakra<
 	ComponentWithAs<"input">,
 	Omit<RadioProps, "value"> & {
-		value: InventoryMemberDeleteMethodFields["mode"];
+		value: CharacterDeleteMethodFields["mode"];
 	}
 >(Radio);
-//? A copy of the 'Radio' component from Chakra UI with it's `value` prop typed to `InventoryMemberDeleteMethodFields["mode"]`
+//? A copy of the 'Radio' component from Chakra UI with it's `value` prop typed to `InventoryCharacterDeleteMethodFields["mode"]`
 
-type MemberDeleteMethodRadioGroupProps = Omit<
+type CharacterDeleteMethodRadioGroupProps = Omit<
 	RadioGroupProps,
 	"value" | "onChange"
 > & {
-	value: InventoryMemberDeleteMethodFields["mode"];
-	onChange: (val: InventoryMemberDeleteMethodFields["mode"]) => void;
+	value: CharacterDeleteMethodFields["mode"];
+	onChange: (val: CharacterDeleteMethodFields["mode"]) => void;
 };
 
-const MemberDeleteMethodRadioGroup = chakra<
-	ComponentWithAs<"div", MemberDeleteMethodRadioGroupProps>,
-	MemberDeleteMethodRadioGroupProps
+const CharacterDeleteMethodRadioGroup = chakra<
+	ComponentWithAs<"div", CharacterDeleteMethodRadioGroupProps>,
+	CharacterDeleteMethodRadioGroupProps
 >(RadioGroup);
 //? A copy of the 'RadioGroup' component from Chakra UI with it's typing changed
 
@@ -72,17 +72,17 @@ const MemberDeleteMethodRadioGroup = chakra<
  * @returns The rendered component
  */
 const SheetOptionsDialog: React.FC = () => {
-	const { name, members } = useInventoryState();
+	const { name, characters } = useInventoryState();
 	const dispatch = useInventoryStateDispatch();
 
 	const {
 		closeDialog,
-		sheetMembersQueue,
-		queueMemberForAdd,
-		queueMemberForRemove,
-		selectedSheetMemberRemoveMethod,
-		selectNewSheetMemberRemoveMethod,
-		selectedSheetMemberRemovedMoveToMember,
+		sheetCharactersQueue,
+		queueCharacterForAdd,
+		queueCharacterForRemove,
+		selectedSheetCharacterRemoveMethod,
+		selectNewSheetCharacterRemoveMethod,
+		selectedSheetCharacterRemovedMoveToCharacter,
 	} = useSheetPageState();
 
 	/**
@@ -104,20 +104,20 @@ const SheetOptionsDialog: React.FC = () => {
 			type: "sheet_metadataUpdate",
 			data: {
 				name: data.name,
-				members: {
-					add: data.members.filter((dataMember) =>
-						sheetMembersQueue.add.includes(dataMember._id)
+				characters: {
+					add: data.characters.filter((dataCharacter) =>
+						sheetCharactersQueue.add.includes(dataCharacter.id)
 					),
-					remove: sheetMembersQueue.remove,
-					update: data.members.filter((dataMember) => {
-						const matchingExistingMember = members.find(
-							(item) => item._id === dataMember._id
+					remove: sheetCharactersQueue.remove,
+					update: data.characters.filter((dataCharacter) => {
+						const matchingExistingCharacter = characters.find(
+							(item) => item.id === dataCharacter.id
 						);
 						return (
-							matchingExistingMember &&
-							matchingExistingMember.name !== dataMember.name
+							matchingExistingCharacter &&
+							matchingExistingCharacter.name !== dataCharacter.name
 						);
-						//? We get items that already existed as members in the sheet before this dialog was opened but have had their name changed
+						//? We get items that already existed as characters in the sheet before this dialog was opened but have had their name changed
 					}),
 				},
 			},
@@ -138,22 +138,22 @@ const SheetOptionsDialog: React.FC = () => {
 	};
 
 	const {
-		isOpen: deleteMemberConfirmIsOpen,
-		onOpen: deleteMemberConfirmOnOpen,
-		onClose: deleteMemberConfirmOnClose,
+		isOpen: deleteCharacterConfirmIsOpen,
+		onOpen: deleteCharacterConfirmOnOpen,
+		onClose: deleteCharacterConfirmOnClose,
 	} = useDisclosure();
 
-	const [deleteMemberTarget, setDeleteMemberTarget] = useState<{
+	const [deleteCharacterTarget, setDeleteCharacterTarget] = useState<{
 		name: string;
 		index: number;
-		_id: string;
-	}>({ name: "", index: 0, _id: "" });
+		id: string;
+	}>({ name: "", index: 0, id: "" });
 
 	return (
 		<SheetDialog dialogType="sheetOptions" header="Sheet Options">
 			<Formik
 				onSubmit={onSubmit}
-				initialValues={{ name, members }}
+				initialValues={{ name, characters }}
 				validationSchema={sheetOptionsValidation}
 			>
 				{({ handleSubmit, isSubmitting, values }) => (
@@ -165,27 +165,30 @@ const SheetOptionsDialog: React.FC = () => {
 								marginBottom="break"
 								inputProps={{ maxLength: defaultFieldLength }}
 							/>
-							{/* //# Member fields */}
+							{/* //# Character fields */}
 							<Text fontWeight="bold" textAlign="center">
-								Members
+								Characters
 							</Text>
 							<Divider />
 							<VStack spacing="group">
-								<FieldArray name="members">
+								<FieldArray name="characters">
 									{(helpers) => (
 										<>
-											{values.members.map((item, index) => (
-												<Field name={"members." + index + ".name"} key={index}>
+											{values.characters.map((item, index) => (
+												<Field
+													name={"characters." + index + ".name"}
+													key={index}
+												>
 													{({ field, form }) => (
 														<FormControl
 															isInvalid={
-																form.errors.members &&
-																form.touched.members &&
-																form.errors.members[index] &&
-																form.touched.members[index]
+																form.errors.characters &&
+																form.touched.characters &&
+																form.errors.characters[index] &&
+																form.touched.characters[index]
 															}
 														>
-															<FormLabel>Member {index + 1}</FormLabel>
+															<FormLabel>Character {index + 1}</FormLabel>
 															<Flex>
 																<Input
 																	{...field}
@@ -195,111 +198,114 @@ const SheetOptionsDialog: React.FC = () => {
 																<IconButton
 																	colorScheme="error"
 																	onClick={() => {
-																		deleteMemberConfirmOnOpen();
-																		setDeleteMemberTarget({
-																			_id: item._id,
+																		deleteCharacterConfirmOnOpen();
+																		setDeleteCharacterTarget({
+																			id: item.id,
 																			name: item.name,
 																			index,
 																		});
 																	}}
-																	aria-label={"delete member " + (index + 1)}
+																	aria-label={"delete character " + (index + 1)}
 																	icon={<RemoveIcon />}
 																	borderRadius="full"
 																	variant="outline"
 																/>
 															</Flex>
 															<FormErrorMessage>
-																{form.errors.members &&
-																	form.errors.members[index] &&
-																	form.errors.members[index].name}
+																{form.errors.characters &&
+																	form.errors.characters[index] &&
+																	form.errors.characters[index].name}
 															</FormErrorMessage>
 														</FormControl>
 													)}
 												</Field>
 											))}
-											{/* //# Add new member button */}
+											{/* //# Add new character button */}
 											<Button
 												width="full"
 												size="sm"
 												colorScheme="secondary"
 												onClick={() => {
-													const newMember = generateMember("");
-													helpers.push(newMember);
-													queueMemberForAdd(newMember._id);
+													const newCharacter = generateCharacter("");
+													helpers.push(newCharacter);
+													queueCharacterForAdd(newCharacter.id);
 												}}
 											>
-												Add Party Member
+												Add Party Character
 											</Button>
-											{/* //# Member Delete Confirmation */}
+											{/* //# Character Delete Confirmation */}
 											<ConfirmationDialog
-												isOpen={deleteMemberConfirmIsOpen}
-												onCancel={deleteMemberConfirmOnClose}
-												header={`Remove "${deleteMemberTarget.name}" from sheet?`}
+												isOpen={deleteCharacterConfirmIsOpen}
+												onCancel={deleteCharacterConfirmOnClose}
+												header={`Remove "${deleteCharacterTarget.name}" from sheet?`}
 												onConfirm={() => {
-													queueMemberForRemove(
-														values.members[deleteMemberTarget.index]._id,
+													queueCharacterForRemove(
+														values.characters[deleteCharacterTarget.index].id,
 														{
-															mode: selectedSheetMemberRemoveMethod,
-															...(selectedSheetMemberRemoveMethod ===
-																DeleteMemberItemHandlingMethods.give && {
-																to: selectedSheetMemberRemovedMoveToMember,
+															mode: selectedSheetCharacterRemoveMethod,
+															...(selectedSheetCharacterRemoveMethod ===
+																DeleteCharacterItemHandlingMethods.give && {
+																to: selectedSheetCharacterRemovedMoveToCharacter,
 															}),
 														}
 													);
-													helpers.remove(deleteMemberTarget.index);
+													helpers.remove(deleteCharacterTarget.index);
 												}}
 											>
 												<Paragraph>
-													Are you sure you want to delete this party member from
-													the sheet?
+													Are you sure you want to delete this party character
+													from the sheet?
 												</Paragraph>
 												<Paragraph>
 													What should happen to items being carried by{" "}
-													{deleteMemberTarget.name}?
+													{deleteCharacterTarget.name}?
 												</Paragraph>
-												<MemberDeleteMethodRadioGroup
-													value={selectedSheetMemberRemoveMethod}
+												<CharacterDeleteMethodRadioGroup
+													value={selectedSheetCharacterRemoveMethod}
 													onChange={(val) =>
-														selectNewSheetMemberRemoveMethod(val)
+														selectNewSheetCharacterRemoveMethod(val)
 													}
 												>
 													<VStack align="start" spacing={4}>
 														{/* //# "Give To" method */}
-														{members.length - sheetMembersQueue.remove.length >
+														{characters.length -
+															sheetCharactersQueue.remove.length >
 															1 && (
-															// ? Do not show "give to" option if there are no other members in the sheet that can receive items
+															// ? Do not show "give to" option if there are no other characters in the sheet that can receive items
 															// NOTE: Cannot currently move items to a character that was just created
 															<Flex justify="space-between" width="full">
-																<MemberDeleteMethodRadio
-																	value={DeleteMemberItemHandlingMethods.give}
+																<CharacterDeleteMethodRadio
+																	value={
+																		DeleteCharacterItemHandlingMethods.give
+																	}
 																>
 																	<Flex align="center" marginRight={2}>
 																		Give To
 																	</Flex>
-																</MemberDeleteMethodRadio>
-																{/* //# "Give To" member Select */}
+																</CharacterDeleteMethodRadio>
+																{/* //# "Give To" character Select */}
 																<ItemGiveToSelect
-																	removingMemberId={deleteMemberTarget._id}
+																	removingCharacterId={deleteCharacterTarget.id}
 																	flexGrow={1}
 																	width="max-content"
 																	size="sm"
 																/>
 															</Flex>
 														)}
-														<MemberDeleteMethodRadio
-															value={DeleteMemberItemHandlingMethods.delete}
+														<CharacterDeleteMethodRadio
+															value={DeleteCharacterItemHandlingMethods.delete}
 														>
 															Delete From Sheet
-														</MemberDeleteMethodRadio>
-														<MemberDeleteMethodRadio
+														</CharacterDeleteMethodRadio>
+														<CharacterDeleteMethodRadio
 															value={
-																DeleteMemberItemHandlingMethods.setToNobody
+																DeleteCharacterItemHandlingMethods.setToNobody
 															}
 														>
 															Set {"\"Carried By\""} to {"\"Nobody\""}
-														</MemberDeleteMethodRadio>
+														</CharacterDeleteMethodRadio>
 													</VStack>
-												</MemberDeleteMethodRadioGroup>
+												</CharacterDeleteMethodRadioGroup>
 											</ConfirmationDialog>
 										</>
 									)}

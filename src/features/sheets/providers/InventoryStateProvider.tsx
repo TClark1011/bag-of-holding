@@ -1,9 +1,9 @@
-import { InventorySheetState, InventorySheetStateAction } from "$sheets/types";
+import { SheetState, SheetStateAction } from "$sheets/types";
 import { createContext, Dispatch, useContext } from "react";
 
 interface SheetStateContextData {
-	state: InventorySheetState;
-	dispatch: Dispatch<InventorySheetStateAction>;
+	state: SheetState;
+	dispatch: Dispatch<SheetStateAction>;
 }
 
 const SheetStateContext = createContext<SheetStateContextData>(
@@ -16,7 +16,7 @@ const SheetStateContext = createContext<SheetStateContextData>(
  *
  * @returns inventory state action dispatcher
  */
-export const useInventoryStateDispatch = (): Dispatch<InventorySheetStateAction> =>
+export const useInventoryStateDispatch = (): Dispatch<SheetStateAction> =>
 	useContext(SheetStateContext).dispatch;
 
 /**
@@ -24,7 +24,7 @@ export const useInventoryStateDispatch = (): Dispatch<InventorySheetStateAction>
  *
  * @returns The state of the inventory
  */
-export const useInventoryState = (): InventorySheetState =>
+export const useInventoryState = (): SheetState =>
 	useContext(SheetStateContext).state;
 
 /**

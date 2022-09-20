@@ -1,10 +1,11 @@
-import { InventorySheetFields } from "$sheets/types";
+import { FullSheet } from "$sheets/types";
 import { healthPotionFixture, longswordFixture } from "./itemFixtures";
-import { averageMembersFixture } from "./membersFixtures";
+import { averageMembersFixture } from "./charactersFixtures";
 
-export const basicSheetFixture: InventorySheetFields = {
-	_id: "basicSheetId",
+export const basicSheetFixture: FullSheet = {
+	id: "basicSheetId",
 	name: "Basic Sheet",
-	members: averageMembersFixture,
+	characters: averageMembersFixture,
 	items: [longswordFixture, healthPotionFixture],
+	updatedAt: new Date(),
 };

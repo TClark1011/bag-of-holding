@@ -1,23 +1,19 @@
-import {
-	InventoryItemCreationFields,
-	InventoryItemFields,
-} from "$sheets/types";
+import { ItemCreationFields } from "$sheets/types";
+import { Item } from "@prisma/client";
 import faker from "faker";
 
 /**
  * Generate a new inventory item object
- * Takes all the required files, excluding "_id"
- * Creates new object with randomly generated "_id" along with the provided fields
+ * Takes all the required files, excluding "id"
+ * Creates new object with randomly generated "id" along with the provided fields
  *
  * @param fields The data used to generate the new item
  * @returns A newly generated item
  */
-const createInventoryItem = (
-	fields: InventoryItemCreationFields
-): InventoryItemFields => {
+const createInventoryItem = (fields: ItemCreationFields): Item => {
 	return {
-		_id: faker.datatype.uuid(),
-		carriedBy: "Nobody",
+		id: faker.datatype.uuid(),
+		carriedByCharacterId: null,
 		quantity: 1,
 		//? quantity defaults to 1
 		weight: 0,

@@ -1,31 +1,33 @@
-import {
-	DeleteMemberItemHandlingMethods,
-	InventorySheetState,
-	InventoryItemFields,
-} from "$sheets/types";
+import { DeleteCharacterItemHandlingMethods, SheetState } from "$sheets/types";
 import { inventoryReducer } from "$sheets/store";
 import { getCarriedItems } from "$sheets/utils";
-import { averageMembersFixture } from "../fixtures/membersFixtures";
+import { averageMembersFixture } from "../fixtures/charactersFixtures";
 import {
 	generateRandomInventoryItem,
 	generateRandomPartyMember,
 } from "../utils/randomGenerators";
 import tweakString from "../utils/tweakString";
 import { getIds } from "$root/utils";
+import { Item } from "@prisma/client";
 
-const testState: InventorySheetState = {
-	_id: "0",
+const testState: SheetState = {
+	id: "0",
 	name: "Test Sheet",
-	members: [],
+	characters: [],
 	items: [],
 };
 
-const testItem: InventoryItemFields = {
-	_id: "0",
+const testItem: Item = {
+	id: "0",
 	name: "Test Item",
 	quantity: 1,
 	weight: 1,
-	carriedBy: "Nobody",
+	value: 1,
+	carriedByCharacterId: null,
+	category: null,
+	description: null,
+	referenceLink: null,
+	sheetId: testState.id,
 };
 
 const testStateWithTestItem = { ...testState, items: [testItem] };
@@ -44,7 +46,7 @@ describe("Inventory State Reducer Actions", () => {
 		expect(
 			inventoryReducer(testStateWithTestItem, {
 				type: "item_remove",
-				data: testItem._id,
+				data: testItem.id,
 			})
 		).toMatchObject(testState);
 	});
@@ -55,8 +57,16 @@ describe("Inventory State Reducer Actions", () => {
 			inventoryReducer(testStateWithTestItem, {
 				type: "item_update",
 				data: {
-					_id: testItem._id,
+					id: testItem.id,
 					name: newName,
+					carriedByCharacterId: null,
+					sheetId: "",
+					description: null,
+					quantity: 1,
+					referenceLink: null,
+					value: 1,
+					category: null,
+					weight: null,
 				},
 			})
 		).toMatchObject({
@@ -82,10 +92,10 @@ describe("Inventory State Reducer Actions", () => {
 	// 			type: "sheet_metadataUpdate",
 	// 			data: {
 	// 				name: newName,
-	// 				members: [testMember],
+	// 				characters: [testMember],
 	// 			},
 	// 		})
-	// 	).toMatchObject({ ...testState, name: newName, members: [testMember] });
+	// 	).toMatchObject({ ...testState, name: newName, characters: [testMember] });
 	// });
 });
 
@@ -96,7 +106,7 @@ describe("Metadata updates", () => {
 				type: "sheet_metadataUpdate",
 				data: {
 					name: tweakString(testState.name),
-					members: {
+					characters: {
 						add: [],
 						update: [],
 						remove: [],
@@ -113,37 +123,37 @@ describe("Metadata updates", () => {
 			type: "sheet_metadataUpdate",
 			data: {
 				name: testState.name,
-				members: {
+				characters: {
 					add: [averageMembersFixture[0]],
 					update: [],
 					remove: [],
 				},
 			},
 		});
-		expect(updatedState.members).toEqual([averageMembersFixture[0]]);
+		expect(updatedState.characters).toEqual([averageMembersFixture[0]]);
 	});
-	test("Add multiple members", () => {
+	test("Add multiple characters", () => {
 		const updatedState = inventoryReducer(testState, {
 			type: "sheet_metadataUpdate",
 			data: {
 				name: testState.name,
-				members: {
+				characters: {
 					add: averageMembersFixture,
 					update: [],
 					remove: [],
 				},
 			},
 		});
-		expect(updatedState.members).toEqual(averageMembersFixture);
+		expect(updatedState.characters).toEqual(averageMembersFixture);
 	});
 	test("Remove member (delete item)", () => {
 		const updatedState = inventoryReducer(
 			{
 				...testState,
-				members: [averageMembersFixture[0]],
+				characters: [averageMembersFixture[0]],
 				items: [
 					generateRandomInventoryItem({
-						carriedBy: averageMembersFixture[0]._id,
+						carriedByCharacterId: averageMembersFixture[0].id,
 					}),
 				],
 				//? Generate 2 random inventory items
@@ -152,12 +162,12 @@ describe("Metadata updates", () => {
 				type: "sheet_metadataUpdate",
 				data: {
 					name: testState.name,
-					members: {
+					characters: {
 						remove: [
 							{
 								...averageMembersFixture[0],
 								deleteMethod: {
-									mode: DeleteMemberItemHandlingMethods.delete,
+									mode: DeleteCharacterItemHandlingMethods.delete,
 								},
 							},
 						],
@@ -167,17 +177,17 @@ describe("Metadata updates", () => {
 				},
 			}
 		);
-		expect(updatedState.members).toEqual([]);
+		expect(updatedState.characters).toEqual([]);
 		expect(updatedState.items).toEqual([]);
 	});
 	test("Remove member (delete multiple items)", () => {
 		const updatedState = inventoryReducer(
 			{
 				...testState,
-				members: [averageMembersFixture[0]],
+				characters: [averageMembersFixture[0]],
 				items: Array.from([null, null], () =>
 					generateRandomInventoryItem({
-						carriedBy: averageMembersFixture[0]._id,
+						carriedByCharacterId: averageMembersFixture[0].id,
 					})
 				),
 				//? Generate 2 random inventory items
@@ -186,12 +196,12 @@ describe("Metadata updates", () => {
 				type: "sheet_metadataUpdate",
 				data: {
 					name: testState.name,
-					members: {
+					characters: {
 						remove: [
 							{
 								...averageMembersFixture[0],
 								deleteMethod: {
-									mode: DeleteMemberItemHandlingMethods.delete,
+									mode: DeleteCharacterItemHandlingMethods.delete,
 								},
 							},
 						],
@@ -201,17 +211,17 @@ describe("Metadata updates", () => {
 				},
 			}
 		);
-		expect(updatedState.members).toEqual([]);
+		expect(updatedState.characters).toEqual([]);
 		expect(updatedState.items).toEqual([]);
 	});
 	test("Remove member (give item)", () => {
 		const updatedState = inventoryReducer(
 			{
 				...testState,
-				members: [averageMembersFixture[0], averageMembersFixture[1]],
+				characters: [averageMembersFixture[0], averageMembersFixture[1]],
 				items: [
 					generateRandomInventoryItem({
-						carriedBy: averageMembersFixture[1]._id,
+						carriedByCharacterId: averageMembersFixture[1].id,
 					}),
 				],
 				//? Generate 2 random inventory items
@@ -220,13 +230,13 @@ describe("Metadata updates", () => {
 				type: "sheet_metadataUpdate",
 				data: {
 					name: testState.name,
-					members: {
+					characters: {
 						remove: [
 							{
 								...averageMembersFixture[1],
 								deleteMethod: {
-									mode: DeleteMemberItemHandlingMethods.give,
-									to: averageMembersFixture[0]._id,
+									mode: DeleteCharacterItemHandlingMethods.give,
+									to: averageMembersFixture[0].id,
 								},
 							},
 						],
@@ -236,20 +246,20 @@ describe("Metadata updates", () => {
 				},
 			}
 		);
-		expect(updatedState.members).toEqual([averageMembersFixture[0]]);
+		expect(updatedState.characters).toEqual([averageMembersFixture[0]]);
 		expect(updatedState.items.length).toEqual(1);
-		expect(updatedState.items[0].carriedBy).toEqual(
-			averageMembersFixture[0]._id
+		expect(updatedState.items[0].carriedByCharacterId).toEqual(
+			averageMembersFixture[0].id
 		);
 	});
 	test("Remove member (give multiple items)", () => {
 		const updatedState = inventoryReducer(
 			{
 				...testState,
-				members: [averageMembersFixture[0], averageMembersFixture[1]],
+				characters: [averageMembersFixture[0], averageMembersFixture[1]],
 				items: Array.from([null, null], () =>
 					generateRandomInventoryItem({
-						carriedBy: averageMembersFixture[1]._id,
+						carriedByCharacterId: averageMembersFixture[1].id,
 					})
 				),
 				//? Generate 2 random inventory items
@@ -258,13 +268,13 @@ describe("Metadata updates", () => {
 				type: "sheet_metadataUpdate",
 				data: {
 					name: testState.name,
-					members: {
+					characters: {
 						remove: [
 							{
 								...averageMembersFixture[1],
 								deleteMethod: {
-									mode: DeleteMemberItemHandlingMethods.give,
-									to: averageMembersFixture[0]._id,
+									mode: DeleteCharacterItemHandlingMethods.give,
+									to: averageMembersFixture[0].id,
 								},
 							},
 						],
@@ -274,7 +284,7 @@ describe("Metadata updates", () => {
 				},
 			}
 		);
-		expect(updatedState.members).toEqual([averageMembersFixture[0]]);
+		expect(updatedState.characters).toEqual([averageMembersFixture[0]]);
 		expect(updatedState.items).toEqual(
 			getCarriedItems(updatedState.items, averageMembersFixture[0])
 		);
@@ -283,10 +293,10 @@ describe("Metadata updates", () => {
 		const updatedState = inventoryReducer(
 			{
 				...testState,
-				members: [averageMembersFixture[0]],
+				characters: [averageMembersFixture[0]],
 				items: [
 					generateRandomInventoryItem({
-						carriedBy: averageMembersFixture[0]._id,
+						carriedByCharacterId: averageMembersFixture[0].id,
 					}),
 				],
 				//? Generate 2 random inventory items
@@ -295,12 +305,12 @@ describe("Metadata updates", () => {
 				type: "sheet_metadataUpdate",
 				data: {
 					name: testState.name,
-					members: {
+					characters: {
 						remove: [
 							{
 								...averageMembersFixture[0],
 								deleteMethod: {
-									mode: DeleteMemberItemHandlingMethods.setToNobody,
+									mode: DeleteCharacterItemHandlingMethods.setToNobody,
 								},
 							},
 						],
@@ -310,19 +320,19 @@ describe("Metadata updates", () => {
 				},
 			}
 		);
-		expect(updatedState.members).toEqual([]);
+		expect(updatedState.characters).toEqual([]);
 		expect(updatedState.items.length).toEqual(1);
-		expect(updatedState.items[0].carriedBy).toEqual("Nobody");
+		expect(updatedState.items[0].carriedByCharacterId).toEqual("Nobody");
 	});
 
 	test("Remove member (mark multiple items as carried by nobody)", () => {
 		const updatedState = inventoryReducer(
 			{
 				...testState,
-				members: [averageMembersFixture[0], averageMembersFixture[1]],
+				characters: [averageMembersFixture[0], averageMembersFixture[1]],
 				items: Array.from([null, null], () =>
 					generateRandomInventoryItem({
-						carriedBy: averageMembersFixture[1]._id,
+						carriedByCharacterId: averageMembersFixture[1].id,
 					})
 				),
 				//? Generate 2 random inventory items
@@ -331,12 +341,12 @@ describe("Metadata updates", () => {
 				type: "sheet_metadataUpdate",
 				data: {
 					name: testState.name,
-					members: {
+					characters: {
 						remove: [
 							{
 								...averageMembersFixture[1],
 								deleteMethod: {
-									mode: DeleteMemberItemHandlingMethods.setToNobody,
+									mode: DeleteCharacterItemHandlingMethods.setToNobody,
 								},
 							},
 						],
@@ -346,7 +356,7 @@ describe("Metadata updates", () => {
 				},
 			}
 		);
-		expect(updatedState.members).toEqual([averageMembersFixture[0]]);
+		expect(updatedState.characters).toEqual([averageMembersFixture[0]]);
 		expect(updatedState.items).toEqual(
 			getCarriedItems(updatedState.items, "Nobody")
 		);
@@ -354,19 +364,19 @@ describe("Metadata updates", () => {
 
 	test("Update member", () => {
 		const randomUpdate = generateRandomPartyMember({
-			_id: averageMembersFixture[0]._id,
+			id: averageMembersFixture[0].id,
 		});
 		const updatedState = inventoryReducer(
 			{
 				...testState,
-				members: [averageMembersFixture[0]],
+				characters: [averageMembersFixture[0]],
 				//? Generate 2 random inventory items
 			},
 			{
 				type: "sheet_metadataUpdate",
 				data: {
 					name: testState.name,
-					members: {
+					characters: {
 						add: [],
 						remove: [],
 						update: [randomUpdate],
@@ -374,24 +384,24 @@ describe("Metadata updates", () => {
 				},
 			}
 		);
-		expect(updatedState.members).toEqual([randomUpdate]);
+		expect(updatedState.characters).toEqual([randomUpdate]);
 	});
-	test("Update multiple members", () => {
+	test("Update multiple characters", () => {
 		const randomUpdates = getIds([
 			averageMembersFixture[0],
 			averageMembersFixture[1],
-		]).map((_id) => generateRandomPartyMember({ _id }));
+		]).map((id) => generateRandomPartyMember({ id }));
 		const updatedState = inventoryReducer(
 			{
 				...testState,
-				members: [averageMembersFixture[0], averageMembersFixture[1]],
+				characters: [averageMembersFixture[0], averageMembersFixture[1]],
 				//? Generate 2 random inventory items
 			},
 			{
 				type: "sheet_metadataUpdate",
 				data: {
 					name: testState.name,
-					members: {
+					characters: {
 						add: [],
 						remove: [],
 						update: randomUpdates,
@@ -399,6 +409,6 @@ describe("Metadata updates", () => {
 				},
 			}
 		);
-		expect(updatedState.members).toEqual(randomUpdates);
+		expect(updatedState.characters).toEqual(randomUpdates);
 	});
 });

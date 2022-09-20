@@ -6,7 +6,7 @@ import Big from "big.js";
 
 const getTestId = testIdGeneratorFactory("MemberTotalsTable");
 
-export const memberTotalsTableTestIds = {
+export const characterTotalsTableTestIds = {
 	root: getTestId("root"),
 };
 
@@ -16,18 +16,18 @@ export const memberTotalsTableTestIds = {
  * @param props The props to pass to the table
  * @returns The rendered stuff
  */
-const MemberTotalsTable: React.FC<TableProps> = ({ ...props }) => {
-	const { members, items } = useInventoryState();
+const CharacterTotalsTable: React.FC<TableProps> = ({ ...props }) => {
+	const { characters, items } = useInventoryState();
 	/**
 	 * Fetch the items carried by a certain member
 	 *
-	 * @param memberId The '_id' of the member to fetch the items of
+	 * @param memberId The 'id' of the member to fetch the items of
 	 * @returns The items carried by te specified character
 	 */
 	const getCarriedItems = (memberId: string) =>
-		items.filter((item) => item.carriedBy === memberId);
+		items.filter((item) => item.carriedByCharacterId === memberId);
 	return (
-		<Table {...props} data-testid={memberTotalsTableTestIds.root}>
+		<Table {...props} data-testid={characterTotalsTableTestIds.root}>
 			<Thead>
 				<Tr>
 					<Th>Character</Th>
@@ -36,12 +36,12 @@ const MemberTotalsTable: React.FC<TableProps> = ({ ...props }) => {
 				</Tr>
 			</Thead>
 			<Tbody>
-				{members.map(({ _id, name }) => (
-					<Tr key={_id}>
+				{characters.map(({ id, name }) => (
+					<Tr key={id}>
 						<Td>{name}</Td>
 						{/* Total weight cell */}
 						<Td>
-							{getCarriedItems(_id).reduce<number>(
+							{getCarriedItems(id).reduce<number>(
 								(total, current) =>
 									new Big(total).add(getItemTotalWeight(current)).toNumber(),
 								0
@@ -49,7 +49,7 @@ const MemberTotalsTable: React.FC<TableProps> = ({ ...props }) => {
 						</Td>
 						{/* Total value cell */}
 						<Td>
-							{getCarriedItems(_id).reduce<number>(
+							{getCarriedItems(id).reduce<number>(
 								(total, current) =>
 									new Big(total).add(getItemTotalValue(current)).toNumber(),
 								0
@@ -62,4 +62,4 @@ const MemberTotalsTable: React.FC<TableProps> = ({ ...props }) => {
 	);
 };
 
-export default MemberTotalsTable;
+export default CharacterTotalsTable;

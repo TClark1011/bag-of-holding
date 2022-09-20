@@ -1,8 +1,9 @@
 import { REFETCH_INTERVAL } from "$root/config";
 import { fetchSheet } from "$sheets/api";
 import { useSheetPageId } from "$sheets/hooks";
-import { InventorySheetFields } from "$sheets/types";
+import { FullSheet } from "$sheets/types";
 import { useInterval } from "@chakra-ui/react";
+import { Sheet } from "@prisma/client";
 
 /**
  * Run an effect whenever sheet data is re-fetched
@@ -11,7 +12,7 @@ import { useInterval } from "@chakra-ui/react";
  * passed the re-fetched data that triggered the
  * effect to run.
  */
-const useSheetRefetchEffect = (effect: (p: InventorySheetFields) => void) => {
+const useSheetRefetchEffect = (effect: (p: FullSheet) => void) => {
 	const id = useSheetPageId();
 
 	useInterval(() => {

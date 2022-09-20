@@ -6,6 +6,7 @@ module.exports = {
 	webpack5: true,
 	env: {
 		MONGO_URL: "_",
+		MONTHS_INACTIVE_OLD_SHEET_DELETE: "3",
 		// Default value so tests dont throw an error
 	},
 	redirects: async () => {

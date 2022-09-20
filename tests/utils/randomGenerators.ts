@@ -1,12 +1,9 @@
-import {
-	InventoryItemFields,
-	InventoryMemberFields,
-	InventorySheetFields,
-} from "$sheets/types";
 import faker from "faker";
 import randomItem from "random-item";
 import { IdentifiedObject } from "$root/types";
 import { A } from "@mobily/ts-belt";
+import { Character, Item, Sheet } from "@prisma/client";
+import { FullSheet } from "$sheets/types";
 
 /**
  * A Function type for functions that return randomly
@@ -23,28 +20,30 @@ export type RandomEntityGenerator<Entity extends IdentifiedObject> = (
  * any of the fields for inventory items. Any fields that
  * are not provided are randomly generated
  * @param [members] Array of inventory members.
- * If provided, the item's `carriedBy` field is set to
- * the `_id` of a member randomly selected from this array.
- * If this is not provided and a `carriedBy` value is not
- * found in `fields`, then carriedBy is set to `Nobody`.
+ * If provided, the item's `carriedByCharacterId` field is set to
+ * the `id` of a member randomly selected from this array.
+ * If this is not provided and a `carriedByCharacterId` value is not
+ * found in `fields`, then carriedByCharacterId is set to `Nobody`.
  * @returns Randomly Generated Inventory Item
  */
 export const generateRandomInventoryItem = (
-	fields: Partial<InventoryItemFields> = {},
-	members?: InventoryMemberFields[]
-): InventoryItemFields => ({
-	_id: faker.datatype.uuid(),
-	name: faker.commerce.productName().substring(0, 23),
-	weight: Number(faker.datatype.number(200).toFixed(2)),
-	carriedBy: members ? randomItem(members)._id : "Nobody",
-	quantity: Number(faker.datatype.number(200).toFixed(0)),
-	description: faker.commerce.productDescription(),
-	category: faker.commerce.productAdjective(),
-	// category: faker.random.alphaNumeric(5),
-	reference: faker.internet.url(),
-	value: Number(faker.datatype.number(200).toFixed(2)),
-	...fields,
-});
+	fields: Partial<Item> = {},
+	members?: Character[]
+): Item => {
+	return {
+		id: faker.datatype.uuid(),
+		name: faker.commerce.productName().substring(0, 23),
+		weight: Number(faker.datatype.number(200).toFixed(2)),
+		carriedByCharacterId: members ? randomItem(members).id : "Nobody",
+		quantity: Number(faker.datatype.number(200).toFixed(0)),
+		description: faker.commerce.productDescription(),
+		category: faker.commerce.productAdjective(),
+		referenceLink: faker.internet.url(),
+		value: Number(faker.datatype.number(200).toFixed(2)),
+		sheetId: "",
+		...fields,
+	};
+};
 
 /**
  * Randomly generate a party member
@@ -54,12 +53,13 @@ export const generateRandomInventoryItem = (
  * are not provided are randomly generated
  * @returns Randomly generated party member
  */
-export const generateRandomPartyMember: RandomEntityGenerator<InventoryMemberFields> = (
+export const generateRandomPartyMember: RandomEntityGenerator<Character> = (
 	fields = {}
 ) => ({
-	_id: faker.datatype.uuid(),
+	id: faker.datatype.uuid(),
 	name: faker.name.firstName(),
 	carryCapacity: faker.datatype.number(),
+	sheetId: "",
 	...fields,
 });
 
@@ -82,18 +82,19 @@ export type RandomSheetOptions = {
 export const generateRandomInventorySheet = ({
 	numberOfMembers = 4,
 	numberOfItems = 50,
-}: Partial<RandomSheetOptions> = {}): InventorySheetFields => {
-	const members = A.make(numberOfMembers, null).map(() =>
+}: Partial<RandomSheetOptions> = {}): FullSheet => {
+	const characters = A.make(numberOfMembers, null).map(() =>
 		generateRandomPartyMember({})
 	);
 	const items = A.make(numberOfItems, null).map(() =>
-		generateRandomInventoryItem({}, members)
+		generateRandomInventoryItem({}, characters)
 	);
 
 	return {
-		_id: faker.datatype.uuid(),
+		id: faker.datatype.uuid(),
 		items,
-		members,
+		characters,
 		name: faker.commerce.productName(),
+		updatedAt: new Date(),
 	};
 };

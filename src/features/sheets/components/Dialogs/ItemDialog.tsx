@@ -18,10 +18,7 @@ import {
 	TextareaControl,
 } from "formik-chakra-ui";
 import { SheetDialogType, useSheetPageState } from "$sheets/store";
-import {
-	InventorySheetStateAction,
-	InventoryItemCreationFields,
-} from "$sheets/types";
+import { SheetStateAction, ItemCreationFields } from "$sheets/types";
 import {
 	useInventoryState,
 	useInventoryStateDispatch,
@@ -56,19 +53,23 @@ const ItemDialog: React.FC<Props> = ({ mode }) => {
 
 	const { activeItem, closeDialog, getUniqueCategories } = useSheetPageState();
 
-	const initialFormValues: InventoryItemCreationFields = inEditMode
+	const initialFormValues: ItemCreationFields = inEditMode
 		? activeItem
 		: {
-			_id: faker.datatype.uuid(),
+			id: faker.datatype.uuid(),
 			name: "",
 			quantity: 1,
 			value: 0,
 			weight: 0,
-			carriedBy: "Nobody",
+			carriedByCharacterId: null,
+			category: null,
+			description: null,
+			referenceLink: null,
+			sheetId: "",
 		  };
 
 	const dispatch = useInventoryStateDispatch();
-	const { members, items } = useInventoryState();
+	const { characters, items } = useInventoryState();
 
 	const categoryAutocompleteItems = useMemo(() => getUniqueCategories(items), [
 		items,
@@ -90,11 +91,11 @@ const ItemDialog: React.FC<Props> = ({ mode }) => {
 	 * @param formFunctions.setSubmitting Set whether or not the form is
 	 * currently submitting
 	 */
-	const onSubmit = (data: InventoryItemCreationFields, { setSubmitting }) => {
+	const onSubmit = (data: ItemCreationFields, { setSubmitting }) => {
 		if (!data.category) {
 			data.category = "None";
 		}
-		const action: InventorySheetStateAction = {
+		const action: SheetStateAction = {
 			type: inEditMode ? "item_update" : "item_add",
 			data,
 			sendToServer: true,
@@ -124,7 +125,7 @@ const ItemDialog: React.FC<Props> = ({ mode }) => {
 		setSubmitting(true);
 		dispatch({
 			type: "item_remove",
-			data: activeItem._id,
+			data: activeItem.id,
 			sendToServer: true,
 			/**
 			 * Regardless of result, mark submission as complete at end of query
@@ -211,16 +212,16 @@ const ItemDialog: React.FC<Props> = ({ mode }) => {
 										numberInputProps={{ min: 0 }}
 									/>
 								</SimpleGrid>
-								<SelectControl name="carriedBy" label="Carried By">
+								<SelectControl name="carriedByCharacterId" label="Carried By">
 									<option value="Nobody">Nobody</option>
-									{members.map((member) => (
-										<option value={member._id} key={member._id}>
+									{characters.map((member) => (
+										<option value={member.id} key={member.id}>
 											{member.name}
 										</option>
 									))}
 								</SelectControl>
 								<InputControl
-									name="reference"
+									name="referenceLink"
 									label="Reference"
 									inputProps={{
 										placeholder: "Link to more information",

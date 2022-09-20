@@ -1,4 +1,4 @@
-import { InventorySheetStateAction } from "../types/InventorySheetState";
+import { SheetStateAction } from "../types/SheetState";
 import { AxiosResponse } from "axios";
 import { sheetsUrlPrefix } from "$root/constants";
 import { axiosInstance } from "$root/config";
@@ -8,7 +8,7 @@ import { axiosInstance } from "$root/config";
  * to be processed and acted upon by the database
  * reducer.
  *
- * @param _id The id of the sheet to be
+ * @param id The id of the sheet to be
  * acted upon
  * @param action The
  * action to be sent to the server
@@ -16,11 +16,11 @@ import { axiosInstance } from "$root/config";
  * resulting promise
  */
 const sendSheetAction = (
-	_id: string,
-	action: InventorySheetStateAction
+	id: string,
+	action: SheetStateAction
 ): Promise<void | AxiosResponse<void>> =>
 	axiosInstance
-		.patch(sheetsUrlPrefix + _id, action)
+		.patch(sheetsUrlPrefix + id, action)
 		.then(() => action.onThen && action.onThen())
 		.catch((err) => action.onCatch && action.onCatch(err))
 		.finally(() => action.onFinally && action.onFinally());

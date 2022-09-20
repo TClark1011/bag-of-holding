@@ -1,8 +1,8 @@
+import { Character, Item } from "@prisma/client";
 import Big from "big.js";
-import { InventoryItemFields, InventoryMemberFields } from "$sheets/types";
 
 type ItemDerivation<Return, ExtraParams extends any[] = []> = (
-	item: InventoryItemFields,
+	item: Item,
 	...args: ExtraParams
 ) => Return;
 
@@ -33,16 +33,16 @@ export const getItemTotalValue: ItemDerivation<number> = (item) =>
  *
  * @param item The item which you want to get the carrier
  * of
- * @param item.carriedBy The id of the party member that is
- * carrying the item
- * @param members The party members in the sheets
+ * @param item.carriedByCharacterId the id of the party
+ * character that is carrying the item
+ * @param characters The party members in the sheets
  * @returns The data of the party member who is carrying
  * the passed item
  */
 export const getCarrier: ItemDerivation<
-	InventoryMemberFields | undefined,
-	[InventoryMemberFields[]]
-> = ({ carriedBy }, members) =>
-	carriedBy !== undefined
-		? members.find(({ _id }) => _id === carriedBy)
+	Character | undefined,
+	[Character[]]
+> = ({ carriedByCharacterId }, characters) =>
+	carriedByCharacterId !== undefined
+		? characters.find(({ id }) => id === carriedByCharacterId)
 		: undefined;

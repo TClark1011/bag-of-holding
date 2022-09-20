@@ -1,10 +1,7 @@
 import { NextApiHandler } from "next";
-import { SheetModel } from "$backend/models";
-import { OmitId } from "$root/types";
-import { connectToMongoose } from "$backend/utils";
-import { InventorySheetFields } from "$sheets/types";
-
-connectToMongoose();
+import createSheetFromFlatData, {
+	SheetFlatDataCreation,
+} from "$backend/createSheetFromFlatData";
 
 /**
  * Handle HTTP requests to the route
@@ -14,13 +11,13 @@ connectToMongoose();
  */
 const routeHandler: NextApiHandler = async (req, res) => {
 	if (req.method === "GET") {
-		const fields: OmitId<InventorySheetFields> = {
+		const fields: SheetFlatDataCreation = {
 			name: "New Sheet",
-			members: [],
+			characters: [],
 			items: [],
 		};
-		const item = await new SheetModel(fields).save();
-		res.status(200).send(item._id);
+		const item = await createSheetFromFlatData(fields);
+		res.status(200).send(item.id);
 		return;
 	}
 	res.status(500).send("error");

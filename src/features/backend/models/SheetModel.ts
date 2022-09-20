@@ -1,10 +1,9 @@
 import mongoose, { Schema, model, Model } from "mongoose";
-import { InventorySheetFields } from "$sheets/types";
 import { UNDERGOING_MIGRATION, inProduction } from "$root/config";
-import { composeAllMixedSchema } from "$backend/utils";
 import { SchemaDefinition } from "mongoose";
+import composeAllMixedSchema from "$backend/utils/composeAllMixedSchema";
 
-const sheetSchemaDefinition: SchemaDefinition<InventorySheetFields> = {
+const sheetSchemaDefinition: SchemaDefinition<any> = {
 	name: { type: String, required: true },
 	members: [
 		{
@@ -36,7 +35,7 @@ const schemaToUse = UNDERGOING_MIGRATION
 // are migrating using its own parsing logic, which will damage
 // the data.
 
-const SheetSchema = new Schema<InventorySheetFields>(schemaToUse, {
+const SheetSchema = new Schema<any>(schemaToUse, {
 	timestamps: true,
 	strict: !UNDERGOING_MIGRATION,
 	// Allow additional keys not specified in the schema if
@@ -69,8 +68,7 @@ const getSheetModel = (useLiveCollection: boolean = inProduction) => {
 	const modelName = getSheetModelName(useLiveCollection);
 
 	const result =
-		(mongoose.models[modelName] as Model<InventorySheetFields>) ||
-		model(modelName, SheetSchema);
+		(mongoose.models[modelName] as Model<any>) || model(modelName, SheetSchema);
 	// Get the existing model, if it doesn't exist create a fresh
 	// one
 
@@ -78,9 +76,7 @@ const getSheetModel = (useLiveCollection: boolean = inProduction) => {
 };
 
 //* Model for accessing the production database
-export const ProductionSheetModel = getSheetModel(true) as ReturnType<
-	typeof getSheetModel
->;
+export const ProductionSheetModel = getSheetModel(true);
 //? Will always be the production sheet collection regardless of execution environment
 
 const SheetModel = getSheetModel();
