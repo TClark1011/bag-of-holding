@@ -6,10 +6,11 @@ generator client {
 }
 
 generator schemas {
-  provider    = "zod-prisma"
-  output      = "./schemas"
-  modelCase   = "camelCase"
-  modelSuffix = "Schema"
+  provider      = "zod-prisma"
+  output        = "./schemas"
+  modelCase     = "camelCase"
+  modelSuffix   = "Schema"
+  relationModel = false
 }
 
 datasource db {
