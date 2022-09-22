@@ -3,7 +3,6 @@ import {
 	IconButton,
 	FormControl,
 	FormErrorMessage,
-	FormLabel,
 	Divider,
 	Flex,
 	Text,
@@ -98,7 +97,6 @@ const SheetOptionsDialog: React.FC = () => {
 		data: SheetOptionsDialogFormFields,
 		{ setSubmitting }: FormikHelpers<SheetOptionsDialogFormFields>
 	) => {
-		console.log("(SheetOptionsDialog) data: ", data);
 		setSubmitting(true);
 		dispatch({
 			type: "sheet_metadataUpdate",
@@ -167,9 +165,9 @@ const SheetOptionsDialog: React.FC = () => {
 							/>
 							{/* //# Character fields */}
 							<Text fontWeight="bold" textAlign="center">
-								Characters
+								Party Members
 							</Text>
-							<Divider />
+							<Divider mb="group" />
 							<VStack spacing="group">
 								<FieldArray name="characters">
 									{(helpers) => (
@@ -188,7 +186,7 @@ const SheetOptionsDialog: React.FC = () => {
 																form.touched.characters[index]
 															}
 														>
-															<FormLabel>Character {index + 1}</FormLabel>
+															{/* <FormLabel>Member {index + 1}</FormLabel> */}
 															<Flex>
 																<Input
 																	{...field}
@@ -253,8 +251,8 @@ const SheetOptionsDialog: React.FC = () => {
 												}}
 											>
 												<Paragraph>
-													Are you sure you want to delete this party character
-													from the sheet?
+													Are you sure you want to delete this party member from
+													the sheet?
 												</Paragraph>
 												<Paragraph>
 													What should happen to items being carried by{" "}
