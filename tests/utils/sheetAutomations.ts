@@ -147,9 +147,8 @@ export const countItemRows = async (client: Page) =>
  * @param searchTerm The search term to use
  * to fill the search bar
  */
-export const fillSearchBar = async (client: Page, searchTerm: string) => {
-	await client.fill(searchBar, searchTerm);
-};
+export const fillSearchBar = (client: Page, searchTerm: string) =>
+	client.fill(searchBar, searchTerm);
 
 /**
  * Helper for executing identical actions accross multiple

@@ -1,5 +1,8 @@
 import dbReducer from "$backend/dbReducer";
 import prisma from "$prisma";
+import { tryCatch } from "$root/utils";
+import { FullSheet } from "$sheets/types";
+import { itemValidation } from "$sheets/validation";
 import { NextApiHandler, NextApiRequest } from "next";
 
 //NOTE: Apparently the NextJS 'API resolved without sending a response for..." errors are false positives and can be ignored.
@@ -19,13 +22,13 @@ const getSheetId = (req: NextApiRequest): string => req.query.sheetId as string;
  * @param req The HTTP request object
  * @param res The HTTP response object
  */
-const handleGET: NextApiHandler = async (req, res) => {
+const handleGET: NextApiHandler<FullSheet | string> = async (req, res) => {
 	try {
 		const data = await prisma.sheet.findFirstOrThrow({
 			where: {
 				id: getSheetId(req),
 			},
-			select: {
+			include: {
 				items: true,
 				characters: true,
 			},
@@ -43,8 +46,18 @@ const handleGET: NextApiHandler = async (req, res) => {
  * @param res The HTTP response object
  */
 const handlePATCH: NextApiHandler = async (req, res) => {
-	dbReducer(getSheetId(req), req.body);
-	res.status(200).json({});
+	const data: any = tryCatch(
+		() => itemValidation.validateSync(req.body.data),
+		() => req.body.data
+	);
+
+	if (itemValidation.isValidSync(data)) {
+		console.log(`([sheetId]) (${Date.now()}) data: `, data);
+		(data as any).id = (data as any).id || undefined; // if item id is empty string, set to undefined
+	}
+
+	await dbReducer(getSheetId(req), { ...req.body, data });
+	return res.status(200).json({});
 };
 
 /**
@@ -56,13 +69,11 @@ const handlePATCH: NextApiHandler = async (req, res) => {
 const routeHandler: NextApiHandler = (req, res) => {
 	switch (req.method) {
 		case "PATCH":
-			handlePATCH(req, res);
-			break;
+			return handlePATCH(req, res);
 		case "GET":
-			handleGET(req, res);
-			break;
+			return handleGET(req, res);
 		default:
-			res.status(400).send("Invalid request method");
+			return res.status(400).send("Invalid request method");
 	}
 };
 

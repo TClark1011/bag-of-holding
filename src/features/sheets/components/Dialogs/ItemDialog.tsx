@@ -9,7 +9,6 @@ import {
 	ModalFooter,
 	useDisclosure,
 } from "@chakra-ui/react";
-import codeToTitle from "code-to-title";
 import { Formik } from "formik";
 import {
 	InputControl,
@@ -53,10 +52,12 @@ const ItemDialog: React.FC<Props> = ({ mode }) => {
 
 	const { activeItem, closeDialog, getUniqueCategories } = useSheetPageState();
 
-	const initialFormValues: ItemCreationFields = inEditMode
+	const initialFormValues: Omit<
+		ItemCreationFields,
+		"id" | "sheetId"
+	> = inEditMode
 		? activeItem
 		: {
-			id: faker.datatype.uuid(),
 			name: "",
 			quantity: 1,
 			value: 0,
@@ -65,7 +66,6 @@ const ItemDialog: React.FC<Props> = ({ mode }) => {
 			category: null,
 			description: null,
 			referenceLink: null,
-			sheetId: "",
 		  };
 
 	const dispatch = useInventoryStateDispatch();
@@ -144,7 +144,7 @@ const ItemDialog: React.FC<Props> = ({ mode }) => {
 		});
 	};
 
-	const headingPrefix = mode === "new" ? "Create" : codeToTitle(mode);
+	const headingPrefix = inEditMode ? "Edit" : "Create";
 	return (
 		<SheetDialog
 			dialogType={("item." + mode) as SheetDialogType}

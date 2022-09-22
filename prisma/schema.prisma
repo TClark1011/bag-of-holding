@@ -5,42 +5,49 @@ generator client {
   provider = "prisma-client-js"
 }
 
+generator schemas {
+  provider    = "zod-prisma"
+  output      = "./schemas"
+  modelCase   = "camelCase"
+  modelSuffix = "Schema"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model Sheet {
-  updatedAt DateTime @updatedAt
-  id String @id @default(cuid())
-  name String
+  updatedAt  DateTime    @updatedAt
+  id         String      @id @default(cuid())
+  name       String
   characters Character[]
-  items Item[]
+  items      Item[]
 }
 
 model Character {
-  id String @id @default(cuid())
-  name String
-  carryCapacity Float @default(0)
-  carriedItems Item[]
+  id            String @id @default(cuid())
+  name          String
+  carryCapacity Float  @default(0)
+  carriedItems  Item[]
 
-  sheet Sheet @relation(fields: [sheetId], references: [id], onDelete: Cascade)
+  sheet   Sheet  @relation(fields: [sheetId], references: [id], onDelete: Cascade)
   sheetId String
 }
 
 model Item {
-  id String @id @default(cuid())
-  name String
-  description String?
-  weight Float?
-  quantity Float @default(1)
+  id            String  @id @default(cuid())
+  name          String
+  description   String?
+  weight        Float?
+  quantity      Float   @default(1)
   referenceLink String? // Usually a link to the rules for the item
-  category String?
-  value Float?
+  category      String?
+  value         Float?
 
-  carriedByCharacter Character? @relation(fields: [carriedByCharacterId], references: [id], onDelete: SetNull)
+  carriedByCharacter   Character? @relation(fields: [carriedByCharacterId], references: [id], onDelete: SetNull)
   carriedByCharacterId String?
 
-  sheet Sheet @relation(fields: [sheetId], references: [id])
+  sheet   Sheet  @relation(fields: [sheetId], references: [id])
   sheetId String
 }

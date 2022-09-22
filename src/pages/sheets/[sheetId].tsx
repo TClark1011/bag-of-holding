@@ -61,7 +61,10 @@ export interface SheetPageProps extends FullSheet {
  * @param sheetFields.members Members
  * @returns Sheet component
  */
-const Sheet: React.FC<SheetPageProps> = ({ isNew = false, ...sheetFields }) => {
+const SheetPage: React.FC<SheetPageProps> = ({
+	isNew = false,
+	...sheetFields
+}) => {
 	const [
 		{ items, name, characters, id },
 		inventoryDispatch,
@@ -104,7 +107,9 @@ const Sheet: React.FC<SheetPageProps> = ({ isNew = false, ...sheetFields }) => {
 							<Flex justify="space-between" marginBottom="group">
 								<Flex>
 									{/* Sheet Title */}
-									<Heading marginRight={1}>{name}</Heading>
+									<Heading marginRight={1} as="h2" id="sheet-title">
+										{name}
+									</Heading>
 									<DarkMode>
 										{/* Sheet Options Button */}
 										<IconButton
@@ -253,4 +258,4 @@ export const getServerSideProps: GetServerSideProps<Sheet> = async (
 	};
 };
 
-export default Sheet;
+export default SheetPage;

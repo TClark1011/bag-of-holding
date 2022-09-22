@@ -11,6 +11,11 @@ const config: PlaywrightTestConfig = {
 		port: 3001,
 		reuseExistingServer: !process.env.CI,
 	},
+	use: {
+		actionTimeout: 10000,
+	},
+	retries: 3,
+	reporter: process.env.CI ? "github" : "list",
 	timeout: 60000,
 	globalSetup: "./tests/setup/playwright.setup.ts",
 	quiet: true,

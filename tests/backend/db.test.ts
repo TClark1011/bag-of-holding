@@ -1,98 +1,10 @@
-import {
-	DeleteCharacterItemHandlingMethods,
-	FullSheet,
-	SheetStatePartialUpdateAction,
-} from "$sheets/types";
-import { generateCharacter, getCarriedItems } from "$sheets/utils";
-import { OmitId } from "$root/types";
-import {
-	healthPotionFixture,
-	longswordFixture,
-} from "../fixtures/itemFixtures";
+import { DeleteCharacterItemHandlingMethods } from "$sheets/types";
 import tweakString from "../utils/tweakString";
 import prisma from "$prisma";
 import dbReducer from "$backend/dbReducer";
-import { Character, Item } from "@prisma/client";
-import createSheetFromFlatData from "$backend/createSheetFromFlatData";
-import { D, flow } from "@mobily/ts-belt";
-import { expectParam } from "$fp";
+import { D } from "@mobily/ts-belt";
 import faker from "faker";
 import { generateRandomInventoryItem } from "$tests/utils/randomGenerators";
-
-const omitSheetId = flow(expectParam<Item>(), D.deleteKey("sheetId"));
-
-/**
- * Function for generating a new sheet for testing.
- * Sheet is deleted once tests are completed
- *
- * @param testFn A callback containing tests
- * to be executed. The callback is passed::
- * - initialState: The state of sheet as it was created
- * - update: A function to dispatch actions on that sheet
- * and then return the updated state
- * @param [initialStateTweaks={}] An object which
- * is merged with a basic sheet inventory state to derive
- * derive the starting state of the sheet. The basic initial
- * sheet has the name "name" and no characters or items.
- */
-const testDbReducer = async (
-	testFn: (
-		initialState: FullSheet,
-		update: (action: SheetStatePartialUpdateAction) => Promise<FullSheet>
-	) => Promise<void>,
-	initialStateTweaks: Partial<OmitId<FullSheet>> = {}
-): Promise<void> => {
-	const newSheet = await createSheetFromFlatData({
-		characters: [],
-		items: [],
-		name: "name",
-		...initialStateTweaks,
-	});
-	// const newSheet = await new SheetModel(
-	// 	merge(
-	// 		{
-	// 			name: "name",
-	// 			characters: [],
-	// 			items: [],
-	// 		},
-	// 		initialStateTweaks
-	// 	)
-	// ).save();
-
-	/**
-	 * Update the sheet via an action and return the
-	 * updated state
-	 *
-	 * @param action The action to execute
-	 * upon th sheet.
-	 * @returns The state of the sheet
-	 * after the action has been executed.
-	 */
-	const update = async (action: SheetStatePartialUpdateAction) => {
-		await dbReducer(newSheet.id, action);
-		const updatedSheet = await prisma.sheet.findFirstOrThrow({
-			where: {
-				id: newSheet.id,
-			},
-			include: {
-				characters: true,
-				items: true,
-			},
-		});
-		return updatedSheet;
-	};
-
-	await testFn(newSheet, update);
-	//? Execute the test function
-
-	await prisma.sheet.delete({
-		where: {
-			id: newSheet.id,
-		},
-	});
-
-	//? Delete the sheet
-};
 
 describe("DB Reducer Actions", () => {
 	test("Create item", async () => {
@@ -227,27 +139,6 @@ describe("DB Reducer Actions", () => {
 });
 
 describe("Metadata Member updates", () => {
-	const testMembers: Character[] = [
-		generateCharacter("1"),
-		generateCharacter("1"),
-	];
-
-	/**
-	 * Function to fetch test items. The test items are
-	 * pulled from the fixtures folder, with their
-	 * `carriedByCharacterId` field changed to match passed characters.
-	 *
-	 * @param member The member object, the `id`
-	 * of which is passed to the first test item.
-	 * @param [member2=member] The member to carry
-	 * the second item.
-	 * @returns The items with altered `carriedByCharacterId`
-	 */
-	const getTestItems = (member: Character, member2 = member): Item[] => [
-		{ ...longswordFixture, carriedByCharacterId: member.id },
-		{ ...healthPotionFixture, carriedByCharacterId: member2.id },
-	];
-
 	test("Add member", async () => {
 		const baseSheet = await prisma.sheet.create({
 			data: {
@@ -618,8 +509,17 @@ describe("Metadata Member updates", () => {
 		expect(updatedSheet.characters).toHaveLength(1);
 
 		expect(updatedSheet.characters[0].carriedItems).toHaveLength(2);
-		expect(updatedSheet.characters[0].carriedItems[0].name).toBe("item name 1");
-		expect(updatedSheet.characters[0].carriedItems[1].name).toBe("item name 2");
+
+		expect(updatedSheet.items).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					name: "item name 1",
+				}),
+				expect.objectContaining({
+					name: "item name 2",
+				}),
+			])
+		);
 	});
 
 	test("Remove member - Set to nobody", async () => {

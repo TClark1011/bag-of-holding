@@ -3,7 +3,6 @@ import { fetchSheet } from "$sheets/api";
 import { useSheetPageId } from "$sheets/hooks";
 import { FullSheet } from "$sheets/types";
 import { useInterval } from "@chakra-ui/react";
-import { Sheet } from "@prisma/client";
 
 /**
  * Run an effect whenever sheet data is re-fetched

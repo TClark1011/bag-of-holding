@@ -87,7 +87,7 @@ testWithNewSheet(
 
 		await page.fill("#name", sheetName);
 		await page.click(sheetOptionsAddMemberButton);
-		await page.fill("[name='members.0.name']", memberName);
+		await page.fill("[name='characters.0.name']", memberName);
 		await page.click(sheetOptionsSaveButton);
 
 		await page.locator("text=Sheet Options").waitFor({
@@ -281,8 +281,8 @@ testWithNewSheet(
 		await clientB.fill("#name", updatedSheetName);
 		await clientB.click(sheetOptionsAddMemberButton);
 		await clientB.click(sheetOptionsAddMemberButton);
-		await clientB.fill("[name='members.0.name']", updatedMemberName);
-		await clientB.fill("[name='members.1.name']", secondMemberName);
+		await clientB.fill("[name='characters.0.name']", updatedMemberName);
+		await clientB.fill("[name='characters.1.name']", secondMemberName);
 		await clientB.click("text=Save");
 
 		await waitForModalState(clientB, "hidden");
@@ -310,6 +310,7 @@ testWithNewSheet(
 				`[data-testid="member-tag"]:has-text("${updatedMemberName}")`
 			)
 		).toBeTruthy();
+
 		expect(
 			await clientA.isVisible(
 				`[data-testid="member-tag"]:has-text("${secondMemberName}")`
@@ -331,12 +332,14 @@ testWithNewSheet(
 		await waitForModalState(clientA, "visible");
 		await fillOutItemForm(clientA, item);
 		// Submit item form
+
 		await clientA.click(cssSelectorWithText("button", "Create Item"));
 		await waitForModalState(clientA, "hidden");
 
 		// Check that the item is visible on the creator client
 		await checkItemFieldVisibility(clientA, item);
 		await waitForRefetch();
+
 		// clientB can see new data
 		await checkItemFieldVisibility(clientB, item);
 
@@ -397,7 +400,7 @@ test.describe("Simultaneous Updates", () => {
 		);
 		// Fill out member name fields
 		await performActionOnMultipleClients(bothClients, (client, index) =>
-			client.fill("[name='members.0.name']", memberNames[index])
+			client.fill("[name='characters.0.name']", memberNames[index])
 		);
 		// Click save button
 		await performActionOnMultipleClients(bothClients, (client) =>

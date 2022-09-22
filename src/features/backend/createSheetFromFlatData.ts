@@ -31,10 +31,12 @@ const createSheetFromFlatData = async (
 					sheetId: baseSheet.id,
 					carriedItems: {
 						createMany: {
-							data: carriedItems.map(({ id, ...item }) => ({
-								...item,
-								sheetId: baseSheet.id,
-							})),
+							data: carriedItems.map(
+								({ id, carriedByCharacterId, ...item }) => ({
+									...item,
+									sheetId: baseSheet.id,
+								})
+							),
 						},
 					},
 				},
