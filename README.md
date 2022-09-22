@@ -17,12 +17,13 @@ Bag of Holding is a web app that lets all the players in a tabletop RPG session 
 
 ## Installation
 
+**NOTE:** You need docker installed
+
 How to install and locally host your own installation of Bag of Holding:
 
 1. Fork + Clone this repository
 2. Run the `yarn` command (yarn must be installed) and wait for installation of packages to finish
-3. Run `yarn dev-db:start` to start the local database **NOTE:** You need docker installed for this to work
-4. Run `yarn start:dev` to run the development server, or just `yarn start` for the production server.
+3. Run `yarn dev` to run the application
 
 ## Development
 
