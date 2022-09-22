@@ -11,6 +11,7 @@ import {
 
 interface TableFilterProps extends PopoverProps {
 	property: FilterableItemProperty;
+	heading?: string;
 }
 
 /**
@@ -32,11 +33,14 @@ interface TableFilterProps extends PopoverProps {
  * component is used. This is because the state change triggered
  * by changing the filters will cause the Popover to close if
  * it's state is being handled automatically via the PopoverTrigger.
+ * @param props.heading Heading to override the default that is
+ * derived from the property
  * @returns Component stuff
  */
 const TableFilter: React.FC<TableFilterProps> = ({
 	property,
 	children,
+	heading,
 	...props
 }) => {
 	return (
@@ -45,7 +49,7 @@ const TableFilter: React.FC<TableFilterProps> = ({
 			<PopoverContent>
 				<PopoverArrow />
 				<PopoverBody>
-					<FilterInterface property={property} />
+					<FilterInterface heading={heading} property={property} />
 				</PopoverBody>
 			</PopoverContent>
 		</Popover>

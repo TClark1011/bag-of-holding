@@ -137,6 +137,9 @@ const TableHeader: React.FC<
 					isOpen={filterPopoverIsOpen}
 					onClose={closeFilterPopover}
 					property={property}
+					{...(property === "carriedByCharacterId" && {
+						heading: "Carried By",
+					})}
 				>
 					<IconButton
 						aria-label="filter"
