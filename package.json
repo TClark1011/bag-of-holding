@@ -26,7 +26,7 @@
 		"release:minor": "yarn release --release-as minor",
 		"release:major": "yarn release --release-as major",
 		"lint": "eslint --fix src tests scripts",
-		"prepare": "husky install && playwright install",
+		"prepare": "husky install",
 		"postinstall": "prisma generate",
 		"clean-deps": "yarn flush-deps && yarn",
 		"flush-deps": "npx rimraf node_modules",

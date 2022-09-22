@@ -31,8 +31,16 @@ jobs:
           node-version: "14"
       - name: Install dependencies
         run: yarn ci
+      - name: Run docker db
+        run: yarn dotenv -e .env.development docker compose up -d
+      - name: Setup database tables
+        run: yarn prisma migrate dev --skip-generate
+      - name: Install playwright deps
+        run: npx playwright install
       - name: Run Playwright tests
         run: npx playwright test
+      - name: Close docker
+        run: docker compose down
       - uses: actions/upload-artifact@v2
         if: always()
         with:
