@@ -5,9 +5,6 @@ import { FullSheet } from "$sheets/types";
 import { itemValidation } from "$sheets/validation";
 import { NextApiHandler, NextApiRequest } from "next";
 
-//NOTE: Apparently the NextJS 'API resolved without sending a response for..." errors are false positives and can be ignored.
-// As seen here "https://github.com/vercel/next.js/issues/10439" it is a known issue with NextJS/Mongoose compatibility
-
 /**
  * Pull the sheetId url parameter for a requests url
  *

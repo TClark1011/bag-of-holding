@@ -23,8 +23,6 @@ const getEnvOrThrow = (key: string, requiredInFrontend = true): string => {
 	return data;
 };
 
-export const MONGO_URL = getEnvOrThrow("MONGO_URL", false);
-
 export const UNDERGOING_MIGRATION = process.env.UNDERGOING_MIGRATION === "true";
 
 export const MONTHS_INACTIVE_OLD_SHEET = Number(
