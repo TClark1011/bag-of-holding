@@ -1,5 +1,3 @@
-import { tryCatch } from "$root/utils";
-
 export const BROWSER = typeof window !== "undefined";
 export const SERVER = !BROWSER;
 
@@ -25,10 +23,7 @@ const getEnvOrThrow = (key: string, requiredInFrontend = true): string => {
 	return data;
 };
 
-export const MONGO_URL = tryCatch(
-	() => getEnvOrThrow("MONGO_URL", false),
-	() => ""
-);
+export const MONGO_URL = String(process.env.MONGO_URL ?? "");
 
 export const UNDERGOING_MIGRATION = process.env.UNDERGOING_MIGRATION === "true";
 
