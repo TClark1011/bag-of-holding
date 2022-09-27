@@ -1,2 +1,2 @@
-import { config as configureEnv } from "dotenv";
-configureEnv();
+import { loadEnvConfig } from "@next/env";
+loadEnvConfig(process.cwd());

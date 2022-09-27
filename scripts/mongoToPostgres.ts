@@ -1,7 +1,8 @@
-import { SheetModel } from "$backend/models";
+import { ProductionSheetModel } from "$backend/models";
 import connectToMongoose from "$backend/utils/connectToMongoose";
-import { getCarriedItems } from "$sheets/utils";
+import { getOldSheetCutOff } from "$root/utils";
 import { PrismaClient } from "@prisma/client";
+import { isAfter } from "date-fns";
 import ora from "ora";
 
 const prisma = new PrismaClient();
@@ -10,69 +11,88 @@ const prisma = new PrismaClient();
 	await connectToMongoose();
 
 	const fetchSpinner = ora("Fetching Production Sheets").start();
-	const sheets = await SheetModel.find({});
-	fetchSpinner.succeed(`Found ${sheets.length} sheets`);
+
+	const sheets = await ProductionSheetModel.find({});
+
+	const relevantSheets = sheets.filter((sheet) =>
+		isAfter(sheet.updatedAt, getOldSheetCutOff())
+	); //Only grab sheets that are wouldn't qualify for deletion
+
+	fetchSpinner.succeed(`Found ${relevantSheets.length} sheets`);
 
 	let completedSheets = 0;
 	const composeMigrationProgressMessage = (completedItems: number) =>
-		`Migrated ${completedItems} of ${sheets.length} sheets`;
+		`Migrated ${completedItems} of ${relevantSheets.length} sheets`;
 
 	const migrationSpinner = ora(composeMigrationProgressMessage(0)).start();
 
 	await Promise.all(
-		sheets.map(async (oldSheet) => {
-			const sheet = await prisma.sheet.create({
-				data: {
+		relevantSheets.map(async (oldSheet) => {
+			const sheet = await prisma.sheet.upsert({
+				where: {
+					id: oldSheet._id.toString(),
+				},
+				update: { name: oldSheet.name, updatedAt: oldSheet.updatedAt },
+				create: {
+					id: oldSheet._id.toString(),
 					name: oldSheet.name,
+					updatedAt: oldSheet.updatedAt,
 				},
 			});
 
 			// Generate members
 			await Promise.all(
 				oldSheet.members.map(async (oldMember) =>
-					prisma.character.create({
-						data: {
-							name: oldMember.name,
-							carryCapacity: oldMember.carryCapacity,
-							sheetId: sheet.id,
-							carriedItems: {
-								createMany: {
-									data: getCarriedItems(oldSheet.items, oldMember).map(
-										(oldItem) => ({
-											name: oldItem.name,
-											description: oldItem.description,
-											sheetId: sheet.id,
-											category: oldItem.category,
-											value: oldItem.value,
-											weight: oldItem.weight,
-											quantity: oldItem.quantity,
-											referenceLink: oldItem.referenceLink,
-										})
-									),
+					prisma.character
+						.create({
+							data: {
+								name: oldMember.name,
+								carryCapacity: oldMember.carryCapacity,
+								sheetId: sheet.id,
+								carriedItems: {
+									createMany: {
+										data: oldSheet.items
+											.filter(
+												(i) =>
+													i.carriedBy.toString() === oldMember._id.toString()
+											)
+											.map((oldItem: any) => ({
+												name: oldItem.name,
+												description: oldItem.description,
+												sheetId: sheet.id,
+												category: oldItem.category,
+												value: oldItem.value,
+												weight: oldItem.weight,
+												quantity: oldItem.quantity,
+												referenceLink: oldItem.reference,
+											})),
+									},
 								},
 							},
-						},
-					})
+						})
+						.catch(() => {})
 				)
 			);
 
 			// Generate Items
 			await Promise.all(
 				oldSheet.items
-					.filter((item) => !item.carriedByCharacterId)
+					.filter((item) => item.carriedBy === "Nobody")
 					.map(async (oldItem) =>
-						prisma.item.create({
-							data: {
-								name: oldItem.name,
-								description: oldItem.description,
-								sheetId: sheet.id,
-								category: oldItem.category,
-								value: oldItem.value,
-								weight: oldItem.weight,
-								quantity: oldItem.quantity,
-								referenceLink: oldItem.referenceLink,
-							},
-						})
+						prisma.item
+							.create({
+								data: {
+									name: oldItem.name,
+									description: oldItem.description,
+									sheetId: sheet.id,
+									category: oldItem.category,
+									value: oldItem.value,
+									weight: oldItem.weight,
+									quantity: oldItem.quantity,
+									referenceLink: oldItem.reference,
+								},
+							})
+							.catch(() => {})
 					)
 			);
 
