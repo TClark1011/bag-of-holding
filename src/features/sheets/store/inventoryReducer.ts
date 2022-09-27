@@ -1,19 +1,23 @@
 import produce from "immer";
 import { merge } from "merge-anything";
 import {
-	DeleteMemberItemHandlingMethods,
-	InventoryMemberDeleteMethodFields,
-	InventorySheetStateAction,
-	InventorySheetState,
-	InventorySheetFields,
+	DeleteCharacterItemHandlingMethods,
+	CharacterDeleteMethodFields,
+	SheetStateAction,
+	SheetState,
 } from "$sheets/types";
 import codeToTitle from "code-to-title";
 import stringifyObject from "stringify-object";
 import { findObjectWithId, getIds } from "$root/utils";
 import { logEvent, logException } from "$analytics/utils";
-import { memberIsCarrying, createInventoryItem } from "$sheets/utils";
+import {
+	characterIsCarrying,
+	createInventoryItem,
+	generateCharacter,
+} from "$sheets/utils";
 import { sendSheetAction } from "$sheets/api";
 import { REFETCH_INTERVAL } from "$root/config";
+import { Character, Sheet } from "@prisma/client";
 
 /**
  * Reducer that handles updates to client state
@@ -26,22 +30,22 @@ import { REFETCH_INTERVAL } from "$root/config";
  * @returns The state updated by the passed action
  */
 const inventoryReducer = (
-	state: InventorySheetState,
-	action: InventorySheetStateAction
-): InventorySheetFields => {
+	state: SheetState,
+	action: SheetStateAction
+): SheetState => {
 	if (action.sendToServer) {
 		//? If send to server is true, we send the action to the server
-		sendSheetAction(state._id, {
+		sendSheetAction(state.id, {
 			...action,
 			sendToServer: false,
-		} as InventorySheetStateAction).catch((err) => {
+		} as SheetStateAction).catch((err) => {
 			logException(
 				`Error occurred when sending sheet '${action.type}' action`,
 				{
 					fatal: true,
 					extraData: stringifyObject({
 						err: err.message,
-						sheetId: state._id,
+						sheetId: state.id,
 						action,
 					}),
 				}
@@ -86,13 +90,13 @@ const inventoryReducer = (
 		case "item_remove":
 			return produceNewState((draftState) => {
 				draftState.items = draftState.items.filter(
-					(item) => item._id !== action.data
+					(item) => item.id !== action.data
 				);
 			}, true);
 		case "item_update":
 			return produceNewState((draftState) => {
 				draftState.items.forEach((item, index) => {
-					if (item._id === action.data._id) {
+					if (item.id === action.data.id) {
 						draftState.items[index] = {
 							...draftState.items[index],
 							...action.data,
@@ -117,33 +121,45 @@ const inventoryReducer = (
 					logEvent("Sheet", "Changed Sheet Name");
 					draftState.name = action.data.name;
 				}
-				draftState.members = draftState.members.filter(
-					(member) => !getIds(action.data.members.remove).includes(member._id)
+				draftState.characters = draftState.characters.filter(
+					(member) => !getIds(action.data.characters.remove).includes(member.id)
 				);
 
-				draftState.members = draftState.members.map((mem) =>
-					getIds(action.data.members.update).includes(mem._id)
-						? findObjectWithId(action.data.members.update, mem._id)
-						: mem
-				);
+				const updateIds = getIds(action.data.characters.update);
+				draftState.characters.forEach((character, index) => {
+					if (updateIds.includes(character.id)) {
+						draftState.characters[index] = {
+							...character,
+							...action.data.characters.update.find(
+								(member) => member.id === character.id
+							),
+						};
+					}
+				});
 
-				action.data.members.remove.forEach((removingMember) => {
+				// draftState.characters = draftState.characters.map((mem) =>
+				// 	getIds(action.data.characters.update).includes(mem.id)
+				// 		? findObjectWithId(action.data.characters.update, mem.id)
+				// 		: mem
+				// );
+
+				action.data.characters.remove.forEach((removingMember) => {
 					logEvent(
 						"Sheet",
 						`Deleted Sheet Member (${removingMember.deleteMethod.mode})`
 					);
 					switch (removingMember.deleteMethod.mode) {
-						case DeleteMemberItemHandlingMethods.delete:
+						case DeleteCharacterItemHandlingMethods.delete:
 							draftState.items = draftState.items.filter(
-								(item) => !memberIsCarrying(removingMember, item)
+								(item) => !characterIsCarrying(removingMember, item)
 							);
 							break;
-						case DeleteMemberItemHandlingMethods.give:
+						case DeleteCharacterItemHandlingMethods.give:
 							draftState.items = draftState.items.map((item) =>
-								memberIsCarrying(removingMember, item)
+								characterIsCarrying(removingMember, item)
 									? {
 										...item,
-										carriedBy: (removingMember.deleteMethod as InventoryMemberDeleteMethodFields & {
+										carriedByCharacterId: (removingMember.deleteMethod as CharacterDeleteMethodFields & {
 												to: string;
 											}).to,
 										/**
@@ -158,16 +174,21 @@ const inventoryReducer = (
 									: item
 							);
 							break;
-						case DeleteMemberItemHandlingMethods.setToNobody:
+						case DeleteCharacterItemHandlingMethods.setToNobody:
 							draftState.items = draftState.items.map((item) =>
-								memberIsCarrying(removingMember, item)
-									? { ...item, carriedBy: "Nobody" }
+								characterIsCarrying(removingMember, item)
+									? { ...item, carriedByCharacterId: "Nobody" }
 									: item
 							);
 					}
 				});
+				const addedCharacters: Character[] = (
+					action.data.characters?.add ?? []
+				).map((addUpdate) =>
+					generateCharacter(addUpdate.name ?? "", addUpdate.carryCapacity ?? 0)
+				);
 
-				draftState.members = draftState.members.concat(action.data.members.add);
+				draftState.characters = draftState.characters.concat(addedCharacters);
 			}, true);
 	}
 };

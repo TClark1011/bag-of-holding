@@ -1,7 +1,6 @@
-import { subMonths } from "date-fns";
+import prisma from "$prisma";
+import { getOldSheetCutOff } from "$root/utils";
 import { NextApiHandler } from "next";
-import { connectToMongoose } from "$backend/utils";
-import { SheetModel } from "$backend/models";
 
 /**
  * Handle a 'DELETE' request and delete all sheets that are more than
@@ -15,14 +14,17 @@ const routeHandler: NextApiHandler = async (req, res) => {
 		res.status(405).send("Request method not implemented");
 	}
 	console.log("deleting old sheets...");
-	await connectToMongoose();
 
-	await SheetModel.deleteMany({
-		updatedAt: { $lt: subMonths(Date.now(), 1) },
-		"items.0": { $exists: true },
-	})
+	await prisma.sheet
+		.deleteMany({
+			where: {
+				updatedAt: {
+					lt: getOldSheetCutOff(),
+				},
+			},
+		})
 		.then((data) => {
-			const resultStr = `deleted ${data.deletedCount} sheets`;
+			const resultStr = `deleted ${data.count} sheets`;
 			res.status(200).send(resultStr);
 			console.log(resultStr);
 		})

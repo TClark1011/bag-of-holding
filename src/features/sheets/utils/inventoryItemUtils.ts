@@ -1,4 +1,4 @@
-import { InventoryItemFields, InventoryMemberFields } from "$sheets/types";
+import { Character, Item } from "@prisma/client";
 
 /**
  * Check whether or not a party member is carrying a
@@ -9,7 +9,5 @@ import { InventoryItemFields, InventoryMemberFields } from "$sheets/types";
  * @returns Whether or not the passed party
  * member is carrying the passed item.
  */
-export const memberIsCarrying = (
-	member: InventoryMemberFields,
-	item: InventoryItemFields
-): boolean => item.carriedBy === member._id;
+export const characterIsCarrying = (member: Character, item: Item): boolean =>
+	item.carriedByCharacterId === member.id;

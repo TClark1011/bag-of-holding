@@ -1,12 +1,12 @@
-import { InventoryMemberFields } from "$sheets/types";
 import { Text, TextProps } from "@chakra-ui/layout";
+import { Character } from "@prisma/client";
 import React from "react";
 import { OmitId } from "../../../types/UtilityTypes";
 import { useInventoryState } from "../providers/InventoryStateProvider";
 
 export interface PartyMemberDataProps extends Omit<TextProps, "children"> {
 	memberId: string;
-	property: keyof OmitId<InventoryMemberFields>;
+	property: keyof OmitId<Character>;
 	fallback?: string | false;
 }
 
@@ -19,7 +19,7 @@ export interface PartyMemberDataProps extends Omit<TextProps, "children"> {
  * data of
  * @param props.property The data property to display
  * @param [props.fallback=props.memberId] The
- * fallback value to use if member with the passed `_id` is not
+ * fallback value to use if member with the passed `id` is not
  * found. If passed boolean `false`, then this component will
  * return `null` if the member is not found. Defaults to the
  * passed `memberId` value.
@@ -32,9 +32,9 @@ const PartyMemberData: React.FC<PartyMemberDataProps> = ({
 	fallback = memberId,
 	...props
 }) => {
-	const { members } = useInventoryState();
+	const { characters } = useInventoryState();
 
-	const selectedMember = members.find((item) => item._id === memberId);
+	const selectedMember = characters.find((item) => item.id === memberId);
 
 	return selectedMember ? (
 		<Text {...props}>

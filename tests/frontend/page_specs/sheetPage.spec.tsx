@@ -2,7 +2,7 @@ import React from "react";
 import { screen } from "@testing-library/dom";
 import { act } from "@testing-library/react";
 import { basicSheetFixture } from "../../fixtures/sheetFixtures";
-import Sheet, { sheetPageTestIds } from "$root/pages/sheets/[sheetId]";
+import SheetPage, { sheetPageTestIds } from "$root/pages/sheets/[sheetId]";
 import { checkTestIdsRender, renderTest } from "../../utils/testUtils";
 import {
 	getItemTotalValue,
@@ -11,25 +11,33 @@ import {
 } from "$sheets/utils";
 import getTestIdQuery from "../../utils/getTestIdQuery";
 import {
-	memberTotalsTableTestIds,
+	characterTotalsTableTestIds,
 	inventoryTableTestIds,
 } from "$sheets/components";
 
-const basicSheetJsx = <Sheet {...basicSheetFixture} />;
+const basicSheetJsx = <SheetPage {...basicSheetFixture} />;
 
-const addMembersButtonText = "Add Members";
+const addCharactersButtonText = "Add Members";
 describe("Elements render", () => {
-	const { items, name, members, _id } = basicSheetFixture;
+	const { items, name, characters, id } = basicSheetFixture;
 
 	test("Static Elements", () => {
 		act(() => {
-			renderTest(<Sheet _id={_id} name={name} members={[]} items={[]} />);
+			renderTest(
+				<SheetPage
+					id={id}
+					name={name}
+					characters={[]}
+					items={[]}
+					updatedAt={new Date()}
+				/>
+			);
 		});
 
 		checkTestIdsRender({ ...inventoryTableTestIds, ...sheetPageTestIds });
 		//? Check rendering of all items with a test id
 
-		["Reset Filters", addMembersButtonText, "Add New Item"].forEach(
+		["Reset Filters", addCharactersButtonText, "Add New Item"].forEach(
 			(textItem) => {
 				expect(screen.getByText(textItem)).toBeInTheDocument();
 			}
@@ -41,16 +49,24 @@ describe("Elements render", () => {
 
 	test("Basic Data", () => {
 		act(() => {
-			renderTest(<Sheet _id={_id} name={name} members={members} items={[]} />);
+			renderTest(
+				<SheetPage
+					id={id}
+					name={name}
+					characters={characters}
+					items={[]}
+					updatedAt={new Date()}
+				/>
+			);
 		});
 
-		expect(screen.queryByText(addMembersButtonText)).toBeFalsy();
-		//? 'Add Members' button should not be visible when the sheet has members
+		expect(screen.queryByText(addCharactersButtonText)).toBeFalsy();
+		//? 'Add Characters' button should not be visible when the sheet has characters
 
 		expect(screen.getByText(name)).toBeInTheDocument;
 
-		members.forEach((member) => {
-			expect(screen.getAllByText(member.name)).toBeTruthy();
+		characters.forEach((character) => {
+			expect(screen.getAllByText(character.name)).toBeTruthy();
 		});
 	});
 
@@ -81,8 +97,8 @@ describe("Computed values are correct", () => {
 	test("All 1s", () => {
 		act(() => {
 			renderTest(
-				<Sheet
-					_id=""
+				<SheetPage
+					id=""
 					name=""
 					items={[
 						createInventoryItem({
@@ -90,9 +106,15 @@ describe("Computed values are correct", () => {
 							quantity: 1,
 							weight: 1,
 							value: 1,
+							carriedByCharacterId: null,
+							category: null,
+							description: null,
+							referenceLink: null,
+							sheetId: null,
 						}),
 					]}
-					members={[]}
+					characters={[]}
+					updatedAt={new Date()}
 				/>
 			);
 		});
@@ -105,8 +127,8 @@ describe("Computed values are correct", () => {
 	test("Basic Integers", () => {
 		act(() => {
 			renderTest(
-				<Sheet
-					_id=""
+				<SheetPage
+					id=""
 					name=""
 					items={[
 						createInventoryItem({
@@ -114,9 +136,15 @@ describe("Computed values are correct", () => {
 							quantity: 2,
 							weight: 4,
 							value: 6,
+							carriedByCharacterId: null,
+							category: null,
+							description: null,
+							referenceLink: null,
+							sheetId: null,
 						}),
 					]}
-					members={[]}
+					characters={[]}
+					updatedAt={new Date()}
 				/>
 			);
 		});
@@ -129,8 +157,8 @@ describe("Computed values are correct", () => {
 	test("Basic Floats", () => {
 		act(() => {
 			renderTest(
-				<Sheet
-					_id=""
+				<SheetPage
+					id=""
 					name=""
 					items={[
 						createInventoryItem({
@@ -138,9 +166,15 @@ describe("Computed values are correct", () => {
 							quantity: 2,
 							weight: 0.1,
 							value: 0.5,
+							carriedByCharacterId: null,
+							category: null,
+							description: null,
+							referenceLink: null,
+							sheetId: null,
 						}),
 					]}
-					members={[]}
+					characters={[]}
+					updatedAt={new Date()}
 				/>
 			);
 		});
@@ -154,8 +188,8 @@ describe("Computed values are correct", () => {
 	test("Problematic floats", () => {
 		act(() => {
 			renderTest(
-				<Sheet
-					_id=""
+				<SheetPage
+					id=""
 					name=""
 					items={[
 						createInventoryItem({
@@ -163,9 +197,15 @@ describe("Computed values are correct", () => {
 							quantity: 3,
 							weight: 0.15,
 							value: 0.2,
+							carriedByCharacterId: null,
+							category: null,
+							description: null,
+							referenceLink: null,
+							sheetId: null,
 						}),
 					]}
-					members={[]}
+					characters={[]}
+					updatedAt={new Date()}
 				/>
 			);
 		});
@@ -177,17 +217,17 @@ describe("Computed values are correct", () => {
 	});
 });
 
-describe("Sheet Member Carry Weights", () => {
-	const testMemberId = "id";
+describe("Sheet Character Carry Weights", () => {
+	const testCharacterId = "id";
 
 	/**
-	 * Fetch the weight/value cells of the first member in the "MemberTotalsTable"
+	 * Fetch the weight/value cells of the first character in the "CharacterTotalsTable"
 	 *
 	 * @returns An object containing the weight/value cell text contents
 	 */
 	const getCells = () => {
 		const queryResult = document.querySelectorAll(
-			`${getTestIdQuery(memberTotalsTableTestIds.root)} tbody tr td`
+			`${getTestIdQuery(characterTotalsTableTestIds.root)} tbody tr td`
 		);
 		return {
 			weight: queryResult[1].textContent,
@@ -198,14 +238,15 @@ describe("Sheet Member Carry Weights", () => {
 	test("Single Item (weight, value, quantity = 1)", () => {
 		act(() => {
 			renderTest(
-				<Sheet
-					_id=""
+				<SheetPage
+					id=""
 					name=""
-					members={[
+					characters={[
 						{
-							_id: testMemberId,
+							id: testCharacterId,
 							carryCapacity: 1,
 							name: "test name",
+							sheetId: "",
 						},
 					]}
 					items={[
@@ -213,9 +254,14 @@ describe("Sheet Member Carry Weights", () => {
 							name: "",
 							weight: 1,
 							value: 1,
-							carriedBy: testMemberId,
+							carriedByCharacterId: testCharacterId,
+							category: null,
+							description: null,
+							referenceLink: null,
+							sheetId: null,
 						}),
 					]}
+					updatedAt={new Date()}
 				/>
 			);
 		});
@@ -228,14 +274,15 @@ describe("Sheet Member Carry Weights", () => {
 	test("Single Item (weight, value = 0,  quantity = 1)", () => {
 		act(() => {
 			renderTest(
-				<Sheet
-					_id=""
+				<SheetPage
+					id=""
 					name=""
-					members={[
+					characters={[
 						{
-							_id: testMemberId,
+							id: testCharacterId,
 							carryCapacity: 1,
 							name: "test name",
+							sheetId: "",
 						},
 					]}
 					items={[
@@ -243,9 +290,14 @@ describe("Sheet Member Carry Weights", () => {
 							name: "",
 							weight: 0,
 							value: 0,
-							carriedBy: testMemberId,
+							carriedByCharacterId: testCharacterId,
+							category: null,
+							description: null,
+							referenceLink: null,
+							sheetId: null,
 						}),
 					]}
+					updatedAt={new Date()}
 				/>
 			);
 		});
@@ -258,14 +310,15 @@ describe("Sheet Member Carry Weights", () => {
 	test("Single Item (weight = 0.15, value = 1.25,  quantity = 3)", () => {
 		act(() => {
 			renderTest(
-				<Sheet
-					_id=""
+				<SheetPage
+					id=""
 					name=""
-					members={[
+					characters={[
 						{
-							_id: testMemberId,
+							id: testCharacterId,
 							carryCapacity: 1,
 							name: "test name",
+							sheetId: "",
 						},
 					]}
 					items={[
@@ -274,9 +327,14 @@ describe("Sheet Member Carry Weights", () => {
 							weight: 0.15,
 							value: 1.25,
 							quantity: 3,
-							carriedBy: testMemberId,
+							carriedByCharacterId: testCharacterId,
+							category: null,
+							description: null,
+							referenceLink: null,
+							sheetId: null,
 						}),
 					]}
+					updatedAt={new Date()}
 				/>
 			);
 		});
@@ -289,14 +347,15 @@ describe("Sheet Member Carry Weights", () => {
 	test("3 Items (All problematic floats with multiple quantities)", () => {
 		act(() => {
 			renderTest(
-				<Sheet
-					_id=""
+				<SheetPage
+					id=""
 					name=""
-					members={[
+					characters={[
 						{
-							_id: testMemberId,
+							id: testCharacterId,
 							carryCapacity: 1,
 							name: "test name",
+							sheetId: "",
 						},
 					]}
 					items={[
@@ -305,23 +364,36 @@ describe("Sheet Member Carry Weights", () => {
 							weight: 0.15,
 							value: 1.25,
 							quantity: 3,
-							carriedBy: testMemberId,
+							carriedByCharacterId: testCharacterId,
+							category: null,
+							description: null,
+							referenceLink: null,
+							sheetId: null,
 						}),
 						createInventoryItem({
 							name: "",
 							weight: 2.27,
 							value: 0.31,
 							quantity: 5,
-							carriedBy: testMemberId,
+							carriedByCharacterId: testCharacterId,
+							category: null,
+							description: null,
+							referenceLink: null,
+							sheetId: null,
 						}),
 						createInventoryItem({
 							name: "",
 							weight: 1.27,
 							value: 0.68,
 							quantity: 7,
-							carriedBy: testMemberId,
+							carriedByCharacterId: testCharacterId,
+							category: null,
+							description: null,
+							referenceLink: null,
+							sheetId: null,
 						}),
 					]}
+					updatedAt={new Date()}
 				/>
 			);
 		});

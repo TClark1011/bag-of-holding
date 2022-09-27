@@ -35,15 +35,15 @@ import confirmationPrompt from "yesno";
 
 	await data.forEach(async (sheet) => {
 		sheet.members = sheet.members.map((memberName) => ({
-			_id: faker.datatype.uuid(),
+			id: faker.datatype.uuid(),
 			carryWeight: 0,
 			name: memberName,
 		}));
 		sheet.items = sheet.items.map((item) => ({
 			...item,
-			carriedBy:
-				sheet.members.find(({ name }) => name === item.carriedBy)?._id ||
-				"Nobody",
+			carriedByCharacterId:
+				sheet.members.find(({ name }) => name === item.carriedByCharacterId)
+					?.id || "Nobody",
 		}));
 		await sheet.save();
 	});

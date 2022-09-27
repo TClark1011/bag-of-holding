@@ -17,11 +17,7 @@ import { BookOutlineIcon, FilterOutlineIcon } from "chakra-ui-ionicons";
 import isUrl from "is-url-superb";
 import { getItemTotalValue, getItemTotalWeight } from "$sheets/utils";
 import { testIdGeneratorFactory } from "$tests/utils/testUtils";
-import {
-	FilterableItemProperty,
-	InventoryItemFields,
-	ProcessableItemProperty,
-} from "$sheets/types";
+import { FilterableItemProperty, ProcessableItemProperty } from "$sheets/types";
 import { useSheetPageState } from "$sheets/store";
 import { useInventoryState } from "$sheets/providers";
 import {
@@ -33,6 +29,7 @@ import {
 } from "$root/components";
 import { TableFilter, PartyMemberData } from "$sheets/components";
 import { SortingDirection } from "$root/types";
+import { Item } from "@prisma/client";
 
 const getTestId = testIdGeneratorFactory("InventoryTable");
 
@@ -51,11 +48,11 @@ const col5Display = ["none", "none", "table-cell"];
 const col6Display = ["none", "none", "none", "table-cell"];
 
 export interface InventorySheetTableProps extends TableProps {
-	onRowClick: (item?: InventoryItemFields) => void;
+	onRowClick: (item?: Item) => void;
 }
 
 const filterableProperties: FilterableItemProperty[] = [
-	"carriedBy",
+	"carriedByCharacterId",
 	"category",
 ];
 
@@ -140,6 +137,9 @@ const TableHeader: React.FC<
 					isOpen={filterPopoverIsOpen}
 					onClose={closeFilterPopover}
 					property={property}
+					{...(property === "carriedByCharacterId" && {
+						heading: "Carried By",
+					})}
 				>
 					<IconButton
 						aria-label="filter"
@@ -178,8 +178,8 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 
 	const { getProcessedItems, getColumnSums } = useSheetPageState();
 
-	const { items, members } = useInventoryState();
-	const processedItems = getProcessedItems(items, members);
+	const { items, characters } = useInventoryState();
+	const processedItems = getProcessedItems(items, characters);
 	const columnSums = getColumnSums(items);
 
 	return (
@@ -234,7 +234,7 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 						</Tooltip>
 					</TableHeader>
 					<TableHeader
-						property="carriedBy"
+						property="carriedByCharacterId"
 						display={col5Display}
 						data-testid={inventoryTableTestIds.carriedByColumnHeader}
 					>
@@ -260,12 +260,12 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 					>
 						{/* Item Name */}
 						<TableCell textAlign="left" data-column="name">
-							{item.reference && isUrl(item.reference) ? (
+							{item.referenceLink && isUrl(item.referenceLink) ? (
 								<Link
-									href={item.reference}
+									href={item.referenceLink}
 									isExternal
 									onClick={(e) => e.stopPropagation()}
-									data-testid="reference-link"
+									data-testid="referenceLink-link"
 								>
 									{item.name} <BookOutlineIcon marginLeft={1} />
 								</Link>
@@ -283,9 +283,12 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 						<TableCell data-column="value" display={col4Display}>
 							{getItemTotalValue(item)}
 						</TableCell>
-						{/* Item "carriedBy" */}
-						<TableCell data-column="carriedBy" display={col5Display}>
-							<PartyMemberData memberId={item.carriedBy} property="name" />
+						{/* Item "carriedByCharacterId" */}
+						<TableCell data-column="carriedByCharacterId" display={col5Display}>
+							<PartyMemberData
+								memberId={item.carriedByCharacterId}
+								property="name"
+							/>
 						</TableCell>
 						{/* Item Category */}
 						<TableCell data-column="category" display={col6Display}>

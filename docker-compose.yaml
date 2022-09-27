@@ -1,0 +1,17 @@
+version: "3.7"
+services:
+  postgres:
+   image: postgres:13
+   container_name: postgres
+   networks:
+   - api
+   ports:
+   - 5432:5432
+   volumes:
+   - pgdata:/var/lib/postgresql/data
+   env_file:
+   - .env.development
+networks:
+ api:
+volumes:
+ pgdata:

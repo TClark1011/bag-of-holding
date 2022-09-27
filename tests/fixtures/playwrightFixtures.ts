@@ -1,10 +1,9 @@
 /* eslint-disable jsdoc/require-jsdoc */
-import { SheetModel } from "$backend/models";
-import { connectToMongoose } from "$backend/utils";
-import { InventorySheetFields } from "$sheets/types";
+import createSheetFromFlatData from "$backend/createSheetFromFlatData";
+import prisma from "$prisma";
+import { FullSheet } from "$sheets/types";
 import { generateRandomInventorySheet } from "$tests/utils/randomGenerators";
 import { test, Page } from "@playwright/test";
-import mongoose from "mongoose";
 
 type ClientName = `client${"A" | "B"}`;
 
@@ -14,16 +13,16 @@ type ClientFields = Record<ClientName, Page> & {
 
 const testNewlyCreatedSheet = test.extend({
 	page: async ({ page }, use) => {
-		await connectToMongoose();
 		const { name } = generateRandomInventorySheet();
 
-		const createdSheet = await new SheetModel({
-			name,
-		}).save();
+		const createdSheet = await prisma.sheet.create({
+			data: {
+				name,
+			},
+		});
 
-		await page.goto(`sheets/${createdSheet._id}`);
+		await page.goto(`sheets/${createdSheet.id}`);
 		await use(page);
-		await mongoose.disconnect();
 	},
 });
 
@@ -44,22 +43,18 @@ export const testWithNewSheet = testNewlyCreatedSheet.extend<ClientFields>({
 });
 
 type ExistingSheetFixtureProps = {
-	sheet: InventorySheetFields;
+	sheet: FullSheet;
 };
 export const testWithExistingSheet = test.extend<ExistingSheetFixtureProps>({
 	// eslint-disable-next-line no-empty-pattern
 	sheet: async ({}, use) => {
-		await connectToMongoose();
-
-		const { _id, ...sheet } = generateRandomInventorySheet();
-		const createdSheet = await new SheetModel(sheet).save();
+		const sheet = generateRandomInventorySheet();
+		const createdSheet = await createSheetFromFlatData(sheet);
 
 		await use(createdSheet);
-
-		await mongoose.disconnect();
 	},
 	page: async ({ page, sheet }, use) => {
-		await page.goto(`/sheets/${sheet._id}`);
+		await page.goto(`/sheets/${sheet.id}`);
 
 		await use(page);
 	},

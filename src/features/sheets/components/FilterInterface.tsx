@@ -118,7 +118,12 @@ const FilterInterface: React.FC<Props> = ({
 							isChecked={!filter.includes(item)}
 							onChange={() => onChange(item)}
 						>
-							<PartyMemberData memberId={item} property="name" fontSize="xs" />
+							<PartyMemberData
+								fallback={(item as any) === "null" ? "Nobody" : item}
+								memberId={item}
+								property="name"
+								fontSize="xs"
+							/>
 						</Checkbox>
 					</ListItem>
 				))}

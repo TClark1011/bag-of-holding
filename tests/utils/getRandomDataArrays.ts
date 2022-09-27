@@ -1,4 +1,4 @@
-import { InventoryItemFields } from "$sheets/types";
+import { Item } from "@prisma/client";
 import { generateRandomInventoryItem } from "./randomGenerators";
 
 /**
@@ -13,5 +13,4 @@ import { generateRandomInventoryItem } from "./randomGenerators";
 export const getArrayOfRandomItems = (
 	length: number,
 	params: Parameters<typeof generateRandomInventoryItem>[0] = {}
-): InventoryItemFields[] =>
-	[...Array(length)].map(() => generateRandomInventoryItem(params));
+): Item[] => [...Array(length)].map(() => generateRandomInventoryItem(params));

@@ -1,10 +1,14 @@
 import { useEffect } from "react";
 
-export interface IdentifiedObject {
-	readonly _id: string;
-}
+export type IdentifiedObject =
+	| {
+			id: string;
+	  }
+	| {
+			id: string;
+	  };
 
-export type OmitId<T extends IdentifiedObject> = Omit<T, "_id" | "id">;
+export type OmitId<T extends IdentifiedObject> = Omit<T, "id" | "id">;
 
 export type ReactEffect = Parameters<typeof useEffect>[0];
 
@@ -17,3 +21,5 @@ export type Writable<T extends Record<string, any> | any[]> = {
 };
 
 export type NonEmptyArray<T> = [T, ...T[]];
+
+export type StrictExtract<Base, Sub extends Base> = Extract<Base, Sub>;

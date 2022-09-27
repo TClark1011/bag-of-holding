@@ -23,14 +23,13 @@ import { getUrlParam, getSheetLink } from "$root/utils";
 import { useSheetPageState, useInventoryReducer } from "$sheets/store";
 import {
 	WelcomeDialog,
-	MemberTotalsTable,
+	CharacterTotalsTable,
 	FilterDialog,
 	InventorySheetTable,
 	SheetOptionsDialog,
 	ItemDialog,
 } from "$sheets/components";
 import { testIdGeneratorFactory } from "$tests/utils/testUtils";
-import { InventorySheetFields } from "$sheets/types";
 import {
 	H3,
 	PartyMemberTagList,
@@ -38,6 +37,8 @@ import {
 	View,
 } from "$root/components";
 import { useOnMountEffect } from "$root/hooks";
+import { Sheet } from "@prisma/client";
+import { FullSheet } from "$sheets/types";
 
 const getTestId = testIdGeneratorFactory("SheetPage");
 
@@ -46,7 +47,7 @@ export const sheetPageTestIds = {
 	sheetOptionsButton: getTestId("SheetOptionsButton"),
 };
 
-export interface SheetPageProps extends InventorySheetFields {
+export interface SheetPageProps extends FullSheet {
 	isNew?: boolean;
 }
 
@@ -60,9 +61,12 @@ export interface SheetPageProps extends InventorySheetFields {
  * @param sheetFields.members Members
  * @returns Sheet component
  */
-const Sheet: React.FC<SheetPageProps> = ({ isNew = false, ...sheetFields }) => {
+const SheetPage: React.FC<SheetPageProps> = ({
+	isNew = false,
+	...sheetFields
+}) => {
 	const [
-		{ items, name, members, _id },
+		{ items, name, characters, id },
 		inventoryDispatch,
 	] = useInventoryReducer(sheetFields);
 
@@ -84,12 +88,12 @@ const Sheet: React.FC<SheetPageProps> = ({ isNew = false, ...sheetFields }) => {
 		<View
 			showTopNav={false}
 			title={`${appName} - ${name}`}
-			url={getSheetLink(sheetFields._id, true)}
+			url={getSheetLink(sheetFields.id, true)}
 			analyticsPageViewProps={{ title: "Sheet", url: "/sheets/[sheetId]" }}
 		>
 			<InventoryStateProvider
 				dispatch={inventoryDispatch}
-				state={{ items, members, name, _id }}
+				state={{ items, characters, name, id }}
 			>
 				<Box>
 					<main>
@@ -103,7 +107,9 @@ const Sheet: React.FC<SheetPageProps> = ({ isNew = false, ...sheetFields }) => {
 							<Flex justify="space-between" marginBottom="group">
 								<Flex>
 									{/* Sheet Title */}
-									<Heading marginRight={1}>{name}</Heading>
+									<Heading marginRight={1} as="h2" id="sheet-title">
+										{name}
+									</Heading>
 									<DarkMode>
 										{/* Sheet Options Button */}
 										<IconButton
@@ -124,9 +130,9 @@ const Sheet: React.FC<SheetPageProps> = ({ isNew = false, ...sheetFields }) => {
 								/>
 							</Flex>
 							<LightMode>
-								{members.length ? (
+								{characters.length ? (
 									<PartyMemberTagList
-										members={members.map((member) => member.name)}
+										members={characters.map((member) => member.name)}
 									/>
 								) : (
 									<Tag
@@ -209,7 +215,7 @@ const Sheet: React.FC<SheetPageProps> = ({ isNew = false, ...sheetFields }) => {
 								<Divider />
 							</Center>
 						</Flex>
-						<MemberTotalsTable />
+						<CharacterTotalsTable />
 						{/* Dialogs */}
 						<ItemDialog mode="new" />
 						<ItemDialog mode="edit" />
@@ -231,18 +237,25 @@ const Sheet: React.FC<SheetPageProps> = ({ isNew = false, ...sheetFields }) => {
  * @param context.params.sheetId The sheet id in the ur;
  * @returns The props for the sheet
  */
-export const getServerSideProps: GetServerSideProps<InventorySheetFields> = async (
+export const getServerSideProps: GetServerSideProps<Sheet> = async (
 	context
 ) => {
-	const { fetchSheetFromDb } = await import("$backend/services");
+	const prisma = await import("$prisma").then((r) => r.default);
+	const sheetId = getUrlParam(context.params.sheetId);
 	// We import like this because importing backend code
 	// into a frontend file causes an error in testing.
 	// This way we are only importing the backend code
 	// when this function actually runs.
-	const sheetData = await fetchSheetFromDb(getUrlParam(context.params.sheetId));
+	const sheetData = await prisma.sheet.findFirstOrThrow({
+		where: { id: sheetId },
+		include: {
+			items: true,
+			characters: true,
+		},
+	});
 	return {
 		props: { ...sheetData, isNew: typeof context.query.new !== "undefined" },
 	};
 };
 
-export default Sheet;
+export default SheetPage;

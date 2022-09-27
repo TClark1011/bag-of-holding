@@ -1,12 +1,8 @@
 import { useSheetRefetchEffect } from "$sheets/hooks";
 import { inventoryReducer } from "$sheets/store";
-import {
-	InventorySheetFields,
-	InventorySheetState,
-	InventorySheetStateAction,
-} from "$sheets/types";
+import { FullSheet, FullSheetWithoutUpdatedAt } from "$sheets/types";
 import { addToRememberedSheets, compareInventories } from "$sheets/utils";
-import { Reducer, useEffect, useReducer } from "react";
+import { useEffect, useReducer } from "react";
 
 /**
  * Initialises the sheet page state with
@@ -21,22 +17,20 @@ import { Reducer, useEffect, useReducer } from "react";
  * @returns The sheet page state and dispatch
  * function
  */
-const useInventoryReducer = (sheetFields: InventorySheetFields) => {
-	const [state, dispatch] = useReducer<
-		Reducer<InventorySheetState, InventorySheetStateAction>
-	>(inventoryReducer, {
+const useInventoryReducer = (sheetFields: FullSheetWithoutUpdatedAt) => {
+	const [state, dispatch] = useReducer(inventoryReducer, {
 		...sheetFields,
 		blockRefetch: {
 			for: 0,
 			from: new Date(),
 		},
 	});
-	const { _id, name, members } = state;
+	const { id, name, characters } = state;
 
 	useEffect(() => {
-		addToRememberedSheets({ _id, name, members });
+		addToRememberedSheets({ id, name, characters });
 		// Store the sheet to the list of 'remembered' sheets
-	}, [_id, name, members]);
+	}, [id, name, characters]);
 
 	useSheetRefetchEffect((newData) => {
 		if (!compareInventories(state, newData)) {

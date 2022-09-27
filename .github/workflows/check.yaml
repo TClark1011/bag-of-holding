@@ -1,10 +1,25 @@
 name: check
 on: pull_request
 env:
-  MONGO_URL: mongodb://127.0.0.1:3002/
+  DATABASE_URL: postgres://postgres_user:postgres_password@localhost:5432/postgres_db
 jobs:
   unit-tests-and-build:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_DB: postgres_db
+          POSTGRES_PASSWORD: postgres_password
+          POSTGRES_PORT: 5432
+          POSTGRES_USER: postgres_user
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
@@ -12,6 +27,8 @@ jobs:
           node-version: "14"
       - name: Install dependencies
         run: yarn ci
+      - name: Setup database
+        run: yarn prisma migrate dev --skip-generate
       - name: Run unit tests
         run: yarn test:unit --coverage
       - uses: romeovs/lcov-reporter-action@v0.2.16
@@ -22,8 +39,21 @@ jobs:
         run: yarn build
   integration-tests:
     runs-on: ubuntu-latest
-    container:
-      image: mcr.microsoft.com/playwright:v1.25.0-focal
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_DB: postgres_db
+          POSTGRES_PASSWORD: postgres_password
+          POSTGRES_PORT: 5432
+          POSTGRES_USER: postgres_user
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
@@ -31,6 +61,10 @@ jobs:
           node-version: "14"
       - name: Install dependencies
         run: yarn ci
+      - name: Setup database
+        run: yarn prisma migrate dev --skip-generate
+      - name: Install playwright deps
+        run: npx playwright install
       - name: Run Playwright tests
         run: npx playwright test
       - uses: actions/upload-artifact@v2

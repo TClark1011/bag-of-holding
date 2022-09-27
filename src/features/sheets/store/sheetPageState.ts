@@ -3,12 +3,10 @@ import {
 	FilterableItemProperty,
 	ProcessableItemProperty,
 	SummableItemProperty,
-	InventoryItemFields,
-	InventoryMemberDeleteMethodFields,
-	SheetStateMembersUpdateQueue,
-	InventoryMemberFieldsDeleteAction,
-	DeleteMemberItemHandlingMethods,
-	InventoryMemberFields,
+	CharacterDeleteMethodFields,
+	CharacterDeleteAction,
+	DeleteCharacterItemHandlingMethods,
+	SheetStateCharactersUpdateQueue,
 } from "$sheets/types";
 import { SortingDirection } from "$root/types";
 import {
@@ -25,6 +23,7 @@ import {
 	getItemTotalWeight,
 	searchComparison,
 } from "$sheets/utils";
+import { Character, Item } from "@prisma/client";
 
 export type SheetDialogType =
 	| "item.new"
@@ -37,19 +36,19 @@ export type InventoryFilters = Record<FilterableItemProperty, string[]>;
 
 export const emptyFilters: InventoryFilters = {
 	category: [],
-	carriedBy: [],
+	carriedByCharacterId: [],
 };
 
-export type ClientStateMemberUpdateQueue = {
-	[Property in keyof Omit<SheetStateMembersUpdateQueue, "remove">]: string[];
-} & { remove: InventoryMemberFieldsDeleteAction[] };
-//? A version of 'SheetStateMembersUpdateQueue' with all field types except for 'remove' changed to 'string[]'
+export type ClientStateCharacterUpdateQueue = {
+	[Property in keyof Omit<SheetStateCharactersUpdateQueue, "remove">]: string[];
+} & { remove: CharacterDeleteAction[] };
+//? A version of 'SheetStatecharactersUpdateQueue' with all field types except for 'remove' changed to 'string[]'
 
 export interface SheetPageState {
 	dialog: {
 		type: SheetDialogType;
 		isOpen: boolean;
-		activeItem: InventoryItemFields;
+		activeItem: Item;
 	};
 	filters: InventoryFilters;
 	ui: {
@@ -60,21 +59,25 @@ export interface SheetPageState {
 		property: ProcessableItemProperty;
 		direction: SortingDirection;
 	};
-	sheetMemberOptionsQueue: ClientStateMemberUpdateQueue;
-	selectedSheetMemberRemoveMethod: InventoryMemberDeleteMethodFields["mode"];
-	selectedSheetMemberRemovedMoveToMember: string;
+	sheetCharacterOptionsQueue: ClientStateCharacterUpdateQueue;
+	selectedSheetCharacterRemoveMethod: CharacterDeleteMethodFields["mode"];
+	selectedSheetCharacterRemovedMoveToCharacter: string;
 }
 
 const sheetPageState = createHookstate<SheetPageState>({
 	dialog: {
 		type: "item.new",
 		activeItem: {
-			_id: "",
+			id: "",
 			name: "",
 			quantity: 0,
 			weight: 0,
-			carriedBy: "Nobody",
 			value: 0,
+			carriedByCharacterId: null,
+			category: null,
+			description: null,
+			referenceLink: null,
+			sheetId: "",
 		},
 		isOpen: false,
 	},
@@ -87,13 +90,13 @@ const sheetPageState = createHookstate<SheetPageState>({
 		searchbarValue: "",
 		openFilter: "none",
 	},
-	sheetMemberOptionsQueue: {
+	sheetCharacterOptionsQueue: {
 		add: [],
 		remove: [],
 		update: [],
 	},
-	selectedSheetMemberRemoveMethod: DeleteMemberItemHandlingMethods.delete,
-	selectedSheetMemberRemovedMoveToMember: "",
+	selectedSheetCharacterRemoveMethod: DeleteCharacterItemHandlingMethods.delete,
+	selectedSheetCharacterRemovedMoveToCharacter: "",
 });
 DevTools(sheetPageState).label("sheetPageState");
 
@@ -112,14 +115,11 @@ export const useSheetPageState = () => {
 	 *
 	 * @param items The items in
 	 * the sheet inventory
-	 * @param members The party members in the sheet
+	 * @param characters The party characters in the sheet
 	 * @returns Sorted/filtered inventory
 	 * items
 	 */
-	const getProcessedItems = (
-		items: InventoryItemFields[],
-		members: InventoryMemberFields[]
-	) => {
+	const getProcessedItems = (items: Item[], characters: Character[]) => {
 		const sorting = state.sorting.value;
 		const sortFn =
 			sorting.direction === "ascending"
@@ -131,8 +131,8 @@ export const useSheetPageState = () => {
 		const sorted = sortFn([
 			(item) => {
 				switch (sorting.property) {
-					case "carriedBy":
-						return getCarrier(item, members)?.name;
+					case "carriedByCharacterId":
+						return getCarrier(item, characters)?.name;
 					case "value":
 					case "weight":
 						//? If 'quantity' or 'weight' are being sorted by, multiply them by the quantity
@@ -169,14 +169,14 @@ export const useSheetPageState = () => {
 		sorting: { ...state.sorting.value },
 		searchbarValue: state.ui.searchbarValue.value,
 		activeItem: { ...state.dialog.activeItem.value },
-		sheetMembersQueue: JSON.parse(
-			JSON.stringify({ ...state.sheetMemberOptionsQueue.value })
-		) as SheetPageState["sheetMemberOptionsQueue"],
+		sheetCharactersQueue: JSON.parse(
+			JSON.stringify({ ...state.sheetCharacterOptionsQueue.value })
+		) as SheetPageState["sheetCharacterOptionsQueue"],
 		//? Not performing a stringify/parse copy here causes the app to crash
-		selectedSheetMemberRemoveMethod:
-			state.selectedSheetMemberRemoveMethod.value,
-		selectedSheetMemberRemovedMoveToMember:
-			state.selectedSheetMemberRemovedMoveToMember.value,
+		selectedSheetCharacterRemoveMethod:
+			state.selectedSheetCharacterRemoveMethod.value,
+		selectedSheetCharacterRemovedMoveToCharacter:
+			state.selectedSheetCharacterRemovedMoveToCharacter.value,
 
 		/**
 		 * Check if a specific dialog is open
@@ -213,9 +213,7 @@ export const useSheetPageState = () => {
 		 * @returns An
 		 * object containing the sums
 		 */
-		getColumnSums: (
-			items: InventoryItemFields[]
-		): Record<SummableItemProperty, number> =>
+		getColumnSums: (items: Item[]): Record<SummableItemProperty, number> =>
 			getProcessedItems(items, []).reduce<Record<SummableItemProperty, number>>(
 				(current, item) => ({
 					weight: new Big(current.weight || 0)
@@ -239,7 +237,7 @@ export const useSheetPageState = () => {
 		 * @returns An array of all the unique category
 		 * values
 		 */
-		getUniqueCategories: (items: InventoryItemFields[]) =>
+		getUniqueCategories: (items: Item[]) =>
 			unique(items.map((item) => item.category)).filter((item) => !!item),
 
 		//# ACTIONS
@@ -252,7 +250,7 @@ export const useSheetPageState = () => {
 		 */
 		openDialog: (
 			dialog: SheetDialogType,
-			item: InventoryItemFields = { ...state.dialog.activeItem.value }
+			item: Item = { ...state.dialog.activeItem.value }
 		) => {
 			state.dialog.set({
 				type: dialog,
@@ -267,8 +265,8 @@ export const useSheetPageState = () => {
 		closeDialog: () => {
 			state.dialog.isOpen.set(false);
 			if (state.dialog.type.value === "sheetOptions") {
-				//? Reset the sheet member options queue if it was the sheet options dialog that was closed
-				state.sheetMemberOptionsQueue.set({
+				//? Reset the sheet character options queue if it was the sheet options dialog that was closed
+				state.sheetCharacterOptionsQueue.set({
 					add: [],
 					remove: [],
 					update: [],
@@ -293,7 +291,7 @@ export const useSheetPageState = () => {
 		 * Reset the filters
 		 */
 		resetFilters: () => {
-			state.filters.carriedBy.set([]);
+			state.filters.carriedByCharacterId.set([]);
 			state.filters.category.set([]);
 		},
 
@@ -366,72 +364,74 @@ export const useSheetPageState = () => {
 		},
 
 		/**
-		 * We 'queue' a party member in the sheet to be deleted.
+		 * We 'queue' a party character in the sheet to be deleted.
 		 * When the 'SheetOptions' dialog form is submitted, all
-		 * members stored in the 'delete' queue will be deleted.
-		 * If a member is queued to be removed, we first check if
+		 * characters stored in the 'delete' queue will be deleted.
+		 * If a character is queued to be removed, we first check if
 		 * it is queued to be added, and if it is, we just remove
 		 * it from the 'add' queue rather than adding it to the
 		 * 'remove' queue
 		 *
-		 * @param _id The'_id' of the member to remove
+		 * @param id The'id' of the character to remove
 		 * @param deleteMethod The method for handling
-		 * items that were being carried by the member to be
+		 * items that were being carried by the character to be
 		 * deleted
 		 */
-		queueMemberForRemove: (
-			_id: string,
-			deleteMethod: InventoryMemberDeleteMethodFields
+		queueCharacterForRemove: (
+			id: string,
+			deleteMethod: CharacterDeleteMethodFields
 		) => {
 			let inPositiveQueue = false;
 			[
-				state.sheetMemberOptionsQueue.add,
-				state.sheetMemberOptionsQueue.update,
+				state.sheetCharacterOptionsQueue.add,
+				state.sheetCharacterOptionsQueue.update,
 			].forEach((positiveQueue) => {
-				if (positiveQueue.value.includes(_id)) {
+				if (positiveQueue.value.includes(id)) {
 					inPositiveQueue = true;
 					positiveQueue.set((value) =>
-						value.filter((queuedMember) => queuedMember !== _id)
+						value.filter((queuedCharacter) => queuedCharacter !== id)
 					);
 				}
 			});
 			if (!inPositiveQueue) {
-				state.sheetMemberOptionsQueue.remove.set((state) => [
+				state.sheetCharacterOptionsQueue.remove.set((state) => [
 					...state,
 					{
-						_id,
+						id: id,
 						carryCapacity: 0,
 						name: "",
 						deleteMethod,
+						sheetId: "",
 					},
 				]);
 			}
 		},
 
 		/**
-		 * Add a member to the queue to be added. When the sheet
-		 * options dialog form is submitted, members in that form
-		 * with '_id' values in this queue are sent to be added to
+		 * Add a character to the queue to be added. When the sheet
+		 * options dialog form is submitted, characters in that form
+		 * with 'id' values in this queue are sent to be added to
 		 * the sheet.
 		 *
-		 * @param _id Thw '_id' of the member to add to the
+		 * @param id Thw 'id' of the character to add to the
 		 * sheet
 		 */
-		queueMemberForAdd: (_id: string) => {
-			state.sheetMemberOptionsQueue.add.set((value) => [...value, _id]);
+		queueCharacterForAdd: (id: string) => {
+			state.sheetCharacterOptionsQueue.add.set((value) => [...value, id]);
 		},
 
 		/**
 		 * Set the 'removeMethod' that is currently selected within the SheetOptions UI
 		 */
-		selectNewSheetMemberRemoveMethod: state.selectedSheetMemberRemoveMethod.set,
+		selectNewSheetCharacterRemoveMethod:
+			state.selectedSheetCharacterRemoveMethod.set,
 
 		/**
-		 * Select the member that is currently selected to move an item to when a member
+		 * Select the character that is currently selected to move an item to when a character
 		 * is removed via the SheetOptions UI
 		 */
-		selectNewSheetMemberRemovedMoveToMember:
-			state.selectedSheetMemberRemovedMoveToMember.set,
+		selectNewSheetCharacterRemovedMoveToCharacter:
+			state.selectedSheetCharacterRemovedMoveToCharacter.set,
 	};
 };
 

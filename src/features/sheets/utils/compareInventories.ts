@@ -1,5 +1,5 @@
 import { pipe, F, A, D } from "$fp";
-import { InventorySheetFields } from "$sheets/types";
+import { FullSheetWithoutUpdatedAt } from "$sheets/types";
 
 /**
  * Check if 2 different instances of inventory sheets
@@ -13,10 +13,13 @@ import { InventorySheetFields } from "$sheets/types";
  * @returns The result of a deep comparison of a and
  * b
  */
-const compareInventories = (a: InventorySheetFields, b: InventorySheetFields) =>
+const compareInventories = (
+	a: FullSheetWithoutUpdatedAt,
+	b: FullSheetWithoutUpdatedAt
+) =>
 	pipe(
 		[a, b],
-		A.map(D.selectKeys(["items", "name", "members"])),
+		A.map(D.selectKeys(["items", "name", "characters"])),
 		A.uniq,
 		A.length,
 		F.equals(1)

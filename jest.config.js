@@ -24,6 +24,14 @@ const config = {
 
 module.exports = {
 	testTimeout: 10000,
+	reporters: [
+		[
+			"jest-compact-reporter",
+			{
+				showPassingTests: true,
+			},
+		],
+	],
 	projects: [
 		{
 			displayName: "frontend",

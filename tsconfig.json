@@ -18,12 +18,15 @@
 		"paths": {
 			"$tests/*": ["./tests/*"],
 			"$*": ["./src/features/*", "./src/lib/*"],
-			"$root/*": ["./src/*"]
+			"$root/*": ["./src/*"],
+			"@prisma/schemas": ["prisma/schemas"]
 		}
 	},
 	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
 	"exclude": ["node_modules"],
+
 	"ts-node": {
+		"require": ["tsconfig-paths/register", "./scripts/loadEnv.ts"],
 		"compilerOptions": {
 			"module": "CommonJS",
 			"resolveJsonModule": true

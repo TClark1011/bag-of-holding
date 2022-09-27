@@ -19,7 +19,7 @@ module.exports = {
 		sourceType: "module",
 	},
 	plugins: ["react", "@typescript-eslint"],
-	ignorePatterns: ["src/assets/**", "node_modules/**"],
+	ignorePatterns: ["src/assets/**", "node_modules/**", "prisma/schemas/**"],
 	rules: {
 		"react/react-in-jsx-scope": "off",
 		"react/prop-types": "off",

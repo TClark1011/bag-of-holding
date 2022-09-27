@@ -1,8 +1,8 @@
-import { InventoryItemFields } from "$sheets/types";
 import { getItemTotalValue } from "$sheets/utils";
 import { searchBar, selectWithinTable } from "$tests/utils/usefulSelectors";
 import { A, N, pipe, S } from "@mobily/ts-belt";
 import { Page, expect, PageScreenshotOptions } from "@playwright/test";
+import { Item } from "@prisma/client";
 
 /**
  * Fill out the form used for creating/editing items
@@ -12,18 +12,17 @@ import { Page, expect, PageScreenshotOptions } from "@playwright/test";
  * the commands to fill out the form
  * @param item The item data to fill out the form with
  */
-export const fillOutItemForm = async (
-	client: Page,
-	item: InventoryItemFields
-) => {
+export const fillOutItemForm = async (client: Page, item: Item) => {
 	await client.fill("#name", item.name),
 	await client.fill("#category", item.category),
 	await client.fill("#description", item.description),
 	await client.fill("#quantity", `${item.quantity}`),
 	await client.fill("#weight", `${item.weight}`),
 	await client.fill("#value", `${item.value}`),
-	await client.fill("#reference", item.reference),
-	(await client.$("#carriedBy")).selectOption({ label: item.carriedBy });
+	await client.fill("#referenceLink", item.referenceLink),
+	(await client.$("#carriedByCharacterId")).selectOption({
+		label: item.carriedByCharacterId,
+	});
 };
 
 /**
@@ -40,7 +39,7 @@ export const fillOutItemForm = async (
  */
 export const checkItemFieldVisibility = async (
 	page: Page,
-	item: InventoryItemFields,
+	item: Item,
 	expectedVisibility = true
 ) => {
 	const itemNameIsVisible = await page.isVisible(
@@ -52,7 +51,7 @@ export const checkItemFieldVisibility = async (
 		`text=${getItemTotalValue(item)}`
 	);
 	const itemCarrierIsVisible = await page.isVisible(
-		`data-testid=item-row-${item.name} >> text=${item.carriedBy}`
+		`data-testid=item-row-${item.name} >> text=${item.carriedByCharacterId}`
 	);
 	[
 		itemNameIsVisible,
@@ -121,10 +120,7 @@ export const waitForModalState = async (
  * open the menu
  * @param item The item for which to open the menu
  */
-export const openItemEditMenu = async (
-	client: Page,
-	item: InventoryItemFields
-) => {
+export const openItemEditMenu = async (client: Page, item: Item) => {
 	await client.click(`data-testid=item-row-${item.name}`);
 	await waitForModalState(client, "visible");
 };
@@ -151,9 +147,8 @@ export const countItemRows = async (client: Page) =>
  * @param searchTerm The search term to use
  * to fill the search bar
  */
-export const fillSearchBar = async (client: Page, searchTerm: string) => {
-	await client.fill(searchBar, searchTerm);
-};
+export const fillSearchBar = (client: Page, searchTerm: string) =>
+	client.fill(searchBar, searchTerm);
 
 /**
  * Helper for executing identical actions accross multiple
