@@ -18,7 +18,7 @@ const createInventoryItem = (fields: ItemCreationFields): Item => {
 		//? quantity defaults to 1
 		weight: 0,
 		//? Weight defaults to 0
-		...fields,
+		...(fields as any),
 		//? Default 'quantity' and 'weight' values are overridden if they are present in fields
 	};
 };

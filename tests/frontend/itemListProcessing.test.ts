@@ -11,7 +11,7 @@ import { alphabet } from "../fixtures/testingConstants";
 import { getArrayOfRandomItems } from "../utils/getRandomDataArrays";
 import { generateRandomInventoryItem } from "../utils/randomGenerators";
 import { Character, Item } from "@prisma/client";
-import { A } from "@mobily/ts-belt";
+import { A, D } from "@mobily/ts-belt";
 
 const testSorting = (
 	items: Item[],
@@ -63,8 +63,8 @@ describe("Sorting ", () => {
 		},
 	];
 
-	columns.forEach((column: ProcessableItemProperty) => {
-		testSorting([...items], members, column);
+	columns.forEach((column) => {
+		testSorting([...items], members, column as ProcessableItemProperty);
 	});
 });
 
@@ -110,8 +110,8 @@ describe("Filter", () => {
 			[]
 		);
 
-	const items = Object.keys(itemAmounts).reduce<Item[]>(
-		(result, letter: keyof typeof itemAmounts) => [
+	const items = D.keys(itemAmounts).reduce<Item[]>(
+		(result, letter) => [
 			...result,
 			...getItemsWithProperty(["category", "carriedByCharacterId"], letter),
 		],

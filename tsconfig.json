@@ -5,7 +5,7 @@
 		"lib": ["dom", "dom.iterable", "esnext"],
 		"allowJs": true,
 		"skipLibCheck": true,
-		"strict": false,
+		"strict": true,
 		"forceConsistentCasingInFileNames": true,
 		"noEmit": true,
 		"esModuleInterop": true,
@@ -23,7 +23,7 @@
 		}
 	},
 	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
-	"exclude": ["node_modules"],
+	"exclude": ["node_modules", "prisma/schemas"],
 
 	"ts-node": {
 		"require": ["tsconfig-paths/register", "./scripts/loadEnv.ts"],

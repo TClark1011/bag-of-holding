@@ -33,6 +33,7 @@ import { useMemo } from "react";
 import { ConfirmationDialog } from "$root/components";
 import { toFormikValidationSchema } from "zod-formik-adapter";
 import stringifyObject from "stringify-object";
+import { G } from "@mobily/ts-belt";
 
 export type ItemDialogMode = "edit" | "new";
 
@@ -94,7 +95,7 @@ const ItemDialog: React.FC<Props> = ({ mode }) => {
 	 * @param formFunctions.setSubmitting Set whether or not the form is
 	 * currently submitting
 	 */
-	const onSubmit = (data: ItemCreationFields, { setSubmitting }) => {
+	const onSubmit = (data: ItemCreationFields, { setSubmitting }: any) => {
 		if (!data.category) {
 			data.category = "None";
 		}
@@ -154,7 +155,7 @@ const ItemDialog: React.FC<Props> = ({ mode }) => {
 			header={`${headingPrefix} Item`}
 		>
 			<Formik
-				initialValues={initialFormValues}
+				initialValues={initialFormValues as never}
 				onSubmit={onSubmit}
 				validationSchema={validator}
 			>
@@ -182,14 +183,14 @@ const ItemDialog: React.FC<Props> = ({ mode }) => {
 									}}
 								/>
 								<datalist id="test">
-									{categoryAutocompleteItems.map((item) => (
+									{categoryAutocompleteItems.filter(G.isString).map((item) => (
 										<option value={item} key={item} />
 									))}
 								</datalist>
 								<Box>
 									<List>
 										{categoryAutocompleteItems.filter((item) =>
-											item.includes(values.category)
+											item?.includes(values.category as never)
 										)}
 									</List>
 								</Box>

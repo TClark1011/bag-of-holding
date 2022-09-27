@@ -5,9 +5,9 @@ import waitOn from "wait-on";
 export default async () => {
 	if (process.env.CI) return;
 
-	await waitOn({
-		resources: ["http://localhost:3001"],
-		timeout: 1000 * 10,
-	});
-	wait(2000);
+	// await waitOn({
+	// 	resources: ["http://localhost:3001"],
+	// 	timeout: 1000 * 10,
+	// });
+	wait(10000);
 };

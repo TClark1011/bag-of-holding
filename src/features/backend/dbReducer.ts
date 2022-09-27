@@ -63,7 +63,7 @@ const dbReducer = async (
 					data: action.data?.characters?.add.map((character) => ({
 						name: character.name,
 						sheetId,
-					})),
+					})) as never,
 				});
 			}
 

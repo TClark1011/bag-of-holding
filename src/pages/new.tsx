@@ -55,7 +55,7 @@ const New: React.FC = () => {
 			title="Creating New Sheet..."
 			analyticsPageViewProps={{ title: "New Sheet Loading Screen" }}
 		>
-			<Center minHeight={screenHeight} padding="break">
+			<Center minHeight={screenHeight ?? undefined} padding="break">
 				{errorHasOccurred ? (
 					<Alert
 						status="error"

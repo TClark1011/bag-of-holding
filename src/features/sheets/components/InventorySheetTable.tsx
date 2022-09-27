@@ -286,7 +286,7 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 						{/* Item "carriedByCharacterId" */}
 						<TableCell data-column="carriedByCharacterId" display={col5Display}>
 							<PartyMemberData
-								memberId={item.carriedByCharacterId}
+								memberId={item.carriedByCharacterId ?? ""}
 								property="name"
 							/>
 						</TableCell>

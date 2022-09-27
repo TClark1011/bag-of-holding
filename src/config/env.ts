@@ -20,7 +20,7 @@ const getEnvOrThrow = (key: string, requiredInFrontend = true): string => {
 		// - We are in the frontend and the env is required in the frontend
 		throw Error(`Required environment variable '${key}' was not found`);
 	}
-	return data;
+	return data as string;
 };
 
 export const UNDERGOING_MIGRATION = process.env.UNDERGOING_MIGRATION === "true";

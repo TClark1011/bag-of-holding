@@ -146,7 +146,7 @@ testWithExistingSheet("Advanced Operations", async ({ page, sheet }) => {
 	const isCarriedByFilteredOutMember = flow(
 		(val: Item) => val,
 		D.getUnsafe("carriedByCharacterId"),
-		F.equals(memberToFilterOut.id)
+		F.equals(memberToFilterOut?.id)
 	);
 	const getNumberOfItemRowsCarriedByMember = async ({ name }: Character) => {
 		const rows = await page.$$(
@@ -162,13 +162,15 @@ testWithExistingSheet("Advanced Operations", async ({ page, sheet }) => {
 	// First we check that the sheet is currently showing items
 	// carried by the member which we will filter out
 	expect(
-		await getNumberOfItemRowsCarriedByMember(memberToFilterOut)
+		memberToFilterOut
+			? await getNumberOfItemRowsCarriedByMember(memberToFilterOut)
+			: null
 	).toBeGreaterThan(0);
 
 	// Click on "Carried By" column filter button
 	await page.click(selectWithinColumnHeader("Carried By", columnFilterButton));
 	await page.waitForSelector(openPopover);
-	await page.click(`${openPopover} >> text="${memberToFilterOut.name}"`);
+	await page.click(`${openPopover} >> text="${memberToFilterOut?.name}"`);
 	// Press escape to close popover
 	await page.keyboard.press("Escape");
 	// Wait for popover to be hidden
@@ -183,13 +185,16 @@ testWithExistingSheet("Advanced Operations", async ({ page, sheet }) => {
 	);
 	expect(await countItemRows(page)).toBe(filteredAndSortedItems.length);
 	expect(await getNameOfItemInTable(0)).toBe(
-		A.last(filteredAndSortedItems).name
+		A.last(filteredAndSortedItems)?.name
 	);
 	expect(await getNameOfItemInTable(-1)).toBe(
-		A.head(filteredAndSortedItems).name
+		A.head(filteredAndSortedItems)?.name
 	);
 
-	expect(await getNumberOfItemRowsCarriedByMember(memberToFilterOut)).toBe(0);
+	const numberOfCarriedItemRows = memberToFilterOut
+		? await getNumberOfItemRowsCarriedByMember(memberToFilterOut)
+		: null;
+	expect(numberOfCarriedItemRows).toBe(0);
 
 	// ### sort by a numeric field
 	const itemsSortedByValue = pipe(
@@ -198,13 +203,13 @@ testWithExistingSheet("Advanced Operations", async ({ page, sheet }) => {
 	);
 	await clickColumnSortButton("Value");
 
-	expect(await getNameOfItemInTable(0)).toBe(A.head(itemsSortedByValue).name);
-	expect(await getNameOfItemInTable(-1)).toBe(A.last(itemsSortedByValue).name);
+	expect(await getNameOfItemInTable(0)).toBe(A.head(itemsSortedByValue)?.name);
+	expect(await getNameOfItemInTable(-1)).toBe(A.last(itemsSortedByValue)?.name);
 
 	await clickColumnSortButton("Value");
 
-	expect(await getNameOfItemInTable(0)).toBe(A.last(itemsSortedByValue).name);
-	expect(await getNameOfItemInTable(-1)).toBe(A.head(itemsSortedByValue).name);
+	expect(await getNameOfItemInTable(0)).toBe(A.last(itemsSortedByValue)?.name);
+	expect(await getNameOfItemInTable(-1)).toBe(A.head(itemsSortedByValue)?.name);
 
 	// ### filter out a category
 	// open the "Carried By" filter menu
@@ -236,7 +241,7 @@ testWithExistingSheet("Advanced Operations", async ({ page, sheet }) => {
 	) as NonEmptyArray<string>;
 	// We will search for the most common 2 letter combo
 	// across all the item names
-	const searchQuery = getMostCommonLetterCombo(itemNames, 2);
+	const searchQuery = getMostCommonLetterCombo(itemNames, 2) as string;
 	const itemNamesThatContainSearchQuery = itemNames.filter((val) =>
 		searchComparison(val, searchQuery)
 	);

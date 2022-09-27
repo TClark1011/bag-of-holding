@@ -241,7 +241,7 @@ export const getServerSideProps: GetServerSideProps<Sheet> = async (
 	context
 ) => {
 	const prisma = await import("$prisma").then((r) => r.default);
-	const sheetId = getUrlParam(context.params.sheetId);
+	const sheetId = getUrlParam(context?.params?.sheetId ?? []);
 	// We import like this because importing backend code
 	// into a frontend file causes an error in testing.
 	// This way we are only importing the backend code

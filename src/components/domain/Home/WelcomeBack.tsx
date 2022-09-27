@@ -40,24 +40,22 @@ const WelcomeBack: React.FC<BoxProps> = (props) => {
 
 	const dividerColor = useColorModeValue("gray.500", "gray.200");
 
-	return (
-		!!rememberedSheets.length && (
-			<Box {...props}>
-				<Divider backgroundColor={dividerColor} borderColor={dividerColor} />
-				<H3 marginY="break" textAlign="center">
-					Welcome Back
-				</H3>
-				<SimpleGrid columns={rememberedSheetCardColumns} spacing="break">
-					{sort(rememberedSheets)
-						.desc("lastAccessedAt")
-						.slice(0, 4)
-						.map((props, index) => (
-							<RememberedSheet {...props} key={index} />
-						))}
-				</SimpleGrid>
-			</Box>
-		)
-	);
+	return rememberedSheets.length ? (
+		<Box {...props}>
+			<Divider backgroundColor={dividerColor} borderColor={dividerColor} />
+			<H3 marginY="break" textAlign="center">
+				Welcome Back
+			</H3>
+			<SimpleGrid columns={rememberedSheetCardColumns} spacing="break">
+				{sort(rememberedSheets)
+					.desc("lastAccessedAt")
+					.slice(0, 4)
+					.map((props, index) => (
+						<RememberedSheet {...props} key={index} />
+					))}
+			</SimpleGrid>
+		</Box>
+	) : null;
 };
 
 export default WelcomeBack;

@@ -180,7 +180,7 @@ const SheetOptionsDialog: React.FC = () => {
 													name={"characters." + index + ".name"}
 													key={index}
 												>
-													{({ field, form }) => (
+													{({ field, form }: any) => (
 														<FormControl
 															isInvalid={
 																form.errors.characters &&
@@ -244,11 +244,13 @@ const SheetOptionsDialog: React.FC = () => {
 														values.characters[deleteCharacterTarget.index].id,
 														{
 															mode: selectedSheetCharacterRemoveMethod,
-															...(selectedSheetCharacterRemoveMethod ===
-																DeleteCharacterItemHandlingMethods.give && {
-																to: selectedSheetCharacterRemovedMoveToCharacter,
-															}),
-														}
+															...((selectedSheetCharacterRemoveMethod ===
+															DeleteCharacterItemHandlingMethods.give
+																? {
+																	to: selectedSheetCharacterRemovedMoveToCharacter as never,
+																  }
+																: {}) as any),
+														} as never
 													);
 													helpers.remove(deleteCharacterTarget.index);
 												}}

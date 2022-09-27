@@ -23,7 +23,7 @@ import {
 } from "$sheets/utils";
 import { Character, Item } from "@prisma/client";
 import { toggleArrayItem } from "$root/utils";
-import { A } from "@mobily/ts-belt";
+import { A, D } from "@mobily/ts-belt";
 
 export type SheetDialogType =
 	| "item.new"
@@ -155,8 +155,10 @@ export const useSheetPageState = () => {
 		let result = [...sorted].filter((item) =>
 			searchComparison(item.name, state.ui.searchbarValue.value)
 		);
-		for (const [property, filter] of Object.entries(state.filters.value)) {
-			result = result.filter((item) => !filter.includes(item[property]));
+		for (const [property, filter] of D.toPairs(state.filters.value)) {
+			result = result.filter(
+				(item) => !filter.includes(item[property as never])
+			);
 		}
 
 		return result;

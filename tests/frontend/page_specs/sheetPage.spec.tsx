@@ -110,7 +110,7 @@ describe("Computed values are correct", () => {
 							category: null,
 							description: null,
 							referenceLink: null,
-							sheetId: null,
+							sheetId: "",
 						}),
 					]}
 					characters={[]}
@@ -140,7 +140,7 @@ describe("Computed values are correct", () => {
 							category: null,
 							description: null,
 							referenceLink: null,
-							sheetId: null,
+							sheetId: "",
 						}),
 					]}
 					characters={[]}
@@ -170,7 +170,7 @@ describe("Computed values are correct", () => {
 							category: null,
 							description: null,
 							referenceLink: null,
-							sheetId: null,
+							sheetId: "",
 						}),
 					]}
 					characters={[]}
@@ -201,7 +201,7 @@ describe("Computed values are correct", () => {
 							category: null,
 							description: null,
 							referenceLink: null,
-							sheetId: null,
+							sheetId: "",
 						}),
 					]}
 					characters={[]}
@@ -258,7 +258,7 @@ describe("Sheet Character Carry Weights", () => {
 							category: null,
 							description: null,
 							referenceLink: null,
-							sheetId: null,
+							sheetId: "",
 						}),
 					]}
 					updatedAt={new Date()}
@@ -294,7 +294,7 @@ describe("Sheet Character Carry Weights", () => {
 							category: null,
 							description: null,
 							referenceLink: null,
-							sheetId: null,
+							sheetId: "",
 						}),
 					]}
 					updatedAt={new Date()}
@@ -331,7 +331,7 @@ describe("Sheet Character Carry Weights", () => {
 							category: null,
 							description: null,
 							referenceLink: null,
-							sheetId: null,
+							sheetId: "",
 						}),
 					]}
 					updatedAt={new Date()}
@@ -368,7 +368,7 @@ describe("Sheet Character Carry Weights", () => {
 							category: null,
 							description: null,
 							referenceLink: null,
-							sheetId: null,
+							sheetId: "",
 						}),
 						createInventoryItem({
 							name: "",
@@ -379,7 +379,7 @@ describe("Sheet Character Carry Weights", () => {
 							category: null,
 							description: null,
 							referenceLink: null,
-							sheetId: null,
+							sheetId: "",
 						}),
 						createInventoryItem({
 							name: "",
@@ -390,7 +390,7 @@ describe("Sheet Character Carry Weights", () => {
 							category: null,
 							description: null,
 							referenceLink: null,
-							sheetId: null,
+							sheetId: "",
 						}),
 					]}
 					updatedAt={new Date()}

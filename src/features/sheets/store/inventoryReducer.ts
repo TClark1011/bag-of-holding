@@ -122,15 +122,16 @@ const inventoryReducer = (
 					draftState.name = action.data.name;
 				}
 				draftState.characters = draftState.characters.filter(
-					(member) => !getIds(action.data.characters.remove).includes(member.id)
+					(member) =>
+						!getIds(action.data.characters?.remove ?? []).includes(member.id)
 				);
 
-				const updateIds = getIds(action.data.characters.update);
+				const updateIds = getIds(action.data.characters?.update ?? []);
 				draftState.characters.forEach((character, index) => {
 					if (updateIds.includes(character.id)) {
 						draftState.characters[index] = {
 							...character,
-							...action.data.characters.update.find(
+							...(action.data.characters?.update ?? []).find(
 								(member) => member.id === character.id
 							),
 						};
@@ -143,7 +144,7 @@ const inventoryReducer = (
 				// 		: mem
 				// );
 
-				action.data.characters.remove.forEach((removingMember) => {
+				(action.data.characters?.remove ?? []).forEach((removingMember) => {
 					logEvent(
 						"Sheet",
 						`Deleted Sheet Member (${removingMember.deleteMethod.mode})`
