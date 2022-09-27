@@ -1,18 +1,26 @@
 import { defaultFieldLength } from "$root/constants";
-import * as yup from "yup";
+import { itemSchema } from "@prisma/schemas";
+import { z } from "zod";
 
 export const descriptionLength = 400;
 export const referenceLength = 100;
 
-const itemValidation = yup.object({
-	name: yup.string().required().max(defaultFieldLength),
-	category: yup.string().max(defaultFieldLength).nullable(),
-	description: yup.string().max(descriptionLength).nullable(),
-	quantity: yup.number().min(1).required(),
-	weight: yup.number().min(0).required(),
-	value: yup.number().min(0).required(),
-	carriedByCharacterId: yup.string().label("carried by").nullable(),
-	referenceLink: yup.string().max(referenceLength).nullable(),
-});
+const prepareNumericString = (val: unknown) =>
+	val === null ? val : Number(val);
+
+const itemValidation = z
+	.object({
+		...itemSchema.shape,
+		name: itemSchema.shape.name.max(defaultFieldLength),
+		category: z.string().max(defaultFieldLength).optional().nullable(),
+		description: z.string().optional().nullable(),
+		quantity: z.preprocess(prepareNumericString, itemSchema.shape.quantity),
+		weight: z.preprocess(prepareNumericString, itemSchema.shape.weight),
+		value: z.preprocess(prepareNumericString, itemSchema.shape.value),
+		id: z.string().nullable().default(null),
+	})
+	.omit({
+		sheetId: true,
+	});
 
 export default itemValidation;

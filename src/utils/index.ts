@@ -11,3 +11,5 @@ export { default as takeRandom } from "./takeRandom";
 export { default as countOccurrences } from "./countOccurrences";
 export { default as tryCatch } from "./tryCatch";
 export { default as getOldSheetCutOff } from "./getOldSheetCutOff";
+export { default as isUrl } from "./isUrl";
+export { default as toggleArrayItem } from "./toggleArrayItem";

@@ -4,7 +4,6 @@ import {
 	act,
 	RenderResult as RenderHookResult,
 } from "@testing-library/react-hooks";
-import shuffle from "just-shuffle";
 import { ChangeEvent } from "react";
 import { useSheetPageState } from "$sheets/store";
 import { FilterableItemProperty, ProcessableItemProperty } from "$sheets/types";
@@ -12,6 +11,7 @@ import { alphabet } from "../fixtures/testingConstants";
 import { getArrayOfRandomItems } from "../utils/getRandomDataArrays";
 import { generateRandomInventoryItem } from "../utils/randomGenerators";
 import { Character, Item } from "@prisma/client";
+import { A } from "@mobily/ts-belt";
 
 const testSorting = (
 	items: Item[],
@@ -314,7 +314,7 @@ describe("Searching", () => {
 		const itemsWithA = getArrayOfRandomItems(amountOfTargetItems, {
 			name: "a",
 		});
-		const items = shuffle([
+		const items = A.shuffle([
 			...itemsWithA,
 			...getArrayOfRandomItems(16, { name: "b" }),
 			...getArrayOfRandomItems(64, { name: "c" }),
@@ -333,9 +333,10 @@ describe("Searching", () => {
 	});
 
 	test.skip("Search Single Item in Large, (All Unique) Array", () => {
-		const items = shuffle(getArrayOfRandomItems(400));
+		const items = A.shuffle(getArrayOfRandomItems(400));
 		const { result } = renderHook(useSheetPageState);
-		const getProcessed = () => result.current.getProcessedItems(items, []);
+		const getProcessed = () =>
+			result.current.getProcessedItems(items as Item[], []);
 
 		act(() => {
 			search(result, items[0].name);
@@ -345,7 +346,7 @@ describe("Searching", () => {
 	});
 
 	test.skip("Reset Search", () => {
-		const items = shuffle(getArrayOfRandomItems(400));
+		const items = A.shuffle(getArrayOfRandomItems(400));
 		const { result } = renderHook(useSheetPageState);
 		const getProcessed = () => result.current.getProcessedItems(items, []);
 

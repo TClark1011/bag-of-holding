@@ -13,3 +13,7 @@ All environment variables used in the codebase are exported from either the `env
 | `UNDERGOING_MIGRATION`             | Whether or not the application is undergoing data migration                                        |
 | `NEXT_PUBLIC_MAINTENANCE_MODE`     | If the application is in maintenance mode, must set both this and `UNDERGOING_MIGRATION` to `true` |
 | `MONTHS_INACTIVE_OLD_SHEET_DELETE` | How many months a sheet must be inactive for before it will be deleted                             |
+
+### Notes
+
+- When performing data migrations against the production database, you must remove all of the URL parameters from the connection string

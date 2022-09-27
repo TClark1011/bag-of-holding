@@ -14,8 +14,6 @@ import {
 	DevTools,
 	useHookstate,
 } from "@hookstate/core";
-import toggleArrayItem from "@lukeboyle/array-item-toggle";
-import unique from "uniq";
 import Big from "big.js";
 import {
 	getCarrier,
@@ -24,6 +22,8 @@ import {
 	searchComparison,
 } from "$sheets/utils";
 import { Character, Item } from "@prisma/client";
+import { toggleArrayItem } from "$root/utils";
+import { A } from "@mobily/ts-belt";
 
 export type SheetDialogType =
 	| "item.new"
@@ -238,7 +238,7 @@ export const useSheetPageState = () => {
 		 * values
 		 */
 		getUniqueCategories: (items: Item[]) =>
-			unique(items.map((item) => item.category)).filter((item) => !!item),
+			A.uniq(items.map((item) => item.category)).filter((item) => !!item),
 
 		//# ACTIONS
 		/**

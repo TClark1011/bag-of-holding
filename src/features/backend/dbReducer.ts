@@ -103,23 +103,6 @@ const dbReducer = async (
 					},
 				});
 
-				// const charactersWithNobodyMode = action.data?.characters?.remove.filter(
-				// 	(mem) =>
-				// 		mem.deleteMethod.mode ===
-				// 		DeleteCharacterItemHandlingMethods.setToNobody
-				// );
-
-				// await prisma.item.updateMany({
-				// 	where: {
-				// 		carriedByCharacterId: {
-				// 			in: getIds(charactersWithNobodyMode),
-				// 		},
-				// 	},
-				// 	data: {
-				// 		carriedByCharacterId: null,
-				// 	},
-				// });
-
 				await prisma.character.deleteMany({
 					where: {
 						id: {
@@ -144,6 +127,7 @@ const dbReducer = async (
 
 			break;
 	}
+	return;
 };
 
 export default dbReducer;

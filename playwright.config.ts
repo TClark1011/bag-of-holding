@@ -3,13 +3,19 @@ import { loadEnvConfig } from "@next/env";
 
 loadEnvConfig(process.cwd());
 
+const PORT = 3001;
+
 const config: PlaywrightTestConfig = {
 	testDir: "./tests/integration",
 	outputDir: "./playwrightOutput",
 	webServer: {
-		command: "PORT=3001 yarn start:dev",
-		port: 3001,
+		command: "yarn start:dev",
+		port: PORT,
 		reuseExistingServer: !process.env.CI,
+		timeout: 120 * 1000,
+		env: {
+			PORT: `${PORT}`,
+		},
 	},
 	use: {
 		actionTimeout: 10000,

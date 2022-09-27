@@ -18,7 +18,7 @@ The following folders contained within this repository are used as described:
   - **state:** State related code eg; reducers or Hookstate objects
   - **types:** Typescript types
   - **utils:** Utility functions
-  - **validation:** Yup object validation code that is used for validating form content
+  - **validation:** Zod object validation code that is used for validating form content
 - **tests:**
   - **fixtures:** Placeholder data that can be used for application testing/previewing
   - **utils:** Utility functions that are used only in testing

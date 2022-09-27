@@ -44,12 +44,11 @@ const handleGET: NextApiHandler<FullSheet | string> = async (req, res) => {
  */
 const handlePATCH: NextApiHandler = async (req, res) => {
 	const data: any = tryCatch(
-		() => itemValidation.validateSync(req.body.data),
+		() => itemValidation.parse(req.body.data),
 		() => req.body.data
 	);
 
-	if (itemValidation.isValidSync(data)) {
-		console.log(`([sheetId]) (${Date.now()}) data: `, data);
+	if (itemValidation.safeParse(data).success) {
 		(data as any).id = (data as any).id || undefined; // if item id is empty string, set to undefined
 	}
 

@@ -23,7 +23,6 @@ import {
 	useInventoryStateDispatch,
 } from "$sheets/providers";
 import { SheetDialog } from "$sheets/components";
-import faker from "faker";
 import {
 	itemValidation,
 	descriptionLength,
@@ -32,12 +31,16 @@ import {
 import { defaultFieldLength } from "$root/constants";
 import { useMemo } from "react";
 import { ConfirmationDialog } from "$root/components";
+import { toFormikValidationSchema } from "zod-formik-adapter";
+import stringifyObject from "stringify-object";
 
 export type ItemDialogMode = "edit" | "new";
 
 interface Props {
 	mode: ItemDialogMode;
 }
+
+const validator = toFormikValidationSchema(itemValidation);
 
 /**
  * Modal dialog for creating a new item
@@ -153,11 +156,12 @@ const ItemDialog: React.FC<Props> = ({ mode }) => {
 			<Formik
 				initialValues={initialFormValues}
 				onSubmit={onSubmit}
-				validationSchema={itemValidation}
+				validationSchema={validator}
 			>
-				{({ handleSubmit, isSubmitting, setSubmitting, values }) => (
+				{({ handleSubmit, isSubmitting, setSubmitting, values, errors }) => (
 					<>
 						<ModalBody>
+							<p style={{ color: "red" }}>{stringifyObject(errors)}</p>
 							<VStack spacing="group">
 								<InputControl
 									name="name"

@@ -12,7 +12,7 @@ Bag of Holding is a web app that lets all the players in a tabletop RPG session 
 
 - Typescript
 - [React](https://github.com/facebook/react), bootstrapped with [Next.js](https://github.com/vercel/next.js/) via `create-next-app` and [Chakra UI](https://github.com/chakra-ui/chakra-ui/) for styling
-- PostgreSQL Database hosted on [Railway](https://railway.app/)
+- PostgreSQL Database hosted on [Supabase](https://app.supabase.com/)
 - Hosted on [Vercel](https://vercel.com/)
 
 ## Installation

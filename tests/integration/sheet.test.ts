@@ -104,168 +104,157 @@ testWithNewSheet(
 	}
 );
 
-testWithExistingSheet(
-	"Single Client - Advanced Operations",
-	async ({ page, sheet }) => {
-		// ### general helpers
-		const clickColumnSortButton = (header: string) =>
-			page.click(
-				selectWithinColumnHeader(header, `button:has-text("${header}")`)
-			);
-		const getNameOfItemInTable = async (index: number) =>
-			pipe(
-				await page.innerText(
-					selectWithinTable(
-						// `tbody >> tr >> nth=${index} >> td[data-column=\"name\"]`
-						`tbody >> tr:has(td[data-column=\"name\"]) >> nth=${index} >> td[data-column=\"name\"]`
-					)
-				),
-				S.trim
-			);
-
-		const sortedItemNames = pipe(
-			sheet.items,
-			A.sortBy(D.getUnsafe("name")),
-			A.map(D.getUnsafe("name"))
+testWithExistingSheet("Advanced Operations", async ({ page, sheet }) => {
+	// ### general helpers
+	const clickColumnSortButton = (header: string) =>
+		page.click(
+			selectWithinColumnHeader(header, `button:has-text("${header}")`)
 		);
-
-		// ### sort by name
-		// Check default is sorting by name
-		expect(await getNameOfItemInTable(0)).toBe(A.head(sortedItemNames));
-		await clickColumnSortButton("Name");
-		// Sorting should be reversed after clicking on the name column header
-		expect(await getNameOfItemInTable(0)).toBe(A.last(sortedItemNames));
-
-		// ### filter helpers
-		const itemCategories = pipe(
-			sheet.items,
-			A.map(D.get("category")),
-			A.uniq
-		) as NonEmptyArray<string>;
-		const memberToFilterOut = takeRandom(
-			sheet.characters as NonEmptyArray<Character>
-		);
-		const isCarriedByFilteredOutMember = flow(
-			(val: Item) => val,
-			D.getUnsafe("carriedByCharacterId"),
-			F.equals(memberToFilterOut.id)
-		);
-		const getNumberOfItemRowsCarriedByMember = async ({ name }: Character) => {
-			const rows = await page.$$(
+	const getNameOfItemInTable = async (index: number) =>
+		pipe(
+			await page.innerText(
 				selectWithinTable(
-					`tbody >> tr >> td[data-column="carriedByCharacterId"]:has-text("${name}")`
+					// `tbody >> tr >> nth=${index} >> td[data-column=\"name\"]`
+					`tbody >> tr:has(td[data-column=\"name\"]) >> nth=${index} >> td[data-column=\"name\"]`
 				)
-			);
-			return rows.length;
-		};
-
-		// ### filter out a single member
-
-		// First we check that the sheet is currently showing items
-		// carried by the member which we will filter out
-		expect(
-			await getNumberOfItemRowsCarriedByMember(memberToFilterOut)
-		).toBeGreaterThan(0);
-
-		// Click on "Carried By" column filter button
-		await page.click(
-			selectWithinColumnHeader("Carried By", columnFilterButton)
-		);
-		await page.waitForSelector(openPopover);
-		await page.click(`${openPopover} >> text="${memberToFilterOut.name}"`);
-		// Press escape to close popover
-		await page.keyboard.press("Escape");
-		// Wait for popover to be hidden
-		await page.locator(openPopover).waitFor({
-			state: "hidden",
-		});
-
-		const filteredAndSortedItems = pipe(
-			sheet.items,
-			A.reject(isCarriedByFilteredOutMember),
-			A.sortBy(D.get("name"))
-		);
-		expect(await countItemRows(page)).toBe(filteredAndSortedItems.length);
-		expect(await getNameOfItemInTable(0)).toBe(
-			A.last(filteredAndSortedItems).name
-		);
-		expect(await getNameOfItemInTable(-1)).toBe(
-			A.head(filteredAndSortedItems).name
+			),
+			S.trim
 		);
 
-		expect(await getNumberOfItemRowsCarriedByMember(memberToFilterOut)).toBe(0);
+	const sortedItemNames = pipe(
+		sheet.items,
+		A.sortBy(D.getUnsafe("name")),
+		A.map(D.getUnsafe("name"))
+	);
 
-		// ### sort by a numeric field
-		const itemsSortedByValue = pipe(
-			filteredAndSortedItems,
-			A.sortBy(getItemTotalValue)
+	// ### sort by name
+	// Check default is sorting by name
+	expect(await getNameOfItemInTable(0)).toBe(A.head(sortedItemNames));
+	await clickColumnSortButton("Name");
+	// Sorting should be reversed after clicking on the name column header
+	expect(await getNameOfItemInTable(0)).toBe(A.last(sortedItemNames));
+
+	// ### filter helpers
+	const itemCategories = pipe(
+		sheet.items,
+		A.map(D.get("category")),
+		A.uniq
+	) as NonEmptyArray<string>;
+	const memberToFilterOut = takeRandom(
+		sheet.characters as NonEmptyArray<Character>
+	);
+	const isCarriedByFilteredOutMember = flow(
+		(val: Item) => val,
+		D.getUnsafe("carriedByCharacterId"),
+		F.equals(memberToFilterOut.id)
+	);
+	const getNumberOfItemRowsCarriedByMember = async ({ name }: Character) => {
+		const rows = await page.$$(
+			selectWithinTable(
+				`tbody >> tr >> td[data-column="carriedByCharacterId"]:has-text("${name}")`
+			)
 		);
-		await clickColumnSortButton("Value");
+		return rows.length;
+	};
 
-		expect(await getNameOfItemInTable(0)).toBe(A.head(itemsSortedByValue).name);
-		expect(await getNameOfItemInTable(-1)).toBe(
-			A.last(itemsSortedByValue).name
-		);
+	// ### filter out a single member
 
-		await clickColumnSortButton("Value");
+	// First we check that the sheet is currently showing items
+	// carried by the member which we will filter out
+	expect(
+		await getNumberOfItemRowsCarriedByMember(memberToFilterOut)
+	).toBeGreaterThan(0);
 
-		expect(await getNameOfItemInTable(0)).toBe(A.last(itemsSortedByValue).name);
-		expect(await getNameOfItemInTable(-1)).toBe(
-			A.head(itemsSortedByValue).name
-		);
+	// Click on "Carried By" column filter button
+	await page.click(selectWithinColumnHeader("Carried By", columnFilterButton));
+	await page.waitForSelector(openPopover);
+	await page.click(`${openPopover} >> text="${memberToFilterOut.name}"`);
+	// Press escape to close popover
+	await page.keyboard.press("Escape");
+	// Wait for popover to be hidden
+	await page.locator(openPopover).waitFor({
+		state: "hidden",
+	});
 
-		// ### filter out a category
-		// open the "Carried By" filter menu
-		await page.click(
-			selectWithinColumnHeader("Carried By", columnFilterButton)
-		);
+	const filteredAndSortedItems = pipe(
+		sheet.items,
+		A.reject(isCarriedByFilteredOutMember),
+		A.sortBy(D.get("name"))
+	);
+	expect(await countItemRows(page)).toBe(filteredAndSortedItems.length);
+	expect(await getNameOfItemInTable(0)).toBe(
+		A.last(filteredAndSortedItems).name
+	);
+	expect(await getNameOfItemInTable(-1)).toBe(
+		A.head(filteredAndSortedItems).name
+	);
 
-		// ### Filter out all members
-		const categoryToFilterOut = takeRandom(itemCategories);
-		const itemIsCarriedByFilteredOutMember = (item: Item) =>
-			pipe(item, D.get("category"), F.equals(categoryToFilterOut));
+	expect(await getNumberOfItemRowsCarriedByMember(memberToFilterOut)).toBe(0);
 
-		await page.click(selectWithinColumnHeader("Category", columnFilterButton));
-		await page.waitForSelector(openPopover);
-		await page.click(`${openPopover} >> text="${categoryToFilterOut}"`);
-		await page.keyboard.press("Escape");
-		await page.locator(openPopover).waitFor({
-			state: "hidden",
-		});
+	// ### sort by a numeric field
+	const itemsSortedByValue = pipe(
+		filteredAndSortedItems,
+		A.sortBy(getItemTotalValue)
+	);
+	await clickColumnSortButton("Value");
 
-		const itemsWithCategoryFilter = A.reject(
-			itemsSortedByValue,
-			itemIsCarriedByFilteredOutMember
-		);
+	expect(await getNameOfItemInTable(0)).toBe(A.head(itemsSortedByValue).name);
+	expect(await getNameOfItemInTable(-1)).toBe(A.last(itemsSortedByValue).name);
 
-		expect(await countItemRows(page)).toBe(itemsWithCategoryFilter.length);
+	await clickColumnSortButton("Value");
 
-		// ### Search
-		const itemNames = itemsWithCategoryFilter.map(
-			D.get("name")
-		) as NonEmptyArray<string>;
-		// We will search for the most common 2 letter combo
-		// across all the item names
-		const searchQuery = getMostCommonLetterCombo(itemNames, 2);
-		const itemNamesThatContainSearchQuery = itemNames.filter((val) =>
-			searchComparison(val, searchQuery)
-		);
+	expect(await getNameOfItemInTable(0)).toBe(A.last(itemsSortedByValue).name);
+	expect(await getNameOfItemInTable(-1)).toBe(A.head(itemsSortedByValue).name);
 
-		// Type search query
-		await fillSearchBar(page, searchQuery);
-		expect(await countItemRows(page)).toBe(
-			itemNamesThatContainSearchQuery.length
-		);
+	// ### filter out a category
+	// open the "Carried By" filter menu
+	await page.click(selectWithinColumnHeader("Carried By", columnFilterButton));
 
-		// Reset the search
-		await fillSearchBar(page, "");
-		expect(await countItemRows(page)).toBe(itemsWithCategoryFilter.length);
+	// ### Filter out all members
+	const categoryToFilterOut = takeRandom(itemCategories);
+	const itemIsCarriedByFilteredOutMember = (item: Item) =>
+		pipe(item, D.get("category"), F.equals(categoryToFilterOut));
 
-		// ### Reset all filters
-		await page.click("text=Reset Filters");
-		expect(await countItemRows(page)).toBe(sheet.items.length);
-	}
-);
+	await page.click(selectWithinColumnHeader("Category", columnFilterButton));
+	await page.waitForSelector(openPopover);
+	await page.click(`${openPopover} >> text="${categoryToFilterOut}"`);
+	await page.keyboard.press("Escape");
+	await page.locator(openPopover).waitFor({
+		state: "hidden",
+	});
+
+	const itemsWithCategoryFilter = A.reject(
+		itemsSortedByValue,
+		itemIsCarriedByFilteredOutMember
+	);
+
+	expect(await countItemRows(page)).toBe(itemsWithCategoryFilter.length);
+
+	// ### Search
+	const itemNames = itemsWithCategoryFilter.map(
+		D.get("name")
+	) as NonEmptyArray<string>;
+	// We will search for the most common 2 letter combo
+	// across all the item names
+	const searchQuery = getMostCommonLetterCombo(itemNames, 2);
+	const itemNamesThatContainSearchQuery = itemNames.filter((val) =>
+		searchComparison(val, searchQuery)
+	);
+
+	// Type search query
+	await fillSearchBar(page, searchQuery);
+	expect(await countItemRows(page)).toBe(
+		itemNamesThatContainSearchQuery.length
+	);
+
+	// Reset the search
+	await fillSearchBar(page, "");
+	expect(await countItemRows(page)).toBe(itemsWithCategoryFilter.length);
+
+	// ### Reset all filters
+	await page.click("text=Reset Filters");
+	expect(await countItemRows(page)).toBe(sheet.items.length);
+});
 
 testWithNewSheet(
 	"Advanced 2 client interactions",

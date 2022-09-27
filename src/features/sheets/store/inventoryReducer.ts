@@ -8,7 +8,7 @@ import {
 } from "$sheets/types";
 import codeToTitle from "code-to-title";
 import stringifyObject from "stringify-object";
-import { findObjectWithId, getIds } from "$root/utils";
+import { getIds } from "$root/utils";
 import { logEvent, logException } from "$analytics/utils";
 import {
 	characterIsCarrying,
@@ -17,7 +17,7 @@ import {
 } from "$sheets/utils";
 import { sendSheetAction } from "$sheets/api";
 import { REFETCH_INTERVAL } from "$root/config";
-import { Character, Sheet } from "@prisma/client";
+import { Character } from "@prisma/client";
 
 /**
  * Reducer that handles updates to client state
