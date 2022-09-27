@@ -1,7 +1,7 @@
 name: delete-old-sheets
 on:
   schedule:
-    - cron: "0 1-23 * * *"
+    - cron: "0 0 1 * *" # monthly
 jobs:
   cron:
     runs-on: ubuntu-latest
