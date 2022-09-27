@@ -1,9 +1,9 @@
 import faker from "faker";
-import randomItem from "random-item";
 import { IdentifiedObject } from "$root/types";
 import { A } from "@mobily/ts-belt";
-import { Character, Item, Sheet } from "@prisma/client";
+import { Character, Item } from "@prisma/client";
 import { FullSheet } from "$sheets/types";
+import { takeRandom } from "$root/utils";
 
 /**
  * A Function type for functions that return randomly
@@ -34,7 +34,7 @@ export const generateRandomInventoryItem = (
 		id: faker.datatype.uuid(),
 		name: faker.commerce.productName().substring(0, 23),
 		weight: Number(faker.datatype.number(200).toFixed(2)),
-		carriedByCharacterId: members ? randomItem(members).id : null,
+		carriedByCharacterId: members ? takeRandom(members).id : null,
 		quantity: Number(faker.datatype.number(200).toFixed(0)),
 		description: faker.commerce.productDescription(),
 		category: faker.commerce.productAdjective(),

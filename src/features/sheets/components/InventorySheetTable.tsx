@@ -14,7 +14,6 @@ import {
 	useColorModeValue,
 } from "@chakra-ui/react";
 import { BookOutlineIcon, FilterOutlineIcon } from "chakra-ui-ionicons";
-import isUrl from "is-url-superb";
 import { getItemTotalValue, getItemTotalWeight } from "$sheets/utils";
 import { testIdGeneratorFactory } from "$tests/utils/testUtils";
 import { FilterableItemProperty, ProcessableItemProperty } from "$sheets/types";
@@ -30,6 +29,7 @@ import {
 import { TableFilter, PartyMemberData } from "$sheets/components";
 import { SortingDirection } from "$root/types";
 import { Item } from "@prisma/client";
+import { isUrl } from "$root/utils";
 
 const getTestId = testIdGeneratorFactory("InventoryTable");
 

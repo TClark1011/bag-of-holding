@@ -1,6 +1,10 @@
 /* eslint-disable jsdoc/require-jsdoc */
-import initMockDB from "$tests/utils/initMockDB";
+import wait from "$tests/utils/wait";
+import waitOn from "wait-on";
 
 export default async () => {
-	await initMockDB();
+	await waitOn({
+		resources: ["http://localhost:3001"],
+	});
+	wait(2000);
 };

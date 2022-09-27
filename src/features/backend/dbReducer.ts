@@ -144,6 +144,7 @@ const dbReducer = async (
 
 			break;
 	}
+	return;
 };
 
 export default dbReducer;
