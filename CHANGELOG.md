@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.2.6](https://github.com/TClark1011/bag-of-holding/compare/v1.2.5...v1.2.6) (2022-09-27)
+
+
+### Bug Fixes
+
+* **frontend:** 🐛 fix incorrect text ([819f4b7](https://github.com/TClark1011/bag-of-holding/commit/819f4b771a06f74aef17fb46bdca151e69f60848))
+* **frontend:** 🐛 fixed incorrect text ([a9f847c](https://github.com/TClark1011/bag-of-holding/commit/a9f847c706dafca5b35cd40788859655df1afafc))
+* **fullstack:** 🐛 change how MONGO_URL env var is loaded ([34e5c18](https://github.com/TClark1011/bag-of-holding/commit/34e5c187b9000906954d41326fca32822a3d9a8b))
+* **scripts:** 🐛 fix delete-old-sheets schedule ([7debae9](https://github.com/TClark1011/bag-of-holding/commit/7debae986e9d6989e9ee270573f635452bda28b0))
+
 ### [1.2.5](https://github.com/TClark1011/bag-of-holding/compare/v1.2.4...v1.2.5) (2022-09-19)
 
 
