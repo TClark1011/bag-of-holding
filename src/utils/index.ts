@@ -10,3 +10,4 @@ export { default as makeWritable } from "./makeWritable";
 export { default as takeRandom } from "./takeRandom";
 export { default as countOccurrences } from "./countOccurrences";
 export { default as tryCatch } from "./tryCatch";
+export { default as getOldSheetCutOff } from "./getOldSheetCutOff";

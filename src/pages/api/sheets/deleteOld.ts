@@ -1,6 +1,5 @@
 import prisma from "$prisma";
-import { MONTHS_INACTIVE_OLD_SHEET } from "$root/config";
-import { subMonths } from "date-fns";
+import { getOldSheetCutOff } from "$root/utils";
 import { NextApiHandler } from "next";
 
 /**
@@ -20,7 +19,7 @@ const routeHandler: NextApiHandler = async (req, res) => {
 		.deleteMany({
 			where: {
 				updatedAt: {
-					lt: subMonths(new Date(), MONTHS_INACTIVE_OLD_SHEET),
+					lt: getOldSheetCutOff(),
 				},
 			},
 		})

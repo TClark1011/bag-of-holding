@@ -91,7 +91,7 @@ const InfoPage: React.FC = () => {
 						</Paragraph>
 						<Paragraph>
 							Sheets that do contain items will still be deleted if they are not
-							edited for 6 months. To avoid this happening to your sheets, just
+							edited for 3 months. To avoid this happening to your sheets, just
 							hop on your sheets every now and then and add a new item and then
 							delete it again right after.
 						</Paragraph>
