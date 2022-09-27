@@ -13,6 +13,7 @@ import "@fontsource/roboto";
 import "@fontsource/roboto/100.css";
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/700.css";
+import queries from "$root/hooks/queries";
 
 /**
  * Generate a selector to add a background color
@@ -70,4 +71,4 @@ const MyApp = ({ Component, pageProps }: AppProps): React.ReactElement => {
 	);
 };
 
-export default MyApp;
+export default queries.withTRPC(MyApp);
