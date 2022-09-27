@@ -37,11 +37,14 @@ import { sheetOptionsValidation } from "$sheets/validation";
 import { defaultFieldLength } from "$root/constants";
 import { generateCharacter } from "$sheets/utils";
 import { ConfirmationDialog, Paragraph } from "$root/components";
+import { toFormikValidationSchema } from "zod-formik-adapter";
 
 export type SheetOptionsDialogFormFields = Pick<
 	FullSheet,
 	"name" | "characters"
 >;
+
+const validator = toFormikValidationSchema(sheetOptionsValidation);
 
 const CharacterDeleteMethodRadio = chakra<
 	ComponentWithAs<"input">,
@@ -152,7 +155,7 @@ const SheetOptionsDialog: React.FC = () => {
 			<Formik
 				onSubmit={onSubmit}
 				initialValues={{ name, characters }}
-				validationSchema={sheetOptionsValidation}
+				validationSchema={validator}
 			>
 				{({ handleSubmit, isSubmitting, values }) => (
 					<>

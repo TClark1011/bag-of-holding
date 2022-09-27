@@ -13,6 +13,7 @@ import { Item } from "@prisma/client";
  * @param item The item data to fill out the form with
  */
 export const fillOutItemForm = async (client: Page, item: Item) => {
+	console.log("(sheetAutomations) item: ", item);
 	await client.fill("#name", item.name),
 	await client.fill("#category", item.category),
 	await client.fill("#description", item.description),
@@ -21,7 +22,7 @@ export const fillOutItemForm = async (client: Page, item: Item) => {
 	await client.fill("#value", `${item.value}`),
 	await client.fill("#referenceLink", item.referenceLink),
 	(await client.$("#carriedByCharacterId")).selectOption({
-		label: item.carriedByCharacterId,
+		label: item.carriedByCharacterId ?? "Nobody",
 	});
 };
 
