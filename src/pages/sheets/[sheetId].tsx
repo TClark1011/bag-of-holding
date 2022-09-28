@@ -44,6 +44,7 @@ import {
 import { useOnMountEffect } from "$root/hooks";
 import { Sheet } from "@prisma/client";
 import { FullSheet } from "$sheets/types";
+import useSheetServerSync from "$sheets/hooks/useSheetServerSync";
 
 const getTestId = testIdGeneratorFactory("SheetPage");
 
@@ -77,6 +78,7 @@ const SheetPage: React.FC<SheetPageProps> = ({
 			payload: sheetFields,
 		});
 	});
+	useSheetServerSync();
 
 	const [
 		{ items, name, characters, id },

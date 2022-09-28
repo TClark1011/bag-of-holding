@@ -1,5 +1,11 @@
+import { sheetChannelName } from "$root/config/pusher/common";
 import queries from "$root/hooks/queries";
-import { useInventoryStore, useLastInventoryStoreAction } from "$sheets/store";
+import usePusherSubscription from "$root/hooks/usePusherSubscription";
+import {
+	useInventoryStore,
+	useInventoryStoreDispatch,
+	useLastInventoryStoreAction,
+} from "$sheets/store";
 import { useEffect } from "react";
 import { match } from "ts-pattern";
 
@@ -17,6 +23,7 @@ const useSheetServerSync = () => {
 	const setSheetNameMutation = queries.sheet.setName.useMutation();
 
 	const sheetId = useInventoryStore((s) => s.sheet.id);
+	const dispatch = useInventoryStoreDispatch();
 
 	useEffect(() => {
 		// Send client updates to the server
@@ -39,7 +46,6 @@ const useSheetServerSync = () => {
 						},
 						(action) => updateItemMutation.mutate(action)
 					)
-					.with({ type: "update-metadata" }, () => {})
 					.with({ type: "set-sheet-name" }, ({ payload, actionId }) =>
 						setSheetNameMutation.mutate({
 							actionId: actionId,
@@ -49,12 +55,14 @@ const useSheetServerSync = () => {
 							},
 						})
 					)
-					.exhaustive();
+					.run();
 			}
 		);
 
 		return unsubscribe;
 	}, [createItemMutation, sheetId]);
+
+	usePusherSubscription(sheetChannelName(sheetId), dispatch);
 };
 
 export default useSheetServerSync;

@@ -15,3 +15,4 @@ export { default as isUrl } from "./isUrl";
 export { default as toggleArrayItem } from "./toggleArrayItem";
 
 export * from "./entityHelpers";
+export * from "./logHelpers";

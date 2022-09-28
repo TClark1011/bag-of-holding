@@ -1,5 +1,7 @@
 import { asActionSchema } from "$actions";
 import prisma from "$prisma";
+import { fireChannelEvent } from "$root/config/pusher/backend";
+import { sheetChannelName } from "$root/config/pusher/common";
 import trpc from "$trpc";
 import { itemSchema } from "@prisma/schemas";
 import { z } from "zod";
@@ -10,6 +12,12 @@ const itemRouter = trpc.router({
 		.mutation(async ({ input }) => {
 			const item = await prisma.item.create({
 				data: input.payload,
+			});
+
+			await fireChannelEvent(sheetChannelName(item.sheetId), {
+				actionId: input.actionId,
+				payload: item,
+				type: "add-item",
 			});
 
 			return item;

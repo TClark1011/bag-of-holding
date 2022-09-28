@@ -17,7 +17,7 @@ import { BookOutlineIcon, FilterOutlineIcon } from "chakra-ui-ionicons";
 import { getItemTotalValue, getItemTotalWeight } from "$sheets/utils";
 import { testIdGeneratorFactory } from "$tests/utils/testUtils";
 import { FilterableItemProperty, ProcessableItemProperty } from "$sheets/types";
-import { useSheetPageState } from "$sheets/store";
+import { useInventoryStore, useSheetPageState } from "$sheets/store";
 import { useInventoryState } from "$sheets/providers";
 import {
 	NumericAscendingSortIcon,
@@ -179,7 +179,8 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 	const { getProcessedItems, getColumnSums } = useSheetPageState();
 
 	const { items, characters } = useInventoryState();
-	const processedItems = getProcessedItems(items, characters);
+	// const processedItems = getProcessedItems(items, characters);
+	const processedItems = useInventoryStore(s => s.sheet.items);
 	const columnSums = getColumnSums(items);
 
 	return (

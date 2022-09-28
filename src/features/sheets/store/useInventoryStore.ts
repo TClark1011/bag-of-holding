@@ -16,6 +16,7 @@ import produce from "immer";
 import { Reducer } from "react";
 import { match } from "ts-pattern";
 import { Except } from "type-fest";
+import { devtools } from "zustand/middleware";
 
 type ClientItemCreationInput = Except<ItemCreationInput, "sheetId">;
 type ClientCharacterCreationInput = Except<CharacterCreationInput, "sheetId">;
@@ -107,7 +108,7 @@ type ResolvedInventoryStoreRemoveCharacterAction = ResolvedActionFromUnresolved<
 	InventoryStoreRemoveCharacterAction["payload"]
 >;
 
-type InventoryStoreAction = (
+export type InventoryStoreAction = (
 	| InventoryStoreAddItemAction
 	| InventoryStoreUpdateItemAction
 	| InventoryStoreRemoveItemAction
@@ -119,7 +120,7 @@ type InventoryStoreAction = (
 	actionId?: string;
 };
 
-type ResolvedInventoryStoreAction =
+export type ResolvedInventoryStoreAction =
 	| ResolvedInventoryStoreAddItemAction
 	| ResolvedInventoryStoreUpdateItemAction
 	| ResolvedInventoryStoreRemoveItemAction
@@ -268,7 +269,9 @@ const inventoryStoreReducer: Reducer<
 	});
 
 const useInventoryStore = createState(
-	withReducer(inventoryStoreReducer, initialInventoryStoreState)
+	devtools(withReducer(inventoryStoreReducer, initialInventoryStoreState), {
+		name: "inventory",
+	})
 );
 
 // eslint-disable-next-line jsdoc/require-jsdoc

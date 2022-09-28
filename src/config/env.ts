@@ -28,3 +28,9 @@ export const UNDERGOING_MIGRATION = process.env.UNDERGOING_MIGRATION === "true";
 export const MONTHS_INACTIVE_OLD_SHEET = Number(
 	getEnvOrThrow("MONTHS_INACTIVE_OLD_SHEET_DELETE", false)
 );
+
+export const PUSHER_SECRET = getEnvOrThrow("PUSHER_SECRET", false);
+export const PUSHER_APP_ID = getEnvOrThrow("PUSHER_APP_ID", false);
+export const NEXT_PUBLIC_PUSHER_KEY = process.env.NEXT_PUBLIC_PUSHER_KEY ?? "";
+export const NEXT_PUBLIC_PUSHER_CLUSTER =
+	process.env.NEXT_PUBLIC_PUSHER_CLUSTER ?? "";

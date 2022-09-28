@@ -16,7 +16,11 @@ import {
 	SelectControl,
 	TextareaControl,
 } from "formik-chakra-ui";
-import { SheetDialogType, useSheetPageState } from "$sheets/store";
+import {
+	SheetDialogType,
+	useInventoryStoreDispatch,
+	useSheetPageState,
+} from "$sheets/store";
 import { SheetStateAction, ItemCreationFields } from "$sheets/types";
 import {
 	useInventoryState,
@@ -52,6 +56,7 @@ const validator = toFormikValidationSchema(itemValidation);
  * @returns The rendered HTML
  */
 const ItemDialog: React.FC<Props> = ({ mode }) => {
+	const newDispatch = useInventoryStoreDispatch();
 	const inEditMode = mode === "edit";
 
 	const { activeItem, closeDialog, getUniqueCategories } = useSheetPageState();
@@ -98,6 +103,13 @@ const ItemDialog: React.FC<Props> = ({ mode }) => {
 	const onSubmit = (data: ItemCreationFields, { setSubmitting }: any) => {
 		if (!data.category) {
 			data.category = "None";
+		}
+
+		if (!inEditMode) {
+			newDispatch({
+				type: "add-item",
+				payload: data,
+			});
 		}
 
 		const action: SheetStateAction = {
@@ -162,7 +174,6 @@ const ItemDialog: React.FC<Props> = ({ mode }) => {
 				{({ handleSubmit, isSubmitting, setSubmitting, values, errors }) => (
 					<>
 						<ModalBody>
-							<p style={{ color: "red" }}>{stringifyObject(errors)}</p>
 							<VStack spacing="group">
 								<InputControl
 									name="name"
