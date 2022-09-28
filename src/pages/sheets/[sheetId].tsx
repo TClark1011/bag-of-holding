@@ -20,7 +20,12 @@ import { GetServerSideProps } from "next";
 import { AddIcon, CreateOutlineIcon } from "chakra-ui-ionicons";
 import { appName } from "$root/constants";
 import { getUrlParam, getSheetLink } from "$root/utils";
-import { useSheetPageState, useInventoryReducer } from "$sheets/store";
+import {
+	useSheetPageState,
+	useInventoryReducer,
+	useInventoryStore,
+	useInventoryStoreDispatch,
+} from "$sheets/store";
 import {
 	WelcomeDialog,
 	CharacterTotalsTable,
@@ -65,6 +70,14 @@ const SheetPage: React.FC<SheetPageProps> = ({
 	isNew = false,
 	...sheetFields
 }) => {
+	const dispatch = useInventoryStoreDispatch();
+	useOnMountEffect(() => {
+		dispatch({
+			type: "set-sheet",
+			payload: sheetFields,
+		});
+	});
+
 	const [
 		{ items, name, characters, id },
 		inventoryDispatch,
