@@ -32,7 +32,6 @@ import { defaultFieldLength } from "$root/constants";
 import { useMemo } from "react";
 import { ConfirmationDialog } from "$root/components";
 import { toFormikValidationSchema } from "zod-formik-adapter";
-import stringifyObject from "stringify-object";
 
 export type ItemDialogMode = "edit" | "new";
 
@@ -94,7 +93,7 @@ const ItemDialog: React.FC<Props> = ({ mode }) => {
 	 * @param formFunctions.setSubmitting Set whether or not the form is
 	 * currently submitting
 	 */
-	const onSubmit = (data: ItemCreationFields, { setSubmitting }) => {
+	const onSubmit = (data: ItemCreationFields, { setSubmitting }: any) => {
 		if (!data.category) {
 			data.category = "None";
 		}
@@ -154,14 +153,13 @@ const ItemDialog: React.FC<Props> = ({ mode }) => {
 			header={`${headingPrefix} Item`}
 		>
 			<Formik
-				initialValues={initialFormValues}
+				initialValues={initialFormValues as never}
 				onSubmit={onSubmit}
 				validationSchema={validator}
 			>
-				{({ handleSubmit, isSubmitting, setSubmitting, values, errors }) => (
+				{({ handleSubmit, isSubmitting, setSubmitting, values }) => (
 					<>
 						<ModalBody>
-							<p style={{ color: "red" }}>{stringifyObject(errors)}</p>
 							<VStack spacing="group">
 								<InputControl
 									name="name"
