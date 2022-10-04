@@ -1,6 +1,7 @@
 import { createTRPCNext } from "@trpc/next";
 import type { AppRouter } from "$root/server/routers";
 import { httpBatchLink } from "@trpc/client";
+import superjson from "superjson";
 
 const getBaseUrl = () => {
 	if (typeof window !== "undefined")
@@ -23,6 +24,7 @@ const queries = createTRPCNext<AppRouter>({
 				url: `${getBaseUrl()}/api/trpc`,
 			}),
 		],
+		transformer: superjson,
 	}),
 	ssr: false,
 });

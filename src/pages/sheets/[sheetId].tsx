@@ -14,10 +14,11 @@ import {
 	TagLabel,
 	TagLeftIcon,
 	Input,
+	HStack,
 } from "@chakra-ui/react";
 import { InventoryStateProvider } from "$sheets/providers";
 import { GetServerSideProps } from "next";
-import { AddIcon, CreateOutlineIcon } from "chakra-ui-ionicons";
+import { AddIcon, CreateOutlineIcon, PencilIcon } from "chakra-ui-ionicons";
 import { appName } from "$root/constants";
 import { getUrlParam, getSheetLink } from "$root/utils";
 import {
@@ -25,6 +26,7 @@ import {
 	useInventoryReducer,
 	useInventoryStore,
 	useInventoryStoreDispatch,
+	fromSheet,
 } from "$sheets/store";
 import {
 	WelcomeDialog,
@@ -45,6 +47,8 @@ import { useOnMountEffect } from "$root/hooks";
 import { Sheet } from "@prisma/client";
 import { FullSheet } from "$sheets/types";
 import useSheetServerSync from "$sheets/hooks/useSheetServerSync";
+import CharacterDialog from "$sheets/components/Dialogs/CharacterDialog";
+import { D } from "@mobily/ts-belt";
 
 const getTestId = testIdGeneratorFactory("SheetPage");
 
@@ -80,10 +84,13 @@ const SheetPage: React.FC<SheetPageProps> = ({
 	});
 	useSheetServerSync();
 
-	const [
-		{ items, name, characters, id },
-		inventoryDispatch,
-	] = useInventoryReducer(sheetFields);
+	const { characters } = useInventoryStore(
+		fromSheet(D.selectKeys(["characters"]))
+	);
+
+	const [{ items, name, id }, inventoryDispatch] = useInventoryReducer(
+		sheetFields
+	);
 
 	useOnMountEffect(() => {
 		if (isNew) {
@@ -144,22 +151,41 @@ const SheetPage: React.FC<SheetPageProps> = ({
 									data-testid={sheetPageTestIds.colorModeButton}
 								/>
 							</Flex>
-							<LightMode>
-								{characters.length ? (
-									<PartyMemberTagList
-										members={characters.map((member) => member.name)}
-									/>
-								) : (
-									<Tag
-										_hover={{ backgroundColor: "gray.300" }}
-										cursor="pointer"
-										onClick={() => openDialog("sheetOptions")}
-									>
-										<TagLeftIcon as={AddIcon} />
-										<TagLabel>Add Members</TagLabel>
-									</Tag>
-								)}
-							</LightMode>
+							<HStack spacing="group">
+								<LightMode>
+									{characters.map((char) => (
+										<Button
+											size="xs"
+											color="gray.800"
+											colorScheme="gray"
+											key={char.id}
+											leftIcon={<PencilIcon />}
+											onClick={() => {
+												dispatch({
+													type: "ui.open-character-edit-dialog",
+													payload: {
+														characterId: char.id,
+													},
+												});
+											}}
+										>
+											{char.name}
+										</Button>
+									))}
+								</LightMode>
+								<Button
+									size="xs"
+									cursor="pointer"
+									onClick={() =>
+										dispatch({
+											type: "ui.open-new-character-dialog",
+										})
+									}
+									leftIcon={<AddIcon />}
+								>
+									Add Member
+								</Button>
+							</HStack>
 						</Box>
 						<Stack
 							minHeight={16}
@@ -237,6 +263,7 @@ const SheetPage: React.FC<SheetPageProps> = ({
 						<FilterDialog />
 						<SheetOptionsDialog />
 						<WelcomeDialog />
+						<CharacterDialog />
 					</main>
 				</Box>
 			</InventoryStateProvider>

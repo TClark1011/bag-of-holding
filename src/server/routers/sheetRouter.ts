@@ -1,4 +1,4 @@
-import { asActionSchema } from "$actions";
+import { asResolvedActionSchema } from "$actions";
 import prisma from "$prisma";
 import trpc from "$trpc";
 import { z } from "zod";
@@ -17,7 +17,7 @@ const sheetRouter = trpc.router({
 	),
 	setName: trpc.procedure
 		.input(
-			asActionSchema(
+			asResolvedActionSchema(
 				z.object({
 					sheetId: z.string(),
 					newName: z.string(),

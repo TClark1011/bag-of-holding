@@ -1,0 +1,12 @@
+{
+	"tasks": [
+		{
+			"label": "Launch Dev",
+			"type": "shell",
+			"command": "yarn dev",
+			"presentation": {
+				"panel": "dedicated"
+			}
+		}
+	]
+}

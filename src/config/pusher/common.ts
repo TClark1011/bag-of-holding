@@ -1,8 +1,4 @@
-import {
-	InventoryStoreAction,
-	ResolvedInventoryStoreAction,
-} from "$sheets/store";
-import type { SetRequired } from "type-fest";
+import { ResolvedInventoryStoreAction } from "$sheets/store";
 
 export type ChannelToDataMap = {
 	sheet: ResolvedInventoryStoreAction;
