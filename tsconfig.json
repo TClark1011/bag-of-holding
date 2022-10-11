@@ -22,7 +22,7 @@
 			"@prisma/schemas": ["prisma/schemas"]
 		}
 	},
-	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+	"include": ["next-env.d.ts", "src/**/*", "prisma/**/*", "tests/**/*"],
 	"exclude": ["node_modules", "prisma/schemas"],
 
 	"ts-node": {
