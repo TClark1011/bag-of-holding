@@ -36,7 +36,6 @@ import { defaultFieldLength } from "$root/constants";
 import { useMemo } from "react";
 import { ConfirmationDialog } from "$root/components";
 import { toFormikValidationSchema } from "zod-formik-adapter";
-import stringifyObject from "stringify-object";
 import { G } from "@mobily/ts-belt";
 
 export type ItemDialogMode = "edit" | "new";
@@ -108,7 +107,7 @@ const ItemDialog: React.FC<Props> = ({ mode }) => {
 		if (!inEditMode) {
 			newDispatch({
 				type: "add-item",
-				payload: data,
+				payload: data as never,
 			});
 		}
 
@@ -171,7 +170,7 @@ const ItemDialog: React.FC<Props> = ({ mode }) => {
 				onSubmit={onSubmit}
 				validationSchema={validator}
 			>
-				{({ handleSubmit, isSubmitting, setSubmitting, values, errors }) => (
+				{({ handleSubmit, isSubmitting, setSubmitting, values }) => (
 					<>
 						<ModalBody>
 							<VStack spacing="group">
