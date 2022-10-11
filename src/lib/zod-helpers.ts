@@ -41,10 +41,21 @@ export type RawToZod<T> = z.ZodType<never> &
 		: z.ZodType<unknown>);
 
 /**
- * @param schema
- * @param value
+ * Use a zod schema as a typeguard
+ *
+ * @param schema The schema
+ * @param value The value to check
  */
 export const matchesSchema = <Schema extends z.ZodTypeAny>(
 	schema: Schema,
+	value: any
+): value is z.infer<Schema> => schema.safeParse(value).success;
+
+/**
+ * Curried version of `matchesSchema`
+ *
+ * @param schema The schema
+ */
+export const _matchesSchema = <Schema extends z.ZodTypeAny>(schema: Schema) => (
 	value: any
 ): value is z.infer<Schema> => schema.safeParse(value).success;

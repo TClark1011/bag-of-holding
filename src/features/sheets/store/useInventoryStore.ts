@@ -1,18 +1,11 @@
-import {
-	Action,
-	PayloadAction,
-	ResolvedActionFromUnresolved,
-	SimpleResolvedActionFromUnresolvedWithPayload,
-	withActionIdSchema,
-} from "$actions";
+/* eslint-disable jsdoc/require-jsdoc */
+import { ExtractResolvedPayloadActions, resolveSimpleAction } from "$actions";
 import { hasId, rejectItemWithId, updateItemWithId } from "$root/utils";
 import { CharacterRemovalStrategy, FullSheet } from "$sheets/types";
 import { itemIsCarriedByCharacterId } from "$sheets/utils";
 import {
-	CharacterCreationInput,
 	composeCharacter,
 	composeItem,
-	ItemCreationInput,
 } from "$sheets/utils/sheetEntityComposers";
 import { createState, withReducer } from "$zustand";
 import { A, D, F } from "@mobily/ts-belt";
@@ -20,22 +13,15 @@ import { Character, Item } from "@prisma/client";
 import cuid from "cuid";
 import produce from "immer";
 import { Reducer } from "react";
-import { match, P } from "ts-pattern";
-import { Except } from "type-fest";
+import { match } from "ts-pattern";
 import { devtools } from "zustand/middleware";
-import {
-	characterDeletionActionSchema,
-	characterUpdateActionSchema,
-	characterDialogHandleDeleteActionSchema,
-	resolvedCharacterDeletionActionSchema,
-	resolvedCharacterUpdateActionSchema,
-	resolvedCharacterDialogHandleDeleteActionSchema,
-} from "$sheets/store/inventoryActions";
 import { z } from "zod";
-import { matchesSchema } from "$zodHelpers";
-
-type ClientItemCreationInput = Except<ItemCreationInput, "sheetId">;
-type ClientCharacterCreationInput = Except<CharacterCreationInput, "sheetId">;
+import { matchesSchema } from "$zod-helpers";
+import {
+	FinalInventoryStoreAction,
+	InventoryStoreAction,
+	ResolvedInventoryStoreAction,
+} from "$sheets/store/inventoryActions";
 
 type CharacterDialogStateProps =
 	| {
@@ -45,7 +31,7 @@ type CharacterDialogStateProps =
 			mode: "edit";
 			data: {
 				characterId: string;
-				subMode: "delete" | "plain";
+				deleteModalIsOpen: boolean;
 			};
 	  }
 	| {
@@ -57,6 +43,7 @@ type InventoryStoreProps = {
 	resolvedActionIds: string[];
 	ui: {
 		characterDialog: CharacterDialogStateProps;
+		sheetNameDialogIsOpen: boolean;
 	};
 };
 
@@ -73,34 +60,29 @@ const initialInventoryStoreState: InventoryStoreProps = {
 		characterDialog: {
 			mode: "closed",
 		},
+		sheetNameDialogIsOpen: false,
 	},
 };
 
-/* ---------------------------------- */
-/*              Selectors             */
-/* ---------------------------------- */
-
+/* #region  SELECTORS */
 /**
- * @param selector
+ * Utility for defining a selector that pulls from the sheet field
+ *
+ * @param selector the selector
  */
 export const fromSheet = <Selection>(selector: (p: FullSheet) => Selection) => (
 	state: InventoryStoreProps
 ) => selector(state.sheet);
 
+/* eslint-disable jsdoc/require-jsdoc */
 type InventoryStoreSelector<Selection> = (
 	state: InventoryStoreProps
 ) => Selection;
 
-/**
- * @param s
- */
 export const selectCharacterDialogMode: InventoryStoreSelector<
 	CharacterDialogStateProps["mode"]
 > = (s) => s.ui.characterDialog.mode;
 
-/**
- * @param s
- */
 export const selectCharacterBeingEdited: InventoryStoreSelector<Character | null> = (
 	s
 ) => {
@@ -113,9 +95,6 @@ export const selectCharacterBeingEdited: InventoryStoreSelector<Character | null
 	return s.sheet.characters.find(hasId(idOfCharacterBeingEdited)) ?? null;
 };
 
-/**
- * @param characterId
- */
 export const selectCharacterCarriedItems = (
 	characterId: string
 ): InventoryStoreSelector<Item[]> =>
@@ -123,119 +102,28 @@ export const selectCharacterCarriedItems = (
 		sheet.items.filter((item) => item.carriedByCharacterId === characterId)
 	);
 
-/* ---------------------------------- */
-/*               Actions              */
-/* ---------------------------------- */
-
-type InventoryStoreAddItemAction = {
-	type: "add-item";
-	payload: ClientItemCreationInput;
+export const selectItemsCarriedByCharacterBeingEdited: InventoryStoreSelector<
+	Item[]
+> = (state) => {
+	const characterBeingEdited = selectCharacterBeingEdited(state);
+	const items = selectCharacterCarriedItems(characterBeingEdited?.id ?? "")(
+		state
+	);
+	return items;
 };
-type ResolvedInventoryStoreAddItemAction = ResolvedActionFromUnresolved<
-	InventoryStoreAddItemAction,
-	Item
->;
 
-type InventoryStoreUpdateItemAction = PayloadAction<
-	"update-item",
-	{
-		itemId: string;
-		updateData: Partial<ClientItemCreationInput>;
-	}
->;
-type ResolvedInventoryStoreUpdateItemAction = ResolvedActionFromUnresolved<
-	InventoryStoreUpdateItemAction,
-	{
-		itemId: string;
-		updateData: Except<
-			Partial<ItemCreationInput> & Pick<ItemCreationInput, "sheetId">,
-			"id"
-		>;
-	}
->;
+export const selectCharacters: InventoryStoreSelector<Character[]> = fromSheet(
+	(sheet) => sheet.characters
+);
 
-type InventoryStoreRemoveItemAction = PayloadAction<
-	"remove-item",
-	{
-		itemId: string;
-	}
->;
-type ResolvedInventoryStoreRemoveItemAction = ResolvedActionFromUnresolved<
-	InventoryStoreRemoveItemAction,
-	InventoryStoreRemoveItemAction["payload"]
->;
-
-type InventoryStoreSetSheetAction = PayloadAction<"set-sheet", FullSheet>;
-type ResolvedInventoryStoreSetSheetAction = ResolvedActionFromUnresolved<
-	InventoryStoreSetSheetAction,
-	FullSheet
->;
-
-type InventoryStoreSetSheetNameAction = PayloadAction<"set-sheet-name", string>;
-type ResolvedInventoryStoreSetSheetNameAction = ResolvedActionFromUnresolved<
-	InventoryStoreSetSheetNameAction,
-	InventoryStoreSetSheetNameAction["payload"]
->;
-
-type InventoryStoreCreateCharacterAction = PayloadAction<
-	"add-character",
-	ClientCharacterCreationInput
->;
-type ResolvedInventoryStoreCreateCharacterAction = ResolvedActionFromUnresolved<
-	InventoryStoreCreateCharacterAction,
-	Character
->;
-
-type InventoryStoreOpenCharacterEditDialogAction = PayloadAction<
-	"ui.open-character-edit-dialog",
-	{
-		characterId: string;
-	}
->;
-type ResolvedInventoryStoreOpenCharacterEditDialogAction = SimpleResolvedActionFromUnresolvedWithPayload<InventoryStoreOpenCharacterEditDialogAction>;
-
-type InventoryStoreCloseCharacterDialogAction = Action<"ui.close-character-dialog">;
-type ResolvedInventoryStoreCloseCharacterDialogAction = ResolvedActionFromUnresolved<
-	InventoryStoreCloseCharacterDialogAction,
-	null
->;
-
-type InventoryStoreOpenNewCharacterDialogAction = Action<"ui.open-new-character-dialog">;
-type ResolvedInventoryStoreOpenNewCharacterDialogAction = ResolvedActionFromUnresolved<
-	InventoryStoreOpenNewCharacterDialogAction,
-	null
->;
-
-export type InventoryStoreAction =
-	| InventoryStoreAddItemAction
-	| InventoryStoreUpdateItemAction
-	| InventoryStoreRemoveItemAction
-	| InventoryStoreSetSheetAction
-	| InventoryStoreSetSheetNameAction
-	| InventoryStoreCreateCharacterAction
-	| z.infer<typeof characterDeletionActionSchema>
-	| z.infer<typeof characterUpdateActionSchema>
-	| InventoryStoreOpenCharacterEditDialogAction
-	| InventoryStoreCloseCharacterDialogAction
-	| InventoryStoreOpenNewCharacterDialogAction
-	| z.infer<typeof characterDialogHandleDeleteActionSchema>;
-
-export type ResolvedInventoryStoreAction =
-	| ResolvedInventoryStoreAddItemAction
-	| ResolvedInventoryStoreUpdateItemAction
-	| ResolvedInventoryStoreRemoveItemAction
-	| ResolvedInventoryStoreSetSheetAction
-	| ResolvedInventoryStoreSetSheetNameAction
-	| ResolvedInventoryStoreCreateCharacterAction
-	| z.infer<typeof resolvedCharacterDeletionActionSchema>
-	| z.infer<typeof resolvedCharacterUpdateActionSchema>
-	| ResolvedInventoryStoreOpenCharacterEditDialogAction
-	| ResolvedInventoryStoreCloseCharacterDialogAction
-	| ResolvedInventoryStoreOpenNewCharacterDialogAction
-	| z.infer<typeof resolvedCharacterDialogHandleDeleteActionSchema>;
+export const selectSheetName: InventoryStoreSelector<string> = fromSheet(
+	(s) => s.name
+);
+/* eslint-enable jsdoc/require-jsdoc */
+/* #endregion */
 
 export const useLastInventoryStoreAction = createState(() => ({
-	lastAction: null as ResolvedInventoryStoreAction | null,
+	lastAction: null as FinalInventoryStoreAction | null,
 }));
 
 const handleCharacterRemoval = (
@@ -279,62 +167,28 @@ const resolveInventoryAction = (
 	sheet: FullSheet,
 	action: InventoryStoreAction,
 	actionId = cuid()
-): ResolvedInventoryStoreAction => {
-	const withoutActionId = match<
-		typeof action,
-		Except<ResolvedInventoryStoreAction, "actionId">
+): FinalInventoryStoreAction => {
+	const resolvedPayload = match<
+		InventoryStoreAction,
+		| ExtractResolvedPayloadActions<ResolvedInventoryStoreAction>["resolvedPayload"]
+		| undefined
 	>(action)
-		.with({ type: "add-item" }, ({ payload }) => ({
-			type: "add-item",
-			payload: composeItem({ ...payload, sheetId: sheet.id }),
-		}))
-		.with({ type: "update-item" }, ({ payload }) => ({
-			type: "update-item",
-			payload: {
-				itemId: payload.itemId,
-				updateData: {
-					...payload.updateData,
-					sheetId: sheet.id,
-				},
-			},
-		}))
-		.with({ type: "add-character" }, ({ payload }) => ({
-			type: "add-character",
-			payload: composeCharacter({ ...payload, sheetId: sheet.id }),
-		}))
-		.with(
-			// This handles all actions that do not have a payload in their
-			// unresolved form
-			{
-				type: P.union(
-					"ui.close-character-dialog",
-					"ui.open-new-character-dialog",
-					"ui.handle-character-delete-button"
-				),
-			},
-			(action) => ({
-				...action,
-				payload: null,
-			})
+		.with({ type: "add-item" }, ({ payload }) =>
+			composeItem({ ...payload, sheetId: sheet.id })
 		)
-		.with(
-			{
-				type: P.union(
-					"set-sheet",
-					"set-sheet-name",
-					"remove-character",
-					"remove-item",
-					"ui.open-character-edit-dialog",
-					"update-character"
-				),
-			},
-			F.identity
+		.with({ type: "add-character" }, ({ payload }) =>
+			composeCharacter({ ...payload, sheetId: sheet.id })
 		)
-		.exhaustive();
+		.with({ type: "set-sheet-name" }, ({ payload }) => ({
+			sheetId: sheet.id,
+			newName: payload,
+		}))
+		.otherwise(() => undefined);
+	const baseResolvedAction = resolveSimpleAction(action, actionId);
 	return {
-		...withoutActionId,
-		actionId,
-	};
+		...baseResolvedAction,
+		...(resolvedPayload && { resolvedPayload }),
+	} as never;
 };
 
 const inventoryStoreReducer: Reducer<
@@ -342,9 +196,9 @@ const inventoryStoreReducer: Reducer<
 	InventoryStoreAction
 > = (prevState, action) =>
 	produce(prevState, (draftState) => {
-		const actionId = matchesSchema(withActionIdSchema, action)
-			? action.actionId
-			: undefined;
+		const actionId = matchesSchema(z.object({ id: z.string() }), action)
+			? action.id
+			: cuid();
 
 		const resolvedAction = resolveInventoryAction(
 			draftState.sheet,
@@ -353,98 +207,86 @@ const inventoryStoreReducer: Reducer<
 		);
 
 		// If this action has already been applied, do not continue
-		if (draftState.resolvedActionIds.includes(resolvedAction.actionId)) return;
+		if (draftState.resolvedActionIds.includes(resolvedAction.id)) return;
 
-		match(resolvedAction)
-			.with({ type: "add-item" }, ({ payload }) => {
-				draftState.sheet.items.push(payload);
-			})
-			.with({ type: "remove-item" }, ({ payload }) => {
-				draftState.sheet.items = rejectItemWithId<Item>(payload.itemId)(
-					draftState.sheet.items
-				);
-			})
-			.with({ type: "update-item" }, ({ payload }) => {
-				draftState.sheet.items = updateItemWithId<Item>(
-					payload.itemId,
-					D.merge(payload.updateData)
+		switch (resolvedAction.type) {
+			case "set-sheet":
+				draftState.sheet = resolvedAction.originalAction.payload as FullSheet;
+				break;
+			case "set-sheet-name":
+				draftState.sheet.name = resolvedAction.originalAction.payload;
+				break;
+			case "add-item":
+				draftState.sheet.items.push(resolvedAction.resolvedPayload as never);
+				break;
+			case "remove-item":
+				draftState.sheet.items = rejectItemWithId<Item>(
+					resolvedAction.originalAction.payload.itemId
 				)(draftState.sheet.items);
-			})
-			.with({ type: "remove-character" }, ({ payload }) => {
+				break;
+			case "update-item":
+				draftState.sheet.items = updateItemWithId<Item>(
+					resolvedAction.originalAction.payload.itemId,
+					D.merge(resolvedAction.originalAction.payload.data)
+				)(draftState.sheet.items);
+				break;
+			case "remove-character":
 				draftState.sheet = handleCharacterRemoval(
 					draftState.sheet,
-					payload.characterId,
-					payload.strategy
+					resolvedAction.originalAction.payload.characterId,
+					resolvedAction.originalAction.payload.strategy
 				);
-			})
-			.with({ type: "add-character" }, ({ payload }) => {
-				draftState.sheet.characters.push(payload);
-			})
-			.with(
-				{
-					type: "set-sheet",
-				},
-				({ payload }) => {
-					draftState.sheet = payload;
-				}
-			)
-			.with({ type: "set-sheet-name" }, ({ payload }) => {
-				draftState.sheet.name = payload;
-			})
-			.with({ type: "ui.open-character-edit-dialog" }, ({ payload }) => {
+				break;
+			case "add-character":
+				draftState.sheet.characters.push(resolvedAction.resolvedPayload);
+				break;
+			case "update-character":
+				draftState.sheet.characters = updateItemWithId<Character>(
+					resolvedAction.originalAction.payload.characterId,
+					D.merge(resolvedAction.originalAction.payload.data)
+				)(draftState.sheet.characters);
+				break;
+			case "ui.open-character-edit-dialog":
 				draftState.ui.characterDialog = {
 					mode: "edit",
 					data: {
-						characterId: payload.characterId,
-						subMode: "plain",
+						characterId: resolvedAction.originalAction.payload.characterId,
+						deleteModalIsOpen: false,
 					},
 				};
-			})
-			.with({ type: "ui.close-character-dialog" }, () => {
-				draftState.ui.characterDialog = {
-					mode: "closed",
-				};
-			})
-			.with({ type: "ui.open-new-character-dialog" }, () => {
+				break;
+			case "ui.open-new-character-dialog":
 				draftState.ui.characterDialog = {
 					mode: "new-character",
 				};
-			})
-			.with({ type: "ui.handle-character-delete-button" }, () => {
-				alert("Handling character delete button");
-				const characterBeingEdited = selectCharacterBeingEdited(draftState);
-				const itemsCarriedByCharacterBeingEdited = selectCharacterCarriedItems(
-					selectCharacterBeingEdited(draftState)?.id ?? ""
-				)(draftState);
+				break;
+			case "ui.close-character-dialog":
+				draftState.ui.characterDialog = {
+					mode: "closed",
+				};
+				break;
+			case "ui.handle-character-delete-button":
 				if (draftState.ui.characterDialog.mode === "edit") {
-					if (itemsCarriedByCharacterBeingEdited.length > 0) {
-						draftState.ui.characterDialog.data.subMode = "delete";
-						alert("Character Has Items");
-					} else {
-						// If character was not carrying any items, we can just remove them
-						draftState = inventoryStoreReducer(draftState, {
-							type: "remove-character",
-							payload: {
-								characterId: characterBeingEdited?.id ?? "",
-								strategy: {
-									type: "item-to-nobody",
-								},
-							},
-						});
-					}
+					draftState.ui.characterDialog.data.deleteModalIsOpen = true;
 				}
-			})
-			.with({ type: "update-character" }, ({ payload }) => {
-				draftState.sheet.characters = updateItemWithId<Character>(
-					payload.characterId,
-					D.merge(payload.data)
-				)(draftState.sheet.characters);
-			})
-			.exhaustive();
+				break;
+			case "ui.close-character-delete-confirm-dialog":
+				if (draftState.ui.characterDialog.mode === "edit") {
+					draftState.ui.characterDialog.data.deleteModalIsOpen = false;
+				}
+				break;
+			case "ui.open-sheet-name-dialog":
+				draftState.ui.sheetNameDialogIsOpen = true;
+				break;
+			case "ui.close-sheet-name-dialog":
+				draftState.ui.sheetNameDialogIsOpen = false;
+				break;
+			default:
+				// @ts-expect-error `resolvedAction` will be `never` if switch is exhaustive
+				resolvedAction.type;
+		}
 
-		// Mark that this action has been applied by pushing
-		// its id to the list of resolved action ids
-		draftState.resolvedActionIds.push(resolvedAction.actionId);
+		draftState.resolvedActionIds.push(resolvedAction.id);
 		useLastInventoryStoreAction.setState({
 			lastAction: resolvedAction,
 		});

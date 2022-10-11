@@ -1,6 +1,5 @@
 import {
 	selectCharacterBeingEdited,
-	selectCharacterDialogMode,
 	useInventoryStore,
 	useInventoryStoreDispatch,
 } from "$sheets/store";
@@ -21,15 +20,19 @@ import {
 	useUpdateEffect,
 } from "@chakra-ui/react";
 import { characterSchema } from "prisma/schemas/character";
-import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { D } from "@mobily/ts-belt";
+import { flow } from "@mobily/ts-belt";
+import CharacterConfirmDeleteDialog from "$sheets/components/Dialogs/CharacterConfirmDeleteDialog";
+import { useForm } from "$hook-form";
+import { createSchemaKeyHelperFunction } from "$root/utils";
 
 const characterDialogFormSchema = characterSchema.pick({
 	name: true,
 	carryCapacity: true,
 });
+
+const f = createSchemaKeyHelperFunction(characterDialogFormSchema);
 
 const useCharacterDialogModalProps = () =>
 	useInventoryStore((s) => ({
@@ -50,10 +53,8 @@ const useCharacterDialogFieldInitialValues = (): z.infer<
 	});
 
 const useCharacterDialogTitle = () =>
-	useInventoryStore((s) =>
-		selectCharacterDialogMode(s) === "edit"
-			? "Edit Character"
-			: "Create Character"
+	useInventoryStore(
+		flow(selectCharacterBeingEdited, (s) => s?.name ?? "Create Character")
 	);
 
 const formResolver = zodResolver(characterDialogFormSchema);
@@ -69,7 +70,7 @@ const CharacterDialog = () => {
 	const header = useCharacterDialogTitle();
 	const dialogState = useInventoryStore((s) => s.ui.characterDialog);
 
-	const { register, handleSubmit, setValue } = useForm({
+	const { register, handleSubmit, reset, formState } = useForm({
 		defaultValues,
 		resolver: formResolver,
 	});
@@ -95,60 +96,64 @@ const CharacterDialog = () => {
 
 	useUpdateEffect(() => {
 		// Whenever the modal is opened, set form values to the default values
-		D.mapWithKey(defaultValues, setValue);
+		reset(defaultValues);
 	}, [isOpen]);
 
 	return (
-		<Modal isOpen={isOpen} onClose={onClose}>
-			<ModalOverlay />
-			<ModalContent as="form" onSubmit={onSubmit}>
-				<ModalHeader>{header}</ModalHeader>
-				<ModalCloseButton />
+		<>
+			<Modal isOpen={isOpen} onClose={onClose}>
+				<ModalOverlay />
+				<ModalContent as="form" onSubmit={onSubmit}>
+					<ModalHeader>{header}</ModalHeader>
+					<ModalCloseButton />
 
-				<ModalBody>
-					<FormControl>
-						<FormLabel>Name</FormLabel>
-						<Input {...register("name")} />
-						<FormErrorMessage />
-					</FormControl>
-				</ModalBody>
+					<ModalBody>
+						<FormControl isInvalid={!!formState.errors.name}>
+							<FormLabel htmlFor={f("name")}>Name</FormLabel>
+							<Input id={f("name")} {...register("name")} />
+							<FormErrorMessage>
+								{formState.errors.name && formState.errors.name.message}
+							</FormErrorMessage>
+						</FormControl>
+					</ModalBody>
 
-				<ModalFooter justifyContent="space-between">
-					<HStack>
-						<Button
-							colorScheme="gray"
-							variant="ghost"
-							onClick={() =>
-								dispatch({
-									type: "ui.close-character-dialog",
-								})
-							}
-						>
-							Cancel
-						</Button>
-
-						{/* Delete Button */}
-						{dialogState.mode === "edit" && (
+					<ModalFooter justifyContent="space-between">
+						<HStack>
 							<Button
-								type="submit"
-								colorScheme="red"
+								colorScheme="gray"
 								variant="ghost"
 								onClick={() =>
 									dispatch({
-										type: "ui.handle-character-delete-button",
+										type: "ui.close-character-dialog",
 									})
 								}
 							>
-								Delete
+								Cancel
 							</Button>
-						)}
-					</HStack>
-					<Button type="submit" colorScheme="primary">
-						Save
-					</Button>
-				</ModalFooter>
-			</ModalContent>
-		</Modal>
+
+							{/* Delete Button */}
+							{dialogState.mode === "edit" && (
+								<Button
+									colorScheme="red"
+									variant="ghost"
+									onClick={() =>
+										dispatch({
+											type: "ui.handle-character-delete-button",
+										})
+									}
+								>
+									Delete
+								</Button>
+							)}
+						</HStack>
+						<Button type="submit" colorScheme="primary">
+							Save
+						</Button>
+					</ModalFooter>
+				</ModalContent>
+			</Modal>
+			<CharacterConfirmDeleteDialog />
+		</>
 	);
 };
 

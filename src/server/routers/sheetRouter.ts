@@ -1,5 +1,5 @@
-import { asResolvedActionSchema } from "$actions";
 import prisma from "$prisma";
+import { resolvedSetSheetNameActionSchema } from "$sheets/store/inventoryActions";
 import trpc from "$trpc";
 import { z } from "zod";
 
@@ -16,21 +16,14 @@ const sheetRouter = trpc.router({
 		})
 	),
 	setName: trpc.procedure
-		.input(
-			asResolvedActionSchema(
-				z.object({
-					sheetId: z.string(),
-					newName: z.string(),
-				})
-			)
-		)
+		.input(resolvedSetSheetNameActionSchema)
 		.mutation(async ({ input }) => {
 			await prisma.sheet.update({
 				where: {
-					id: input.payload.sheetId,
+					id: input.resolvedPayload.sheetId,
 				},
 				data: {
-					name: input.payload.newName,
+					name: input.resolvedPayload.newName,
 				},
 			});
 		}),

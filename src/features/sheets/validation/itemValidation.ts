@@ -11,7 +11,7 @@ const prepareNumericString = (val: unknown) =>
 const itemValidation = z
 	.object({
 		...itemSchema.shape,
-		name: itemSchema.shape.name.max(defaultFieldLength),
+		name: itemSchema.shape.name,
 		category: z.string().max(defaultFieldLength).optional().nullable(),
 		description: z.string().optional().nullable(),
 		quantity: z.preprocess(prepareNumericString, itemSchema.shape.quantity),

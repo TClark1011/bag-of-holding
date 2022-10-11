@@ -1,6 +1,6 @@
 import { Paragraph } from "$root/components";
 import { SheetDialog } from "$sheets/components";
-import { useSheetPageState } from "$sheets/store";
+import { useInventoryStoreDispatch, useSheetPageState } from "$sheets/store";
 import { Button, VStack, ModalBody, ModalFooter } from "@chakra-ui/react";
 
 /**
@@ -10,7 +10,8 @@ import { Button, VStack, ModalBody, ModalFooter } from "@chakra-ui/react";
  * @returns Component stuff
  */
 const WelcomeDialog: React.FC = () => {
-	const { closeDialog, openDialog } = useSheetPageState();
+	const { closeDialog } = useSheetPageState();
+	const dispatch = useInventoryStoreDispatch();
 
 	/**
 	 * Callback to execute when the close button is clicked. Closes
@@ -18,7 +19,9 @@ const WelcomeDialog: React.FC = () => {
 	 */
 	const closeButtonOnClick = () => {
 		closeDialog();
-		openDialog("sheetOptions");
+		dispatch({
+			type: "ui.open-sheet-name-dialog",
+		});
 	};
 	return (
 		<SheetDialog dialogType="welcome" header="Welcome!">

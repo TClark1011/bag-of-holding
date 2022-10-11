@@ -1,46 +1,51 @@
-import { asResolvedActionSchema } from "$actions";
 import prisma from "$prisma";
+import sheetRelatedProcedure from "$root/server/sheetRelatedProcedure";
+import {
+	deleteItemActionSchema,
+	resolvedCreateItemActionSchema,
+	updateItemActionSchema,
+} from "$sheets/store/inventoryActions";
 import trpc from "$trpc";
-import { itemSchema } from "@prisma/schemas";
-import { z } from "zod";
 
 const itemRouter = trpc.router({
-	create: trpc.procedure
-		.input(asResolvedActionSchema(itemSchema))
+	create: sheetRelatedProcedure
+		.input(resolvedCreateItemActionSchema)
 		.mutation(async ({ input }) => {
 			const item = await prisma.item.create({
-				data: input.payload,
+				data: input.resolvedPayload,
+			});
+
+			await prisma.sheet.update({
+				where: {
+					id: input.resolvedPayload.sheetId,
+				},
+				data: {},
 			});
 
 			return item;
 		}),
-	update: trpc.procedure
-		.input(
-			asResolvedActionSchema(
-				z.object({
-					itemId: z.string(),
-					updateData: itemSchema.partial(),
-				})
-			)
-		)
+	update: sheetRelatedProcedure
+		.input(updateItemActionSchema)
 		.mutation(async ({ input }) => {
 			const item = await prisma.item.update({
 				where: {
 					id: input.payload.itemId,
 				},
-				data: input.payload.updateData,
+				data: input.payload.data,
 			});
 
 			return item;
 		}),
-	delete: trpc.procedure
-		.input(asResolvedActionSchema(z.object({ itemId: z.string() })))
+	delete: sheetRelatedProcedure
+		.input(deleteItemActionSchema)
 		.mutation(async ({ input }) => {
-			await prisma.item.delete({
+			const result = await prisma.item.delete({
 				where: {
 					id: input.payload.itemId,
 				},
 			});
+
+			return result;
 		}),
 });
 

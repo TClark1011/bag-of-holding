@@ -10,9 +10,6 @@ import {
 	IconButton,
 	DarkMode,
 	LightMode,
-	Tag,
-	TagLabel,
-	TagLeftIcon,
 	Input,
 	HStack,
 } from "@chakra-ui/react";
@@ -37,18 +34,14 @@ import {
 	ItemDialog,
 } from "$sheets/components";
 import { testIdGeneratorFactory } from "$tests/utils/testUtils";
-import {
-	H3,
-	PartyMemberTagList,
-	ColorModeSwitch,
-	View,
-} from "$root/components";
+import { H3, ColorModeSwitch, View } from "$root/components";
 import { useOnMountEffect } from "$root/hooks";
 import { Sheet } from "@prisma/client";
 import { FullSheet } from "$sheets/types";
 import useSheetServerSync from "$sheets/hooks/useSheetServerSync";
 import CharacterDialog from "$sheets/components/Dialogs/CharacterDialog";
 import { D } from "@mobily/ts-belt";
+import SheetNameDialog from "$sheets/components/Dialogs/SheetNameDialog";
 
 const getTestId = testIdGeneratorFactory("SheetPage");
 
@@ -84,13 +77,11 @@ const SheetPage: React.FC<SheetPageProps> = ({
 	});
 	useSheetServerSync();
 
-	const { characters } = useInventoryStore(
-		fromSheet(D.selectKeys(["characters"]))
+	const { characters, name } = useInventoryStore(
+		fromSheet(D.selectKeys(["characters", "name"]))
 	);
 
-	const [{ items, name, id }, inventoryDispatch] = useInventoryReducer(
-		sheetFields
-	);
+	const [{ items, id }, inventoryDispatch] = useInventoryReducer(sheetFields);
 
 	useOnMountEffect(() => {
 		if (isNew) {
@@ -136,9 +127,13 @@ const SheetPage: React.FC<SheetPageProps> = ({
 										{/* Sheet Options Button */}
 										<IconButton
 											id="options-button"
-											aria-label="edit sheet settings"
+											aria-label="edit sheet name"
 											icon={<CreateOutlineIcon boxSize={6} />}
-											onClick={() => openDialog("sheetOptions")}
+											onClick={() =>
+												dispatch({
+													type: "ui.open-sheet-name-dialog",
+												})
+											}
 											variant="ghost"
 											isRound
 											data-testid={sheetPageTestIds.sheetOptionsButton}
@@ -172,19 +167,20 @@ const SheetPage: React.FC<SheetPageProps> = ({
 											{char.name}
 										</Button>
 									))}
+									<Button
+										size="xs"
+										colorScheme="gray"
+										color="gray.800"
+										onClick={() =>
+											dispatch({
+												type: "ui.open-new-character-dialog",
+											})
+										}
+										leftIcon={<AddIcon />}
+									>
+										Add Member
+									</Button>
 								</LightMode>
-								<Button
-									size="xs"
-									cursor="pointer"
-									onClick={() =>
-										dispatch({
-											type: "ui.open-new-character-dialog",
-										})
-									}
-									leftIcon={<AddIcon />}
-								>
-									Add Member
-								</Button>
 							</HStack>
 						</Box>
 						<Stack
@@ -264,6 +260,7 @@ const SheetPage: React.FC<SheetPageProps> = ({
 						<SheetOptionsDialog />
 						<WelcomeDialog />
 						<CharacterDialog />
+						<SheetNameDialog />
 					</main>
 				</Box>
 			</InventoryStateProvider>

@@ -1,3 +1,4 @@
+import { expectParam } from "$fp";
 import queries from "$root/hooks/queries";
 import {
 	fromSheet,
@@ -6,14 +7,31 @@ import {
 	useLastInventoryStoreAction,
 } from "$sheets/store";
 import { useStoreEffect } from "$zustand";
-import { D } from "@mobily/ts-belt";
-import { useEffect } from "react";
+import { D, flow } from "@mobily/ts-belt";
+import { Sheet } from "@prisma/client";
+import { isAfter } from "date-fns/fp";
+import { useCallback } from "react";
 import { match } from "ts-pattern";
+
+const useSheetUpdateIsNewerChecker = () => {
+	const localUpdatedAt = useInventoryStore(fromSheet((s) => s.updatedAt));
+
+	return useCallback(
+		flow(
+			expectParam<Sheet>(),
+			D.getUnsafe("updatedAt"),
+			isAfter(localUpdatedAt)
+		),
+		[localUpdatedAt]
+	);
+};
 
 /**
  * client state in sync with the server state
  */
 const useSheetServerSync = () => {
+	const dispatch = useInventoryStoreDispatch();
+
 	const createItemMutation = queries.item.create.useMutation();
 	const removeItemMutation = queries.item.delete.useMutation();
 	const updateItemMutation = queries.item.update.useMutation();
@@ -22,16 +40,18 @@ const useSheetServerSync = () => {
 	const deleteCharacterMutation = queries.character.delete.useMutation();
 	const updateCharacterMutation = queries.character.update.useMutation();
 
-	const sheetId = useInventoryStore(fromSheet(D.getUnsafe("id")));
-	const dispatch = useInventoryStoreDispatch();
+	const sheetId = useInventoryStore(fromSheet((s) => s.id));
+	const deriveIfSheetUpdateIsNewer = useSheetUpdateIsNewerChecker();
 
 	queries.sheet.getFull.useQuery(sheetId, {
 		onSuccess: (data) => {
-			if (!data) return;
-			dispatch({
-				type: "set-sheet",
-				payload: data,
-			});
+			if (data && deriveIfSheetUpdateIsNewer(data)) {
+				// Update state if the sheet has changed
+				dispatch({
+					type: "set-sheet",
+					payload: data,
+				});
+			}
 		},
 		enabled: ![
 			createItemMutation,
@@ -56,31 +76,25 @@ const useSheetServerSync = () => {
 				(action) => createItemMutation.mutate(action)
 			)
 			.with({ type: "remove-item" }, (action) =>
-				removeItemMutation.mutate(action)
+				removeItemMutation.mutate(action.originalAction)
 			)
 			.with(
 				{
 					type: "update-item",
 				},
-				(action) => updateItemMutation.mutate(action)
+				(action) => updateItemMutation.mutate(action.originalAction)
 			)
-			.with({ type: "set-sheet-name" }, ({ payload, actionId }) =>
-				setSheetNameMutation.mutate({
-					actionId: actionId,
-					payload: {
-						sheetId: sheetId,
-						newName: payload,
-					},
-				})
+			.with({ type: "set-sheet-name" }, (action) =>
+				setSheetNameMutation.mutate(action)
 			)
 			.with({ type: "add-character" }, (action) =>
 				addCharacterMutation.mutate(action)
 			)
 			.with({ type: "remove-character" }, (action) =>
-				deleteCharacterMutation.mutate(action)
+				deleteCharacterMutation.mutate(action.originalAction)
 			)
 			.with({ type: "update-character" }, (action) =>
-				updateCharacterMutation.mutate(action)
+				updateCharacterMutation.mutate(action.originalAction)
 			)
 			.otherwise(() => {});
 	});

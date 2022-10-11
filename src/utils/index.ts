@@ -16,3 +16,4 @@ export { default as toggleArrayItem } from "./toggleArrayItem";
 
 export * from "./entityHelpers";
 export * from "./logHelpers";
+export * from "./misc";

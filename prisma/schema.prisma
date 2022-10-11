@@ -11,6 +11,7 @@ generator schemas {
   modelCase     = "camelCase"
   modelSuffix   = "Schema"
   relationModel = false
+  imports       = "./zod-prisma-helpers"
 }
 
 datasource db {
@@ -21,14 +22,14 @@ datasource db {
 model Sheet {
   updatedAt  DateTime    @updatedAt
   id         String      @id @default(cuid())
-  name       String
+  name       String /// @zod.and(imports.nameField)
   characters Character[]
   items      Item[]
 }
 
 model Character {
   id            String @id @default(cuid())
-  name          String
+  name          String /// @zod.and(imports.nameField)
   carryCapacity Float  @default(0)
   carriedItems  Item[]
 
@@ -38,7 +39,7 @@ model Character {
 
 model Item {
   id            String  @id @default(cuid())
-  name          String
+  name          String /// @zod.and(imports.nameField)
   description   String?
   weight        Float?
   quantity      Float   @default(1)

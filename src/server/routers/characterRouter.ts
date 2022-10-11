@@ -1,25 +1,24 @@
-import { asResolvedActionSchema } from "$actions";
 import prisma from "$prisma";
+import sheetRelatedProcedure from "$root/server/sheetRelatedProcedure";
 import {
-	resolvedCharacterDeletionActionSchema,
-	resolvedCharacterUpdateActionSchema,
+	characterDeletionActionSchema,
+	characterUpdateActionSchema,
+	resolvedCharacterCreationActionSchema,
 } from "$sheets/store/inventoryActions";
 import trpc from "$trpc";
-import { characterSchema } from "prisma/schemas/character";
-import { z } from "zod";
 
 const characterRouter = trpc.router({
-	create: trpc.procedure
-		.input(asResolvedActionSchema(characterSchema))
+	create: sheetRelatedProcedure
+		.input(resolvedCharacterCreationActionSchema)
 		.mutation(async ({ input }) => {
 			const newCharacter = await prisma.character.create({
-				data: input.payload,
+				data: input.resolvedPayload,
 			});
 
 			return newCharacter;
 		}),
-	delete: trpc.procedure
-		.input(resolvedCharacterDeletionActionSchema)
+	delete: sheetRelatedProcedure
+		.input(characterDeletionActionSchema)
 		.mutation(async ({ input }) => {
 			switch (input.payload.strategy.type) {
 				case "item-to-nobody":
@@ -44,14 +43,16 @@ const characterRouter = trpc.router({
 					break;
 			}
 
-			await prisma.character.delete({
+			const deletedCharacter = await prisma.character.delete({
 				where: {
 					id: input.payload.characterId,
 				},
 			});
+
+			return deletedCharacter;
 		}),
-	update: trpc.procedure
-		.input(resolvedCharacterUpdateActionSchema)
+	update: sheetRelatedProcedure
+		.input(characterUpdateActionSchema)
 		.mutation(async ({ input }) => {
 			const updatedCharacter = await prisma.character.update({
 				where: {
