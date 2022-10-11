@@ -1,21 +1,6 @@
-import {
-	Box,
-	Center,
-	Divider,
-	Flex,
-	Heading,
-	SimpleGrid,
-	Stack,
-	Button,
-	IconButton,
-	DarkMode,
-	LightMode,
-	Input,
-	HStack,
-} from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 import { InventoryStateProvider } from "$sheets/providers";
 import { GetServerSideProps } from "next";
-import { AddIcon, CreateOutlineIcon, PencilIcon } from "chakra-ui-ionicons";
 import { appName } from "$root/constants";
 import { getUrlParam, getSheetLink } from "$root/utils";
 import {
@@ -27,14 +12,13 @@ import {
 } from "$sheets/store";
 import {
 	WelcomeDialog,
-	CharacterTotalsTable,
 	FilterDialog,
 	InventorySheetTable,
 	SheetOptionsDialog,
 	ItemDialog,
 } from "$sheets/components";
 import { testIdGeneratorFactory } from "$tests/utils/testUtils";
-import { H3, ColorModeSwitch, View } from "$root/components";
+import { View } from "$root/components";
 import { useOnMountEffect } from "$root/hooks";
 import { Sheet } from "@prisma/client";
 import { FullSheet } from "$sheets/types";
@@ -42,6 +26,9 @@ import useSheetServerSync from "$sheets/hooks/useSheetServerSync";
 import CharacterDialog from "$sheets/components/Dialogs/CharacterDialog";
 import { D } from "@mobily/ts-belt";
 import SheetNameDialog from "$sheets/components/Dialogs/SheetNameDialog";
+import SheetTopBar from "$sheets/components/SheetTopBar";
+import SheetActions from "$sheets/components/SheetActions";
+import CharacterTotals from "$sheets/components/CharacterTotals";
 
 const getTestId = testIdGeneratorFactory("SheetPage");
 
@@ -90,12 +77,7 @@ const SheetPage: React.FC<SheetPageProps> = ({
 		}
 	});
 
-	const {
-		openDialog,
-		searchbarValue,
-		searchbarOnChange,
-		resetFilters,
-	} = useSheetPageState();
+	const { openDialog } = useSheetPageState();
 
 	return (
 		<View
@@ -108,160 +90,23 @@ const SheetPage: React.FC<SheetPageProps> = ({
 				dispatch={inventoryDispatch}
 				state={{ items, characters, name, id }}
 			>
-				<Box>
-					<main>
-						{/* Top Bar */}
-						<Box
-							padding={2}
-							backgroundColor="gray.900"
-							color="gray.50"
-							boxShadow="lg"
-						>
-							<Flex justify="space-between" marginBottom="group">
-								<Flex>
-									{/* Sheet Title */}
-									<Heading marginRight={1} as="h2" id="sheet-title">
-										{name}
-									</Heading>
-									<DarkMode>
-										{/* Sheet Options Button */}
-										<IconButton
-											id="options-button"
-											aria-label="edit sheet name"
-											icon={<CreateOutlineIcon boxSize={6} />}
-											onClick={() =>
-												dispatch({
-													type: "ui.open-sheet-name-dialog",
-												})
-											}
-											variant="ghost"
-											isRound
-											data-testid={sheetPageTestIds.sheetOptionsButton}
-										/>
-									</DarkMode>
-								</Flex>
-								{/* Color Mode Switch */}
-								<ColorModeSwitch
-									useDarkModeColors
-									data-testid={sheetPageTestIds.colorModeButton}
-								/>
-							</Flex>
-							<HStack spacing="group">
-								<LightMode>
-									{characters.map((char) => (
-										<Button
-											size="xs"
-											color="gray.800"
-											colorScheme="gray"
-											key={char.id}
-											leftIcon={<PencilIcon />}
-											onClick={() => {
-												dispatch({
-													type: "ui.open-character-edit-dialog",
-													payload: {
-														characterId: char.id,
-													},
-												});
-											}}
-										>
-											{char.name}
-										</Button>
-									))}
-									<Button
-										size="xs"
-										colorScheme="gray"
-										color="gray.800"
-										onClick={() =>
-											dispatch({
-												type: "ui.open-new-character-dialog",
-											})
-										}
-										leftIcon={<AddIcon />}
-									>
-										Add Member
-									</Button>
-								</LightMode>
-							</HStack>
-						</Box>
-						<Stack
-							minHeight={16}
-							padding="group"
-							direction={["column-reverse", "column-reverse", "row"]}
-						>
-							<Box>
-								{/* Add new Item Button */}
-								<Button
-									data-testid="add-item-button"
-									colorScheme="primary"
-									onClick={() => openDialog("item.new")}
-									width="full"
-								>
-									Add New Item
-								</Button>
-							</Box>
-							<Box flexGrow={2}>
-								{/* Search Bar */}
-								<Input
-									width="full"
-									placeholder="Search"
-									onChange={searchbarOnChange}
-									value={searchbarValue}
-								/>
-								{/* NOTE: Updates may stutter in dev mode but is fine when built */}
-							</Box>
-							<Box>
-								<SimpleGrid columns={[2, 2, 2, 1]} gap="group">
-									{/* Reset Filters Button */}
-									<Button width="full" onClick={resetFilters}>
-										Reset Filters
-									</Button>
-									{/* Filter Options Dialog Button */}
-									<Button
-										width="full"
-										display={[
-											"inline-flex",
-											"inline-flex",
-											"inline-flex",
-											"none",
-										]}
-										onClick={() => openDialog("filter")}
-									>
-										Filters
-									</Button>
-								</SimpleGrid>
-							</Box>
-						</Stack>
-						<InventorySheetTable
-							onRowClick={(item) => openDialog("item.edit", item)}
-							marginBottom="break"
-						/>
-						<Flex width="full">
-							<Center flexGrow={1}>
-								<Divider />
-							</Center>
-							<H3
-								fontWeight="300"
-								flexShrink={1}
-								textAlign="center"
-								display="inline"
-								paddingX="break"
-							>
-								Party Member Totals
-							</H3>
-							<Center flexGrow={1}>
-								<Divider />
-							</Center>
-						</Flex>
-						<CharacterTotalsTable />
-						{/* Dialogs */}
-						<ItemDialog mode="new" />
-						<ItemDialog mode="edit" />
-						<FilterDialog />
-						<SheetOptionsDialog />
-						<WelcomeDialog />
-						<CharacterDialog />
-						<SheetNameDialog />
-					</main>
+				<Box as="main">
+					<SheetTopBar />
+					<SheetActions />
+					<InventorySheetTable
+						onRowClick={(item) => openDialog("item.edit", item)}
+						marginBottom="break"
+					/>
+					<CharacterTotals />
+
+					{/* Dialogs */}
+					<ItemDialog mode="new" />
+					<ItemDialog mode="edit" />
+					<FilterDialog />
+					<SheetOptionsDialog />
+					<WelcomeDialog />
+					<CharacterDialog />
+					<SheetNameDialog />
 				</Box>
 			</InventoryStateProvider>
 		</View>
