@@ -16,9 +16,12 @@ import {
 import { BookOutlineIcon, FilterOutlineIcon } from "chakra-ui-ionicons";
 import { getItemTotalValue, getItemTotalWeight } from "$sheets/utils";
 import { testIdGeneratorFactory } from "$tests/utils/testUtils";
-import { FilterableItemProperty, ProcessableItemProperty } from "$sheets/types";
-import { useInventoryStore, useSheetPageState } from "$sheets/store";
-import { useInventoryState } from "$sheets/providers";
+import { ProcessableItemProperty } from "$sheets/types";
+import {
+	selectVisibleItems,
+	useInventoryStore,
+	useSheetPageState,
+} from "$sheets/store";
 import {
 	NumericAscendingSortIcon,
 	NumericDescendingSortIcon,
@@ -30,6 +33,8 @@ import { TableFilter, PartyMemberData } from "$sheets/components";
 import { SortingDirection } from "$root/types";
 import { Item } from "@prisma/client";
 import { isUrl } from "$root/utils";
+import { matchesSchema } from "$zod-helpers";
+import { filterableItemPropertySchema } from "$extra-schemas";
 
 const getTestId = testIdGeneratorFactory("InventoryTable");
 
@@ -50,11 +55,6 @@ const col6Display = ["none", "none", "none", "table-cell"];
 export interface InventorySheetTableProps extends TableProps {
 	onRowClick: (item?: Item) => void;
 }
-
-const filterableProperties: FilterableItemProperty[] = [
-	"carriedByCharacterId",
-	"category",
-];
 
 const numericProperties: ProcessableItemProperty[] = [
 	"quantity",
@@ -88,11 +88,6 @@ const determineIconSet = (property: ProcessableItemProperty) =>
 		? numericSortingIconSet
 		: defaultSortingIconSet;
 
-const determineIfPropertyIsFilterable = (
-	property: ProcessableItemProperty
-): property is FilterableItemProperty =>
-	filterableProperties.includes(property as any);
-
 /**
  * A component to be used as the column headers
  *
@@ -119,7 +114,7 @@ const TableHeader: React.FC<
 	} = useSheetPageState();
 
 	const sortingIcons = determineIconSet(property);
-	const isFilterable = determineIfPropertyIsFilterable(property);
+	const isFilterable = matchesSchema(filterableItemPropertySchema, property);
 	const isBeingSorted = sorting.property === property;
 	const filterPopoverIsOpen = isFilterable && isFilterPopoverOpen(property);
 
@@ -172,16 +167,10 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 	...props
 }) => {
 	const hoverBg = useColorModeValue("gray.100", "gray.700");
-	//? Color to use for background of row items that are hovered
 
-	//? Destructure after initializer so that full state object can be easily passed to selectors
-
-	const { getProcessedItems, getColumnSums } = useSheetPageState();
-
-	const { items, characters } = useInventoryState();
-	// const processedItems = getProcessedItems(items, characters);
-	const processedItems = useInventoryStore(s => s.sheet.items);
-	const columnSums = getColumnSums(items);
+	const { getColumnSums } = useSheetPageState();
+	const processedItems = useInventoryStore(selectVisibleItems);
+	const columnSums = getColumnSums(processedItems);
 
 	return (
 		<Table

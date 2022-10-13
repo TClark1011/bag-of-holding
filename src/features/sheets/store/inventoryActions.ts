@@ -4,7 +4,11 @@ import {
 	payloadActionSchema,
 	staticResolvedActionSchemaFields,
 } from "$actions";
-import { fullSheetSchema, itemCreationSchema } from "$extra-schemas";
+import {
+	filterableItemPropertySchema,
+	fullSheetSchema,
+	itemCreationSchema,
+} from "$extra-schemas";
 import { characterSchema, itemSchema } from "@prisma/schemas";
 import { z } from "zod";
 
@@ -131,19 +135,42 @@ export const openCharacterEditDialogAction = payloadActionSchema(
 	})
 );
 
-export const closeCharacterDialogAction = actionSchema(
+export const closeCharacterDialogActionSchema = actionSchema(
 	"ui.close-character-dialog"
 );
 
-export const openNewCharacterDialogAction = actionSchema(
+export const openNewCharacterDialogActionSchema = actionSchema(
 	"ui.open-new-character-dialog"
 );
 
-export const openSheetNameDialogAction = actionSchema(
+export const openSheetNameDialogActionSchema = actionSchema(
 	"ui.open-sheet-name-dialog"
 );
-export const closeSheetNameDialogAction = actionSchema(
+export const closeSheetNameDialogActionSchema = actionSchema(
 	"ui.close-sheet-name-dialog"
+);
+
+export const toggleFilterActionSchema = payloadActionSchema(
+	"ui.toggle-filter",
+	z.object({
+		property: filterableItemPropertySchema,
+		value: z.string().or(z.null()),
+	})
+);
+
+export const invertPropertyFilterActionSchema = payloadActionSchema(
+	"ui.invert-filter",
+	filterableItemPropertySchema
+);
+
+export const clearPropertyFilterActionSchema = payloadActionSchema(
+	"ui.clear-filter",
+	filterableItemPropertySchema
+);
+
+export const resetPropertyFilterActionSchema = payloadActionSchema(
+	"ui.reset-filter",
+	filterableItemPropertySchema
 );
 
 /* #endregion */
@@ -158,12 +185,16 @@ export type InventoryStoreAction =
 	| z.infer<typeof characterDeletionActionSchema>
 	| z.infer<typeof characterUpdateActionSchema>
 	| z.infer<typeof openCharacterEditDialogAction>
-	| z.infer<typeof closeCharacterDialogAction>
-	| z.infer<typeof openNewCharacterDialogAction>
+	| z.infer<typeof closeCharacterDialogActionSchema>
+	| z.infer<typeof openNewCharacterDialogActionSchema>
 	| z.infer<typeof characterDialogHandleDeleteActionSchema>
 	| z.infer<typeof closeCharacterDeleteConfirmDialogActionSchema>
-	| z.infer<typeof openSheetNameDialogAction>
-	| z.infer<typeof closeSheetNameDialogAction>;
+	| z.infer<typeof openSheetNameDialogActionSchema>
+	| z.infer<typeof closeSheetNameDialogActionSchema>
+	| z.infer<typeof toggleFilterActionSchema>
+	| z.infer<typeof invertPropertyFilterActionSchema>
+	| z.infer<typeof clearPropertyFilterActionSchema>
+	| z.infer<typeof resetPropertyFilterActionSchema>;
 
 export type ResolvedInventoryStoreAction =
 	| z.infer<typeof resolvedSetSheetNameActionSchema>

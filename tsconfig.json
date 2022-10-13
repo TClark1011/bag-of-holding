@@ -1,9 +1,8 @@
 {
 	"compilerOptions": {
-		"target": "es5",
+		"target": "es2015",
 		"module": "esnext",
 		"lib": ["dom", "dom.iterable", "esnext"],
-		"allowJs": true,
 		"skipLibCheck": true,
 		"strict": true,
 		"forceConsistentCasingInFileNames": true,
@@ -22,14 +21,13 @@
 			"@prisma/schemas": ["prisma/schemas"]
 		}
 	},
-	"include": ["next-env.d.ts", "src/**/*", "prisma/**/*", "tests/**/*"],
-	"exclude": ["node_modules", "prisma/schemas"],
-
+	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+	"exclude": ["node_modules"],
 	"ts-node": {
 		"require": ["tsconfig-paths/register", "./scripts/loadEnv.ts"],
 		"compilerOptions": {
 			"module": "CommonJS",
-			"resolveJsonModule": true
+			"resolveJsonModule": true,
 		}
 	}
 }

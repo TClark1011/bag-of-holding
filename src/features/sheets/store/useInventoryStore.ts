@@ -1,6 +1,11 @@
 /* eslint-disable jsdoc/require-jsdoc */
 import { ExtractResolvedPayloadActions, resolveSimpleAction } from "$actions";
-import { rejectItemWithId, updateItemWithId } from "$root/utils";
+import {
+	arrayDiff,
+	rejectItemWithId,
+	toggleArrayItem,
+	updateItemWithId,
+} from "$root/utils";
 import { CharacterRemovalStrategy, FullSheet } from "$sheets/types";
 import { itemIsCarriedByCharacterId } from "$sheets/utils";
 import {
@@ -22,6 +27,11 @@ import {
 	InventoryStoreAction,
 	ResolvedInventoryStoreAction,
 } from "$sheets/store/inventoryActions";
+import { FilterableItemProperty } from "$extra-schemas";
+import {
+	selectEffectivePropertyFilter,
+	selectAllPossibleFilterValuesOnProperty,
+} from "$sheets/store/inventorySelectors";
 
 export type CharacterDialogStateProps =
 	| {
@@ -38,14 +48,18 @@ export type CharacterDialogStateProps =
 			mode: "new-character";
 	  };
 
+export type FiltersState = Record<
+	FilterableItemProperty,
+	(string | null)[] | null
+>;
+
 export type InventoryStoreProps = {
 	sheet: FullSheet;
 	resolvedActionIds: string[];
 	ui: {
 		characterDialog: CharacterDialogStateProps;
 		sheetNameDialogIsOpen: boolean;
-		carriedByFilter: string[];
-		categoryFilter: string[];
+		filters: FiltersState;
 	};
 };
 
@@ -63,8 +77,10 @@ const initialInventoryStoreState: InventoryStoreProps = {
 			mode: "closed",
 		},
 		sheetNameDialogIsOpen: false,
-		carriedByFilter: [],
-		categoryFilter: [],
+		filters: {
+			carriedByCharacterId: null,
+			category: null,
+		},
 	},
 };
 
@@ -226,6 +242,35 @@ const inventoryStoreReducer: Reducer<
 				break;
 			case "ui.close-sheet-name-dialog":
 				draftState.ui.sheetNameDialogIsOpen = false;
+				break;
+			case "ui.toggle-filter":
+				draftState.ui.filters[
+					resolvedAction.originalAction.payload.property
+				] = toggleArrayItem(
+					selectEffectivePropertyFilter(
+						resolvedAction.originalAction.payload.property
+					)(draftState),
+					resolvedAction.originalAction.payload.value
+				);
+				break;
+			case "ui.invert-filter":
+				draftState.ui.filters[
+					resolvedAction.originalAction.payload
+				] = arrayDiff(
+					draftState.ui.filters[resolvedAction.originalAction.payload] ??
+						selectAllPossibleFilterValuesOnProperty(
+							resolvedAction.originalAction.payload
+						)(draftState),
+					selectAllPossibleFilterValuesOnProperty(
+						resolvedAction.originalAction.payload
+					)(draftState)
+				);
+				break;
+			case "ui.clear-filter":
+				draftState.ui.filters[resolvedAction.originalAction.payload] = [];
+				break;
+			case "ui.reset-filter":
+				draftState.ui.filters[resolvedAction.originalAction.payload] = null;
 				break;
 			default:
 				// @ts-expect-error `resolvedAction` will be `never` if switch is exhaustive
