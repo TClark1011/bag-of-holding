@@ -20,6 +20,7 @@ import { ProcessableItemProperty } from "$sheets/types";
 import {
 	selectVisibleItems,
 	useInventoryStore,
+	useInventoryStoreDispatch,
 	useSheetPageState,
 } from "$sheets/store";
 import {
@@ -34,7 +35,10 @@ import { SortingDirection } from "$root/types";
 import { Item } from "@prisma/client";
 import { isUrl } from "$root/utils";
 import { matchesSchema } from "$zod-helpers";
-import { filterableItemPropertySchema } from "$extra-schemas";
+import {
+	filterableItemPropertySchema,
+	sortableItemPropertySchema,
+} from "$extra-schemas";
 
 const getTestId = testIdGeneratorFactory("InventoryTable");
 
@@ -106,19 +110,27 @@ const TableHeader: React.FC<
 	}
 > = ({ property, children, ...props }) => {
 	const {
-		sorting,
-		sortInventory,
 		closeFilterPopover,
 		openFilterPopover,
 		isFilterPopoverOpen,
 	} = useSheetPageState();
+	const dispatch = useInventoryStoreDispatch();
 
+	const sorting = useInventoryStore((s) => s.ui.sorting);
 	const sortingIcons = determineIconSet(property);
 	const isFilterable = matchesSchema(filterableItemPropertySchema, property);
-	const isBeingSorted = sorting.property === property;
+	const isBeingSorted = sorting?.property === property;
 	const filterPopoverIsOpen = isFilterable && isFilterPopoverOpen(property);
 
-	const onSort = () => sortInventory(property);
+	const onSort = () => {
+		if (matchesSchema(sortableItemPropertySchema, property)) {
+			dispatch({
+				type: "ui.toggle-sort",
+				payload: property,
+			});
+		}
+	};
+
 	const onPopoverOpen = () => isFilterable && openFilterPopover(property);
 
 	return (

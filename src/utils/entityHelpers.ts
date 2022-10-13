@@ -29,7 +29,9 @@ export const updateItemWithId = <Entity extends { id: string }>(
 		entities.map(F.when(hasId(targetId), updater));
 
 /**
- * @param targetId
+ * Remove the item(s) from an array that has a specified id
+ *
+ * @param targetId The id to target
  */
 export const rejectItemWithId = <Entity extends { id: string }>(
 	targetId: string

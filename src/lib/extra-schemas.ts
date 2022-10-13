@@ -43,3 +43,16 @@ export type FullSheetEntityProperty = z.infer<
 export type GetEntityByProperty<
 	EntityName extends FullSheetEntityProperty
 > = FullSheet[EntityName][number];
+
+export const sortableItemPropertySchema = itemSchema
+	.pick({
+		category: true,
+		carriedByCharacterId: true,
+		name: true,
+		weight: true,
+		value: true,
+		quantity: true,
+	})
+	.keyof();
+
+export type SortableItemProperty = z.infer<typeof sortableItemPropertySchema>;

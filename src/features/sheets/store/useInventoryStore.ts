@@ -27,11 +27,12 @@ import {
 	InventoryStoreAction,
 	ResolvedInventoryStoreAction,
 } from "$sheets/store/inventoryActions";
-import { FilterableItemProperty } from "$extra-schemas";
+import { FilterableItemProperty, SortableItemProperty } from "$extra-schemas";
 import {
 	selectEffectivePropertyFilter,
 	selectAllPossibleFilterValuesOnProperty,
 } from "$sheets/store/inventorySelectors";
+import { SortingDirection } from "$root/types";
 
 export type CharacterDialogStateProps =
 	| {
@@ -60,6 +61,10 @@ export type InventoryStoreProps = {
 		characterDialog: CharacterDialogStateProps;
 		sheetNameDialogIsOpen: boolean;
 		filters: FiltersState;
+		sorting: null | {
+			property: SortableItemProperty;
+			direction: SortingDirection;
+		};
 	};
 };
 
@@ -81,6 +86,7 @@ const initialInventoryStoreState: InventoryStoreProps = {
 			carriedByCharacterId: null,
 			category: null,
 		},
+		sorting: null,
 	},
 };
 
@@ -271,6 +277,26 @@ const inventoryStoreReducer: Reducer<
 				break;
 			case "ui.reset-filter":
 				draftState.ui.filters[resolvedAction.originalAction.payload] = null;
+				break;
+			case "ui.toggle-sort":
+				if (
+					draftState.ui.sorting &&
+					draftState.ui.sorting.property ===
+						resolvedAction.originalAction.payload
+				) {
+					// If the targeted property is already being sorted...
+					if (draftState.ui.sorting.direction === "descending") {
+						draftState.ui.sorting.direction = "ascending"; // Set it to ascending if it was descending
+					} else if (draftState.ui.sorting.direction === "ascending") {
+						draftState.ui.sorting = null; // If it was ascending, remove the sorting
+					}
+				} else {
+					// If a new proeprty is being sorted by
+					draftState.ui.sorting = {
+						direction: "descending",
+						property: resolvedAction.originalAction.payload,
+					};
+				}
 				break;
 			default:
 				// @ts-expect-error `resolvedAction` will be `never` if switch is exhaustive

@@ -8,6 +8,7 @@ import {
 	filterableItemPropertySchema,
 	fullSheetSchema,
 	itemCreationSchema,
+	sortableItemPropertySchema,
 } from "$extra-schemas";
 import { characterSchema, itemSchema } from "@prisma/schemas";
 import { z } from "zod";
@@ -173,6 +174,11 @@ export const resetPropertyFilterActionSchema = payloadActionSchema(
 	filterableItemPropertySchema
 );
 
+export const toggleSortActionSchema = payloadActionSchema(
+	"ui.toggle-sort",
+	sortableItemPropertySchema
+);
+
 /* #endregion */
 
 export type InventoryStoreAction =
@@ -194,7 +200,8 @@ export type InventoryStoreAction =
 	| z.infer<typeof toggleFilterActionSchema>
 	| z.infer<typeof invertPropertyFilterActionSchema>
 	| z.infer<typeof clearPropertyFilterActionSchema>
-	| z.infer<typeof resetPropertyFilterActionSchema>;
+	| z.infer<typeof resetPropertyFilterActionSchema>
+	| z.infer<typeof toggleSortActionSchema>;
 
 export type ResolvedInventoryStoreAction =
 	| z.infer<typeof resolvedSetSheetNameActionSchema>

@@ -2,6 +2,7 @@ import {
 	FilterableItemProperty,
 	FullSheetEntityProperty,
 	GetEntityByProperty,
+	SortableItemProperty,
 } from "$extra-schemas";
 import { findObjectWithId, getUniqueValuesOf, hasId } from "$root/utils";
 import {
@@ -11,6 +12,7 @@ import {
 import { FullSheet } from "$sheets/types";
 import { A, D, F, flow, pipe } from "@mobily/ts-belt";
 import { Character, Item } from "@prisma/client";
+import Big from "big.js";
 import { match } from "ts-pattern";
 
 export type InventoryStoreSelector<Selection> = (
@@ -139,6 +141,21 @@ export const selectEffectivePropertyFilter = (
 	return actualFilter;
 };
 
+const propertySorters: Record<
+	SortableItemProperty,
+	(sheet: FullSheet) => (item: Item) => any
+> = {
+	carriedByCharacterId: (sheet) => (item) =>
+		sheet.items.find(hasId(item.id))?.name ?? "",
+	name: () => D.getUnsafe("name"),
+	category: () => D.getUnsafe("category"),
+	weight: () => ({ weight, quantity }) =>
+		new Big(weight ?? 0).times(quantity).toNumber(),
+	value: () => ({ value, quantity }) =>
+		new Big(value ?? 0).times(quantity).toNumber(),
+	quantity: () => D.getUnsafe("quantity"),
+};
+
 /**
  * Select items that match the given filters and have been sorted
  *
@@ -158,5 +175,14 @@ export const selectVisibleItems: InventoryStoreSelector<Item[]> = (state) =>
 						item.category ?? ""
 					)
 			)
-		)
+		),
+		(items) =>
+			state.ui.sorting
+				? A.sortBy(
+					items,
+					propertySorters[state.ui.sorting.property](state.sheet)
+				  )
+				: items,
+		(items) =>
+			state.ui.sorting?.direction === "ascending" ? items : A.reverse(items)
 	);

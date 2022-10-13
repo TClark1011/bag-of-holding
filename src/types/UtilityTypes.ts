@@ -1,12 +1,8 @@
 import { useEffect } from "react";
 
-export type IdentifiedObject =
-	| {
-			id: string;
-	  }
-	| {
-			id: string;
-	  };
+export type IdentifiedObject = {
+	id: string;
+};
 
 export type OmitId<T extends IdentifiedObject> = Omit<T, "id" | "id">;
 

@@ -1,33 +1,56 @@
 {
-	"compilerOptions": {
-		"target": "es2015",
-		"module": "esnext",
-		"lib": ["dom", "dom.iterable", "esnext"],
-		"skipLibCheck": true,
-		"strict": true,
-		"forceConsistentCasingInFileNames": true,
-		"noEmit": true,
-		"esModuleInterop": true,
-		"moduleResolution": "node",
-		"resolveJsonModule": true,
-		"isolatedModules": true,
-		"jsx": "preserve",
-		"incremental": true,
-		"baseUrl": ".",
-		"paths": {
-			"$tests/*": ["./tests/*"],
-			"$*": ["./src/features/*", "./src/lib/*"],
-			"$root/*": ["./src/*"],
-			"@prisma/schemas": ["prisma/schemas"]
-		}
-	},
-	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
-	"exclude": ["node_modules"],
-	"ts-node": {
-		"require": ["tsconfig-paths/register", "./scripts/loadEnv.ts"],
-		"compilerOptions": {
-			"module": "CommonJS",
-			"resolveJsonModule": true,
-		}
-	}
+  "compilerOptions": {
+    "target": "es2015",
+    "module": "esnext",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "skipLibCheck": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "baseUrl": ".",
+    "paths": {
+      "$tests/*": [
+        "./tests/*"
+      ],
+      "$*": [
+        "./src/features/*",
+        "./src/lib/*"
+      ],
+      "$root/*": [
+        "./src/*"
+      ],
+      "@prisma/schemas": [
+        "prisma/schemas"
+      ]
+    },
+    "allowJs": true
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules"
+  ],
+  "ts-node": {
+    "require": [
+      "tsconfig-paths/register",
+      "./scripts/loadEnv.ts"
+    ],
+    "compilerOptions": {
+      "module": "CommonJS",
+      "resolveJsonModule": true
+    }
+  }
 }
