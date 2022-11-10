@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.3.0](https://github.com/TClark1011/bag-of-holding/compare/v1.2.8...v1.3.0) (2022-11-10)
+
+
+### Features
+
+* **frontend:** 🎸 increase description, reference field limits ([c1e5d43](https://github.com/TClark1011/bag-of-holding/commit/c1e5d43ceaa162ab526579c2f9b0692a866c2343))
+
 ### [1.2.8](https://github.com/TClark1011/bag-of-holding/compare/v1.2.7...v1.2.8) (2022-09-28)
 
 
