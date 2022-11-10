@@ -2,8 +2,8 @@ import { defaultFieldLength } from "$root/constants";
 import { itemSchema } from "@prisma/schemas";
 import { z } from "zod";
 
-export const descriptionLength = 400;
-export const referenceLength = 100;
+export const descriptionLength = 4000;
+export const referenceLength = 200;
 
 const prepareNumericString = (val: unknown) =>
 	val === null ? val : Number(val);
