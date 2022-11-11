@@ -1,6 +1,7 @@
 import {
 	actionSchema,
 	FinalActions,
+	PayloadAction,
 	payloadActionSchema,
 	staticResolvedActionSchemaFields,
 } from "$actions";
@@ -10,6 +11,7 @@ import {
 	itemCreationSchema,
 	sortableItemPropertySchema,
 } from "$extra-schemas";
+import { Item } from "@prisma/client";
 import { characterSchema, itemSchema } from "@prisma/schemas";
 import { z } from "zod";
 
@@ -90,20 +92,6 @@ export const resolvedCharacterCreationActionSchema = staticResolvedActionSchemaF
 
 /* #endregion */
 
-/* #region  Item Actions */
-export const createItemActionSchema = payloadActionSchema(
-	"add-item",
-	itemCreationSchema
-);
-
-export const resolvedCreateItemActionSchema = staticResolvedActionSchemaFields.extend(
-	{
-		type: createItemActionSchema.shape.type,
-		originalAction: createItemActionSchema,
-		resolvedPayload: itemSchema,
-	}
-);
-
 export const updateItemActionSchema = payloadActionSchema(
 	"update-item",
 	z.object({
@@ -179,10 +167,25 @@ export const toggleSortActionSchema = payloadActionSchema(
 	sortableItemPropertySchema
 );
 
+export const openFilterMenuActionSchema = payloadActionSchema(
+	"ui.open-filter-menu",
+	filterableItemPropertySchema
+);
+export const closeFilterMenuActionSchema = actionSchema("ui.close-filter-menu");
+
+export const openNewItemDialogActionSchema = actionSchema(
+	"ui.open-new-item-dialog"
+);
+export const openItemEditDialogActionSchema = payloadActionSchema(
+	"ui.open-item-edit-dialog",
+	z.string()
+);
+export const closeItemDialogActionSchema = actionSchema("ui.close-item-dialog");
+
 /* #endregion */
 
 export type InventoryStoreAction =
-	| z.infer<typeof createItemActionSchema>
+	| PayloadAction<"add-item", Omit<Item, "id">>
 	| z.infer<typeof updateItemActionSchema>
 	| z.infer<typeof deleteItemActionSchema>
 	| z.infer<typeof setSheetActionSchema>
@@ -201,11 +204,15 @@ export type InventoryStoreAction =
 	| z.infer<typeof invertPropertyFilterActionSchema>
 	| z.infer<typeof clearPropertyFilterActionSchema>
 	| z.infer<typeof resetPropertyFilterActionSchema>
-	| z.infer<typeof toggleSortActionSchema>;
+	| z.infer<typeof toggleSortActionSchema>
+	| z.infer<typeof openFilterMenuActionSchema>
+	| z.infer<typeof closeFilterMenuActionSchema>
+	| z.infer<typeof openNewItemDialogActionSchema>
+	| z.infer<typeof openItemEditDialogActionSchema>
+	| z.infer<typeof closeItemDialogActionSchema>;
 
 export type ResolvedInventoryStoreAction =
 	| z.infer<typeof resolvedSetSheetNameActionSchema>
-	| z.infer<typeof resolvedCreateItemActionSchema>
 	| z.infer<typeof resolvedCharacterCreationActionSchema>;
 
 export type FinalInventoryStoreAction = FinalActions<

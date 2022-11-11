@@ -10,6 +10,6 @@ export * from "react-hook-form";
  */
 export const useForm: typeof useBaseForm = (options) =>
 	useBaseForm({
-		mode: "onBlur",
+		mode: "onTouched",
 		...options,
 	});

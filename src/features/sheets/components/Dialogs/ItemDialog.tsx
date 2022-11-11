@@ -1,50 +1,119 @@
 import {
-	Button,
-	Box,
-	Flex,
-	List,
-	SimpleGrid,
-	VStack,
 	ModalBody,
+	useUpdateEffect,
+	Modal,
+	ModalOverlay,
+	ModalHeader,
+	ModalCloseButton,
+	ModalContent,
+	FormControl,
+	FormLabel,
+	FormErrorMessage,
+	Input,
+	Textarea,
+	Flex,
+	NumberInput,
+	NumberInputField,
+	NumberInputStepper,
+	NumberIncrementStepper,
+	NumberDecrementStepper,
+	VStack,
+	Select,
+	Button,
 	ModalFooter,
 	useDisclosure,
 } from "@chakra-ui/react";
-import { Formik } from "formik";
 import {
-	InputControl,
-	NumberInputControl,
-	SelectControl,
-	TextareaControl,
-} from "formik-chakra-ui";
-import {
-	SheetDialogType,
+	InventoryStoreSelector,
+	selectCharacters,
+	selectItemBeingEdited,
+	useInventoryStore,
 	useInventoryStoreDispatch,
-	useSheetPageState,
+	useInventoryStoreState,
 } from "$sheets/store";
-import { SheetStateAction, ItemCreationFields } from "$sheets/types";
+import { A, D, flow, G } from "@mobily/ts-belt";
+import { itemCreationSchema } from "$extra-schemas";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { createSchemaKeyHelperFunction, _getUniqueValuesOf } from "$root/utils";
+import { z } from "zod";
+import { useForm } from "$hook-form";
+import { IterableElement, ValueOf } from "type-fest";
+import useRenderLogging from "$root/hooks/useRenderLogging";
 import {
-	useInventoryState,
-	useInventoryStateDispatch,
-} from "$sheets/providers";
-import { SheetDialog } from "$sheets/components";
-import {
-	itemValidation,
-	descriptionLength,
-	referenceLength,
-} from "$sheets/validation";
-import { defaultFieldLength } from "$root/constants";
-import { useMemo } from "react";
-import { ConfirmationDialog } from "$root/components";
-import { toFormikValidationSchema } from "zod-formik-adapter";
-import { G } from "@mobily/ts-belt";
+	useAddItemMutation,
+	useEditItemMutation,
+	useItemDeleteMutation,
+	useSheetPageId,
+} from "$sheets/hooks";
+import { itemSchema } from "prisma/schemas/item";
 
-export type ItemDialogMode = "edit" | "new";
+// const itemFormSchema = itemCreationSchema.transform<
+// 	z.infer<typeof itemCreationSchema>
+// >((data) => ({
+// 	...data,
+// 	category: data.category === "" ? null : data.category,
+// 	description: data.description === "" ? null : data.description,
+// 	referenceLink: data.referenceLink === "" ? null : data.referenceLink,
+// }));
+const itemFormSchema = itemSchema.omit({ id: true, sheetId: true });
+const itemFormResolver = zodResolver(itemFormSchema);
+const f = createSchemaKeyHelperFunction(itemFormSchema);
 
-interface Props {
-	mode: ItemDialogMode;
-}
+const selectItemFormInitialValues: InventoryStoreSelector<
+	z.infer<typeof itemFormSchema>
+> = (state) =>
+	selectItemBeingEdited(state) ?? {
+		name: "",
+		value: 0,
+		weight: 0,
+		quantity: 1,
+	};
 
-const validator = toFormikValidationSchema(itemValidation);
+const useItemForm = () => {
+	const defaultValues = useInventoryStore(selectItemFormInitialValues);
+	const { reset, ...form } = useForm<z.infer<typeof itemFormSchema>>({
+		resolver: itemFormResolver,
+		defaultValues,
+	});
+
+	useUpdateEffect(() => {
+		// FIXME: If a new item is added via refetch while item modal is open, the form fields are reset
+		reset(defaultValues);
+	}, [defaultValues, reset]);
+
+	return { reset, ...form };
+};
+
+const useItemModalProps = () => {
+	const dispatch = useInventoryStoreDispatch();
+	const isOpen = useInventoryStore((s) => !!s.ui.itemDialog);
+	const onClose = () =>
+		dispatch({
+			type: "ui.close-item-dialog",
+		});
+
+	return { isOpen, onClose };
+};
+
+const selectAllItemCategories: InventoryStoreSelector<string[]> = flow(
+	D.getUnsafe("sheet"),
+	D.getUnsafe("items"),
+	_getUniqueValuesOf(D.getUnsafe("category")),
+	A.filter(G.isString)
+);
+
+const CATEGORY_LIST_NAME = "existing-categories";
+
+const NUMERIC_FIELDS = [f("quantity"), f("weight"), f("value")] as const;
+
+const NUMERIC_FIELD_LABELS: Record<
+	IterableElement<typeof NUMERIC_FIELDS>,
+	string
+> = {
+	quantity: "Quantity",
+	weight: "Weight",
+	value: "Value",
+};
 
 /**
  * Modal dialog for creating a new item
@@ -54,239 +123,215 @@ const validator = toFormikValidationSchema(itemValidation);
  * create a new item or "edit" if being used to edit an existing item.
  * @returns The rendered HTML
  */
-const ItemDialog: React.FC<Props> = ({ mode }) => {
-	const newDispatch = useInventoryStoreDispatch();
-	const inEditMode = mode === "edit";
+const ItemDialog: React.FC = () => {
+	useRenderLogging("ItemDialog");
 
-	const { activeItem, closeDialog, getUniqueCategories } = useSheetPageState();
+	const createItemMutator = useAddItemMutation();
+	const editItemMutator = useEditItemMutation();
+	const deleteItemMutator = useItemDeleteMutation();
 
-	const initialFormValues: Omit<
-		ItemCreationFields,
-		"id" | "sheetId"
-	> = inEditMode
-		? activeItem
-		: {
-			name: "",
-			quantity: 1,
-			value: 0,
-			weight: 0,
-			carriedByCharacterId: null,
-			category: null,
-			description: null,
-			referenceLink: null,
-		  };
+	const sheetId = useSheetPageId();
+	const { formState, register, handleSubmit } = useItemForm();
+	const { isOpen, onClose } = useItemModalProps();
+	const existingItemCategories = useInventoryStore(selectAllItemCategories);
+	const characters = useInventoryStore(selectCharacters);
+	const isInEditMode = useInventoryStore(
+		(s) => s.ui.itemDialog?.mode === "edit"
+	);
+	const itemBeingEdited = useInventoryStore(selectItemBeingEdited);
 
-	const dispatch = useInventoryStateDispatch();
-	const { characters, items } = useInventoryState();
+	const deleteConfirmationModalController = useDisclosure();
 
-	const categoryAutocompleteItems = useMemo(() => getUniqueCategories(items), [
-		items,
-	]);
-
-	const {
-		isOpen: deleteConfirmIsOpen,
-		onOpen: deleteConfirmOnOpen,
-		onClose: deleteConfirmOnClose,
-	} = useDisclosure();
-
-	/**
-	 * Handle the submitting of the new item form
-	 * Sends data in a 'PATCH' http request to the api.
-	 *
-	 * @param data The form data
-	 * @param formFunctions Object containing functions for controlling
-	 * formik behaviour
-	 * @param formFunctions.setSubmitting Set whether or not the form is
-	 * currently submitting
-	 */
-	const onSubmit = (data: ItemCreationFields, { setSubmitting }: any) => {
-		if (!data.category) {
-			data.category = "None";
-		}
-
-		if (!inEditMode) {
-			newDispatch({
-				type: "add-item",
-				payload: data as never,
-			});
-		}
-
-		const action: SheetStateAction = {
-			type: inEditMode ? "item_update" : "item_add",
-			data: {
-				id: data.id ?? "",
-				...data,
-			},
-			sendToServer: true,
-			/**
-			 * Close the dialog if the server responded positively
-			 */
-			onThen: closeDialog,
-			/**
-			 * Set submitting to false when the server responds
-			 */
-			onFinally: () => {
-				setSubmitting(false);
-			},
-		};
-		dispatch(action);
-	};
-
-	/**
-	 * Function to execute when delete button is clicked
-	 *
-	 * @param setSubmitting Function set the
-	 * 'isSubmitting' status of the form
-	 */
-	const onDelete = (setSubmitting: (a: boolean) => void): void => {
-		setSubmitting(true);
-		dispatch({
-			type: "item_remove",
-			data: activeItem.id,
-			sendToServer: true,
-			/**
-			 * Regardless of result, mark submission as complete at end of query
-			 */
-			onFinally: () => {
-				setSubmitting(false);
-			},
-			/**
-			 * Close Dialog if delete request was successful
-			 */
-			onThen: () => {
-				closeDialog();
-			},
-		});
-	};
-
-	const headingPrefix = inEditMode ? "Edit" : "Create";
 	return (
-		<SheetDialog
-			dialogType={("item." + mode) as SheetDialogType}
-			header={`${headingPrefix} Item`}
-		>
-			<Formik
-				initialValues={initialFormValues as never}
-				onSubmit={onSubmit}
-				validationSchema={validator}
-			>
-				{({ handleSubmit, isSubmitting, setSubmitting, values }) => (
-					<>
-						<ModalBody>
-							<VStack spacing="group">
-								<InputControl
-									name="name"
-									label="Name"
-									inputProps={{
-										placeholder: "Name",
-										maxLength: defaultFieldLength,
-									}}
+		<>
+			<Modal isOpen={isOpen} onClose={onClose}>
+				<ModalOverlay />
+				<ModalContent
+					as="form"
+					onSubmit={handleSubmit((form) => {
+						if (isInEditMode && itemBeingEdited) {
+							editItemMutator.mutate({
+								...itemBeingEdited,
+								...form,
+							});
+						} else if (!isInEditMode) {
+							createItemMutator.mutate({
+								...form,
+								sheetId,
+							});
+						}
+						onClose();
+					})}
+				>
+					<ModalHeader>Item Dialog</ModalHeader>
+					<ModalCloseButton />
+
+					<ModalBody>
+						<VStack>
+							{/* Name */}
+							<FormControl isInvalid={!!formState.errors.name}>
+								<FormLabel htmlFor={f("name")}>Name</FormLabel>
+								<Input
+									id={f("name")}
+									{...register("name")}
+									placeholder="Name"
 								/>
-								<InputControl
-									name="category"
-									label="Category"
-									inputProps={{
-										placeholder: "eg; 'Weapon' or 'Survival'",
-										maxLength: defaultFieldLength,
-										list: "test",
-										autoComplete: "off",
-									}}
+								<FormErrorMessage>
+									{formState.errors.name && formState.errors.name.message}
+								</FormErrorMessage>
+							</FormControl>
+							{/* Category */}
+							<FormControl isInvalid={!!formState.errors.category}>
+								<FormLabel htmlFor={f("category")}>Category</FormLabel>
+								<Input
+									id={f("category")}
+									{...register("category")}
+									placeholder="Category"
+									list={CATEGORY_LIST_NAME}
 								/>
-								<datalist id="test">
-									{categoryAutocompleteItems.filter(G.isString).map((item) => (
-										<option value={item} key={item} />
+								<datalist id={CATEGORY_LIST_NAME}>
+									{existingItemCategories.map((category) => (
+										<option value={category} key={category} />
 									))}
 								</datalist>
-								<Box>
-									<List>
-										{categoryAutocompleteItems.filter((item) =>
-											item?.includes(values.category as never)
-										)}
-									</List>
-								</Box>
-								<TextareaControl
-									name="description"
-									label="Description"
-									textareaProps={{
-										placeholder: "Description of the item",
-										maxLength: descriptionLength,
-									}}
+								<FormErrorMessage>
+									{formState.errors.category &&
+										formState.errors.category.message}
+								</FormErrorMessage>
+							</FormControl>
+							{/* Description */}
+							<FormControl isInvalid={!!formState.errors.description}>
+								<FormLabel htmlFor={f("description")}>Description</FormLabel>
+								<Textarea
+									id={f("description")}
+									{...register("description")}
+									placeholder="Description"
 								/>
-								<SimpleGrid columns={3} spacing="group">
-									<NumberInputControl
-										name="quantity"
-										label="Quantity"
-										numberInputProps={{ min: 1 }}
-									/>
-									<NumberInputControl
-										name="weight"
-										label="Weight"
-										numberInputProps={{ min: 0 }}
-									/>
-									<NumberInputControl
-										name="value"
-										label="Value"
-										numberInputProps={{ min: 0 }}
-									/>
-								</SimpleGrid>
-								<SelectControl name="carriedByCharacterId" label="Carried By">
-									<option value="Nobody">Nobody</option>
-									{characters.map((member) => (
-										<option value={member.id} key={member.id}>
-											{member.name}
+								<FormErrorMessage>
+									{formState.errors.description &&
+										formState.errors.description.message}
+								</FormErrorMessage>
+							</FormControl>
+							{/* Quantity/Weight/Value */}
+							<Flex justify="space-between" gap="group">
+								{NUMERIC_FIELDS.map((fieldName) => (
+									<FormControl
+										key={fieldName}
+										isInvalid={!!formState.errors[fieldName]}
+									>
+										<FormLabel htmlFor={fieldName}>
+											{NUMERIC_FIELD_LABELS[fieldName]}
+										</FormLabel>
+										<NumberInput
+											step={fieldName === "quantity" ? 1 : 0.25}
+											min={0}
+										>
+											<NumberInputField
+												id={fieldName}
+												{...register(fieldName, {
+													valueAsNumber: true,
+												})}
+											/>
+											<NumberInputStepper>
+												<NumberIncrementStepper />
+												<NumberDecrementStepper />
+											</NumberInputStepper>
+										</NumberInput>
+										<FormErrorMessage>
+											{formState.errors[fieldName] &&
+												formState.errors[fieldName]?.message}
+										</FormErrorMessage>
+									</FormControl>
+								))}
+							</Flex>
+
+							{/* Carried By */}
+							<FormControl isInvalid={!!formState.errors.carriedByCharacterId}>
+								<FormLabel htmlFor={f("carriedByCharacterId")}>
+									Carried By
+								</FormLabel>
+								<Select
+									id={f("carriedByCharacterId")}
+									{...register("carriedByCharacterId", {
+										setValueAs: (value: string) =>
+											value === "" ? null : value,
+									})}
+								>
+									<option value="">Nobody</option>
+									{characters.map((character) => (
+										<option value={character.id} key={character.id}>
+											{character.name}
 										</option>
 									))}
-								</SelectControl>
-								<InputControl
-									name="referenceLink"
-									label="Reference"
-									inputProps={{
-										placeholder: "Link to more information",
-										maxLength: referenceLength,
-									}}
+								</Select>
+								<FormErrorMessage>
+									{formState.errors.carriedByCharacterId &&
+										formState.errors.carriedByCharacterId.message}
+								</FormErrorMessage>
+							</FormControl>
+
+							{/* Reference */}
+							<FormControl isInvalid={!!formState.errors.referenceLink}>
+								<FormLabel htmlFor={f("referenceLink")}>Reference</FormLabel>
+								<Input
+									id={f("referenceLink")}
+									{...register("referenceLink")}
+									placeholder="Reference"
 								/>
-							</VStack>
-						</ModalBody>
-						<ModalFooter>
-							<Flex
-								justify={inEditMode ? "space-between" : "flex-end"}
-								width="full"
+								<FormErrorMessage>
+									{formState.errors.referenceLink &&
+										formState.errors.referenceLink.message}
+								</FormErrorMessage>
+							</FormControl>
+						</VStack>
+						{/* Footer */}
+					</ModalBody>
+					<ModalFooter
+						gap={2}
+						justifyContent={isInEditMode ? "space-between" : "flex-end"}
+					>
+						{isInEditMode && (
+							<Button
+								variant="ghost"
+								colorScheme="red"
+								onClick={deleteConfirmationModalController.onOpen}
 							>
-								{inEditMode && (
-									<Button
-										colorScheme="error"
-										// onClick={() => onDelete(setSubmitting)}
-										onClick={deleteConfirmOnOpen}
-										isDisabled={isSubmitting}
-									>
-										Delete
-									</Button>
-								)}
-								<Button colorScheme="primary" onClick={() => handleSubmit()}>
-									{inEditMode ? "Save" : "Create Item"}
-								</Button>
-							</Flex>
-						</ModalFooter>
-						<ConfirmationDialog
-							isOpen={deleteConfirmIsOpen}
-							onConfirm={() => onDelete(setSubmitting)}
-							onCancel={deleteConfirmOnClose}
-							confirmProps={{ isLoading: isSubmitting }}
-							header={`Delete "${activeItem.name}" ?`}
+								Delete
+							</Button>
+						)}
+						<Flex gap={2}>
+							<Button variant="ghost">Cancel</Button>
+							<Button type="submit" colorScheme="primary">
+								{isInEditMode ? "Save" : "Create"}
+							</Button>
+						</Flex>
+					</ModalFooter>
+				</ModalContent>
+			</Modal>
+			<Modal {...deleteConfirmationModalController}>
+				<ModalOverlay />
+				<ModalContent>
+					<ModalHeader>Confirm Delete</ModalHeader>
+					<ModalBody>
+						Are you sure you want to delete the item {itemBeingEdited?.name}?
+					</ModalBody>
+					<ModalFooter gap={2}>
+						<Button variant="ghost">Cancel</Button>
+						<Button
+							onClick={() => {
+								deleteItemMutator.mutate({
+									itemId: itemBeingEdited?.id ?? "",
+								});
+								deleteConfirmationModalController.onClose();
+								onClose();
+							}}
 						>
-							Are you sure you want to delete this item?{" "}
-							{activeItem.quantity > 1 && (
-								<>
-									All
-									{activeItem.quantity} instanceof it will be removed from the
-									sheet.
-								</>
-							)}
-						</ConfirmationDialog>
-					</>
-				)}
-			</Formik>
-		</SheetDialog>
+							Confirm
+						</Button>
+					</ModalFooter>
+				</ModalContent>
+			</Modal>
+		</>
 	);
 };
 

@@ -6,42 +6,41 @@ import {
 	updateItemActionSchema,
 } from "$sheets/store/inventoryActions";
 import trpc from "$trpc";
+import { itemSchema } from "prisma/schemas/item";
+import { z } from "zod";
 
 const itemRouter = trpc.router({
 	create: sheetRelatedProcedure
-		.input(resolvedCreateItemActionSchema)
+		.input(itemSchema.omit({ id: true }))
 		.mutation(async ({ input }) => {
 			const item = await prisma.item.create({
-				data: input.resolvedPayload,
-			});
-
-			await prisma.sheet.update({
-				where: {
-					id: input.resolvedPayload.sheetId,
-				},
-				data: {},
+				data: input,
 			});
 
 			return item;
 		}),
 	update: sheetRelatedProcedure
-		.input(updateItemActionSchema)
+		.input(itemSchema)
 		.mutation(async ({ input }) => {
 			const item = await prisma.item.update({
 				where: {
-					id: input.payload.itemId,
+					id: input.id,
 				},
-				data: input.payload.data,
+				data: input,
 			});
 
 			return item;
 		}),
 	delete: sheetRelatedProcedure
-		.input(deleteItemActionSchema)
+		.input(
+			z.object({
+				itemId: z.string(),
+			})
+		)
 		.mutation(async ({ input }) => {
 			const result = await prisma.item.delete({
 				where: {
-					id: input.payload.itemId,
+					id: input.itemId,
 				},
 			});
 

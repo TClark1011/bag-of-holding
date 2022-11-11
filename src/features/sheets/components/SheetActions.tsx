@@ -1,17 +1,23 @@
-import { useSheetPageState } from "$sheets/store";
+import useRenderLogging from "$root/hooks/useRenderLogging";
+import { useInventoryStoreDispatch, useSheetPageState } from "$sheets/store";
 import { Button, Input, SimpleGrid, Stack } from "@chakra-ui/react";
 import { FC } from "react";
 
 /**
- *
+ * Primary actions of a sheet
+ * - Add New Item
+ * - Search
+ * - Filter Controls
  */
 const SheetActions: FC = () => {
+	useRenderLogging("SheetActions");
 	const {
 		openDialog,
 		searchbarValue,
 		searchbarOnChange,
 		resetFilters,
 	} = useSheetPageState();
+	const dispatch = useInventoryStoreDispatch();
 
 	return (
 		<Stack
@@ -22,7 +28,11 @@ const SheetActions: FC = () => {
 			<Button
 				data-testid="add-item-button"
 				colorScheme="primary"
-				onClick={() => openDialog("item.new")}
+				onClick={() =>
+					dispatch({
+						type: "ui.open-new-item-dialog",
+					})
+				}
 				flexGrow={0}
 			>
 				Add New Item

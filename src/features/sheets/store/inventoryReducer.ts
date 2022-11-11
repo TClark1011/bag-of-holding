@@ -33,26 +33,6 @@ const inventoryReducer = (
 	state: SheetState,
 	action: SheetStateAction
 ): SheetState => {
-	if (action.sendToServer) {
-		//? If send to server is true, we send the action to the server
-		sendSheetAction(state.id, {
-			...action,
-			sendToServer: false,
-		} as SheetStateAction).catch((err) => {
-			logException(
-				`Error occurred when sending sheet '${action.type}' action`,
-				{
-					fatal: true,
-					extraData: stringifyObject({
-						err: err.message,
-						sheetId: state.id,
-						action,
-					}),
-				}
-			);
-		});
-	}
-
 	/**
 	 * Shorthand for calling the immer 'produce' function,
 	 * passing the state as the first parameter

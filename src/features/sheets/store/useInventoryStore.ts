@@ -34,6 +34,15 @@ import {
 } from "$sheets/store/inventorySelectors";
 import { SortingDirection } from "$root/types";
 
+export type ItemDialogStateProps =
+	| {
+			mode: "edit";
+			characterId: string;
+	  }
+	| {
+			mode: "new";
+	  };
+
 export type CharacterDialogStateProps =
 	| {
 			mode: "closed";
@@ -65,6 +74,8 @@ export type InventoryStoreProps = {
 			property: SortableItemProperty;
 			direction: SortingDirection;
 		};
+		openFilterMenu: null | FilterableItemProperty;
+		itemDialog: ItemDialogStateProps | null;
 	};
 };
 
@@ -87,6 +98,8 @@ const initialInventoryStoreState: InventoryStoreProps = {
 			category: null,
 		},
 		sorting: null,
+		openFilterMenu: null,
+		itemDialog: null,
 	},
 };
 
@@ -141,9 +154,6 @@ const resolveInventoryAction = (
 		| ExtractResolvedPayloadActions<ResolvedInventoryStoreAction>["resolvedPayload"]
 		| undefined
 	>(action)
-		.with({ type: "add-item" }, ({ payload }) =>
-			composeItem({ ...payload, sheetId: sheet.id })
-		)
 		.with({ type: "add-character" }, ({ payload }) =>
 			composeCharacter({ ...payload, sheetId: sheet.id })
 		)
@@ -185,7 +195,10 @@ const inventoryStoreReducer: Reducer<
 				draftState.sheet.name = resolvedAction.originalAction.payload;
 				break;
 			case "add-item":
-				draftState.sheet.items.push(resolvedAction.resolvedPayload as never);
+				draftState.sheet.items.push({
+					id: Math.random().toString(),
+					...resolvedAction.originalAction.payload,
+				});
 				break;
 			case "remove-item":
 				draftState.sheet.items = rejectItemWithId<Item>(
@@ -297,6 +310,26 @@ const inventoryStoreReducer: Reducer<
 						property: resolvedAction.originalAction.payload,
 					};
 				}
+				break;
+			case "ui.open-filter-menu":
+				draftState.ui.openFilterMenu = resolvedAction.originalAction.payload;
+				break;
+			case "ui.close-filter-menu":
+				draftState.ui.openFilterMenu = null;
+				break;
+			case "ui.open-new-item-dialog":
+				draftState.ui.itemDialog = {
+					mode: "new",
+				};
+				break;
+			case "ui.open-item-edit-dialog":
+				draftState.ui.itemDialog = {
+					mode: "edit",
+					characterId: resolvedAction.originalAction.payload,
+				};
+				break;
+			case "ui.close-item-dialog":
+				draftState.ui.itemDialog = null;
 				break;
 			default:
 				// @ts-expect-error `resolvedAction` will be `never` if switch is exhaustive

@@ -104,6 +104,16 @@ export const selectCharacterWithId = (
 		return character;
 	});
 
+export const selectPropertyFilterMenuIsOpen = (
+	property: FilterableItemProperty
+): InventoryStoreSelector<boolean> => (state) =>
+	state.ui.openFilterMenu === property;
+
+export const selectItemBeingEdited: InventoryStoreSelector<Item | null> = (s) =>
+	s.ui.itemDialog?.mode === "edit"
+		? s.sheet.items.find(hasId(s.ui.itemDialog.characterId)) ?? null
+		: null;
+
 /* eslint-enable jsdoc/require-jsdoc */
 
 /**

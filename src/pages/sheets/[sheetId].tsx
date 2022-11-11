@@ -29,6 +29,7 @@ import SheetNameDialog from "$sheets/components/Dialogs/SheetNameDialog";
 import SheetTopBar from "$sheets/components/SheetTopBar";
 import SheetActions from "$sheets/components/SheetActions";
 import CharacterTotals from "$sheets/components/CharacterTotals";
+import useRenderLogging from "$root/hooks/useRenderLogging";
 
 const getTestId = testIdGeneratorFactory("SheetPage");
 
@@ -55,6 +56,8 @@ const SheetPage: React.FC<SheetPageProps> = ({
 	isNew = false,
 	...sheetFields
 }) => {
+	useRenderLogging("SheetPage");
+
 	const dispatch = useInventoryStoreDispatch();
 	useOnMountEffect(() => {
 		dispatch({
@@ -100,8 +103,7 @@ const SheetPage: React.FC<SheetPageProps> = ({
 					<CharacterTotals />
 
 					{/* Dialogs */}
-					<ItemDialog mode="new" />
-					<ItemDialog mode="edit" />
+					<ItemDialog />
 					<FilterDialog />
 					<SheetOptionsDialog />
 					<WelcomeDialog />

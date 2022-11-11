@@ -18,6 +18,7 @@ import { getItemTotalValue, getItemTotalWeight } from "$sheets/utils";
 import { testIdGeneratorFactory } from "$tests/utils/testUtils";
 import { ProcessableItemProperty } from "$sheets/types";
 import {
+	selectPropertyFilterMenuIsOpen,
 	selectVisibleItems,
 	useInventoryStore,
 	useInventoryStoreDispatch,
@@ -109,18 +110,17 @@ const TableHeader: React.FC<
 		property: ProcessableItemProperty;
 	}
 > = ({ property, children, ...props }) => {
-	const {
-		closeFilterPopover,
-		openFilterPopover,
-		isFilterPopoverOpen,
-	} = useSheetPageState();
 	const dispatch = useInventoryStoreDispatch();
 
 	const sorting = useInventoryStore((s) => s.ui.sorting);
+	const filterPopoverIsOpen = useInventoryStore(
+		(state) =>
+			matchesSchema(filterableItemPropertySchema, property) &&
+			selectPropertyFilterMenuIsOpen(property)(state)
+	);
 	const sortingIcons = determineIconSet(property);
 	const isFilterable = matchesSchema(filterableItemPropertySchema, property);
 	const isBeingSorted = sorting?.property === property;
-	const filterPopoverIsOpen = isFilterable && isFilterPopoverOpen(property);
 
 	const onSort = () => {
 		if (matchesSchema(sortableItemPropertySchema, property)) {
@@ -131,7 +131,14 @@ const TableHeader: React.FC<
 		}
 	};
 
-	const onPopoverOpen = () => isFilterable && openFilterPopover(property);
+	const onPopoverOpen = () =>
+		isFilterable &&
+		dispatch({
+			type: "ui.open-filter-menu",
+			payload: property,
+		});
+
+	const onPopoverClose = () => dispatch({ type: "ui.close-filter-menu" });
 
 	return (
 		<TableCell {...props} as={Th}>
@@ -142,7 +149,7 @@ const TableHeader: React.FC<
 			{isFilterable && (
 				<TableFilter
 					isOpen={filterPopoverIsOpen}
-					onClose={closeFilterPopover}
+					onClose={onPopoverClose}
 					property={property}
 					{...(property === "carriedByCharacterId" && {
 						heading: "Carried By",
@@ -178,6 +185,7 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 	onRowClick,
 	...props
 }) => {
+	const dispatch = useInventoryStoreDispatch();
 	const hoverBg = useColorModeValue("gray.100", "gray.700");
 
 	const { getColumnSums } = useSheetPageState();
@@ -255,7 +263,12 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 				{processedItems.map((item, index) => (
 					<Tr
 						key={index}
-						onClick={() => onRowClick(item)}
+						onClick={() =>
+							dispatch({
+								type: "ui.open-item-edit-dialog",
+								payload: item.id,
+							})
+						}
 						cursor="pointer"
 						_hover={{ backgroundColor: hoverBg }}
 						data-testid={`item-row-${item.name}`}

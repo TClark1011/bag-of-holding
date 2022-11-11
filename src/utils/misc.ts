@@ -1,3 +1,5 @@
+import { ReplaceValue } from "$root/types";
+import { D, F, G } from "@mobily/ts-belt";
 import { z } from "zod";
 
 /**
@@ -11,4 +13,15 @@ import { z } from "zod";
 export const createSchemaKeyHelperFunction = <Schema extends z.ZodTypeAny>(
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	schema: Schema // This is just here to get type inference
-) => (key: keyof z.infer<Schema>) => key;
+) => <SpecificKey extends keyof z.infer<Schema>>(key: SpecificKey) => key;
+
+/**
+ * @param obj
+ */
+export const undefinedFieldsToNull = <T extends Record<string, unknown>>(
+	obj: T
+): ReplaceValue<T, undefined, null> =>
+	D.map(
+		obj,
+		F.when(G.isUndefined, () => null)
+	) as any;
