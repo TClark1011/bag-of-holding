@@ -8,10 +8,7 @@ import {
 } from "$root/utils";
 import { CharacterRemovalStrategy, FullSheet } from "$sheets/types";
 import { itemIsCarriedByCharacterId } from "$sheets/utils";
-import {
-	composeCharacter,
-	composeItem,
-} from "$sheets/utils/sheetEntityComposers";
+import { composeCharacter } from "$sheets/utils/sheetEntityComposers";
 import { createState, withReducer } from "$zustand";
 import { A, D, F } from "@mobily/ts-belt";
 import { Character, Item } from "@prisma/client";
@@ -76,6 +73,7 @@ export type InventoryStoreProps = {
 		};
 		openFilterMenu: null | FilterableItemProperty;
 		itemDialog: ItemDialogStateProps | null;
+		searchBarValue: string;
 	};
 };
 
@@ -100,6 +98,7 @@ const initialInventoryStoreState: InventoryStoreProps = {
 		sorting: null,
 		openFilterMenu: null,
 		itemDialog: null,
+		searchBarValue: "",
 	},
 };
 
@@ -331,9 +330,12 @@ const inventoryStoreReducer: Reducer<
 			case "ui.close-item-dialog":
 				draftState.ui.itemDialog = null;
 				break;
+			case "ui.set-search-value":
+				draftState.ui.searchBarValue = resolvedAction.originalAction.payload;
+				break;
 			default:
 				// @ts-expect-error `resolvedAction` will be `never` if switch is exhaustive
-				resolvedAction.type;
+				resolvedAction.type; // using ts-expect-error here so this line will error if the switch is not exhaustive
 		}
 
 		draftState.resolvedActionIds.push(resolvedAction.id);

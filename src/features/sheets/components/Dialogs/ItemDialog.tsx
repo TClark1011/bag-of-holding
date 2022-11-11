@@ -29,15 +29,13 @@ import {
 	selectItemBeingEdited,
 	useInventoryStore,
 	useInventoryStoreDispatch,
-	useInventoryStoreState,
 } from "$sheets/store";
 import { A, D, flow, G } from "@mobily/ts-belt";
-import { itemCreationSchema } from "$extra-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createSchemaKeyHelperFunction, _getUniqueValuesOf } from "$root/utils";
 import { z } from "zod";
 import { useForm } from "$hook-form";
-import { IterableElement, ValueOf } from "type-fest";
+import { IterableElement } from "type-fest";
 import useRenderLogging from "$root/hooks/useRenderLogging";
 import {
 	useAddItemMutation,
@@ -47,14 +45,6 @@ import {
 } from "$sheets/hooks";
 import { itemSchema } from "prisma/schemas/item";
 
-// const itemFormSchema = itemCreationSchema.transform<
-// 	z.infer<typeof itemCreationSchema>
-// >((data) => ({
-// 	...data,
-// 	category: data.category === "" ? null : data.category,
-// 	description: data.description === "" ? null : data.description,
-// 	referenceLink: data.referenceLink === "" ? null : data.referenceLink,
-// }));
 const itemFormSchema = itemSchema.omit({ id: true, sheetId: true });
 const itemFormResolver = zodResolver(itemFormSchema);
 const f = createSchemaKeyHelperFunction(itemFormSchema);

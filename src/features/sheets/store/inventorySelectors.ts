@@ -10,6 +10,7 @@ import {
 	InventoryStoreProps,
 } from "$sheets/store/useInventoryStore";
 import { FullSheet } from "$sheets/types";
+import { searchComparison } from "$sheets/utils";
 import { A, D, F, flow, pipe } from "@mobily/ts-belt";
 import { Character, Item } from "@prisma/client";
 import Big from "big.js";
@@ -175,7 +176,7 @@ export const selectVisibleItems: InventoryStoreSelector<Item[]> = (state) =>
 	pipe(
 		state.sheet.items,
 		A.filter(
-			F.both(
+			F.allPass([
 				(item) =>
 					selectEffectivePropertyFilter("carriedByCharacterId")(state).includes(
 						item.carriedByCharacterId
@@ -183,8 +184,9 @@ export const selectVisibleItems: InventoryStoreSelector<Item[]> = (state) =>
 				(item) =>
 					selectEffectivePropertyFilter("category")(state).includes(
 						item.category ?? ""
-					)
-			)
+					),
+				(item) => searchComparison(item.name, state.ui.searchBarValue),
+			])
 		),
 		(items) =>
 			state.ui.sorting

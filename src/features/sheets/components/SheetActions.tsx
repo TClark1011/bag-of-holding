@@ -1,7 +1,42 @@
+import { useDebouncedEffect } from "$root/hooks/debounceHooks";
 import useRenderLogging from "$root/hooks/useRenderLogging";
 import { useInventoryStoreDispatch, useSheetPageState } from "$sheets/store";
 import { Button, Input, SimpleGrid, Stack } from "@chakra-ui/react";
-import { FC } from "react";
+import { FC, useState } from "react";
+
+const useSearchInputProps = () => {
+	const dispatch = useInventoryStoreDispatch();
+
+	const [localValue, setLocalValue] = useState("");
+
+	useDebouncedEffect(
+		() => {
+			dispatch({
+				type: "ui.set-search-value",
+				payload: localValue,
+			});
+		},
+		[localValue],
+		200
+	);
+
+	/**
+	 * We are using an approach where we track the value of the search
+	 * bar via local `useState`, and then whenever that value changes,
+	 * we insert the local tate into global state once the value has
+	 * settled ("settled" = has been the same for 200ms). The reason for
+	 * this is that if we simply used the global state value it would
+	 * make the search bar very laggy, as everytime an input is performed,
+	 * all the item searching calculations would be re-run.
+	 */
+
+	return {
+		value: localValue,
+		onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+			setLocalValue(e.target.value);
+		},
+	};
+};
 
 /**
  * Primary actions of a sheet
@@ -11,12 +46,9 @@ import { FC } from "react";
  */
 const SheetActions: FC = () => {
 	useRenderLogging("SheetActions");
-	const {
-		openDialog,
-		searchbarValue,
-		searchbarOnChange,
-		resetFilters,
-	} = useSheetPageState();
+	const searchInputProps = useSearchInputProps();
+
+	const { openDialog, resetFilters } = useSheetPageState();
 	const dispatch = useInventoryStoreDispatch();
 
 	return (
@@ -42,8 +74,7 @@ const SheetActions: FC = () => {
 				flexGrow={1}
 				width="full"
 				placeholder="Search"
-				onChange={searchbarOnChange}
-				value={searchbarValue}
+				{...searchInputProps}
 			/>
 			{/* NOTE: Updates may stutter in dev mode but is fine when built */}
 			<SimpleGrid columns={[2, 2, 2, 1]} gap="group">

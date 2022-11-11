@@ -12,7 +12,7 @@ import {
 	sortableItemPropertySchema,
 } from "$extra-schemas";
 import { Item } from "@prisma/client";
-import { characterSchema, itemSchema } from "@prisma/schemas";
+import { characterSchema } from "@prisma/schemas";
 import { z } from "zod";
 
 /* #region  General Sheet Actions */
@@ -186,6 +186,7 @@ export const closeItemDialogActionSchema = actionSchema("ui.close-item-dialog");
 
 export type InventoryStoreAction =
 	| PayloadAction<"add-item", Omit<Item, "id">>
+	| PayloadAction<"ui.set-search-value", string>
 	| z.infer<typeof updateItemActionSchema>
 	| z.infer<typeof deleteItemActionSchema>
 	| z.infer<typeof setSheetActionSchema>
