@@ -22,8 +22,10 @@ export type ReplaceValue<
 	[Key in keyof Obj]: Exclude<Obj[Key], ValueToReplace> | ReplacementValue;
 };
 
-type A = {
-	a: number | null | undefined;
-};
+export type TypeGuardFromBlank<IsType> = (input: any) => input is IsType;
 
-type B = ReplaceValue<A, undefined, null>;
+// A type guard where the input has a type, and the function
+// merely narrows it down to a subset of that type
+export type NarrowingTypeGuard<BaseType, SubType extends BaseType> = (
+	input: BaseType
+) => input is SubType;

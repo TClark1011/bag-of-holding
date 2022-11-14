@@ -16,13 +16,13 @@ import {
 	InventorySheetTable,
 	SheetOptionsDialog,
 	ItemDialog,
+	InventoryDataFetchingEffects,
 } from "$sheets/components";
 import { testIdGeneratorFactory } from "$tests/utils/testUtils";
 import { View } from "$root/components";
 import { useOnMountEffect } from "$root/hooks";
 import { Sheet } from "@prisma/client";
 import { FullSheet } from "$sheets/types";
-import useSheetServerSync from "$sheets/hooks/useSheetServerSync";
 import CharacterDialog from "$sheets/components/Dialogs/CharacterDialog";
 import { D } from "@mobily/ts-belt";
 import SheetNameDialog from "$sheets/components/Dialogs/SheetNameDialog";
@@ -65,7 +65,6 @@ const SheetPage: React.FC<SheetPageProps> = ({
 			payload: sheetFields,
 		});
 	});
-	useSheetServerSync();
 
 	const { characters, name } = useInventoryStore(
 		fromSheet(D.selectKeys(["characters", "name"]))
@@ -83,35 +82,44 @@ const SheetPage: React.FC<SheetPageProps> = ({
 	const { openDialog } = useSheetPageState();
 
 	return (
-		<View
-			showTopNav={false}
-			title={`${appName} - ${name}`}
-			url={getSheetLink(sheetFields.id, true)}
-			analyticsPageViewProps={{ title: "Sheet", url: "/sheets/[sheetId]" }}
-		>
-			<InventoryStateProvider
-				dispatch={inventoryDispatch}
-				state={{ items, characters, name, id }}
-			>
-				<Box as="main">
-					<SheetTopBar />
-					<SheetActions />
-					<InventorySheetTable
-						onRowClick={(item) => openDialog("item.edit", item)}
-						marginBottom="break"
-					/>
-					<CharacterTotals />
+		<>
+			<InventoryDataFetchingEffects />
 
-					{/* Dialogs */}
-					<ItemDialog />
-					<FilterDialog />
-					<SheetOptionsDialog />
-					<WelcomeDialog />
-					<CharacterDialog />
-					<SheetNameDialog />
-				</Box>
-			</InventoryStateProvider>
-		</View>
+			<View
+				showTopNav={false}
+				title={`${appName} - ${name}`}
+				url={getSheetLink(sheetFields.id, true)}
+				analyticsPageViewProps={{ title: "Sheet", url: "/sheets/[sheetId]" }}
+			>
+				<InventoryStateProvider
+					dispatch={inventoryDispatch}
+					state={{ items, characters, name, id }}
+				>
+					<Box as="main">
+						<SheetTopBar />
+						<SheetActions />
+						<InventorySheetTable
+							onRowClick={(item) =>
+								dispatch({
+									type: "ui.open-item-edit-dialog",
+									payload: item?.id ?? "",
+								})
+							}
+							mb="break"
+						/>
+						<CharacterTotals />
+
+						{/* Dialogs */}
+						<ItemDialog />
+						<FilterDialog />
+						<SheetOptionsDialog />
+						<WelcomeDialog />
+						<CharacterDialog />
+						<SheetNameDialog />
+					</Box>
+				</InventoryStateProvider>
+			</View>
+		</>
 	);
 };
 

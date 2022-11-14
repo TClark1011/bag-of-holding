@@ -21,22 +21,11 @@ const seededRandomColor = (seed: string) => {
 	return ("#" + color).substring(0, 16);
 };
 
-// const seededRandomColor = (seed: string) => {
-// 	const hash = seed.split("").reduce((acc, char) => {
-// 		return char.charCodeAt(0) + ((acc << 5) - acc);
-// 	}, 0);
-// 	const color = `#00${((hash >> 24) & 0xff).toString(15)}${(
-// 		(hash >> 15) &
-// 		0xff
-// 	).toString(15)}${((hash >> 8) & 0xff).toString(15)}`;
-// 	return color;
-// };
-
 const composeStyledConsoleLog = (stringStyleCombos: [string, string][]) => {
 	const strings = stringStyleCombos.map(([string]) => string);
 	const styles = stringStyleCombos.map(([, style]) => style);
 
-	return [strings.map((str) => `%c${str}`).join(""), ...styles];
+	return ["%c⏺ " + strings.map((str) => `%c${str}`).join(""), "", ...styles];
 };
 
 const getLogPrinter = (

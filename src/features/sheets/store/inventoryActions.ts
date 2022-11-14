@@ -1,4 +1,5 @@
 import {
+	Action,
 	actionSchema,
 	FinalActions,
 	PayloadAction,
@@ -187,6 +188,9 @@ export const closeItemDialogActionSchema = actionSchema("ui.close-item-dialog");
 export type InventoryStoreAction =
 	| PayloadAction<"add-item", Omit<Item, "id">>
 	| PayloadAction<"ui.set-search-value", string>
+	| Action<"ui.open-filter-dialog">
+	| Action<"ui.close-filter-dialog">
+	| Action<"ui.reset-all-filters">
 	| z.infer<typeof updateItemActionSchema>
 	| z.infer<typeof deleteItemActionSchema>
 	| z.infer<typeof setSheetActionSchema>

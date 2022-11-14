@@ -1,6 +1,11 @@
 import { expectParam } from "$fp";
 import queries from "$root/hooks/queries";
 import {
+	useAddItemMutation,
+	useEditItemMutation,
+	useItemDeleteMutation,
+} from "$sheets/hooks";
+import {
 	fromSheet,
 	useInventoryStore,
 	useInventoryStoreDispatch,
@@ -27,14 +32,16 @@ const useSheetUpdateIsNewerChecker = () => {
 };
 
 /**
- * client state in sync with the server state
+ * Keep refetching the sheet, load fetched data into
+ * local state if it is newer. Refetching is disabled
+ * while a mutation is in progress
  */
-const useSheetServerSync = () => {
+const InventoryDataFetchingEffects = () => {
 	const dispatch = useInventoryStoreDispatch();
 
-	const createItemMutation = queries.item.create.useMutation();
-	const removeItemMutation = queries.item.delete.useMutation();
-	const updateItemMutation = queries.item.update.useMutation();
+	const createItemMutation = useAddItemMutation();
+	const removeItemMutation = useItemDeleteMutation();
+	const updateItemMutation = useEditItemMutation();
 	const setSheetNameMutation = queries.sheet.setName.useMutation();
 	const addCharacterMutation = queries.character.create.useMutation();
 	const deleteCharacterMutation = queries.character.delete.useMutation();
@@ -69,21 +76,6 @@ const useSheetServerSync = () => {
 	useStoreEffect(useLastInventoryStoreAction, ({ lastAction }) => {
 		if (lastAction === null || lastAction.type === "set-sheet") return;
 		match(lastAction)
-			.with(
-				{
-					type: "add-item",
-				},
-				(action) => createItemMutation.mutate(action)
-			)
-			.with({ type: "remove-item" }, (action) =>
-				removeItemMutation.mutate(action.originalAction)
-			)
-			.with(
-				{
-					type: "update-item",
-				},
-				(action) => updateItemMutation.mutate(action.originalAction)
-			)
 			.with({ type: "set-sheet-name" }, (action) =>
 				setSheetNameMutation.mutate(action)
 			)
@@ -98,6 +90,7 @@ const useSheetServerSync = () => {
 			)
 			.otherwise(() => {});
 	});
+	return null;
 };
 
-export default useSheetServerSync;
+export default InventoryDataFetchingEffects;

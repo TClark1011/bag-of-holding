@@ -74,6 +74,7 @@ export type InventoryStoreProps = {
 		openFilterMenu: null | FilterableItemProperty;
 		itemDialog: ItemDialogStateProps | null;
 		searchBarValue: string;
+		filterDialogIsOpen: boolean;
 	};
 };
 
@@ -99,6 +100,7 @@ const initialInventoryStoreState: InventoryStoreProps = {
 		openFilterMenu: null,
 		itemDialog: null,
 		searchBarValue: "",
+		filterDialogIsOpen: false,
 	},
 };
 
@@ -332,6 +334,18 @@ const inventoryStoreReducer: Reducer<
 				break;
 			case "ui.set-search-value":
 				draftState.ui.searchBarValue = resolvedAction.originalAction.payload;
+				break;
+			case "ui.open-filter-dialog":
+				draftState.ui.filterDialogIsOpen = true;
+				break;
+			case "ui.close-filter-dialog":
+				draftState.ui.filterDialogIsOpen = false;
+				break;
+			case "ui.reset-all-filters":
+				draftState.ui.filters = {
+					carriedByCharacterId: null,
+					category: null,
+				};
 				break;
 			default:
 				// @ts-expect-error `resolvedAction` will be `never` if switch is exhaustive

@@ -45,6 +45,17 @@ import {
 } from "$sheets/hooks";
 import { itemSchema } from "prisma/schemas/item";
 
+const useItemModalProps = () => {
+	const dispatch = useInventoryStoreDispatch();
+	const isOpen = useInventoryStore((s) => !!s.ui.itemDialog);
+	const onClose = () =>
+		dispatch({
+			type: "ui.close-item-dialog",
+		});
+
+	return { isOpen, onClose };
+};
+
 const itemFormSchema = itemSchema.omit({ id: true, sheetId: true });
 const itemFormResolver = zodResolver(itemFormSchema);
 const f = createSchemaKeyHelperFunction(itemFormSchema);
@@ -61,28 +72,17 @@ const selectItemFormInitialValues: InventoryStoreSelector<
 
 const useItemForm = () => {
 	const defaultValues = useInventoryStore(selectItemFormInitialValues);
+	const { isOpen } = useItemModalProps();
 	const { reset, ...form } = useForm<z.infer<typeof itemFormSchema>>({
 		resolver: itemFormResolver,
 		defaultValues,
 	});
 
 	useUpdateEffect(() => {
-		// FIXME: If a new item is added via refetch while item modal is open, the form fields are reset
 		reset(defaultValues);
-	}, [defaultValues, reset]);
+	}, [isOpen]);
 
 	return { reset, ...form };
-};
-
-const useItemModalProps = () => {
-	const dispatch = useInventoryStoreDispatch();
-	const isOpen = useInventoryStore((s) => !!s.ui.itemDialog);
-	const onClose = () =>
-		dispatch({
-			type: "ui.close-item-dialog",
-		});
-
-	return { isOpen, onClose };
 };
 
 const selectAllItemCategories: InventoryStoreSelector<string[]> = flow(
@@ -303,10 +303,17 @@ const ItemDialog: React.FC = () => {
 				<ModalContent>
 					<ModalHeader>Confirm Delete</ModalHeader>
 					<ModalBody>
-						Are you sure you want to delete the item {itemBeingEdited?.name}?
+						Are you sure you want to delete the item &quot;
+						{itemBeingEdited?.name}
+						&quot;?
 					</ModalBody>
 					<ModalFooter gap={2}>
-						<Button variant="ghost">Cancel</Button>
+						<Button
+							variant="ghost"
+							onClick={deleteConfirmationModalController.onClose}
+						>
+							Cancel
+						</Button>
 						<Button
 							onClick={() => {
 								deleteItemMutator.mutate({

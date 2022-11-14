@@ -12,3 +12,4 @@ export * from "./ItemGiveToSelect";
 export * from "./SheetDialog";
 export * from "./Dialogs";
 export * from "./CharacterTotalsTable";
+export * from "./SideEffects";
