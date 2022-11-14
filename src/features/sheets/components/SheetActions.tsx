@@ -1,6 +1,6 @@
 import { useDebouncedEffect } from "$root/hooks/debounceHooks";
 import useRenderLogging from "$root/hooks/useRenderLogging";
-import { useInventoryStoreDispatch, useSheetPageState } from "$sheets/store";
+import { useInventoryStoreDispatch } from "$sheets/store";
 import { Button, Input, SimpleGrid, Stack } from "@chakra-ui/react";
 import { FC, useState } from "react";
 
@@ -46,10 +46,9 @@ const useSearchInputProps = () => {
  */
 const SheetActions: FC = () => {
 	useRenderLogging("SheetActions");
-	const searchInputProps = useSearchInputProps();
 
-	const { openDialog, resetFilters } = useSheetPageState();
 	const dispatch = useInventoryStoreDispatch();
+	const searchInputProps = useSearchInputProps();
 
 	return (
 		<Stack
@@ -79,12 +78,24 @@ const SheetActions: FC = () => {
 			{/* NOTE: Updates may stutter in dev mode but is fine when built */}
 			<SimpleGrid columns={[2, 2, 2, 1]} gap="group">
 				{/* Reset Filters Button */}
-				<Button onClick={resetFilters}>Reset Filters</Button>
+				<Button
+					onClick={() =>
+						dispatch({
+							type: "ui.reset-all-filters",
+						})
+					}
+				>
+					Reset Filters
+				</Button>
 				{/* Filter Options Dialog Button */}
 				<Button
 					width="full"
 					display={["inline-flex", "inline-flex", "inline-flex", "none"]}
-					onClick={() => openDialog("filter")}
+					onClick={() =>
+						dispatch({
+							type: "ui.open-filter-dialog",
+						})
+					}
 					flexGrow={0}
 				>
 					Filters
