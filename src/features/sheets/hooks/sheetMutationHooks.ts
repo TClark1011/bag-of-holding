@@ -1,5 +1,6 @@
 /* eslint-disable jsdoc/require-jsdoc */
 import queries from "$root/hooks/queries";
+import { nullFieldsToUndefined } from "$root/utils";
 import { useInventoryStoreDispatch } from "$sheets/store";
 
 export const useAddItemMutation: typeof queries.item.create.useMutation = (
@@ -30,7 +31,10 @@ export const useEditItemMutation: typeof queries.item.update.useMutation = (
 		onMutate: (input) => {
 			dispatch({
 				type: "update-item",
-				payload: input as any,
+				payload: {
+					data: nullFieldsToUndefined(input),
+					itemId: input.id,
+				},
 			});
 
 			return options?.onMutate?.(input);
@@ -49,7 +53,7 @@ export const useItemDeleteMutation: typeof queries.item.delete.useMutation = (
 		onMutate: (input) => {
 			dispatch({
 				type: "remove-item",
-				payload: input as any,
+				payload: input,
 			});
 
 			return options?.onMutate?.(input);

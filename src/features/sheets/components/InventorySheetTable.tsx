@@ -18,11 +18,11 @@ import { getItemTotalValue, getItemTotalWeight } from "$sheets/utils";
 import { testIdGeneratorFactory } from "$tests/utils/testUtils";
 import { ProcessableItemProperty } from "$sheets/types";
 import {
+	selectOverallColumnSums,
 	selectPropertyFilterMenuIsOpen,
 	selectVisibleItems,
 	useInventoryStore,
 	useInventoryStoreDispatch,
-	useSheetPageState,
 } from "$sheets/store";
 import {
 	NumericAscendingSortIcon,
@@ -115,15 +115,15 @@ const TableHeader: React.FC<
 	const sorting = useInventoryStore((s) => s.ui.sorting);
 	const filterPopoverIsOpen = useInventoryStore(
 		(state) =>
-			matchesSchema(filterableItemPropertySchema, property) &&
+			matchesSchema(property, filterableItemPropertySchema) &&
 			selectPropertyFilterMenuIsOpen(property)(state)
 	);
 	const sortingIcons = determineIconSet(property);
-	const isFilterable = matchesSchema(filterableItemPropertySchema, property);
+	const isFilterable = matchesSchema(property, filterableItemPropertySchema);
 	const isBeingSorted = sorting?.property === property;
 
 	const onSort = () => {
-		if (matchesSchema(sortableItemPropertySchema, property)) {
+		if (matchesSchema(property, sortableItemPropertySchema)) {
 			dispatch({
 				type: "ui.toggle-sort",
 				payload: property,
@@ -188,9 +188,8 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 	const dispatch = useInventoryStoreDispatch();
 	const hoverBg = useColorModeValue("gray.100", "gray.700");
 
-	const { getColumnSums } = useSheetPageState();
+	const columnSums = useInventoryStore(selectOverallColumnSums);
 	const processedItems = useInventoryStore(selectVisibleItems);
-	const columnSums = getColumnSums(processedItems);
 
 	return (
 		<Table
@@ -312,7 +311,7 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 					</Tr>
 				))}
 				<Tr>
-					{/* Bottom Row */}
+					{/* Bottom Sums Row */}
 					<TableCell colSpan={2} fontWeight="bold" textAlign="right">
 						Total
 					</TableCell>

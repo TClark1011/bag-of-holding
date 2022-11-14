@@ -35,7 +35,6 @@ export type FullSheet = z.infer<typeof fullSheetSchema>;
 export const fullSheetEntityPropertySchema = fullSheetSchema
 	.pick({ items: true, characters: true })
 	.keyof();
-
 export type FullSheetEntityProperty = z.infer<
 	typeof fullSheetEntityPropertySchema
 >;
@@ -54,5 +53,9 @@ export const sortableItemPropertySchema = itemSchema
 		quantity: true,
 	})
 	.keyof();
-
 export type SortableItemProperty = z.infer<typeof sortableItemPropertySchema>;
+
+export const numericItemPropertySchema = itemSchema
+	.pick({ quantity: true, weight: true, value: true })
+	.keyof();
+export type NumericItemProperty = z.infer<typeof numericItemPropertySchema>;

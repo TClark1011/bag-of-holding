@@ -175,7 +175,7 @@ const inventoryStoreReducer: Reducer<
 	InventoryStoreAction
 > = (prevState, action) =>
 	produce(prevState, (draftState) => {
-		const actionId = matchesSchema(z.object({ id: z.string() }), action)
+		const actionId = matchesSchema(action, z.object({ id: z.string() }))
 			? action.id
 			: cuid();
 

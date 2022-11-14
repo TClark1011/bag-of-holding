@@ -7,15 +7,13 @@ import {
 	SheetState,
 } from "$sheets/types";
 import codeToTitle from "code-to-title";
-import stringifyObject from "stringify-object";
 import { getIds } from "$root/utils";
-import { logEvent, logException } from "$analytics/utils";
+import { logEvent } from "$analytics/utils";
 import {
 	characterIsCarrying,
 	createInventoryItem,
 	generateCharacter,
 } from "$sheets/utils";
-import { sendSheetAction } from "$sheets/api";
 import { REFETCH_INTERVAL } from "$root/config";
 import { Character } from "@prisma/client";
 

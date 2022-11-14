@@ -1,7 +1,9 @@
+/* eslint-disable jsdoc/require-jsdoc */
 import {
 	FilterableItemProperty,
 	FullSheetEntityProperty,
 	GetEntityByProperty,
+	NumericItemProperty,
 	SortableItemProperty,
 } from "$extra-schemas";
 import { findObjectWithId, getUniqueValuesOf, hasId } from "$root/utils";
@@ -10,7 +12,11 @@ import {
 	InventoryStoreProps,
 } from "$sheets/store/useInventoryStore";
 import { FullSheet } from "$sheets/types";
-import { searchComparison } from "$sheets/utils";
+import {
+	getItemTotalValue,
+	getItemTotalWeight,
+	searchComparison,
+} from "$sheets/utils";
 import { A, D, F, flow, pipe } from "@mobily/ts-belt";
 import { Character, Item } from "@prisma/client";
 import Big from "big.js";
@@ -28,8 +34,6 @@ export type InventoryStoreSelector<Selection> = (
 export const fromSheet = <Selection>(selector: (p: FullSheet) => Selection) => (
 	state: InventoryStoreProps
 ) => selector(state.sheet);
-
-/* eslint-disable jsdoc/require-jsdoc */
 
 export const selectCharacterDialogMode: InventoryStoreSelector<
 	CharacterDialogStateProps["mode"]
@@ -115,8 +119,6 @@ export const selectItemBeingEdited: InventoryStoreSelector<Item | null> = (s) =>
 		? s.sheet.items.find(hasId(s.ui.itemDialog.characterId)) ?? null
 		: null;
 
-/* eslint-enable jsdoc/require-jsdoc */
-
 /**
  * Select all the possible values that can be applied to a
  * filterable property
@@ -167,11 +169,6 @@ const propertySorters: Record<
 	quantity: () => D.getUnsafe("quantity"),
 };
 
-/**
- * Select items that match the given filters and have been sorted
- *
- * @param state The current state
- */
 export const selectVisibleItems: InventoryStoreSelector<Item[]> = (state) =>
 	pipe(
 		state.sheet.items,
@@ -198,3 +195,44 @@ export const selectVisibleItems: InventoryStoreSelector<Item[]> = (state) =>
 		(items) =>
 			state.ui.sorting?.direction === "ascending" ? items : A.reverse(items)
 	);
+
+export type ColumnSums = Record<NumericItemProperty, number>;
+
+const getItemColumnSums = (items: Item[]) => {
+	const sums: ColumnSums = {
+		quantity: 0,
+		value: 0,
+		weight: 0,
+	};
+
+	for (const item of items) {
+		sums.quantity += item.quantity;
+		sums.value += getItemTotalValue(item);
+		sums.weight += getItemTotalWeight(item);
+	}
+
+	return sums;
+};
+
+export const selectOverallColumnSums: InventoryStoreSelector<ColumnSums> = (
+	state
+) => getItemColumnSums(state.sheet.items);
+
+type CharacterColumnSumsResult = {
+	character: Character;
+	sums: ColumnSums;
+};
+
+export const selectAllCharacterColumnTotals: InventoryStoreSelector<
+	CharacterColumnSumsResult[]
+> = (state) => {
+	const result: CharacterColumnSumsResult[] = [];
+	for (const character of state.sheet.characters) {
+		const items = selectCharacterCarriedItems(character.id)(state);
+		result.push({
+			character,
+			sums: getItemColumnSums(items),
+		});
+	}
+	return result;
+};

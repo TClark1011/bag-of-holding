@@ -43,19 +43,35 @@ export type RawToZod<T> = z.ZodType<never> &
 /**
  * Use a zod schema as a typeguard
  *
- * @param schema The schema
- * @param value The value to check
+ * @param data The data to check the type of
+ * @param schema The schema to check against
  */
-export const matchesSchema = <Schema extends z.ZodTypeAny>(
-	schema: Schema,
-	value: any
-): value is z.infer<Schema> => schema.safeParse(value).success;
+export function matchesSchema<Schema extends z.ZodTypeAny>(
+	data: any,
+	schema: Schema
+): data is z.infer<Schema>;
+/**
+ * Use a zod schema as a typeguard (curried)
+ *
+ * @param schema The schema to check against
+ * @returns a function that takes any data and returns
+ * true/false to indicate if it matches the schema
+ */
+export function matchesSchema<Schema extends z.ZodTypeAny>(
+	schema: Schema
+): (data: any) => data is z.infer<Schema>;
 
 /**
- * Curried version of `matchesSchema`
+ * Use a zod schema as a type guard
  *
- * @param schema The schema
+ * @param params Params
  */
-export const _matchesSchema = <Schema extends z.ZodTypeAny>(schema: Schema) => (
-	value: any
-): value is z.infer<Schema> => schema.safeParse(value).success;
+export function matchesSchema<Schema extends z.ZodTypeAny>(
+	...params: [any, Schema] | [Schema]
+) {
+	const [data, schema] = params.length === 2 ? params : [undefined, params[0]];
+	const validator = schema.safeParse;
+	return data !== undefined
+		? validator(data).success
+		: (data: any) => validator(data).success;
+}
