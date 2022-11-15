@@ -1,8 +1,8 @@
+import { selectCharacterWithId, useInventoryStore } from "$sheets/store";
 import { Text, TextProps } from "@chakra-ui/layout";
 import { Character } from "@prisma/client";
 import React from "react";
 import { OmitId } from "../../../types/UtilityTypes";
-import { useInventoryState } from "../providers/InventoryStateProvider";
 
 export interface PartyMemberDataProps extends Omit<TextProps, "children"> {
 	memberId: string;
@@ -32,9 +32,7 @@ const PartyMemberData: React.FC<PartyMemberDataProps> = ({
 	fallback = memberId,
 	...props
 }) => {
-	const { characters } = useInventoryState();
-
-	const selectedMember = characters.find((item) => item.id === memberId);
+	const selectedMember = useInventoryStore(selectCharacterWithId(memberId));
 
 	return selectedMember ? (
 		<Text {...props}>

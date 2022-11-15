@@ -1,11 +1,8 @@
 import { Box } from "@chakra-ui/react";
-import { InventoryStateProvider } from "$sheets/providers";
 import { GetServerSideProps } from "next";
 import { appName } from "$root/constants";
 import { getUrlParam, getSheetLink } from "$root/utils";
 import {
-	useSheetPageState,
-	useInventoryReducer,
 	useInventoryStore,
 	useInventoryStoreDispatch,
 	fromSheet,
@@ -14,7 +11,6 @@ import {
 	WelcomeDialog,
 	FilterDialog,
 	InventorySheetTable,
-	SheetOptionsDialog,
 	ItemDialog,
 	InventoryDataFetchingEffects,
 } from "$sheets/components";
@@ -24,12 +20,12 @@ import { useOnMountEffect } from "$root/hooks";
 import { Sheet } from "@prisma/client";
 import { FullSheet } from "$sheets/types";
 import CharacterDialog from "$sheets/components/Dialogs/CharacterDialog";
-import { D } from "@mobily/ts-belt";
 import SheetNameDialog from "$sheets/components/Dialogs/SheetNameDialog";
 import SheetTopBar from "$sheets/components/SheetTopBar";
 import SheetActions from "$sheets/components/SheetActions";
 import CharacterTotals from "$sheets/components/CharacterTotals";
 import useRenderLogging from "$root/hooks/useRenderLogging";
+import { get } from "$fp";
 
 const getTestId = testIdGeneratorFactory("SheetPage");
 
@@ -59,6 +55,9 @@ const SheetPage: React.FC<SheetPageProps> = ({
 	useRenderLogging("SheetPage");
 
 	const dispatch = useInventoryStoreDispatch();
+
+	const name = useInventoryStore(fromSheet(get("name")));
+
 	useOnMountEffect(() => {
 		dispatch({
 			type: "set-sheet",
@@ -66,20 +65,14 @@ const SheetPage: React.FC<SheetPageProps> = ({
 		});
 	});
 
-	const { characters, name } = useInventoryStore(
-		fromSheet(D.selectKeys(["characters", "name"]))
-	);
-
-	const [{ items, id }, inventoryDispatch] = useInventoryReducer(sheetFields);
-
 	useOnMountEffect(() => {
 		if (isNew) {
-			openDialog("welcome");
+			dispatch({
+				type: "ui.open-welcome-dialog",
+			});
 			//? Open the welcome dialog if the sheet is new
 		}
 	});
-
-	const { openDialog } = useSheetPageState();
 
 	return (
 		<>
@@ -91,33 +84,27 @@ const SheetPage: React.FC<SheetPageProps> = ({
 				url={getSheetLink(sheetFields.id, true)}
 				analyticsPageViewProps={{ title: "Sheet", url: "/sheets/[sheetId]" }}
 			>
-				<InventoryStateProvider
-					dispatch={inventoryDispatch}
-					state={{ items, characters, name, id }}
-				>
-					<Box as="main">
-						<SheetTopBar />
-						<SheetActions />
-						<InventorySheetTable
-							onRowClick={(item) =>
-								dispatch({
-									type: "ui.open-item-edit-dialog",
-									payload: item?.id ?? "",
-								})
-							}
-							mb="break"
-						/>
-						<CharacterTotals />
+				<Box as="main">
+					<SheetTopBar />
+					<SheetActions />
+					<InventorySheetTable
+						onRowClick={(item) =>
+							dispatch({
+								type: "ui.open-item-edit-dialog",
+								payload: item?.id ?? "",
+							})
+						}
+						mb="break"
+					/>
+					<CharacterTotals />
 
-						{/* Dialogs */}
-						<ItemDialog />
-						<FilterDialog />
-						<SheetOptionsDialog />
-						<WelcomeDialog />
-						<CharacterDialog />
-						<SheetNameDialog />
-					</Box>
-				</InventoryStateProvider>
+					{/* Dialogs */}
+					<ItemDialog />
+					<FilterDialog />
+					<WelcomeDialog />
+					<CharacterDialog />
+					<SheetNameDialog />
+				</Box>
 			</View>
 		</>
 	);

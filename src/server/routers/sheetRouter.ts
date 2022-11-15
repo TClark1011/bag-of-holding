@@ -27,6 +27,13 @@ const sheetRouter = trpc.router({
 				},
 			});
 		}),
+	create: trpc.procedure.mutation(() =>
+		prisma.sheet.create({
+			data: {
+				name: "New Sheet",
+			},
+		})
+	),
 });
 
 export default sheetRouter;

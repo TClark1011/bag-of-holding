@@ -191,6 +191,8 @@ export type InventoryStoreAction =
 	| Action<"ui.open-filter-dialog">
 	| Action<"ui.close-filter-dialog">
 	| Action<"ui.reset-all-filters">
+	| Action<"ui.open-welcome-dialog">
+	| Action<"ui.close-welcome-dialog">
 	| z.infer<typeof updateItemActionSchema>
 	| z.infer<typeof deleteItemActionSchema>
 	| z.infer<typeof setSheetActionSchema>

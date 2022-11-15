@@ -1,4 +1,4 @@
-import { Box, Center, VStack } from "@chakra-ui/react";
+import { Box, Button, Center, VStack } from "@chakra-ui/react";
 import { testIdGeneratorFactory } from "$tests/utils/testUtils";
 import {
 	infoPageUrl,
@@ -7,7 +7,6 @@ import {
 	appSlogan,
 } from "$root/constants";
 import {
-	GetStartedButton,
 	View,
 	H1,
 	H2,
@@ -15,6 +14,11 @@ import {
 	BagOfHoldingIcon,
 	WelcomeBack,
 } from "$root/components";
+import queries from "$root/hooks/queries";
+import { useRouter } from "next/router";
+import { getSheetLink } from "$root/utils";
+import { FC, useState } from "react";
+import useRenderLogging from "$root/hooks/useRenderLogging";
 
 const getTestId = testIdGeneratorFactory("Home");
 
@@ -28,7 +32,23 @@ export const homePageTestIds = {
  *
  * @returns The home page
  */
-const Home: React.FC = () => {
+const Home: FC = () => {
+	useRenderLogging("Home");
+
+	const router = useRouter();
+	const [isLoading, setIsLoading] = useState(false);
+	const createSheetMutation = queries.sheet.create.useMutation({
+		onMutate: () => {
+			setIsLoading(true);
+		},
+		onError: () => {
+			setIsLoading(false);
+		},
+		onSuccess: (data) => {
+			router.replace(getSheetLink(data.id) + "?new", getSheetLink(data.id));
+		},
+	});
+
 	return (
 		<View
 			accountForTopNav={false}
@@ -56,7 +76,14 @@ const Home: React.FC = () => {
 						<Center>
 							<VStack spacing="break">
 								{/* Get Started Button */}
-								<GetStartedButton />
+								<Button
+									colorScheme="primary"
+									onClick={() => createSheetMutation.mutate()}
+									isLoading={isLoading}
+									loadingText="Creating Sheet"
+								>
+									Get Started
+								</Button>
 								{/* Link to info page */}
 								<ButtonLink
 									href={infoPageUrl}

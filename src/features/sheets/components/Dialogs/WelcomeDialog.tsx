@@ -1,7 +1,31 @@
-import { Paragraph } from "$root/components";
-import { SheetDialog } from "$sheets/components";
-import { useInventoryStoreDispatch, useSheetPageState } from "$sheets/store";
-import { Button, VStack, ModalBody, ModalFooter } from "@chakra-ui/react";
+import useRenderLogging from "$root/hooks/useRenderLogging";
+import { useInventoryStore, useInventoryStoreDispatch } from "$sheets/store";
+import {
+	Button,
+	VStack,
+	ModalBody,
+	ModalFooter,
+	Modal,
+	ModalOverlay,
+	ModalContent,
+	ModalHeader,
+} from "@chakra-ui/react";
+
+const useWelcomeDialogModalProps = () => {
+	const dispatch = useInventoryStoreDispatch();
+	const isOpen = useInventoryStore((s) => s.ui.welcomeDialogIsOpen);
+
+	const onClose = () => {
+		dispatch({
+			type: "ui.close-welcome-dialog",
+		});
+		dispatch({
+			type: "ui.open-sheet-name-dialog",
+		});
+	};
+
+	return { isOpen, onClose };
+};
 
 /**
  * Dialog that will be displayed the first time a newly
@@ -10,45 +34,39 @@ import { Button, VStack, ModalBody, ModalFooter } from "@chakra-ui/react";
  * @returns Component stuff
  */
 const WelcomeDialog: React.FC = () => {
-	const { closeDialog } = useSheetPageState();
-	const dispatch = useInventoryStoreDispatch();
+	useRenderLogging("WelcomeDialog");
 
-	/**
-	 * Callback to execute when the close button is clicked. Closes
-	 * the dialog and then opens the 'sheetOptions' dialog.
-	 */
-	const closeButtonOnClick = () => {
-		closeDialog();
-		dispatch({
-			type: "ui.open-sheet-name-dialog",
-		});
-	};
+	const modalProps = useWelcomeDialogModalProps();
 	return (
-		<SheetDialog dialogType="welcome" header="Welcome!">
-			<ModalBody>
-				<VStack spacing="group">
-					<Paragraph>
-						Before you do anything else, we highly recommend you{" "}
-						<b>bookmark this page, otherwise you might lose it!</b>
-					</Paragraph>
-					<Paragraph>
-						Currently the only way for you to get back to this sheet is if you
-						save the URL.{" "}
-						<b>If you lose the URL to a sheet, {"it's"} gone forever!</b>
-					</Paragraph>
-					<Paragraph>
-						You can share this page with other players by just sending them the
-						URL for this sheet. Be careful though, since{" "}
-						<b>anyone with the sheet url can edit it!</b>
-					</Paragraph>
-				</VStack>
-			</ModalBody>
-			<ModalFooter>
-				<Button colorScheme="primary" onClick={closeButtonOnClick}>
-					Close
-				</Button>
-			</ModalFooter>
-		</SheetDialog>
+		<Modal {...modalProps} closeOnOverlayClick={false} closeOnEsc={false}>
+			<ModalOverlay />
+			<ModalContent>
+				<ModalHeader>Welcome!</ModalHeader>
+				<ModalBody>
+					<VStack spacing="group">
+						<p>
+							Before you do anything else, we highly recommend you{" "}
+							<b>bookmark this page, otherwise you might lose it!</b>
+						</p>
+						<p>
+							Currently the only way for you to get back to this sheet is if you
+							save the URL.{" "}
+							<b>If you lose the URL to a sheet, {"it's"} gone forever!</b>
+						</p>
+						<p>
+							You can share this page with other players by just sending them
+							the URL for this sheet. Be careful though, since{" "}
+							<b>anyone with the sheet url can edit it!</b>
+						</p>
+					</VStack>
+				</ModalBody>
+				<ModalFooter>
+					<Button colorScheme="primary" onClick={modalProps.onClose}>
+						Close
+					</Button>
+				</ModalFooter>
+			</ModalContent>
+		</Modal>
 	);
 };
 

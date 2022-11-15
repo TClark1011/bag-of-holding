@@ -1,3 +1,5 @@
+import { D } from "@mobily/ts-belt";
+
 export * from "@mobily/ts-belt";
 
 /**
@@ -23,3 +25,5 @@ export const expectParam = <T>() => (value: T) => value;
  * passed value
  */
 export const give = <T>(value: T) => () => value;
+
+export const get = D.getUnsafe;

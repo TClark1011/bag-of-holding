@@ -75,6 +75,7 @@ export type InventoryStoreProps = {
 		itemDialog: ItemDialogStateProps | null;
 		searchBarValue: string;
 		filterDialogIsOpen: boolean;
+		welcomeDialogIsOpen: boolean;
 	};
 };
 
@@ -101,6 +102,7 @@ const initialInventoryStoreState: InventoryStoreProps = {
 		itemDialog: null,
 		searchBarValue: "",
 		filterDialogIsOpen: false,
+		welcomeDialogIsOpen: false,
 	},
 };
 
@@ -346,6 +348,12 @@ const inventoryStoreReducer: Reducer<
 					carriedByCharacterId: null,
 					category: null,
 				};
+				break;
+			case "ui.open-welcome-dialog":
+				draftState.ui.welcomeDialogIsOpen = true;
+				break;
+			case "ui.close-welcome-dialog":
+				draftState.ui.welcomeDialogIsOpen = false;
 				break;
 			default:
 				// @ts-expect-error `resolvedAction` will be `never` if switch is exhaustive

@@ -7,7 +7,6 @@ import { Meta } from "$root/components";
 import { AppProps } from "next/dist/shared/lib/router/router";
 import { css, Global } from "@emotion/react";
 
-import "@hookstate/devtools";
 import "$root/assets/fonts/Coves/stylesheet.css";
 import "@fontsource/roboto";
 import "@fontsource/roboto/100.css";
