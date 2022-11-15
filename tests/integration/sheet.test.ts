@@ -38,6 +38,8 @@ import { A, D, F, flow, pipe, S } from "@mobily/ts-belt";
 import test, { expect } from "@playwright/test";
 import * as faker from "faker";
 
+const shortRandomString = () => Math.random().toString().slice(2, 8);
+
 /**
  * Generate a test name to use for an
  * entity. Takes a passed string,
@@ -62,45 +64,77 @@ const [memberName, updatedMemberName, secondMemberName] = A.makeWithIndex(
 
 test("Create New Sheet, Close Welcome", async ({ page, baseURL }) => {
 	await page.goto("/");
-	await page.click("#new-sheet-button");
 
-	expect(page.url()).toBe(`${baseURL}/new`);
+	await page.click("text=Get Started");
 
 	await page.waitForNavigation({
 		url: "**/sheets/*",
 	});
 
-	await waitForModalState(page, "visible", "Welcome!");
+	await page.$("text=Welcome!");
 	await page.click(cssSelectorWithText("button", "Close"));
-	await page.waitForSelector("text=Sheet Options");
+	await page.waitForSelector("text=Edit Sheet Name");
 	await page.keyboard.press("Escape");
-	await waitForModalState(page, "hidden", "Welcome!");
 
 	expect(await getSheetTitle(page)).toBe("New Sheet");
 });
 
-testWithNewSheet(
-	"Edit Sheet Options",
-	async ({ page, clientB, waitForRefetch }) => {
-		await page.click(sheetOptionsButton);
-		await waitForModalState(page, "visible");
+testWithNewSheet("Change Sheet Name", async ({ clientA, clientB }) => {
+	await clientA.click(sheetOptionsButton);
+	await clientA.waitForSelector("text=Edit Sheet Name");
 
-		await page.fill("#name", sheetName);
-		await page.click(sheetOptionsAddMemberButton);
-		await page.fill("[name='characters.0.name']", memberName);
-		await page.click(sheetOptionsSaveButton);
+	const testName = "Test Sheet Name";
+	await clientA.fill("#name", testName);
+	await clientA.click("text=Save");
 
-		await page.locator("text=Sheet Options").waitFor({
+	await clientA.waitForSelector("text=Edit Sheet Name", {
+		state: "hidden",
+	});
+
+	expect(await getSheetTitle(clientA)).toBe(testName);
+
+	await clientB.waitForSelector(`text=${testName}`, {
+		timeout: 10000,
+	});
+});
+
+testWithNewSheet.only(
+	"Create Character, Give Items",
+	async ({ clientA, clientB }) => {
+		await clientA.click("text=Add Character");
+
+		const characterName = shortRandomString();
+
+		const nameInputSelector = "input#name";
+		await clientA.waitForSelector(nameInputSelector);
+
+		await clientA.fill(nameInputSelector, characterName);
+		await clientA.click("text=Save");
+
+		await clientA.waitForSelector(`button:has-text("${characterName}")`);
+		await clientB.waitForSelector(`button:has-text("${characterName}")`);
+
+		await clientA.click("text=Add New Item");
+
+		const itemName = shortRandomString();
+
+		await clientA.waitForSelector(nameInputSelector);
+		await clientA.fill(nameInputSelector, itemName);
+		await (await clientA.$("#carriedByCharacterId"))?.selectOption({
+			label: characterName,
+		});
+
+		await clientA.click("text=Create");
+		await clientA.waitForSelector(nameInputSelector, {
 			state: "hidden",
 		});
 
-		expect(await getSheetTitle(page)).toBe(sheetName);
-		expect(await page.isVisible(`text=${memberName}`)).toBe(true);
-
-		await waitForRefetch();
-
-		expect(await getSheetTitle(page)).toBe(sheetName);
-		expect(await clientB.isVisible(`text=${memberName}`)).toBe(true);
+		await clientA.waitForSelector(
+			`tr:has-text("${itemName}"):has-text("${itemName}")`
+		);
+		await clientB.waitForSelector(
+			`tr:has-text("${itemName}"):has-text("${itemName}")`
+		);
 	}
 );
 

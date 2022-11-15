@@ -100,11 +100,9 @@ export const selectItemWithId = (id: string): InventoryStoreSelector<Item> =>
 
 export const selectCharacterWithId = (
 	id: string
-): InventoryStoreSelector<Character> =>
+): InventoryStoreSelector<Character | undefined> =>
 	fromSheet((sheet) => {
 		const character = findObjectWithId(sheet.characters, id);
-
-		if (!character) throw new Error(`Item with id ${id} not found`);
 
 		return character;
 	});

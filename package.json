@@ -13,11 +13,7 @@
 		"dev-db:start": "concurrently \"yarn dev-db:run\" \"yarn dev-db:wait && yarn prisma migrate dev --skip-generate\"",
 		"dev-db:reset": "docker-compose down --rmi all --volumes",
 		"dev-db:studio": "yarn prisma studio",
-		"test": "stmux --error=\"\" --mouse --wait always -- [ -t unit \"yarn test:unit\" .. -t integration \"yarn test:integration\" ]",
-		"test:unit": "jest --runInBand",
-		"test:frontend": "jest --runInBand --selectProjects frontend",
-		"test:backend": "jest --runInBand --selectProjects backend",
-		"test:integration": "playwright test",
+		"test": "playwright test",
 		"commit": "git cz",
 		"check-types": "tsc --noEmit",
 		"release": "standard-version",
@@ -29,8 +25,7 @@
 		"postinstall": "prisma generate && yarn patch-package",
 		"clean-deps": "yarn flush-deps && yarn",
 		"flush-deps": "npx rimraf node_modules",
-		"ci": "yarn install --freeze-lockfile",
-		"patch-package": "patch-package --use-yarn"
+		"ci": "yarn install --freeze-lockfile"
 	},
 	"dependencies": {
 		"@chakra-ui/react": "^1.8.9",
@@ -112,7 +107,6 @@
 		"jest-dom": "^4.0.0",
 		"jest-extended": "^0.11.5",
 		"ora": "5.4.1",
-		"patch-package": "^6.4.7",
 		"prettier": "^2.2.1",
 		"prettier-eslint": "^12.0.0",
 		"prisma": "^4.3.1",

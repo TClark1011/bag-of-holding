@@ -86,7 +86,7 @@ const SheetTopBar: FC = () => {
 						}
 						leftIcon={<AddIcon />}
 					>
-						Add Member
+						Add Character
 					</Button>
 				</LightMode>
 			</HStack>

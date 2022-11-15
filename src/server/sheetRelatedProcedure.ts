@@ -16,8 +16,8 @@ const sheetUpdateMiddleware = trpc.middleware(async ({ next, type }) => {
 	if (type !== "mutation" || !endResult.ok) return endResult;
 
 	const sheetId: string | null = matchesSchema(
-		z.object({ data: itemSchema.or(characterSchema) }),
-		endResult
+		endResult,
+		z.object({ data: itemSchema.or(characterSchema) })
 	)
 		? endResult.data.sheetId
 		: null;
