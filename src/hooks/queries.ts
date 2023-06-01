@@ -1,6 +1,6 @@
 import { createTRPCNext } from "@trpc/next";
 import type { AppRouter } from "$root/server/routers";
-import { httpBatchLink } from "@trpc/client";
+import { httpBatchLink, loggerLink } from "@trpc/client";
 import superjson from "superjson";
 
 const getBaseUrl = () => {
@@ -20,6 +20,9 @@ const getBaseUrl = () => {
 const queries = createTRPCNext<AppRouter>({
 	config: () => ({
 		links: [
+			loggerLink({
+				enabled: () => process.env.NODE_ENV === "development",
+			}),
 			httpBatchLink({
 				url: `${getBaseUrl()}/api/trpc`,
 			}),

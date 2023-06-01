@@ -1,4 +1,5 @@
 import { expectParam } from "$fp";
+import { SHEET_REFETCH_INTERVAL_MS } from "$root/config";
 import queries from "$root/hooks/queries";
 import {
 	useAddItemMutation,
@@ -67,7 +68,7 @@ const InventoryDataFetchingEffects = () => {
 			deleteCharacterMutation,
 			updateCharacterMutation,
 		].some((mutation) => mutation.isLoading), //do not refetch while mutations are in progress
-		refetchInterval: 1000 * 6,
+		refetchInterval: SHEET_REFETCH_INTERVAL_MS,
 		refetchIntervalInBackground: true,
 	});
 

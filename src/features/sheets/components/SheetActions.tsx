@@ -1,3 +1,4 @@
+import { SEARCH_BAR_DELAY_MS } from "$root/config";
 import { useDebouncedEffect } from "$root/hooks/debounceHooks";
 import useRenderLogging from "$root/hooks/useRenderLogging";
 import { useInventoryStoreDispatch } from "$sheets/store";
@@ -17,7 +18,7 @@ const useSearchInputProps = () => {
 			});
 		},
 		[localValue],
-		200
+		SEARCH_BAR_DELAY_MS
 	);
 
 	/**

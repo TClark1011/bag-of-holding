@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations */
 import { ExtractResolvedPayloadActions, resolveSimpleAction } from "$actions";
 import {
 	arrayDiff,
@@ -6,11 +7,14 @@ import {
 	toggleArrayItem,
 	updateItemWithId,
 } from "$root/utils";
-import { CharacterRemovalStrategy } from "$sheets/types";
+import {
+	CharacterRemovalStrategy,
+	numericItemPropertySchema,
+} from "$sheets/types";
 import { itemIsCarriedByCharacterId } from "$sheets/utils";
 import { composeCharacter } from "$sheets/utils/sheetEntityComposers";
 import { createState, withReducer } from "$zustand";
-import { A, D, F } from "@mobily/ts-belt";
+import { A, D, F, pipe } from "@mobily/ts-belt";
 import { Character, Item } from "@prisma/client";
 import cuid from "cuid";
 import produce from "immer";
@@ -34,6 +38,13 @@ import {
 	selectAllPossibleFilterValuesOnProperty,
 } from "$sheets/store/inventorySelectors";
 import { SortingDirection } from "$root/types";
+import {
+	createLoopedProgression,
+	getLoopedProgressionValue,
+	goNextOnLoopedProgression,
+	LoopedProgression,
+	updateLoopedProgressionToPositionOfValue,
+} from "$root/utils/loopedProgression";
 
 export type ItemDialogStateProps =
 	| {
@@ -83,6 +94,11 @@ export type InventoryStoreProps = {
 	};
 };
 
+const defaultSorting: InventoryStoreProps["ui"]["sorting"] = {
+	property: "name",
+	direction: "ascending",
+};
+
 const initialInventoryStoreState: InventoryStoreProps = {
 	sheet: {
 		characters: [],
@@ -101,7 +117,7 @@ const initialInventoryStoreState: InventoryStoreProps = {
 			carriedByCharacterId: null,
 			category: null,
 		},
-		sorting: null,
+		sorting: defaultSorting,
 		openFilterMenu: null,
 		itemDialog: null,
 		searchBarValue: "",
@@ -179,11 +195,29 @@ const resolveInventoryAction = (
 	} as never;
 };
 
+const numericSortingDirectionProgression =
+	createLoopedProgression<null | SortingDirection>([
+		null,
+		"descending",
+		"ascending",
+	]);
+
+const textSortingDirectionProgression =
+	createLoopedProgression<null | SortingDirection>([
+		null,
+		"ascending",
+		"descending",
+	]);
+
+const isNumericItemProperty = matchesSchema(numericItemPropertySchema);
+
 const inventoryStoreReducer: Reducer<
 	InventoryStoreProps,
 	InventoryStoreAction
 > = (prevState, action) =>
 	produce(prevState, (draftState) => {
+		console.debug("inventoryStoreDispatchingAction", action);
+
 		const actionId = matchesSchema(action, z.object({ id: z.string() }))
 			? action.id
 			: cuid();
@@ -300,24 +334,48 @@ const inventoryStoreReducer: Reducer<
 				draftState.ui.filters[resolvedAction.originalAction.payload] = null;
 				break;
 			case "ui.toggle-sort":
-				if (
-					draftState.ui.sorting &&
-					draftState.ui.sorting.property ===
-						resolvedAction.originalAction.payload
-				) {
-					// If the targeted property is already being sorted...
-					if (draftState.ui.sorting.direction === "descending") {
-						draftState.ui.sorting.direction = "ascending"; // Set it to ascending if it was descending
-					} else if (draftState.ui.sorting.direction === "ascending") {
-						draftState.ui.sorting = null; // If it was ascending, remove the sorting
-					}
+				const propertyTargetedForSorting =
+					resolvedAction.originalAction.payload;
+
+				const targetedPropertyIsNumeric = isNumericItemProperty(
+					propertyTargetedForSorting
+				);
+
+				const sortingDirectionProgression: LoopedProgression<SortingDirection | null> =
+					targetedPropertyIsNumeric
+						? numericSortingDirectionProgression
+						: textSortingDirectionProgression;
+
+				const targetPropertyWasAlreadyBeingSortedBy =
+					draftState.ui.sorting?.property === propertyTargetedForSorting;
+
+				const currentSortingValueForTargetProperty: SortingDirection | null =
+					targetPropertyWasAlreadyBeingSortedBy
+						? draftState.ui.sorting?.direction ?? null
+						: null;
+
+				const newSortingDirection = pipe(
+					sortingDirectionProgression,
+					(p) =>
+						updateLoopedProgressionToPositionOfValue(
+							p,
+							currentSortingValueForTargetProperty
+						),
+					goNextOnLoopedProgression,
+					getLoopedProgressionValue
+				);
+
+				if (newSortingDirection === null) {
+					draftState.ui.sorting = defaultSorting;
+					// We never want to have no sorting, so we set it to the default
+					// (ascending by name) rather than go to null
 				} else {
-					// If a new proeprty is being sorted by
 					draftState.ui.sorting = {
-						direction: "descending",
+						direction: newSortingDirection,
 						property: resolvedAction.originalAction.payload,
 					};
 				}
+
 				break;
 			case "ui.open-filter-menu":
 				draftState.ui.openFilterMenu = resolvedAction.originalAction.payload;
@@ -361,8 +419,7 @@ const inventoryStoreReducer: Reducer<
 				draftState.ui.welcomeDialogIsOpen = false;
 				break;
 			default:
-				// @ts-expect-error `resolvedAction` will be `never` if switch is exhaustive
-				resolvedAction.type; // using ts-expect-error here so this line will error if the switch is not exhaustive
+				mustBeNever(resolvedAction);
 		}
 
 		draftState.resolvedActionIds.push(resolvedAction.id);

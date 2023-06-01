@@ -4,13 +4,13 @@ import {
 	GetEntityByProperty,
 	NumericItemProperty,
 	SortableItemProperty,
-} from "$extra-schemas";
+	FullSheet,
+} from "$sheets/types";
 import { findObjectWithId, getUniqueValuesOf, hasId } from "$root/utils";
 import {
 	CharacterDialogStateProps,
 	InventoryStoreProps,
 } from "$sheets/store/useInventoryStore";
-import { FullSheet } from "$sheets/types";
 import {
 	getItemTotalValue,
 	getItemTotalWeight,
