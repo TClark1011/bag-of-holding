@@ -16,6 +16,19 @@ import { Item } from "@prisma/client";
 import { characterSchema } from "@prisma/schemas";
 import { z } from "zod";
 
+/**
+ * Explanation of "resolved" actions: Some actions may require
+ * extra information that is returned by the server in order
+ * to be fully executed. Such actions have a "resolved" and
+ * "unresolved" form. The unresolved action does not contain
+ * the extra information, while the resolved action does.
+ *
+ * Example: When creating an item, we do not know what ID the
+ * server will assign it, so this information is not included
+ * in the unresolved action. However, the resolved action
+ * contains the ID.
+ */
+
 /* #region  General Sheet Actions */
 export const setSheetActionSchema = payloadActionSchema(
 	"set-sheet",

@@ -164,7 +164,6 @@ const ItemDialog: React.FC = () => {
 									id={f("name")}
 									{...register("name")}
 									placeholder="Name"
-
 								/>
 								<FormErrorMessage>
 									{formState.errors.name && formState.errors.name.message}
