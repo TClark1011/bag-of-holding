@@ -1,5 +1,6 @@
-import { expectParam } from "$fp";
+import { expectParam, P } from "$fp";
 import { useOnMountEffect } from "$root/hooks";
+import { useCharacterDeleteMutation } from "$sheets/hooks";
 import {
 	selectCharacterBeingEdited,
 	selectCharacters,
@@ -26,10 +27,11 @@ import {
 	RadioGroup,
 	Select,
 	Text,
+	useBoolean,
 	VStack,
 } from "@chakra-ui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { A, flow } from "@mobily/ts-belt";
+import { A, F, flow } from "@mobily/ts-belt";
 import { FC, useCallback, useMemo } from "react";
 import { useForm, UseFormReturn } from "react-hook-form";
 import { z } from "zod";
@@ -146,32 +148,27 @@ const useOtherCharacters = () =>
 	});
 
 const useHandleCharacterDeletionWithStrategyForm = () => {
-	const dispatch = useInventoryStoreDispatch();
 	const characterBeingEdited = useInventoryStore(selectCharacterBeingEdited);
+	const characterDeletionMutation = useCharacterDeleteMutation();
 
 	const handler = useCallback(
-		(data: StrategySelectionFormFields) => {
+		async (data: StrategySelectionFormFields) => {
+			const characterId = characterBeingEdited?.id ?? "";
 			if (data.strategyType === "item-pass") {
-				dispatch({
-					type: "remove-character",
-					payload: {
-						characterId: characterBeingEdited?.id ?? "",
-						strategy: {
-							type: "item-pass",
-							data: {
-								toCharacterId: data.passToTarget ?? "",
-							},
+				await characterDeletionMutation.mutateAsync({
+					characterId,
+					strategy: {
+						type: data.strategyType,
+						data: {
+							toCharacterId: data.passToTarget ?? "",
 						},
 					},
 				});
 			} else {
-				dispatch({
-					type: "remove-character",
-					payload: {
-						characterId: characterBeingEdited?.id ?? "",
-						strategy: {
-							type: data.strategyType,
-						},
+				await characterDeletionMutation.mutateAsync({
+					characterId,
+					strategy: {
+						type: data.strategyType,
 					},
 				});
 			}
@@ -183,20 +180,19 @@ const useHandleCharacterDeletionWithStrategyForm = () => {
 };
 
 const useHandleSimpleConfirmation = () => {
-	const dispatch = useInventoryStoreDispatch();
 	const characterBeingEdited = useInventoryStore(selectCharacterBeingEdited);
+	const characterDeletionMutation = useCharacterDeleteMutation();
 
-	const handler = useCallback(() => {
-		dispatch({
-			type: "remove-character",
-			payload: {
+	const handler = useCallback(
+		() =>
+			characterDeletionMutation.mutateAsync({
 				characterId: characterBeingEdited?.id ?? "",
 				strategy: {
 					type: "item-delete",
 				},
-			},
-		});
-	}, [characterBeingEdited]);
+			}),
+		[characterBeingEdited]
+	);
 
 	return handler;
 };
@@ -214,6 +210,7 @@ const CharacterConfirmDeleteDialog = () => {
 	const itemsCarriedByEditTarget = useItemsCarriedByEditTarget();
 	const strategySelectionForm = useStrategySelectionForm();
 	const characterBeingEdited = useInventoryStore(selectCharacterBeingEdited);
+	const [isLoading, isLoadingController] = useBoolean();
 
 	const submitStrategySelectionForm = useHandleCharacterDeletionWithStrategyForm();
 	const submitSimpleConfirmation = useHandleSimpleConfirmation();
@@ -227,7 +224,13 @@ const CharacterConfirmDeleteDialog = () => {
 	);
 
 	const submissionHandler = useMemo(
-		() => flow(submitFormData, onCloseBaseCharacterEditModal),
+		() =>
+			flow(
+				F.tap(isLoadingController.on),
+				submitFormData,
+				P.then(onCloseBaseCharacterEditModal),
+				P.then(isLoadingController.off)
+			),
 		[strategySelectionForm, itemsCarriedByEditTarget]
 	);
 
@@ -253,7 +256,7 @@ const CharacterConfirmDeleteDialog = () => {
 					<Button mr="group" variant="ghost" onClick={onClose}>
 						Cancel
 					</Button>
-					<Button colorScheme="primary" type="submit">
+					<Button colorScheme="red" type="submit" isLoading={isLoading}>
 						Confirm
 					</Button>
 				</ModalFooter>

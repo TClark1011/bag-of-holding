@@ -35,6 +35,10 @@ export const fromSheet = <Selection>(selector: (p: FullSheet) => Selection) => (
 	state: InventoryStoreProps
 ) => selector(state.sheet);
 
+export const fromUI = <Selection>(
+	selector: (p: InventoryStoreProps["ui"]) => Selection
+): InventoryStoreSelector<Selection> => (state) => selector(state.ui);
+
 export const selectCharacterDialogMode: InventoryStoreSelector<
 	CharacterDialogStateProps["mode"]
 > = (s) => s.ui.characterDialog.mode;

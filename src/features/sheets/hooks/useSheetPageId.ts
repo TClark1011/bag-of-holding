@@ -8,7 +8,7 @@ import { getUrlSlug } from "$root/utils";
  * url is not accessible
  */
 const useSheetPageId = () => {
-	const id = getUrlSlug()?.[2] || "";
+	const id = getUrlSlug()?.[2] ?? "";
 
 	return id;
 };

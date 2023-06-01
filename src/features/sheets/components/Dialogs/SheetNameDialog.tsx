@@ -1,4 +1,5 @@
 import {
+	fromSheet,
 	selectSheetName,
 	useInventoryStore,
 	useInventoryStoreDispatch,
@@ -23,6 +24,8 @@ import { z } from "zod";
 import { sheetSchema } from "@prisma/schemas";
 import { useForm } from "$hook-form";
 import { createSchemaKeyHelperFunction } from "$root/utils";
+import { useSheetNameChangeMutation } from "$sheets/hooks";
+import { get } from "$fp";
 
 const sheetNameFormSchema = sheetSchema.pick({
 	name: true,
@@ -61,13 +64,15 @@ const useSheetNameForm = () => {
 };
 
 const useSubmitHandler = () => {
-	const dispatch = useInventoryStoreDispatch();
+	const sheetId = useInventoryStore(fromSheet(get("id")));
 	const { onClose } = useModalProps();
 
-	const onSubmit = ({ name }: z.infer<typeof sheetNameFormSchema>) => {
-		dispatch({
-			type: "set-sheet-name",
-			payload: name,
+	const sheetRenameMutation = useSheetNameChangeMutation();
+
+	const onSubmit = async ({ name }: z.infer<typeof sheetNameFormSchema>) => {
+		await sheetRenameMutation.mutateAsync({
+			sheetId,
+			newName: name,
 		});
 		onClose();
 	};
@@ -106,6 +111,7 @@ const SheetNameDialog: FC = () => {
 						type="submit"
 						colorScheme="primary"
 						isDisabled={!formState.isValid}
+						isLoading={formState.isSubmitting}
 					>
 						Save
 					</Button>

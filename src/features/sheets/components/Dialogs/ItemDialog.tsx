@@ -138,14 +138,14 @@ const ItemDialog: React.FC = () => {
 				<ModalOverlay />
 				<ModalContent
 					as="form"
-					onSubmit={handleSubmit((form) => {
+					onSubmit={handleSubmit(async (form) => {
 						if (isInEditMode && itemBeingEdited) {
-							editItemMutator.mutate({
+							await editItemMutator.mutateAsync({
 								...itemBeingEdited,
 								...form,
 							});
 						} else if (!isInEditMode) {
-							createItemMutator.mutate({
+							await createItemMutator.mutateAsync({
 								...form,
 								sheetId,
 							});
@@ -291,13 +291,20 @@ const ItemDialog: React.FC = () => {
 						)}
 						<Flex gap={2}>
 							<Button variant="ghost">Cancel</Button>
-							<Button type="submit" colorScheme="primary">
+							<Button
+								type="submit"
+								colorScheme="primary"
+								isLoading={
+									editItemMutator.isLoading || createItemMutator.isLoading
+								}
+							>
 								{isInEditMode ? "Save" : "Create"}
 							</Button>
 						</Flex>
 					</ModalFooter>
 				</ModalContent>
 			</Modal>
+			{/* Delete Confirmation Modal */}
 			<Modal {...deleteConfirmationModalController}>
 				<ModalOverlay />
 				<ModalContent>
@@ -315,12 +322,15 @@ const ItemDialog: React.FC = () => {
 							Cancel
 						</Button>
 						<Button
+							isLoading={deleteItemMutator.isLoading}
 							onClick={() => {
-								deleteItemMutator.mutate({
-									itemId: itemBeingEdited?.id ?? "",
-								});
-								deleteConfirmationModalController.onClose();
-								onClose();
+								deleteItemMutator
+									.mutateAsync({
+										itemId: itemBeingEdited?.id ?? "",
+									})
+									.then(
+										flow(deleteConfirmationModalController.onClose, onClose)
+									);
 							}}
 						>
 							Confirm

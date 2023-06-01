@@ -1,7 +1,12 @@
 /* eslint-disable jsdoc/require-jsdoc */
 import queries from "$root/hooks/queries";
-import { nullFieldsToUndefined } from "$root/utils";
 import { useInventoryStoreDispatch } from "$sheets/store";
+
+/**
+ * This file contains hooks that wrap the trpc mutations
+ * and automatically sync the results with the zustand
+ * store to keep the UI up to date
+ */
 
 export const useAddItemMutation: typeof queries.item.create.useMutation = (
 	options
@@ -9,13 +14,13 @@ export const useAddItemMutation: typeof queries.item.create.useMutation = (
 	const dispatch = useInventoryStoreDispatch();
 	const mutation = queries.item.create.useMutation({
 		...options,
-		onMutate: (input) => {
+		onSuccess: (result, ...remainingParams) => {
 			dispatch({
 				type: "add-item",
-				payload: input as any,
+				payload: result,
 			});
 
-			return options?.onMutate?.(input);
+			return options?.onSuccess?.(result, ...remainingParams);
 		},
 	});
 
@@ -28,16 +33,16 @@ export const useEditItemMutation: typeof queries.item.update.useMutation = (
 	const dispatch = useInventoryStoreDispatch();
 	const mutation = queries.item.update.useMutation({
 		...options,
-		onMutate: (input) => {
+		onSuccess: (result, ...remainingParams) => {
 			dispatch({
 				type: "update-item",
 				payload: {
-					data: nullFieldsToUndefined(input),
-					itemId: input.id,
+					data: result,
+					itemId: result.id,
 				},
 			});
 
-			return options?.onMutate?.(input);
+			return options?.onSuccess?.(result, ...remainingParams);
 		},
 	});
 
@@ -50,13 +55,93 @@ export const useItemDeleteMutation: typeof queries.item.delete.useMutation = (
 	const dispatch = useInventoryStoreDispatch();
 	const mutation = queries.item.delete.useMutation({
 		...options,
-		onMutate: (input) => {
+		onSuccess: (result, input, context) => {
 			dispatch({
 				type: "remove-item",
 				payload: input,
 			});
 
-			return options?.onMutate?.(input);
+			return options?.onSuccess?.(result, input, context);
+		},
+	});
+
+	return mutation;
+};
+
+export const useCharacterCreateMutation: typeof queries.character.create.useMutation = (
+	options
+) => {
+	const dispatch = useInventoryStoreDispatch();
+	const mutation = queries.character.create.useMutation({
+		...options,
+		onSuccess: (result, ...remainingParams) => {
+			dispatch({
+				type: "add-character",
+				payload: result,
+			});
+
+			return options?.onSuccess?.(result, ...remainingParams);
+		},
+	});
+
+	return mutation;
+};
+
+export const useCharacterDeleteMutation: typeof queries.character.delete.useMutation = (
+	options
+) => {
+	const dispatch = useInventoryStoreDispatch();
+	const mutation = queries.character.delete.useMutation({
+		...options,
+		onSuccess: (result, input, context) => {
+			console.log("(sheetMutationHooks) result: ", result);
+			dispatch({
+				type: "remove-character",
+				payload: input,
+			});
+
+			return options?.onSuccess?.(result, input, context);
+		},
+	});
+
+	return mutation;
+};
+
+export const useCharacterUpdateMutation: typeof queries.character.update.useMutation = (
+	options
+) => {
+	const dispatch = useInventoryStoreDispatch();
+	const mutation = queries.character.update.useMutation({
+		...options,
+		onSuccess: (result, ...remainingParams) => {
+			dispatch({
+				type: "update-character",
+				payload: {
+					data: result,
+					characterId: result.id,
+				},
+			});
+
+			return options?.onSuccess?.(result, ...remainingParams);
+		},
+	});
+
+	return mutation;
+};
+
+export const useSheetNameChangeMutation: typeof queries.sheet.setName.useMutation = (
+	options
+) => {
+	const dispatch = useInventoryStoreDispatch();
+	const mutation = queries.sheet.setName.useMutation({
+		...options,
+		onSuccess: (result, ...remainingParams) => {
+			dispatch({
+				type: "set-sheet-name",
+				payload: result.name,
+			});
+
+			return options?.onSuccess?.(result, ...remainingParams);
 		},
 	});
 

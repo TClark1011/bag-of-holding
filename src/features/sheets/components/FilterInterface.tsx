@@ -105,11 +105,11 @@ const FilterInterface: React.FC<Props> = ({
 				</ButtonGroup>
 			</Flex>
 			<List textAlign="left">
-				{uniquePropertyValues.map((item) => (
-					<ListItem key={item} display="flex" alignItems="center">
+				{uniquePropertyValues.map((propertyValue) => (
+					<ListItem key={propertyValue} display="flex" alignItems="center">
 						<Checkbox
-							isChecked={filter.includes(item)}
-							onChange={() => onChange(item)}
+							isChecked={filter.includes(propertyValue)}
+							onChange={() => onChange(propertyValue)}
 							sx={{
 								"*": {
 									fontSize: "xs",
@@ -120,10 +120,10 @@ const FilterInterface: React.FC<Props> = ({
 								<EntityData
 									entityType="characters"
 									selector={(v) => v?.name ?? "Nobody"}
-									entityId={item ?? ""}
+									entityId={propertyValue ?? ""}
 								/>
 							)}
-							{property === "category" && <Box>{item ?? "None"}</Box>}
+							{property === "category" && <Box>{propertyValue || "None"}</Box>}
 						</Checkbox>
 					</ListItem>
 				))}

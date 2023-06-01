@@ -1,4 +1,6 @@
 import {
+	fromSheet,
+	fromUI,
 	selectCharacterBeingEdited,
 	useInventoryStore,
 	useInventoryStoreDispatch,
@@ -26,6 +28,11 @@ import { flow } from "@mobily/ts-belt";
 import CharacterConfirmDeleteDialog from "$sheets/components/Dialogs/CharacterConfirmDeleteDialog";
 import { useForm } from "$hook-form";
 import { createSchemaKeyHelperFunction } from "$root/utils";
+import {
+	useCharacterCreateMutation,
+	useCharacterUpdateMutation,
+} from "$sheets/hooks";
+import { get } from "$fp";
 
 const characterDialogFormSchema = characterSchema.pick({
 	name: true,
@@ -59,45 +66,55 @@ const useCharacterDialogTitle = () =>
 
 const formResolver = zodResolver(characterDialogFormSchema);
 
-/**
- *
- */
-const CharacterDialog = () => {
-	const dispatch = useInventoryStoreDispatch();
+const useCharacterDialogForm = () => {
+	const { isOpen } = useCharacterDialogModalProps();
 
-	const { isOpen, onClose } = useCharacterDialogModalProps();
 	const defaultValues = useCharacterDialogFieldInitialValues();
-	const header = useCharacterDialogTitle();
-	const dialogState = useInventoryStore((s) => s.ui.characterDialog);
 
-	const { register, handleSubmit, reset, formState } = useForm({
+	const { reset, ...form } = useForm({
 		defaultValues,
 		resolver: formResolver,
-	});
-
-	const onSubmit = handleSubmit((data) => {
-		if (dialogState.mode === "new-character") {
-			dispatch({
-				type: "add-character",
-				payload: data,
-			});
-		}
-		if (dialogState.mode === "edit") {
-			dispatch({
-				type: "update-character",
-				payload: {
-					characterId: dialogState.data.characterId,
-					data,
-				},
-			});
-		}
-		dispatch({ type: "ui.close-character-dialog" });
 	});
 
 	useUpdateEffect(() => {
 		// Whenever the modal is opened, set form values to the default values
 		reset(defaultValues);
 	}, [isOpen]);
+
+	return { reset, ...form };
+};
+
+/**
+ * Dialog for creating/editing/deleting characters
+ */
+const CharacterDialog = () => {
+	const dispatch = useInventoryStoreDispatch();
+
+	const { isOpen, onClose } = useCharacterDialogModalProps();
+	const header = useCharacterDialogTitle();
+	const sheetId = useInventoryStore(fromSheet(get("id")));
+	const dialogState = useInventoryStore(fromUI(get("characterDialog")));
+
+	const { register, handleSubmit, formState } = useCharacterDialogForm();
+
+	const characterCreationMutator = useCharacterCreateMutation();
+	const characterUpdateMutator = useCharacterUpdateMutation();
+
+	const onSubmit = handleSubmit(async (data) => {
+		if (dialogState.mode === "new-character") {
+			await characterCreationMutator.mutateAsync({
+				...data,
+				sheetId,
+			});
+		}
+		if (dialogState.mode === "edit") {
+			await characterUpdateMutator.mutateAsync({
+				characterId: dialogState.data.characterId,
+				data,
+			});
+		}
+		dispatch({ type: "ui.close-character-dialog" });
+	});
 
 	return (
 		<>
@@ -146,7 +163,11 @@ const CharacterDialog = () => {
 								</Button>
 							)}
 						</HStack>
-						<Button type="submit" colorScheme="primary">
+						<Button
+							type="submit"
+							colorScheme="primary"
+							isLoading={formState.isSubmitting}
+						>
 							Save
 						</Button>
 					</ModalFooter>

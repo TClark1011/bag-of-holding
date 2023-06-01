@@ -62,12 +62,13 @@ export const characterDeletionStrategySchema = z.union([
 	characterDeletionItemToNobodyStrategySchema,
 ]);
 
+export const characterDeletionActionPayloadSchema = z.object({
+	characterId: z.string(),
+	strategy: characterDeletionStrategySchema,
+});
 export const characterDeletionActionSchema = payloadActionSchema(
 	"remove-character",
-	z.object({
-		characterId: z.string(),
-		strategy: characterDeletionStrategySchema,
-	})
+	characterDeletionActionPayloadSchema
 );
 
 export const characterUpdateActionSchema = payloadActionSchema(

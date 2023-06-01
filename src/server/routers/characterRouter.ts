@@ -1,30 +1,28 @@
 import prisma from "$prisma";
 import sheetRelatedProcedure from "$root/server/sheetRelatedProcedure";
-import {
-	characterDeletionActionSchema,
-	characterUpdateActionSchema,
-	resolvedCharacterCreationActionSchema,
-} from "$sheets/store/inventoryActions";
+import { characterDeletionActionPayloadSchema } from "$sheets/store/inventoryActions";
 import trpc from "$trpc";
+import { characterSchema } from "prisma/schemas/character";
+import { z } from "zod";
 
 const characterRouter = trpc.router({
 	create: sheetRelatedProcedure
-		.input(resolvedCharacterCreationActionSchema)
+		.input(characterSchema.omit({ id: true }))
 		.mutation(async ({ input }) => {
 			const newCharacter = await prisma.character.create({
-				data: input.resolvedPayload,
+				data: input,
 			});
 
 			return newCharacter;
 		}),
 	delete: sheetRelatedProcedure
-		.input(characterDeletionActionSchema)
+		.input(characterDeletionActionPayloadSchema)
 		.mutation(async ({ input }) => {
-			switch (input.payload.strategy.type) {
+			switch (input.strategy.type) {
 				case "item-to-nobody":
 					await prisma.item.updateMany({
 						where: {
-							carriedByCharacterId: input.payload.characterId,
+							carriedByCharacterId: input.characterId,
 						},
 						data: {
 							carriedByCharacterId: null,
@@ -34,10 +32,17 @@ const characterRouter = trpc.router({
 				case "item-pass":
 					await prisma.item.updateMany({
 						where: {
-							carriedByCharacterId: input.payload.characterId,
+							carriedByCharacterId: input.characterId,
 						},
 						data: {
-							carriedByCharacterId: input.payload.strategy.data.toCharacterId,
+							carriedByCharacterId: input.strategy.data.toCharacterId,
+						},
+					});
+					break;
+				case "item-delete":
+					await prisma.item.deleteMany({
+						where: {
+							carriedByCharacterId: input.characterId,
 						},
 					});
 					break;
@@ -45,20 +50,25 @@ const characterRouter = trpc.router({
 
 			const deletedCharacter = await prisma.character.delete({
 				where: {
-					id: input.payload.characterId,
+					id: input.characterId,
 				},
 			});
 
 			return deletedCharacter;
 		}),
 	update: sheetRelatedProcedure
-		.input(characterUpdateActionSchema)
+		.input(
+			z.object({
+				characterId: z.string(),
+				data: characterSchema.partial(),
+			})
+		)
 		.mutation(async ({ input }) => {
 			const updatedCharacter = await prisma.character.update({
 				where: {
-					id: input.payload.characterId,
+					id: input.characterId,
 				},
-				data: input.payload.data,
+				data: input.data,
 			});
 
 			return updatedCharacter;

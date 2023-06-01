@@ -54,15 +54,14 @@ const shortRandomString = () => Math.random().toString().slice(2, 8);
 const testNameGenerator = (entityType: string) =>
 	`_T.${entityType}.${faker.random.alphaNumeric(2)}`;
 
-const [sheetName, updatedSheetName] = A.makeWithIndex(2, () =>
+const [, updatedSheetName] = A.makeWithIndex(2, () =>
 	testNameGenerator("Sheet")
 );
-const [memberName, updatedMemberName, secondMemberName] = A.makeWithIndex(
-	3,
-	() => testNameGenerator("Member")
+const [, updatedMemberName, secondMemberName] = A.makeWithIndex(3, () =>
+	testNameGenerator("Member")
 );
 
-test("Create New Sheet, Close Welcome", async ({ page, baseURL }) => {
+test("Create New Sheet, Close Welcome", async ({ page }) => {
 	await page.goto("/");
 
 	await page.click("text=Get Started");
