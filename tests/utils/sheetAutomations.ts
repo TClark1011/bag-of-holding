@@ -1,5 +1,7 @@
+import { SEARCH_BAR_DELAY_MS } from "$root/config";
 import { getItemTotalValue } from "$sheets/utils";
 import { searchBar, selectWithinTable } from "$tests/utils/usefulSelectors";
+import wait from "$tests/utils/wait";
 import { A, N, pipe, S } from "@mobily/ts-belt";
 import { Page, expect, PageScreenshotOptions } from "@playwright/test";
 import { Item } from "@prisma/client";
@@ -153,8 +155,17 @@ export const countItemRows = async (client: Page) =>
  * @param searchTerm The search term to use
  * to fill the search bar
  */
-export const fillSearchBar = (client: Page, searchTerm: string) =>
-	client.fill(searchBar, searchTerm);
+export const fillSearchBar = async (client: Page, searchTerm: string) => {
+	await client.fill(searchBar, searchTerm);
+	await wait(SEARCH_BAR_DELAY_MS + 50);
+};
+
+export const clearSearchbar = async (client: Page) => {
+	await client.focus(searchBar);
+	await client.keyboard.press("Meta+A");
+	await client.keyboard.press("Backspace");
+	await wait(SEARCH_BAR_DELAY_MS + 50);
+};
 
 /**
  * Helper for executing identical actions across multiple

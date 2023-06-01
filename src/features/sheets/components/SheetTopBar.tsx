@@ -63,6 +63,7 @@ const SheetTopBar: FC = () => {
 							colorScheme="gray"
 							key={char.id}
 							leftIcon={<PencilIcon />}
+							className="character-tag" // for testing
 							onClick={() => {
 								dispatch({
 									type: "ui.open-character-edit-dialog",

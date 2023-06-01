@@ -13,6 +13,7 @@
 		"eslint:recommended",
 		"plugin:react/recommended",
 		"plugin:@typescript-eslint/recommended",
+		"plugin:playwright/playwright-test",
 		"prettier"
 	],
 	"parser": "@typescript-eslint/parser",
@@ -26,10 +27,14 @@
 	"plugins": ["react", "@typescript-eslint", "prettier"],
 	"ignorePatterns": ["src/assets/**", "node_modules/**", "prisma/schemas/**"],
 	"rules": {
+		// base
+		"no-warning-comments": "warn",
+		// prettier
 		"prettier/prettier": "error",
+		// react
 		"react/react-in-jsx-scope": "off",
 		"react/prop-types": "off",
-		"no-warning-comments": "warn",
+		// typescript
 		"@typescript-eslint/no-explicit-any": "off",
 		"@typescript-eslint/explicit-module-boundary-types": "off",
 		"@typescript-eslint/no-empty-function": "off",
@@ -38,6 +43,8 @@
 			{
 				"ignoreRestSiblings": true
 			}
-		]
+		],
+		// playwright
+		"playwright/no-element-handle": "off"
 	}
 }

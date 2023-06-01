@@ -8,11 +8,13 @@ export const sheetOptionsButton = "#options-button";
 // export const openPopover =
 // 	":below([aria-expanded=\"true\"] > .chakra-popover__body)";
 export const openPopover = '.chakra-popover__body:near([aria-expanded="true"])';
-export const sheetOptionsAddMemberButton = "text=Add Party Member";
+export const sheetOptionsAddMemberButton = "text=Save";
+export const sheetAddCharacterButton = 'button:has-text("Add Character")';
+export const characterDialogSaveButton = 'button:has-text("Save")';
 export const sheetOptionsSaveButton = 'button:has-text("Save")';
-export const sheetMemberTag = "data-testid=member-tag";
+export const sheetCharacterTag = ".character-tag";
 export const sheetNewItemButton = "text=Add New Item";
-export const sheetNewItemSaveButton = 'button:has-text("Create Item")';
+export const sheetNewItemSaveButton = 'button:has-text("Create")';
 
 export const selectWithinTable = (selector: string) =>
 	`${itemsTable} >> ${selector}`;

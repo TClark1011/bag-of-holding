@@ -1,6 +1,6 @@
 import prisma from "$prisma";
 import sheetRelatedProcedure from "$root/server/sheetRelatedProcedure";
-import { characterDeletionActionPayloadSchema } from "$sheets/store/inventoryActions";
+import { characterRemovalStrategySchema } from "$sheets/types";
 import trpc from "$trpc";
 import { characterSchema } from "prisma/schemas/character";
 import { z } from "zod";
@@ -9,6 +9,7 @@ const characterRouter = trpc.router({
 	create: sheetRelatedProcedure
 		.input(characterSchema.omit({ id: true }))
 		.mutation(async ({ input }) => {
+			console.log("Running character creation mutation");
 			const newCharacter = await prisma.character.create({
 				data: input,
 			});
@@ -16,7 +17,12 @@ const characterRouter = trpc.router({
 			return newCharacter;
 		}),
 	delete: sheetRelatedProcedure
-		.input(characterDeletionActionPayloadSchema)
+		.input(
+			z.object({
+				characterId: z.string(),
+				strategy: characterRemovalStrategySchema,
+			})
+		)
 		.mutation(async ({ input }) => {
 			switch (input.strategy.type) {
 				case "item-to-nobody":

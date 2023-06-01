@@ -9,11 +9,11 @@ import {
 	useInventoryStoreDispatch,
 } from "$sheets/store";
 import {
-	characterDeletionItemDeleteStrategySchema,
-	characterDeletionItemPassStrategySchema,
-	characterDeletionItemToNobodyStrategySchema,
-} from "$sheets/store/inventoryActions";
-import { CharacterRemovalStrategy } from "$sheets/types";
+	characterRemovalItemDeleteStrategySchema,
+	characterRemovalItemPassStrategySchema,
+	characterRemovalItemToNobodyStrategySchema,
+	CharacterRemovalStrategy,
+} from "$sheets/types";
 import {
 	Button,
 	Flex,
@@ -38,9 +38,9 @@ import { z } from "zod";
 
 /* #region  Form Stuff */
 const characterDeletionNameSchema = z.union([
-	characterDeletionItemPassStrategySchema.shape.type,
-	characterDeletionItemToNobodyStrategySchema.shape.type,
-	characterDeletionItemDeleteStrategySchema.shape.type,
+	characterRemovalItemPassStrategySchema.shape.type,
+	characterRemovalItemToNobodyStrategySchema.shape.type,
+	characterRemovalItemDeleteStrategySchema.shape.type,
 ]);
 
 const strategySelectionFormSchema = z.object({

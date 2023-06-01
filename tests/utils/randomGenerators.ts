@@ -2,8 +2,8 @@ import faker from "faker";
 import { IdentifiedObject } from "$root/types";
 import { A } from "@mobily/ts-belt";
 import { Character, Item } from "@prisma/client";
-import { FullSheet } from "$sheets/types";
 import { takeRandom } from "$root/utils";
+import { FullSheet } from "$sheets/types";
 
 /**
  * A Function type for functions that return randomly

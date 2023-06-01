@@ -1,6 +1,6 @@
 import { NonEmptyArray } from "$root/types";
 import { countOccurrences } from "$root/utils";
-import { A, O, pipe } from "@mobily/ts-belt";
+import { A, O, pipe, S } from "@mobily/ts-belt";
 
 /**
  * Get every set of adjacent letters in a string.
@@ -41,7 +41,9 @@ const getMostCommonLetterCombo = (
 ) => {
 	const allLetterCombos = strings
 		.map(getEveryAdjacentLetterSet(setSize))
-		.flat();
+		.flat()
+		.map(S.toLowerCase);
+
 	const combosSortedByFrequency = A.sortBy(allLetterCombos, (item) =>
 		countOccurrences(allLetterCombos, item)
 	);

@@ -17,7 +17,7 @@ import {
 	useInventoryStore,
 	useInventoryStoreDispatch,
 } from "$sheets/store";
-import { FilterableItemProperty } from "$extra-schemas";
+import { FilterableItemProperty } from "$sheets/types";
 import EntityData from "$sheets/components/EntityData";
 import { A, flow, G } from "@mobily/ts-belt";
 

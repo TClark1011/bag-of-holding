@@ -120,7 +120,11 @@ const CharacterDialog = () => {
 		<>
 			<Modal isOpen={isOpen} onClose={onClose}>
 				<ModalOverlay />
-				<ModalContent as="form" onSubmit={onSubmit}>
+				<ModalContent
+					as="form"
+					data-testid="dialog-content"
+					onSubmit={onSubmit}
+				>
 					<ModalHeader>{header}</ModalHeader>
 					<ModalCloseButton />
 
