@@ -119,7 +119,6 @@ const ItemDialog: React.FC = () => {
 	const createItemMutator = useAddItemMutation();
 	const editItemMutator = useEditItemMutation();
 	const deleteItemMutator = useItemDeleteMutation();
-
 	const sheetId = useSheetPageId();
 	const { formState, register, handleSubmit } = useItemForm();
 	const { isOpen, onClose } = useItemModalProps();
@@ -165,6 +164,7 @@ const ItemDialog: React.FC = () => {
 									id={f("name")}
 									{...register("name")}
 									placeholder="Name"
+
 								/>
 								<FormErrorMessage>
 									{formState.errors.name && formState.errors.name.message}
