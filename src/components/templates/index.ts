@@ -4,5 +4,4 @@ export { default as View } from "./View";
 
 export * from "./Meta";
 export * from "./PartyMemberTagList";
-export * from "../../features/sheets/components/SheetDialog";
 export * from "./View";

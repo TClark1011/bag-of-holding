@@ -68,8 +68,10 @@ const View: React.FC<ViewProps> = ({
 		BoxProps,
 		"height" | "minHeight" | "paddingX" | "paddingTop"
 	> = {
-		...(minFullHeight ? { minHeight: screenHeight, height: 1 } : {}),
-		paddingTop: accountForTopNav ? topNavHeight : null,
+		...(minFullHeight
+			? { minHeight: screenHeight ?? undefined, height: 1 }
+			: {}),
+		paddingTop: accountForTopNav ? topNavHeight : undefined,
 	};
 
 	return (

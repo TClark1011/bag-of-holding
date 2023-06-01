@@ -6,11 +6,13 @@ generator client {
 }
 
 generator schemas {
-  provider      = "zod-prisma"
-  output        = "./schemas"
-  modelCase     = "camelCase"
-  modelSuffix   = "Schema"
-  relationModel = false
+  provider              = "zod-prisma"
+  output                = "./schemas"
+  modelCase             = "camelCase"
+  modelSuffix           = "Schema"
+  relationModel         = false
+  imports               = "./zod-prisma-helpers"
+  prismaJsonNullability = false
 }
 
 datasource db {
@@ -21,14 +23,14 @@ datasource db {
 model Sheet {
   updatedAt  DateTime    @updatedAt
   id         String      @id @default(cuid())
-  name       String
+  name       String /// @zod.and(imports.nameField)
   characters Character[]
   items      Item[]
 }
 
 model Character {
   id            String @id @default(cuid())
-  name          String
+  name          String /// @zod.and(imports.nameField)
   carryCapacity Float  @default(0)
   carriedItems  Item[]
 
@@ -38,13 +40,13 @@ model Character {
 
 model Item {
   id            String  @id @default(cuid())
-  name          String
+  name          String /// @zod.and(imports.nameField)
   description   String?
-  weight        Float?
-  quantity      Float   @default(1)
+  weight        Float? /// @zod.min(0)
+  quantity      Float   @default(1) /// @zod.min(0)
   referenceLink String? // Usually a link to the rules for the item
   category      String?
-  value         Float?
+  value         Float? /// @zod.min(0)
 
   carriedByCharacter   Character? @relation(fields: [carriedByCharacterId], references: [id], onDelete: SetNull)
   carriedByCharacterId String?

@@ -1,6 +1,6 @@
 import { useSheetRefetchEffect } from "$sheets/hooks";
 import { inventoryReducer } from "$sheets/store";
-import { FullSheet, FullSheetWithoutUpdatedAt } from "$sheets/types";
+import { FullSheetWithoutUpdatedAt } from "$sheets/types";
 import { addToRememberedSheets, compareInventories } from "$sheets/utils";
 import { useEffect, useReducer } from "react";
 

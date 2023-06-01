@@ -53,8 +53,7 @@
 	"[javascript]": {
 		"editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
 	},
-	"typescript.tsdk": "node_modules\\typescript\\lib",
-	"jest.jestCommandLine": "yarn test",
+	"typescript.tsdk": "node_modules/typescript/lib",
 	"javascript.preferences.importModuleSpecifier": "non-relative",
 	"typescript.preferences.importModuleSpecifier": "non-relative",
 	"prisma.fileWatcher": true

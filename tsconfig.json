@@ -1,11 +1,10 @@
 {
 	"compilerOptions": {
-		"target": "es5",
+		"target": "es2015",
 		"module": "esnext",
 		"lib": ["dom", "dom.iterable", "esnext"],
-		"allowJs": true,
 		"skipLibCheck": true,
-		"strict": false,
+		"strict": true,
 		"forceConsistentCasingInFileNames": true,
 		"noEmit": true,
 		"esModuleInterop": true,
@@ -20,11 +19,11 @@
 			"$*": ["./src/features/*", "./src/lib/*"],
 			"$root/*": ["./src/*"],
 			"@prisma/schemas": ["prisma/schemas"]
-		}
+		},
+		"allowJs": true
 	},
 	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
 	"exclude": ["node_modules"],
-
 	"ts-node": {
 		"require": ["tsconfig-paths/register", "./scripts/loadEnv.ts"],
 		"compilerOptions": {

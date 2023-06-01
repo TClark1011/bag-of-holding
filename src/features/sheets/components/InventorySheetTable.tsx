@@ -16,9 +16,14 @@ import {
 import { BookOutlineIcon, FilterOutlineIcon } from "chakra-ui-ionicons";
 import { getItemTotalValue, getItemTotalWeight } from "$sheets/utils";
 import { testIdGeneratorFactory } from "$tests/utils/testUtils";
-import { FilterableItemProperty, ProcessableItemProperty } from "$sheets/types";
-import { useSheetPageState } from "$sheets/store";
-import { useInventoryState } from "$sheets/providers";
+import { ProcessableItemProperty } from "$sheets/types";
+import {
+	selectOverallColumnSums,
+	selectPropertyFilterMenuIsOpen,
+	selectVisibleItems,
+	useInventoryStore,
+	useInventoryStoreDispatch,
+} from "$sheets/store";
 import {
 	NumericAscendingSortIcon,
 	NumericDescendingSortIcon,
@@ -30,6 +35,11 @@ import { TableFilter, PartyMemberData } from "$sheets/components";
 import { SortingDirection } from "$root/types";
 import { Item } from "@prisma/client";
 import { isUrl } from "$root/utils";
+import { matchesSchema } from "$zod-helpers";
+import {
+	filterableItemPropertySchema,
+	sortableItemPropertySchema,
+} from "$extra-schemas";
 
 const getTestId = testIdGeneratorFactory("InventoryTable");
 
@@ -50,11 +60,6 @@ const col6Display = ["none", "none", "none", "table-cell"];
 export interface InventorySheetTableProps extends TableProps {
 	onRowClick: (item?: Item) => void;
 }
-
-const filterableProperties: FilterableItemProperty[] = [
-	"carriedByCharacterId",
-	"category",
-];
 
 const numericProperties: ProcessableItemProperty[] = [
 	"quantity",
@@ -88,11 +93,6 @@ const determineIconSet = (property: ProcessableItemProperty) =>
 		? numericSortingIconSet
 		: defaultSortingIconSet;
 
-const determineIfPropertyIsFilterable = (
-	property: ProcessableItemProperty
-): property is FilterableItemProperty =>
-	filterableProperties.includes(property as any);
-
 /**
  * A component to be used as the column headers
  *
@@ -110,21 +110,35 @@ const TableHeader: React.FC<
 		property: ProcessableItemProperty;
 	}
 > = ({ property, children, ...props }) => {
-	const {
-		sorting,
-		sortInventory,
-		closeFilterPopover,
-		openFilterPopover,
-		isFilterPopoverOpen,
-	} = useSheetPageState();
+	const dispatch = useInventoryStoreDispatch();
 
+	const sorting = useInventoryStore((s) => s.ui.sorting);
+	const filterPopoverIsOpen = useInventoryStore(
+		(state) =>
+			matchesSchema(property, filterableItemPropertySchema) &&
+			selectPropertyFilterMenuIsOpen(property)(state)
+	);
 	const sortingIcons = determineIconSet(property);
-	const isFilterable = determineIfPropertyIsFilterable(property);
-	const isBeingSorted = sorting.property === property;
-	const filterPopoverIsOpen = isFilterable && isFilterPopoverOpen(property);
+	const isFilterable = matchesSchema(property, filterableItemPropertySchema);
+	const isBeingSorted = sorting?.property === property;
 
-	const onSort = () => sortInventory(property);
-	const onPopoverOpen = () => isFilterable && openFilterPopover(property);
+	const onSort = () => {
+		if (matchesSchema(property, sortableItemPropertySchema)) {
+			dispatch({
+				type: "ui.toggle-sort",
+				payload: property,
+			});
+		}
+	};
+
+	const onPopoverOpen = () =>
+		isFilterable &&
+		dispatch({
+			type: "ui.open-filter-menu",
+			payload: property,
+		});
+
+	const onPopoverClose = () => dispatch({ type: "ui.close-filter-menu" });
 
 	return (
 		<TableCell {...props} as={Th}>
@@ -135,7 +149,7 @@ const TableHeader: React.FC<
 			{isFilterable && (
 				<TableFilter
 					isOpen={filterPopoverIsOpen}
-					onClose={closeFilterPopover}
+					onClose={onPopoverClose}
 					property={property}
 					{...(property === "carriedByCharacterId" && {
 						heading: "Carried By",
@@ -171,16 +185,11 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 	onRowClick,
 	...props
 }) => {
+	const dispatch = useInventoryStoreDispatch();
 	const hoverBg = useColorModeValue("gray.100", "gray.700");
-	//? Color to use for background of row items that are hovered
 
-	//? Destructure after initializer so that full state object can be easily passed to selectors
-
-	const { getProcessedItems, getColumnSums } = useSheetPageState();
-
-	const { items, characters } = useInventoryState();
-	const processedItems = getProcessedItems(items, characters);
-	const columnSums = getColumnSums(items);
+	const columnSums = useInventoryStore(selectOverallColumnSums);
+	const processedItems = useInventoryStore(selectVisibleItems);
 
 	return (
 		<Table
@@ -253,7 +262,12 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 				{processedItems.map((item, index) => (
 					<Tr
 						key={index}
-						onClick={() => onRowClick(item)}
+						onClick={() =>
+							dispatch({
+								type: "ui.open-item-edit-dialog",
+								payload: item.id,
+							})
+						}
 						cursor="pointer"
 						_hover={{ backgroundColor: hoverBg }}
 						data-testid={`item-row-${item.name}`}
@@ -286,7 +300,7 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 						{/* Item "carriedByCharacterId" */}
 						<TableCell data-column="carriedByCharacterId" display={col5Display}>
 							<PartyMemberData
-								memberId={item.carriedByCharacterId}
+								memberId={item.carriedByCharacterId ?? ""}
 								property="name"
 							/>
 						</TableCell>
@@ -297,7 +311,7 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 					</Tr>
 				))}
 				<Tr>
-					{/* Bottom Row */}
+					{/* Bottom Sums Row */}
 					<TableCell colSpan={2} fontWeight="bold" textAlign="right">
 						Total
 					</TableCell>

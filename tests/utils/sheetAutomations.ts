@@ -14,14 +14,19 @@ import { Item } from "@prisma/client";
  */
 export const fillOutItemForm = async (client: Page, item: Item) => {
 	console.log("(sheetAutomations) item: ", item);
-	await client.fill("#name", item.name),
-	await client.fill("#category", item.category),
-	await client.fill("#description", item.description),
-	await client.fill("#quantity", `${item.quantity}`),
-	await client.fill("#weight", `${item.weight}`),
-	await client.fill("#value", `${item.value}`),
-	await client.fill("#referenceLink", item.referenceLink),
-	(await client.$("#carriedByCharacterId")).selectOption({
+
+	await client.fill("#name", item.name);
+
+	item.category && (await client.fill("#category", item.category));
+	item.description && (await client.fill("#description", item.description));
+
+	await client.fill("#quantity", `${item.quantity}`);
+	await client.fill("#weight", `${item.weight}`);
+	await client.fill("#value", `${item.value}`);
+
+	item.referenceLink &&
+		(await client.fill("#referenceLink", item.referenceLink));
+	(await client.$("#carriedByCharacterId"))?.selectOption({
 		label: item.carriedByCharacterId ?? "Nobody",
 	});
 };
@@ -127,7 +132,7 @@ export const openItemEditMenu = async (client: Page, item: Item) => {
 };
 
 /**
- * Coun the number of rows in the item table, does
+ * Count the number of rows in the item table, does
  * not count the header row or the totals row at the
  * bottom
  *
@@ -152,7 +157,7 @@ export const fillSearchBar = (client: Page, searchTerm: string) =>
 	client.fill(searchBar, searchTerm);
 
 /**
- * Helper for executing identical actions accross multiple
+ * Helper for executing identical actions across multiple
  * clients
  *
  * @param clients An array of clients on which to execute
@@ -181,7 +186,7 @@ export const getNameOfItemInTableAtRowIndex = async (
 		await client.innerText(
 			selectWithinTable(
 				// `tbody >> tr >> nth=${index} >> td[data-column=\"name\"]`
-				`tbody >> tr:has(td[data-column=\"name\"]) >> nth=${index} >> td[data-column=\"name\"]`
+				`tbody >> tr:has(td[data-column="name"]) >> nth=${index} >> td[data-column="name"]`
 			)
 		),
 		S.trim

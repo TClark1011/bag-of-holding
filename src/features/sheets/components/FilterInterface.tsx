@@ -10,17 +10,24 @@ import {
 	ButtonGroup,
 	useColorModeValue,
 } from "@chakra-ui/react";
-import { FilterableItemProperty } from "$sheets/types";
-import { useInventoryState } from "$sheets/providers";
-import { sort } from "fast-sort";
 import codeToTitle from "code-to-title";
-import { PartyMemberData } from "$sheets/components";
-import { useSheetPageState } from "$sheets/store";
+import {
+	selectEffectivePropertyFilter,
+	selectAllPossibleFilterValuesOnProperty,
+	useInventoryStore,
+	useInventoryStoreDispatch,
+} from "$sheets/store";
+import { FilterableItemProperty } from "$extra-schemas";
+import EntityData from "$sheets/components/EntityData";
+import { A, flow, G } from "@mobily/ts-belt";
 
 interface Props extends Omit<BoxProps, "onChange"> {
 	property: FilterableItemProperty;
 	heading?: string;
 }
+
+const sortNullToStart = (arr: (string | null)[]) =>
+	A.sortBy(arr, G.isNot(G.isNull));
 
 /**
  * The interface for a filter, containing the checkboxes for
@@ -39,54 +46,40 @@ const FilterInterface: React.FC<Props> = ({
 	heading = codeToTitle(property),
 	...props
 }) => {
-	//POSSIBLE ERROR: Opening a filter popover, changing some values, then clicking the 'Filters' button exceeds maximum callstack.
-	const { items } = useInventoryState();
+	const dispatch = useInventoryStoreDispatch();
+	const uniquePropertyValues = useInventoryStore(
+		flow(selectAllPossibleFilterValuesOnProperty(property), sortNullToStart)
+	);
+	const filter = useInventoryStore(selectEffectivePropertyFilter(property));
 
-	const propertyValues = items.map((item) => item[property] + "");
-	const uniquePropertyValues = sort(
-		propertyValues.filter(
-			(item, index) => propertyValues.indexOf(item) === index
-		)
-	).asc();
-
-	const { updateFilter, resetPropertyFilter, filters } = useSheetPageState();
-
-	const filter = filters[property];
-
-	/**
-	 * Callback to be executed when a filter is changed.
-	 * Executes 'updateFilter', providing the property
-	 *
-	 * @param value The value to pass to the filter
-	 */
-	const onChange = (value: string) => {
-		updateFilter(property, value);
+	const onChange = (value: string | null) => {
+		dispatch({
+			type: "ui.toggle-filter",
+			payload: {
+				property,
+				value,
+			},
+		});
 	};
 
-	/**
-	 * Reset filter. Runs the 'resetPropertyFilter' method for
-	 * sheetPageState, providing the property
-	 */
-	const resetFilter = () => {
-		resetPropertyFilter(property);
-	};
-	/**
-	 * Filter out all values
-	 */
-	const filterAll = () => {
-		uniquePropertyValues
-			.filter((item) => !filter.includes(item))
-			.forEach((item) => {
-				onChange(item);
-			});
+	const onCheckAll = () => {
+		dispatch({
+			type: "ui.reset-filter",
+			payload: property,
+		});
 	};
 
-	/**
-	 * Invert current filter
-	 */
-	const invertFilter = () => {
-		uniquePropertyValues.forEach((item) => {
-			onChange(item);
+	const onUncheckAll = () => {
+		dispatch({
+			type: "ui.clear-filter",
+			payload: property,
+		});
+	};
+
+	const onInvert = () => {
+		dispatch({
+			type: "ui.invert-filter",
+			payload: property,
 		});
 	};
 
@@ -106,24 +99,31 @@ const FilterInterface: React.FC<Props> = ({
 					{heading}
 				</Text>
 				<ButtonGroup size="xs" isAttached>
-					<Button onClick={filterAll}>Uncheck All</Button>
-					<Button onClick={resetFilter}>Check All</Button>
-					<Button onClick={invertFilter}>Invert</Button>
+					<Button onClick={onUncheckAll}>Uncheck All</Button>
+					<Button onClick={onCheckAll}>Check All</Button>
+					<Button onClick={onInvert}>Invert</Button>
 				</ButtonGroup>
 			</Flex>
 			<List textAlign="left">
-				{uniquePropertyValues.map((item) => (
-					<ListItem key={item} display="flex" alignItems="center">
+				{uniquePropertyValues.map((propertyValue) => (
+					<ListItem key={propertyValue} display="flex" alignItems="center">
 						<Checkbox
-							isChecked={!filter.includes(item)}
-							onChange={() => onChange(item)}
+							isChecked={filter.includes(propertyValue)}
+							onChange={() => onChange(propertyValue)}
+							sx={{
+								"*": {
+									fontSize: "xs",
+								},
+							}}
 						>
-							<PartyMemberData
-								fallback={(item as any) === "null" ? "Nobody" : item}
-								memberId={item}
-								property="name"
-								fontSize="xs"
-							/>
+							{property === "carriedByCharacterId" && (
+								<EntityData
+									entityType="characters"
+									selector={(v) => v?.name ?? "Nobody"}
+									entityId={propertyValue ?? ""}
+								/>
+							)}
+							{property === "category" && <Box>{propertyValue || "None"}</Box>}
 						</Checkbox>
 					</ListItem>
 				))}

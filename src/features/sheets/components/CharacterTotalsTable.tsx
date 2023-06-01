@@ -1,8 +1,9 @@
-import { useInventoryState } from "$sheets/providers";
-import { getItemTotalValue, getItemTotalWeight } from "$sheets/utils";
+import {
+	selectAllCharacterColumnTotals,
+	useInventoryStore,
+} from "$sheets/store";
 import { testIdGeneratorFactory } from "$tests/utils/testUtils";
 import { Table, TableProps, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/table";
-import Big from "big.js";
 
 const getTestId = testIdGeneratorFactory("MemberTotalsTable");
 
@@ -17,15 +18,7 @@ export const characterTotalsTableTestIds = {
  * @returns The rendered stuff
  */
 const CharacterTotalsTable: React.FC<TableProps> = ({ ...props }) => {
-	const { characters, items } = useInventoryState();
-	/**
-	 * Fetch the items carried by a certain member
-	 *
-	 * @param memberId The 'id' of the member to fetch the items of
-	 * @returns The items carried by te specified character
-	 */
-	const getCarriedItems = (memberId: string) =>
-		items.filter((item) => item.carriedByCharacterId === memberId);
+	const sums = useInventoryStore(selectAllCharacterColumnTotals);
 	return (
 		<Table {...props} data-testid={characterTotalsTableTestIds.root}>
 			<Thead>
@@ -36,25 +29,13 @@ const CharacterTotalsTable: React.FC<TableProps> = ({ ...props }) => {
 				</Tr>
 			</Thead>
 			<Tbody>
-				{characters.map(({ id, name }) => (
-					<Tr key={id}>
-						<Td>{name}</Td>
+				{sums.map(({ character, sums }) => (
+					<Tr key={character.id}>
+						<Td>{character.name}</Td>
 						{/* Total weight cell */}
-						<Td>
-							{getCarriedItems(id).reduce<number>(
-								(total, current) =>
-									new Big(total).add(getItemTotalWeight(current)).toNumber(),
-								0
-							)}
-						</Td>
+						<Td>{sums.weight}</Td>
 						{/* Total value cell */}
-						<Td>
-							{getCarriedItems(id).reduce<number>(
-								(total, current) =>
-									new Big(total).add(getItemTotalValue(current)).toNumber(),
-								0
-							)}
-						</Td>
+						<Td>{sums.value}</Td>
 					</Tr>
 				))}
 			</Tbody>

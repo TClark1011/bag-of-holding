@@ -1,4 +1,4 @@
-import { Writable } from "$root/types";
+import type { Writable } from "type-fest";
 
 /**
  * Takes an object type and removes the `readonly` modifier

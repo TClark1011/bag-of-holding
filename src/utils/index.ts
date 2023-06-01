@@ -13,3 +13,8 @@ export { default as tryCatch } from "./tryCatch";
 export { default as getOldSheetCutOff } from "./getOldSheetCutOff";
 export { default as isUrl } from "./isUrl";
 export { default as toggleArrayItem } from "./toggleArrayItem";
+
+export * from "./entityHelpers";
+export * from "./logHelpers";
+export * from "./misc";
+export * from "./arrayHelpers";

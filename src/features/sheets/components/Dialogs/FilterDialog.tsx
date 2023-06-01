@@ -1,8 +1,29 @@
-import { Button, VStack, ModalBody, ModalFooter } from "@chakra-ui/react";
+import {
+	Button,
+	VStack,
+	ModalBody,
+	ModalFooter,
+	ModalContent,
+	ModalOverlay,
+	Modal,
+} from "@chakra-ui/react";
 import { FilterableItemProperty } from "$sheets/types";
-import { SheetDialog, FilterInterface } from "$sheets/components";
-import { useSheetPageState } from "$sheets/store";
+import { FilterInterface } from "$sheets/components";
+import { useInventoryStoreDispatch, useInventoryStore } from "$sheets/store";
 import { D } from "@mobily/ts-belt";
+import useRenderLogging from "$root/hooks/useRenderLogging";
+
+const useFilterDialogModalProps = () => {
+	const dispatch = useInventoryStoreDispatch();
+	const isOpen = useInventoryStore((s) => s.ui.filterDialogIsOpen);
+	const onClose = () => {
+		dispatch({
+			type: "ui.close-filter-dialog",
+		});
+	};
+
+	return { isOpen, onClose };
+};
 
 /**
  * Dialog for filtering the table on mobile devices
@@ -10,33 +31,40 @@ import { D } from "@mobily/ts-belt";
  * @returns Component stuff
  */
 const FilterDialog: React.FC = () => {
-	const { filters, closeDialog } = useSheetPageState();
+	useRenderLogging("FilterDialog");
+	const modalProps = useFilterDialogModalProps();
+	const filters = useInventoryStore((s) => s.ui.filters);
 	return (
-		<SheetDialog dialogType="filter" header="Filter Inventory">
-			<ModalBody>
-				<VStack spacing="break" width="full" display="block">
-					{D.toPairs(filters).map(([property, filter], index) => (
-						<FilterInterface
-							heading={
-								property === "carriedByCharacterId" ? "Carried By" : "Category"
-							}
-							property={property as FilterableItemProperty}
-							/**
-							 * Type casting is guaranteed to be safe here, its only required
-							 * due to limitation with auto type recognition
-							 */
-							filter={filter}
-							key={index}
-						/>
-					))}
-				</VStack>
-			</ModalBody>
-			<ModalFooter>
-				<Button colorScheme="primary" onClick={closeDialog}>
-					Close
-				</Button>
-			</ModalFooter>
-		</SheetDialog>
+		<Modal {...modalProps}>
+			<ModalOverlay />
+			<ModalContent>
+				<ModalBody>
+					<VStack spacing="break" width="full" display="block">
+						{D.toPairs(filters).map(([property, filter], index) => (
+							<FilterInterface
+								heading={
+									property === "carriedByCharacterId"
+										? "Carried By"
+										: "Category"
+								}
+								property={property as FilterableItemProperty}
+								/**
+								 * Type casting is guaranteed to be safe here, its only required
+								 * due to limitation with auto type recognition
+								 */
+								filter={filter ?? []}
+								key={index}
+							/>
+						))}
+					</VStack>
+				</ModalBody>
+				<ModalFooter>
+					<Button colorScheme="primary" onClick={modalProps.onClose}>
+						Close
+					</Button>
+				</ModalFooter>
+			</ModalContent>
+		</Modal>
 	);
 };
 

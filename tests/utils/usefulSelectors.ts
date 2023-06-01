@@ -1,20 +1,18 @@
-/* eslint-disable jsdoc/require-jsdoc */
-
 //# Generic
 export const itemsTable = "#items-table";
-export const columnFilterButton = "[aria-label=\"filter\"]";
-export const searchBar = "[placeholder=\"Search\"]";
+export const columnFilterButton = '[aria-label="filter"]';
+export const searchBar = '[placeholder="Search"]';
 export const sheetOptionsButton = "#options-button";
 
 //# Playwright only
 // export const openPopover =
 // 	":below([aria-expanded=\"true\"] > .chakra-popover__body)";
-export const openPopover = ".chakra-popover__body:near([aria-expanded=\"true\"])";
+export const openPopover = '.chakra-popover__body:near([aria-expanded="true"])';
 export const sheetOptionsAddMemberButton = "text=Add Party Member";
-export const sheetOptionsSaveButton = "button:has-text(\"Save\")";
+export const sheetOptionsSaveButton = 'button:has-text("Save")';
 export const sheetMemberTag = "data-testid=member-tag";
 export const sheetNewItemButton = "text=Add New Item";
-export const sheetNewItemSaveButton = "button:has-text(\"Create Item\")";
+export const sheetNewItemSaveButton = 'button:has-text("Create Item")';
 
 export const selectWithinTable = (selector: string) =>
 	`${itemsTable} >> ${selector}`;

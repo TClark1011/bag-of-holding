@@ -1,4 +1,3 @@
-/* eslint-disable jsdoc/require-jsdoc */
 import createSheetFromFlatData from "$backend/createSheetFromFlatData";
 import prisma from "$prisma";
 import { FullSheet } from "$sheets/types";

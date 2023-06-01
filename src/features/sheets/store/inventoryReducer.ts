@@ -7,15 +7,13 @@ import {
 	SheetState,
 } from "$sheets/types";
 import codeToTitle from "code-to-title";
-import stringifyObject from "stringify-object";
 import { getIds } from "$root/utils";
-import { logEvent, logException } from "$analytics/utils";
+import { logEvent } from "$analytics/utils";
 import {
 	characterIsCarrying,
 	createInventoryItem,
 	generateCharacter,
 } from "$sheets/utils";
-import { sendSheetAction } from "$sheets/api";
 import { REFETCH_INTERVAL } from "$root/config";
 import { Character } from "@prisma/client";
 
@@ -33,26 +31,6 @@ const inventoryReducer = (
 	state: SheetState,
 	action: SheetStateAction
 ): SheetState => {
-	if (action.sendToServer) {
-		//? If send to server is true, we send the action to the server
-		sendSheetAction(state.id, {
-			...action,
-			sendToServer: false,
-		} as SheetStateAction).catch((err) => {
-			logException(
-				`Error occurred when sending sheet '${action.type}' action`,
-				{
-					fatal: true,
-					extraData: stringifyObject({
-						err: err.message,
-						sheetId: state.id,
-						action,
-					}),
-				}
-			);
-		});
-	}
-
 	/**
 	 * Shorthand for calling the immer 'produce' function,
 	 * passing the state as the first parameter
@@ -122,15 +100,16 @@ const inventoryReducer = (
 					draftState.name = action.data.name;
 				}
 				draftState.characters = draftState.characters.filter(
-					(member) => !getIds(action.data.characters.remove).includes(member.id)
+					(member) =>
+						!getIds(action.data.characters?.remove ?? []).includes(member.id)
 				);
 
-				const updateIds = getIds(action.data.characters.update);
+				const updateIds = getIds(action.data.characters?.update ?? []);
 				draftState.characters.forEach((character, index) => {
 					if (updateIds.includes(character.id)) {
 						draftState.characters[index] = {
 							...character,
-							...action.data.characters.update.find(
+							...(action.data.characters?.update ?? []).find(
 								(member) => member.id === character.id
 							),
 						};
@@ -143,7 +122,7 @@ const inventoryReducer = (
 				// 		: mem
 				// );
 
-				action.data.characters.remove.forEach((removingMember) => {
+				(action.data.characters?.remove ?? []).forEach((removingMember) => {
 					logEvent(
 						"Sheet",
 						`Deleted Sheet Member (${removingMember.deleteMethod.mode})`
@@ -158,18 +137,20 @@ const inventoryReducer = (
 							draftState.items = draftState.items.map((item) =>
 								characterIsCarrying(removingMember, item)
 									? {
-										...item,
-										carriedByCharacterId: (removingMember.deleteMethod as CharacterDeleteMethodFields & {
-												to: string;
-											}).to,
-										/**
-										 * ? Have to use typecasting here even though it seems like I
-										 * ? shouldn't have to. When I write out
-										 * ? `removingMember.deleteMethod` underneath this case statement,
-										 * ? typescript recognises that it has mode "move" and as such
-										 * ? has a "to" field. But when I try to use "to" here, it insists,
-										 * ? that mode is "remove" and therefore does not have a "to" field.
-										 */
+											...item,
+											carriedByCharacterId: (
+												removingMember.deleteMethod as CharacterDeleteMethodFields & {
+													to: string;
+												}
+											).to,
+											/**
+											 * ? Have to use typecasting here even though it seems like I
+											 * ? shouldn't have to. When I write out
+											 * ? `removingMember.deleteMethod` underneath this case statement,
+											 * ? typescript recognises that it has mode "move" and as such
+											 * ? has a "to" field. But when I try to use "to" here, it insists,
+											 * ? that mode is "remove" and therefore does not have a "to" field.
+											 */
 									  }
 									: item
 							);

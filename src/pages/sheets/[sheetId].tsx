@@ -1,44 +1,31 @@
-import {
-	Box,
-	Center,
-	Divider,
-	Flex,
-	Heading,
-	SimpleGrid,
-	Stack,
-	Button,
-	IconButton,
-	DarkMode,
-	LightMode,
-	Tag,
-	TagLabel,
-	TagLeftIcon,
-	Input,
-} from "@chakra-ui/react";
-import { InventoryStateProvider } from "$sheets/providers";
+import { Box } from "@chakra-ui/react";
 import { GetServerSideProps } from "next";
-import { AddIcon, CreateOutlineIcon } from "chakra-ui-ionicons";
 import { appName } from "$root/constants";
 import { getUrlParam, getSheetLink } from "$root/utils";
-import { useSheetPageState, useInventoryReducer } from "$sheets/store";
+import {
+	useInventoryStore,
+	useInventoryStoreDispatch,
+	fromSheet,
+} from "$sheets/store";
 import {
 	WelcomeDialog,
-	CharacterTotalsTable,
 	FilterDialog,
 	InventorySheetTable,
-	SheetOptionsDialog,
 	ItemDialog,
+	InventoryDataFetchingEffects,
 } from "$sheets/components";
 import { testIdGeneratorFactory } from "$tests/utils/testUtils";
-import {
-	H3,
-	PartyMemberTagList,
-	ColorModeSwitch,
-	View,
-} from "$root/components";
+import { View } from "$root/components";
 import { useOnMountEffect } from "$root/hooks";
 import { Sheet } from "@prisma/client";
 import { FullSheet } from "$sheets/types";
+import CharacterDialog from "$sheets/components/Dialogs/CharacterDialog";
+import SheetNameDialog from "$sheets/components/Dialogs/SheetNameDialog";
+import SheetTopBar from "$sheets/components/SheetTopBar";
+import SheetActions from "$sheets/components/SheetActions";
+import CharacterTotals from "$sheets/components/CharacterTotals";
+import useRenderLogging from "$root/hooks/useRenderLogging";
+import { get } from "$fp";
 
 const getTestId = testIdGeneratorFactory("SheetPage");
 
@@ -65,167 +52,61 @@ const SheetPage: React.FC<SheetPageProps> = ({
 	isNew = false,
 	...sheetFields
 }) => {
-	const [
-		{ items, name, characters, id },
-		inventoryDispatch,
-	] = useInventoryReducer(sheetFields);
+	useRenderLogging("SheetPage");
+
+	const dispatch = useInventoryStoreDispatch();
+
+	const name = useInventoryStore(fromSheet(get("name")));
+
+	useOnMountEffect(() => {
+		dispatch({
+			type: "set-sheet",
+			payload: sheetFields,
+		});
+	});
 
 	useOnMountEffect(() => {
 		if (isNew) {
-			openDialog("welcome");
+			dispatch({
+				type: "ui.open-welcome-dialog",
+			});
 			//? Open the welcome dialog if the sheet is new
 		}
 	});
 
-	const {
-		openDialog,
-		searchbarValue,
-		searchbarOnChange,
-		resetFilters,
-	} = useSheetPageState();
-
 	return (
-		<View
-			showTopNav={false}
-			title={`${appName} - ${name}`}
-			url={getSheetLink(sheetFields.id, true)}
-			analyticsPageViewProps={{ title: "Sheet", url: "/sheets/[sheetId]" }}
-		>
-			<InventoryStateProvider
-				dispatch={inventoryDispatch}
-				state={{ items, characters, name, id }}
+		<>
+			<InventoryDataFetchingEffects />
+
+			<View
+				showTopNav={false}
+				title={`${appName} - ${name}`}
+				url={getSheetLink(sheetFields.id, true)}
+				analyticsPageViewProps={{ title: "Sheet", url: "/sheets/[sheetId]" }}
 			>
-				<Box>
-					<main>
-						{/* Top Bar */}
-						<Box
-							padding={2}
-							backgroundColor="gray.900"
-							color="gray.50"
-							boxShadow="lg"
-						>
-							<Flex justify="space-between" marginBottom="group">
-								<Flex>
-									{/* Sheet Title */}
-									<Heading marginRight={1} as="h2" id="sheet-title">
-										{name}
-									</Heading>
-									<DarkMode>
-										{/* Sheet Options Button */}
-										<IconButton
-											id="options-button"
-											aria-label="edit sheet settings"
-											icon={<CreateOutlineIcon boxSize={6} />}
-											onClick={() => openDialog("sheetOptions")}
-											variant="ghost"
-											isRound
-											data-testid={sheetPageTestIds.sheetOptionsButton}
-										/>
-									</DarkMode>
-								</Flex>
-								{/* Color Mode Switch */}
-								<ColorModeSwitch
-									useDarkModeColors
-									data-testid={sheetPageTestIds.colorModeButton}
-								/>
-							</Flex>
-							<LightMode>
-								{characters.length ? (
-									<PartyMemberTagList
-										members={characters.map((member) => member.name)}
-									/>
-								) : (
-									<Tag
-										_hover={{ backgroundColor: "gray.300" }}
-										cursor="pointer"
-										onClick={() => openDialog("sheetOptions")}
-									>
-										<TagLeftIcon as={AddIcon} />
-										<TagLabel>Add Members</TagLabel>
-									</Tag>
-								)}
-							</LightMode>
-						</Box>
-						<Stack
-							minHeight={16}
-							padding="group"
-							direction={["column-reverse", "column-reverse", "row"]}
-						>
-							<Box>
-								{/* Add new Item Button */}
-								<Button
-									data-testid="add-item-button"
-									colorScheme="primary"
-									onClick={() => openDialog("item.new")}
-									width="full"
-								>
-									Add New Item
-								</Button>
-							</Box>
-							<Box flexGrow={2}>
-								{/* Search Bar */}
-								<Input
-									width="full"
-									placeholder="Search"
-									onChange={searchbarOnChange}
-									value={searchbarValue}
-								/>
-								{/* NOTE: Updates may stutter in dev mode but is fine when built */}
-							</Box>
-							<Box>
-								<SimpleGrid columns={[2, 2, 2, 1]} gap="group">
-									{/* Reset Filters Button */}
-									<Button width="full" onClick={resetFilters}>
-										Reset Filters
-									</Button>
-									{/* Filter Options Dialog Button */}
-									<Button
-										width="full"
-										display={[
-											"inline-flex",
-											"inline-flex",
-											"inline-flex",
-											"none",
-										]}
-										onClick={() => openDialog("filter")}
-									>
-										Filters
-									</Button>
-								</SimpleGrid>
-							</Box>
-						</Stack>
-						<InventorySheetTable
-							onRowClick={(item) => openDialog("item.edit", item)}
-							marginBottom="break"
-						/>
-						<Flex width="full">
-							<Center flexGrow={1}>
-								<Divider />
-							</Center>
-							<H3
-								fontWeight="300"
-								flexShrink={1}
-								textAlign="center"
-								display="inline"
-								paddingX="break"
-							>
-								Party Member Totals
-							</H3>
-							<Center flexGrow={1}>
-								<Divider />
-							</Center>
-						</Flex>
-						<CharacterTotalsTable />
-						{/* Dialogs */}
-						<ItemDialog mode="new" />
-						<ItemDialog mode="edit" />
-						<FilterDialog />
-						<SheetOptionsDialog />
-						<WelcomeDialog />
-					</main>
+				<Box as="main">
+					<SheetTopBar />
+					<SheetActions />
+					<InventorySheetTable
+						onRowClick={(item) =>
+							dispatch({
+								type: "ui.open-item-edit-dialog",
+								payload: item?.id ?? "",
+							})
+						}
+						mb="break"
+					/>
+					<CharacterTotals />
+
+					{/* Dialogs */}
+					<ItemDialog />
+					<FilterDialog />
+					<WelcomeDialog />
+					<CharacterDialog />
+					<SheetNameDialog />
 				</Box>
-			</InventoryStateProvider>
-		</View>
+			</View>
+		</>
 	);
 };
 
@@ -241,7 +122,7 @@ export const getServerSideProps: GetServerSideProps<Sheet> = async (
 	context
 ) => {
 	const prisma = await import("$prisma").then((r) => r.default);
-	const sheetId = getUrlParam(context.params.sheetId);
+	const sheetId = getUrlParam(context?.params?.sheetId ?? []);
 	// We import like this because importing backend code
 	// into a frontend file causes an error in testing.
 	// This way we are only importing the backend code

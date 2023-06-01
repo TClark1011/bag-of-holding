@@ -63,7 +63,7 @@ const dbReducer = async (
 					data: action.data?.characters?.add.map((character) => ({
 						name: character.name,
 						sheetId,
-					})),
+					})) as never,
 				});
 			}
 
@@ -83,8 +83,9 @@ const dbReducer = async (
 								carriedByCharacterId: character.id,
 							},
 							data: {
-								carriedByCharacterId: (character.deleteMethod as CharacterMoveDeleteMethod)
-									.to,
+								carriedByCharacterId: (
+									character.deleteMethod as CharacterMoveDeleteMethod
+								).to,
 							},
 						})
 					)

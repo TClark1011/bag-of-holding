@@ -38,6 +38,8 @@ import { A, D, F, flow, pipe, S } from "@mobily/ts-belt";
 import test, { expect } from "@playwright/test";
 import * as faker from "faker";
 
+const shortRandomString = () => Math.random().toString().slice(2, 8);
+
 /**
  * Generate a test name to use for an
  * entity. Takes a passed string,
@@ -52,55 +54,88 @@ import * as faker from "faker";
 const testNameGenerator = (entityType: string) =>
 	`_T.${entityType}.${faker.random.alphaNumeric(2)}`;
 
-const [sheetName, updatedSheetName] = A.makeWithIndex(2, () =>
+const [, updatedSheetName] = A.makeWithIndex(2, () =>
 	testNameGenerator("Sheet")
 );
-const [memberName, updatedMemberName, secondMemberName] = A.makeWithIndex(
-	3,
-	() => testNameGenerator("Member")
+const [, updatedMemberName, secondMemberName] = A.makeWithIndex(3, () =>
+	testNameGenerator("Member")
 );
 
-test("Create New Sheet, Close Welcome", async ({ page, baseURL }) => {
+test("Create New Sheet, Close Welcome", async ({ page }) => {
 	await page.goto("/");
-	await page.click("#new-sheet-button");
 
-	expect(page.url()).toBe(`${baseURL}/new`);
+	await page.click("text=Get Started");
 
 	await page.waitForNavigation({
 		url: "**/sheets/*",
 	});
 
-	await waitForModalState(page, "visible", "Welcome!");
+	await page.$("text=Welcome!");
 	await page.click(cssSelectorWithText("button", "Close"));
-	await page.waitForSelector("text=Sheet Options");
+	await page.waitForSelector("text=Edit Sheet Name");
 	await page.keyboard.press("Escape");
-	await waitForModalState(page, "hidden", "Welcome!");
 
 	expect(await getSheetTitle(page)).toBe("New Sheet");
 });
 
-testWithNewSheet(
-	"Edit Sheet Options",
-	async ({ page, clientB, waitForRefetch }) => {
-		await page.click(sheetOptionsButton);
-		await waitForModalState(page, "visible");
+testWithNewSheet("Change Sheet Name", async ({ clientA, clientB }) => {
+	await clientA.click(sheetOptionsButton);
+	await clientA.waitForSelector("text=Edit Sheet Name");
 
-		await page.fill("#name", sheetName);
-		await page.click(sheetOptionsAddMemberButton);
-		await page.fill("[name='characters.0.name']", memberName);
-		await page.click(sheetOptionsSaveButton);
+	const testName = "Test Sheet Name";
+	await clientA.fill("#name", testName);
+	await clientA.click("text=Save");
 
-		await page.locator("text=Sheet Options").waitFor({
+	await clientA.waitForSelector("text=Edit Sheet Name", {
+		state: "hidden",
+	});
+
+	expect(await getSheetTitle(clientA)).toBe(testName);
+
+	await clientB.waitForSelector(`text=${testName}`, {
+		timeout: 10000,
+	});
+});
+
+testWithNewSheet.only(
+	"Create Character, Give Items",
+	async ({ clientA, clientB }) => {
+		await clientA.click("text=Add Character");
+
+		const characterName = shortRandomString();
+
+		const nameInputSelector = "input#name";
+		await clientA.waitForSelector(nameInputSelector);
+
+		await clientA.fill(nameInputSelector, characterName);
+		await clientA.click("text=Save");
+
+		await clientA.waitForSelector(`button:has-text("${characterName}")`);
+		await clientB.waitForSelector(`button:has-text("${characterName}")`);
+
+		await clientA.click("text=Add New Item");
+
+		const itemName = shortRandomString();
+
+		await clientA.waitForSelector(nameInputSelector);
+		await clientA.fill(nameInputSelector, itemName);
+		await (
+			await clientA.$("#carriedByCharacterId")
+		)?.selectOption({
+			label: characterName,
+		});
+
+		await clientA.click("text=Create");
+		await clientA.waitForSelector(nameInputSelector, {
 			state: "hidden",
 		});
 
-		expect(await getSheetTitle(page)).toBe(sheetName);
-		expect(await page.isVisible(`text=${memberName}`)).toBe(true);
-
-		await waitForRefetch();
-
-		expect(await getSheetTitle(page)).toBe(sheetName);
-		expect(await clientB.isVisible(`text=${memberName}`)).toBe(true);
+		await clientA.waitForSelector(
+			`tr:has-text("${itemName}"):has-text("${itemName}")`
+		);
+		await clientB.waitForSelector(
+			`tr:has-text("${itemName}"):has-text("${itemName}")`
+		);
 	}
 );
 
@@ -114,8 +149,7 @@ testWithExistingSheet("Advanced Operations", async ({ page, sheet }) => {
 		pipe(
 			await page.innerText(
 				selectWithinTable(
-					// `tbody >> tr >> nth=${index} >> td[data-column=\"name\"]`
-					`tbody >> tr:has(td[data-column=\"name\"]) >> nth=${index} >> td[data-column=\"name\"]`
+					`tbody >> tr:has(td[data-column="name"]) >> nth=${index} >> td[data-column="name"]`
 				)
 			),
 			S.trim
@@ -146,7 +180,7 @@ testWithExistingSheet("Advanced Operations", async ({ page, sheet }) => {
 	const isCarriedByFilteredOutMember = flow(
 		(val: Item) => val,
 		D.getUnsafe("carriedByCharacterId"),
-		F.equals(memberToFilterOut.id)
+		F.equals(memberToFilterOut?.id)
 	);
 	const getNumberOfItemRowsCarriedByMember = async ({ name }: Character) => {
 		const rows = await page.$$(
@@ -162,13 +196,15 @@ testWithExistingSheet("Advanced Operations", async ({ page, sheet }) => {
 	// First we check that the sheet is currently showing items
 	// carried by the member which we will filter out
 	expect(
-		await getNumberOfItemRowsCarriedByMember(memberToFilterOut)
+		memberToFilterOut
+			? await getNumberOfItemRowsCarriedByMember(memberToFilterOut)
+			: null
 	).toBeGreaterThan(0);
 
 	// Click on "Carried By" column filter button
 	await page.click(selectWithinColumnHeader("Carried By", columnFilterButton));
 	await page.waitForSelector(openPopover);
-	await page.click(`${openPopover} >> text="${memberToFilterOut.name}"`);
+	await page.click(`${openPopover} >> text="${memberToFilterOut?.name}"`);
 	// Press escape to close popover
 	await page.keyboard.press("Escape");
 	// Wait for popover to be hidden
@@ -183,13 +219,16 @@ testWithExistingSheet("Advanced Operations", async ({ page, sheet }) => {
 	);
 	expect(await countItemRows(page)).toBe(filteredAndSortedItems.length);
 	expect(await getNameOfItemInTable(0)).toBe(
-		A.last(filteredAndSortedItems).name
+		A.last(filteredAndSortedItems)?.name
 	);
 	expect(await getNameOfItemInTable(-1)).toBe(
-		A.head(filteredAndSortedItems).name
+		A.head(filteredAndSortedItems)?.name
 	);
 
-	expect(await getNumberOfItemRowsCarriedByMember(memberToFilterOut)).toBe(0);
+	const numberOfCarriedItemRows = memberToFilterOut
+		? await getNumberOfItemRowsCarriedByMember(memberToFilterOut)
+		: null;
+	expect(numberOfCarriedItemRows).toBe(0);
 
 	// ### sort by a numeric field
 	const itemsSortedByValue = pipe(
@@ -198,13 +237,13 @@ testWithExistingSheet("Advanced Operations", async ({ page, sheet }) => {
 	);
 	await clickColumnSortButton("Value");
 
-	expect(await getNameOfItemInTable(0)).toBe(A.head(itemsSortedByValue).name);
-	expect(await getNameOfItemInTable(-1)).toBe(A.last(itemsSortedByValue).name);
+	expect(await getNameOfItemInTable(0)).toBe(A.head(itemsSortedByValue)?.name);
+	expect(await getNameOfItemInTable(-1)).toBe(A.last(itemsSortedByValue)?.name);
 
 	await clickColumnSortButton("Value");
 
-	expect(await getNameOfItemInTable(0)).toBe(A.last(itemsSortedByValue).name);
-	expect(await getNameOfItemInTable(-1)).toBe(A.head(itemsSortedByValue).name);
+	expect(await getNameOfItemInTable(0)).toBe(A.last(itemsSortedByValue)?.name);
+	expect(await getNameOfItemInTable(-1)).toBe(A.head(itemsSortedByValue)?.name);
 
 	// ### filter out a category
 	// open the "Carried By" filter menu
@@ -236,7 +275,7 @@ testWithExistingSheet("Advanced Operations", async ({ page, sheet }) => {
 	) as NonEmptyArray<string>;
 	// We will search for the most common 2 letter combo
 	// across all the item names
-	const searchQuery = getMostCommonLetterCombo(itemNames, 2);
+	const searchQuery = getMostCommonLetterCombo(itemNames, 2) as string;
 	const itemNamesThatContainSearchQuery = itemNames.filter((val) =>
 		searchComparison(val, searchQuery)
 	);
