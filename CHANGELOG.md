@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.2](https://github.com/TClark1011/bag-of-holding/compare/v1.4.1...v1.4.2) (2023-06-01)
+
+
+### Bug Fixes
+
+* **fullstack:** 🐛 fixed bug where mutations where sent twice ([52a0bfd](https://github.com/TClark1011/bag-of-holding/commit/52a0bfd82bf78a7ae82e0764b427bc6a6c964ebd))
+
 ### [1.4.1](https://github.com/TClark1011/bag-of-holding/compare/v1.4.0...v1.4.1) (2023-06-01)
 
 ## [1.4.0](https://github.com/TClark1011/bag-of-holding/compare/v1.3.1...v1.4.0) (2023-06-01)
