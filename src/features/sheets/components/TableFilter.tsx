@@ -8,17 +8,18 @@ import {
 	PopoverProps,
 	PopoverTrigger,
 } from "@chakra-ui/react";
+import { PropsWithChildren } from "react";
 
-interface TableFilterProps extends PopoverProps {
-	property: FilterableItemProperty;
-	heading?: string;
-}
+type TableFilterProps = PropsWithChildren &
+	PopoverProps & {
+		property: FilterableItemProperty;
+		heading?: string;
+	};
 
 /**
  * Popover containing the user interface for filtering
  * inventory table columns.
  *
- * @param props The props
  * @param props.property The
  * property that the filter is applied against
  * @param props.onChange Function to run whenever an
@@ -26,16 +27,8 @@ interface TableFilterProps extends PopoverProps {
  * item is passed as a parameter.
  * @param props.filter An array of strings that are
  * currently being filtered out of the table.
- * @param props.children The children are
- * inserted into 'PopoverTrigger'. NOTE: While this does allow
- * the popover to automatically handle 'isOpen' and 'onClose'
- * properties, these props should still be supplied when this
- * component is used. This is because the state change triggered
- * by changing the filters will cause the Popover to close if
- * it's state is being handled automatically via the PopoverTrigger.
  * @param props.heading Heading to override the default that is
  * derived from the property
- * @returns Component stuff
  */
 const TableFilter: React.FC<TableFilterProps> = ({
 	property,

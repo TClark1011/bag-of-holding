@@ -7,10 +7,6 @@ type GitLinkProps = Omit<IconButtonProps, "aria-label" | "icon" | "children">;
 /**
  * An icon that works as a link to the Github repository
  * page
- *
- * @param props The props
- * @returns Icon button that links
- * to the github repository
  */
 const GitLink: React.FC<GitLinkProps> = (props) => (
 	<Link href={appGitLink}>

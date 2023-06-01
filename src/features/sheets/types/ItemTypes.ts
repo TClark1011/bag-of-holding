@@ -17,10 +17,3 @@ export type SummableItemProperty = StrictExtract<
 
 export type ItemCreationFields = Omit<OmitId<Item>, "quantity" | "weight"> &
 	Partial<Pick<Item, "quantity" | "weight" | "id">>;
-/**
- * The fields that are required to be input when creating a new inventory item.
- * We need this type because the fields 'quantity' and 'weight' are required fields,
- * however when producing a new item, we want these fields to be optional for the user
- * because we can apply defaults if values are not provided. For more information about
- * the defaults, see the 'createInventoryItem' function.
- */

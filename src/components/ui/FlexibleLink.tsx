@@ -3,15 +3,16 @@ import {
 	Link as ChakraLink,
 	LinkProps as ChakraLinkProps,
 } from "@chakra-ui/react";
+import { PropsWithChildren } from "react";
 
 type OmitHref<T> = Omit<T, "href">;
 
-export interface FlexibleLinkProps {
+export type FlexibleLinkProps = PropsWithChildren & {
 	href: string;
 	useNextLink?: boolean;
 	nextLinkProps?: OmitHref<NextLinkProps>;
 	chakraLinkProps?: OmitHref<ChakraLinkProps>;
-}
+};
 
 /**
  * A link that can either use the smooth client-side loading
