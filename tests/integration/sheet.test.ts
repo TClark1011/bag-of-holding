@@ -119,7 +119,9 @@ testWithNewSheet.only(
 
 		await clientA.waitForSelector(nameInputSelector);
 		await clientA.fill(nameInputSelector, itemName);
-		await (await clientA.$("#carriedByCharacterId"))?.selectOption({
+		await (
+			await clientA.$("#carriedByCharacterId")
+		)?.selectOption({
 			label: characterName,
 		});
 
@@ -147,8 +149,7 @@ testWithExistingSheet("Advanced Operations", async ({ page, sheet }) => {
 		pipe(
 			await page.innerText(
 				selectWithinTable(
-					// `tbody >> tr >> nth=${index} >> td[data-column=\"name\"]`
-					`tbody >> tr:has(td[data-column=\"name\"]) >> nth=${index} >> td[data-column=\"name\"]`
+					`tbody >> tr:has(td[data-column="name"]) >> nth=${index} >> td[data-column="name"]`
 				)
 			),
 			S.trim

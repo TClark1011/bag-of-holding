@@ -4,15 +4,14 @@ import { Box, BoxProps } from "@chakra-ui/react";
 import { flow } from "@mobily/ts-belt";
 import { FC, useMemo } from "react";
 
-export type EntityDataProps<
-	EntityName extends FullSheetEntityProperty
-> = BoxProps & {
-	entityType: EntityName;
-	selector: (
-		entity: GetEntityByProperty<EntityName> | undefined
-	) => ReturnType<FC> | string;
-	entityId: string;
-};
+export type EntityDataProps<EntityName extends FullSheetEntityProperty> =
+	BoxProps & {
+		entityType: EntityName;
+		selector: (
+			entity: GetEntityByProperty<EntityName> | undefined
+		) => ReturnType<FC> | string;
+		entityId: string;
+	};
 
 /**
  * Display data from an entity (either an Item or Character). Takes

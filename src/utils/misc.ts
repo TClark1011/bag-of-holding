@@ -12,10 +12,13 @@ import type { ValueOf } from "type-fest";
  * @returns A function that simply accepts and then returns
  * keys from the schema
  */
-export const createSchemaKeyHelperFunction = <Schema extends z.ZodTypeAny>(
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	schema: Schema // This is just here to get type inference
-) => <SpecificKey extends keyof z.infer<Schema>>(key: SpecificKey) => key;
+export const createSchemaKeyHelperFunction =
+	<Schema extends z.ZodTypeAny>(
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		schema: Schema // This is just here to get type inference
+	) =>
+	<SpecificKey extends keyof z.infer<Schema>>(key: SpecificKey) =>
+		key;
 
 /**
  * Go through an object's values and replace one value type
@@ -33,10 +36,10 @@ export const swapValueTypes = <
 	ToReplace,
 	Replacement
 >(
-		obj: Obj,
-		checker: (p: ValueOf<Obj> | unknown) => p is ToReplace,
-		converter: (p: ToReplace) => Replacement
-	): ReplaceValue<Obj, ToReplace, Replacement> =>
+	obj: Obj,
+	checker: (p: ValueOf<Obj> | unknown) => p is ToReplace,
+	converter: (p: ToReplace) => Replacement
+): ReplaceValue<Obj, ToReplace, Replacement> =>
 	D.map(obj, guardedIfElse(checker, converter, F.identity as any)) as any;
 
 /**

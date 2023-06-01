@@ -7,9 +7,10 @@ import { A, F } from "@mobily/ts-belt";
  *
  * @param id The id to check for
  */
-export const hasId = <Entity extends { id: string }>(id: string) => (
-	entity: Entity
-) => entity.id === id;
+export const hasId =
+	<Entity extends { id: string }>(id: string) =>
+	(entity: Entity) =>
+		entity.id === id;
 
 /**
  * A function for mapping over an array of entities and applying
@@ -22,10 +23,9 @@ export const hasId = <Entity extends { id: string }>(id: string) => (
  * item does not exist in the array, then the original array is returned
  * unchanged
  */
-export const updateItemWithId = <Entity extends { id: string }>(
-	targetId: string,
-	updater: Updater<Entity>
-) => (entities: Entity[]): Entity[] =>
+export const updateItemWithId =
+	<Entity extends { id: string }>(targetId: string, updater: Updater<Entity>) =>
+	(entities: Entity[]): Entity[] =>
 		entities.map(F.when(hasId(targetId), updater));
 
 /**
@@ -33,6 +33,7 @@ export const updateItemWithId = <Entity extends { id: string }>(
  *
  * @param targetId The id to target
  */
-export const rejectItemWithId = <Entity extends { id: string }>(
-	targetId: string
-) => (entities: Entity[]): Entity[] => A.reject(entities, hasId(targetId));
+export const rejectItemWithId =
+	<Entity extends { id: string }>(targetId: string) =>
+	(entities: Entity[]): Entity[] =>
+		A.reject(entities, hasId(targetId));

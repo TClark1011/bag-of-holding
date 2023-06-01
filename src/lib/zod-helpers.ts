@@ -10,11 +10,9 @@ type RawStringToZod<Str extends string> = IsLiteral<Str> extends true
 	? z.ZodLiteral<Str>
 	: z.ZodString;
 
-type RawObjectToZod<Obj extends Record<string, unknown>> = z.ZodObject<
-	{
-		[Key in keyof Obj]: RawToZod<Obj[Key]>;
-	}
->;
+type RawObjectToZod<Obj extends Record<string, unknown>> = z.ZodObject<{
+	[Key in keyof Obj]: RawToZod<Obj[Key]>;
+}>;
 
 /**
  * Take a base typescript type and convert it to the corresponding

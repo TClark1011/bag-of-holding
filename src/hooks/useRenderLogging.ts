@@ -28,34 +28,33 @@ const composeStyledConsoleLog = (stringStyleCombos: [string, string][]) => {
 	return ["%c⏺ " + strings.map((str) => `%c${str}`).join(""), "", ...styles];
 };
 
-const getLogPrinter = (
-	componentName: string,
-	extraContext: (string | number)[] = []
-) => (extraMessage: string) => {
-	const componentNameColor = seededRandomColor(componentName);
-	if (inDevelopment) {
-		console.debug(
-			...composeStyledConsoleLog([
-				[`[${componentName}`, `color: ${componentNameColor}`],
-				...(extraContext.length > 0
-					? ([[" (", "color: white;"]] as [string, string][])
-					: []),
-				...extraContext.map(
-					(context, index) =>
-						[
-							`${context}${index !== extraContext.length - 1 ? "," : ""}`,
-							`color: ${seededRandomColor(String(context))};`,
-						] as [string, string]
-				),
-				...(extraContext.length > 0
-					? ([[")", "color: white;"]] as [string, string][])
-					: []),
-				["] ", `color: ${componentNameColor}`],
-				[extraMessage, "color: inherit;"],
-			])
-		);
-	}
-};
+const getLogPrinter =
+	(componentName: string, extraContext: (string | number)[] = []) =>
+	(extraMessage: string) => {
+		const componentNameColor = seededRandomColor(componentName);
+		if (inDevelopment) {
+			console.debug(
+				...composeStyledConsoleLog([
+					[`[${componentName}`, `color: ${componentNameColor}`],
+					...(extraContext.length > 0
+						? ([[" (", "color: white;"]] as [string, string][])
+						: []),
+					...extraContext.map(
+						(context, index) =>
+							[
+								`${context}${index !== extraContext.length - 1 ? "," : ""}`,
+								`color: ${seededRandomColor(String(context))};`,
+							] as [string, string]
+					),
+					...(extraContext.length > 0
+						? ([[")", "color: white;"]] as [string, string][])
+						: []),
+					["] ", `color: ${componentNameColor}`],
+					[extraMessage, "color: inherit;"],
+				])
+			);
+		}
+	};
 
 /**
  * Print messages to the debug console when a component

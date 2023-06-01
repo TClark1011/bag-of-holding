@@ -134,7 +134,7 @@ testWithNewSheet("Advanced Sheet Test", async ({ clientA, clientB }) => {
 
 	/* #region  Change Sheet Name */
 	await clientA.click("h2 + button");
-	await clientA.locator("input[name=\"name\"]").fill(newSheetName);
+	await clientA.locator('input[name="name"]').fill(newSheetName);
 	await clientA.locator("text=Save").click();
 
 	await performActionOnMultipleClients([clientA, clientB], (client) =>
@@ -143,7 +143,7 @@ testWithNewSheet("Advanced Sheet Test", async ({ clientA, clientB }) => {
 	/* #endregion */
 
 	/* #region  First Item */
-	await clientA.locator("[data-testid=\"add-item-button\"]").click();
+	await clientA.locator('[data-testid="add-item-button"]').click();
 	await fillOutItemForm(clientA, firstItem);
 	await clientA.locator("text=Create").click();
 	await performActionOnMultipleClients([clientA, clientB], (client) =>
@@ -152,7 +152,7 @@ testWithNewSheet("Advanced Sheet Test", async ({ clientA, clientB }) => {
 	/* #endregion */
 
 	/* #region  Second Item */
-	await clientB.locator("[data-testid=\"add-item-button\"]").click();
+	await clientB.locator('[data-testid="add-item-button"]').click();
 	await fillOutItemForm(clientB, secondItem);
 	await clientB.locator("text=Create").click();
 	await performActionOnMultipleClients([clientA, clientB], (client) =>
@@ -170,7 +170,7 @@ testWithNewSheet("Advanced Sheet Test", async ({ clientA, clientB }) => {
 	/* #endregion */
 
 	/* #region  Third item (give to first character) */
-	await clientA.locator("[data-testid=\"add-item-button\"]").click();
+	await clientA.locator('[data-testid="add-item-button"]').click();
 	await fillOutItemForm(clientA, thirdItem);
 	await clientA.locator("text=Create").click();
 	await performActionOnMultipleClients([clientA], (client) =>
@@ -203,13 +203,13 @@ testWithNewSheet("Advanced Sheet Test", async ({ clientA, clientB }) => {
 	// Open CarriedBy Filter Menu
 	await clientB
 		.locator(
-			"[data-testid=\"InventoryTable__CarriedByColumnHeader\"] [aria-label=\"filter\"]"
+			'[data-testid="InventoryTable__CarriedByColumnHeader"] [aria-label="filter"]'
 		)
 		.click();
 	// Uncheck All
 	await clientB
 		.locator(
-			"[data-testid=\"InventoryTable__CarriedByColumnHeader\"] >> text=Uncheck All"
+			'[data-testid="InventoryTable__CarriedByColumnHeader"] >> text=Uncheck All'
 		)
 		.click();
 
@@ -226,14 +226,14 @@ testWithNewSheet("Advanced Sheet Test", async ({ clientA, clientB }) => {
 	// Uncheck all
 	await clientB
 		.locator(
-			"[data-testid=\"InventoryTable__CarriedByColumnHeader\"] >> text=Uncheck All"
+			'[data-testid="InventoryTable__CarriedByColumnHeader"] >> text=Uncheck All'
 		)
 		.click();
 
 	// Check only first character
 	await clientB
 		.locator(
-			`li:has-text(\"${firstCharacterName}\") .chakra-checkbox .chakra-checkbox__control`
+			`li:has-text("${firstCharacterName}") .chakra-checkbox .chakra-checkbox__control`
 		)
 		.click();
 
@@ -256,14 +256,14 @@ testWithNewSheet("Advanced Sheet Test", async ({ clientA, clientB }) => {
 	// Open Category Filter
 	await clientB
 		.locator(
-			"[data-testid=\"InventoryTable__CategoryColumnHeader\"] [aria-label=\"filter\"]"
+			'[data-testid="InventoryTable__CategoryColumnHeader"] [aria-label="filter"]'
 		)
 		.click();
 
 	// Uncheck second item category
 	await clientB
 		.locator(
-			`li:has-text(\"${firstItem.category}\") .chakra-checkbox .chakra-checkbox__control`
+			`li:has-text("${firstItem.category}") .chakra-checkbox .chakra-checkbox__control`
 		)
 		.click();
 
@@ -303,7 +303,7 @@ testWithNewSheet("Advanced Sheet Test", async ({ clientA, clientB }) => {
 	return;
 
 	/* #region  Create Fourth Item (Give to second character) */
-	await clientA.locator("[data-testid=\"add-item-button\"]").click();
+	await clientA.locator('[data-testid="add-item-button"]').click();
 	await fillOutItemForm(clientA, fourthItem);
 	await clientA.locator("text=Create").click();
 
@@ -316,10 +316,10 @@ testWithNewSheet("Advanced Sheet Test", async ({ clientA, clientB }) => {
 	firstItem.carriedBy = secondCharacterName;
 	thirdItem.carriedBy = secondCharacterName;
 
-	await clientA.locator(`button:has-text(\"${firstCharacterName}\")`).click();
+	await clientA.locator(`button:has-text("${firstCharacterName}")`).click();
 	await clientA.locator("text=Delete").click();
-	await clientA.locator("label:has([value=\"item-pass\"])").click();
-	await clientA.locator("select[name=\"passToTarget\"]").selectOption({
+	await clientA.locator('label:has([value="item-pass"])').click();
+	await clientA.locator('select[name="passToTarget"]').selectOption({
 		label: secondCharacterName,
 	});
 	await clientA.locator("text=Confirm").click();
@@ -337,8 +337,8 @@ testWithNewSheet("Advanced Sheet Test", async ({ clientA, clientB }) => {
 
 	/* #region  Create Third Character */
 	await clientB.locator("text=Add Character").click();
-	await clientB.locator("input[name=\"name\"]").click();
-	await clientB.locator("input[name=\"name\"]").fill(thirdCharacterName);
+	await clientB.locator('input[name="name"]').click();
+	await clientB.locator('input[name="name"]').fill(thirdCharacterName);
 	await clientB.locator("text=Save").click();
 
 	await performActionOnMultipleClients([clientA, clientB], (client) =>
@@ -361,7 +361,7 @@ testWithNewSheet("Advanced Sheet Test", async ({ clientA, clientB }) => {
 	/* #region  Give Second Item to third character */
 	await clientA.locator(`tr:has-text("${secondItem.name}")`).click();
 	await clientA
-		.locator("select[name=\"carriedByCharacterId\"]")
+		.locator('select[name="carriedByCharacterId"]')
 		.selectOption({ label: thirdCharacterName });
 	await clientA.locator("text=Save").click();
 
@@ -374,7 +374,7 @@ testWithNewSheet("Advanced Sheet Test", async ({ clientA, clientB }) => {
 	/* #region  Delete Third Character(items = carried by nobody) */
 	await clientA.locator(`button >> text=${thirdCharacterName}`).click();
 	await clientA.locator("text=Delete").click();
-	await clientA.locator("text=/.*Set \"Carried To\" to \"Nobody\".*/").click();
+	await clientA.locator('text=/.*Set "Carried To" to "Nobody".*/').click();
 	await clientA.locator("text=Confirm").click();
 
 	secondItem.carriedBy = "";
@@ -384,8 +384,8 @@ testWithNewSheet("Advanced Sheet Test", async ({ clientA, clientB }) => {
 	/* #endregion */
 
 	/* #region  Change Sheet Name */
-	await clientA.locator("[aria-label=\"edit sheet name\"]").click();
-	await clientA.locator("input[name=\"name\"]").fill(editedSheetName);
+	await clientA.locator('[aria-label="edit sheet name"]').click();
+	await clientA.locator('input[name="name"]').fill(editedSheetName);
 	await clientA.locator("text=Save").click();
 	await performActionOnMultipleClients([clientA, clientB], async (client) =>
 		client
@@ -396,7 +396,7 @@ testWithNewSheet("Advanced Sheet Test", async ({ clientA, clientB }) => {
 
 	/* #region  Create Fourth Character */
 	await clientA.locator("text=Add Character").click();
-	await clientA.locator("input[name=\"name\"]").fill(fourthCharacterName);
+	await clientA.locator('input[name="name"]').fill(fourthCharacterName);
 	await clientA.locator("text=Save").click();
 
 	await performActionOnMultipleClients([clientA, clientB], (client) =>
@@ -414,7 +414,7 @@ testWithNewSheet("Advanced Sheet Test", async ({ clientA, clientB }) => {
 	/* #endregion */
 
 	/* #region  Delete Fourth Character (Delete Items) */
-	await clientA.locator(`button:has-text(\"${fourthCharacterName}\")`).click();
+	await clientA.locator(`button:has-text("${fourthCharacterName}")`).click();
 	await clientA.locator("text=Delete").click();
 	await clientA.locator("text=Delete From Sheet").click();
 	await clientA.locator("text=Confirm").click();

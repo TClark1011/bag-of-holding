@@ -24,16 +24,14 @@ export type ResolvedPayloadAction<
 	resolvedPayload: Payload;
 };
 
-export type ResolveMultipleActions<Actions extends Action<string>> = ValueOf<
-	{
-		[ActionType in Actions["type"]]: {
-			resolved: true;
-			id: string;
-			type: ActionType;
-			originalAction: Extract<Actions, { type: ActionType }>;
-		};
-	}
->;
+export type ResolveMultipleActions<Actions extends Action<string>> = ValueOf<{
+	[ActionType in Actions["type"]]: {
+		resolved: true;
+		id: string;
+		type: ActionType;
+		originalAction: Extract<Actions, { type: ActionType }>;
+	};
+}>;
 
 export type ExtractResolvedPayloadActions<
 	Actions extends ResolvedPayloadAction<any, any>
@@ -59,28 +57,26 @@ export const payloadActionSchema = <
 	TypeName extends string,
 	PayloadSchema extends z.ZodTypeAny
 >(
-		typeName: TypeName,
-		payloadSchema: PayloadSchema
-	) =>
-		actionSchema(typeName).extend({
-			payload: payloadSchema,
-		});
+	typeName: TypeName,
+	payloadSchema: PayloadSchema
+) =>
+	actionSchema(typeName).extend({
+		payload: payloadSchema,
+	});
 
 export type ExtractResolvedActions<Actions extends Action<string>> = Extract<
 	Actions,
 	{ resolved: true }
 >;
 
-export type ExtractUnresolvableActions<
-	Actions extends Action<string>
-> = Exclude<Actions, { type: ExtractResolvedActions<Actions>["type"] }>;
+export type ExtractUnresolvableActions<Actions extends Action<string>> =
+	Exclude<Actions, { type: ExtractResolvedActions<Actions>["type"] }>;
 
-export type ExtractResolvableActions<
-	TheAction extends Action<string>
-> = Exclude<
-	TheAction,
-	ExtractUnresolvableActions<TheAction> | ExtractResolvedActions<TheAction>
->;
+export type ExtractResolvableActions<TheAction extends Action<string>> =
+	Exclude<
+		TheAction,
+		ExtractUnresolvableActions<TheAction> | ExtractResolvedActions<TheAction>
+	>;
 
 export type FinalActions<Actions extends Action<string>> =
 	| ExtractResolvedActions<Actions>
@@ -102,11 +98,11 @@ export const resolveSimpleAction = <TheAction extends Action<string>>(
 	action: TheAction,
 	id = cuid()
 ): ResolvedAction<TheAction> => ({
-		resolved: true,
-		id,
-		type: action.type,
-		originalAction: action,
-	});
+	resolved: true,
+	id,
+	type: action.type,
+	originalAction: action,
+});
 
 export const staticResolvedActionSchemaFields = z.object({
 	id: z.string(),

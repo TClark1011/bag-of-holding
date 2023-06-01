@@ -1,4 +1,3 @@
-/* eslint-disable jsdoc/require-jsdoc */
 import wait from "$tests/utils/wait";
 
 export default async () => {

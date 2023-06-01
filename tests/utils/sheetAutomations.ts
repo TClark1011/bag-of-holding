@@ -186,7 +186,7 @@ export const getNameOfItemInTableAtRowIndex = async (
 		await client.innerText(
 			selectWithinTable(
 				// `tbody >> tr >> nth=${index} >> td[data-column=\"name\"]`
-				`tbody >> tr:has(td[data-column=\"name\"]) >> nth=${index} >> td[data-column=\"name\"]`
+				`tbody >> tr:has(td[data-column="name"]) >> nth=${index} >> td[data-column="name"]`
 			)
 		),
 		S.trim

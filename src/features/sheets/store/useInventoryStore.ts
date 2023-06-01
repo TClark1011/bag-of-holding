@@ -1,4 +1,3 @@
-/* eslint-disable jsdoc/require-jsdoc */
 import { ExtractResolvedPayloadActions, resolveSimpleAction } from "$actions";
 import {
 	arrayDiff,
@@ -266,27 +265,25 @@ const inventoryStoreReducer: Reducer<
 				draftState.ui.sheetNameDialogIsOpen = false;
 				break;
 			case "ui.toggle-filter":
-				draftState.ui.filters[
-					resolvedAction.originalAction.payload.property
-				] = toggleArrayItem(
-					selectEffectivePropertyFilter(
-						resolvedAction.originalAction.payload.property
-					)(draftState),
-					resolvedAction.originalAction.payload.value
-				);
+				draftState.ui.filters[resolvedAction.originalAction.payload.property] =
+					toggleArrayItem(
+						selectEffectivePropertyFilter(
+							resolvedAction.originalAction.payload.property
+						)(draftState),
+						resolvedAction.originalAction.payload.value
+					);
 				break;
 			case "ui.invert-filter":
-				draftState.ui.filters[
-					resolvedAction.originalAction.payload
-				] = arrayDiff(
-					draftState.ui.filters[resolvedAction.originalAction.payload] ??
+				draftState.ui.filters[resolvedAction.originalAction.payload] =
+					arrayDiff(
+						draftState.ui.filters[resolvedAction.originalAction.payload] ??
+							selectAllPossibleFilterValuesOnProperty(
+								resolvedAction.originalAction.payload
+							)(draftState),
 						selectAllPossibleFilterValuesOnProperty(
 							resolvedAction.originalAction.payload
-						)(draftState),
-					selectAllPossibleFilterValuesOnProperty(
-						resolvedAction.originalAction.payload
-					)(draftState)
-				);
+						)(draftState)
+					);
 				break;
 			case "ui.clear-filter":
 				draftState.ui.filters[resolvedAction.originalAction.payload] = [];
@@ -372,11 +369,9 @@ const useInventoryStore = createState(
 	})
 );
 
-// eslint-disable-next-line jsdoc/require-jsdoc
 export const useInventoryStoreDispatch = () =>
 	useInventoryStore((s) => s.dispatch);
 
-// eslint-disable-next-line jsdoc/require-jsdoc
 export const useInventoryStoreState = () => useInventoryStore((s) => s.sheet);
 
 export default useInventoryStore;

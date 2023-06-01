@@ -103,7 +103,7 @@ const StrategySelectionForm: FC<{
 					Delete From Sheet
 				</Radio>
 				<Radio {...register("strategyType")} value={dsn("item-to-nobody")}>
-					Set {"\"Carried To\""} to {"\"Nobody\""}
+					Set {'"Carried To"'} to {'"Nobody"'}
 				</Radio>
 			</VStack>
 		</RadioGroup>
@@ -212,7 +212,8 @@ const CharacterConfirmDeleteDialog = () => {
 	const characterBeingEdited = useInventoryStore(selectCharacterBeingEdited);
 	const [isLoading, isLoadingController] = useBoolean();
 
-	const submitStrategySelectionForm = useHandleCharacterDeletionWithStrategyForm();
+	const submitStrategySelectionForm =
+		useHandleCharacterDeletionWithStrategyForm();
 	const submitSimpleConfirmation = useHandleSimpleConfirmation();
 
 	const submitFormData = useMemo(

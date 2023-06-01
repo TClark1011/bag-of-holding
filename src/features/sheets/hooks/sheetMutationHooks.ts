@@ -1,4 +1,3 @@
-/* eslint-disable jsdoc/require-jsdoc */
 import queries from "$root/hooks/queries";
 import { useInventoryStoreDispatch } from "$sheets/store";
 
@@ -68,82 +67,78 @@ export const useItemDeleteMutation: typeof queries.item.delete.useMutation = (
 	return mutation;
 };
 
-export const useCharacterCreateMutation: typeof queries.character.create.useMutation = (
-	options
-) => {
-	const dispatch = useInventoryStoreDispatch();
-	const mutation = queries.character.create.useMutation({
-		...options,
-		onSuccess: (result, ...remainingParams) => {
-			dispatch({
-				type: "add-character",
-				payload: result,
-			});
+export const useCharacterCreateMutation: typeof queries.character.create.useMutation =
+	(options) => {
+		const dispatch = useInventoryStoreDispatch();
+		const mutation = queries.character.create.useMutation({
+			...options,
+			onSuccess: (result, ...remainingParams) => {
+				dispatch({
+					type: "add-character",
+					payload: result,
+				});
 
-			return options?.onSuccess?.(result, ...remainingParams);
-		},
-	});
+				return options?.onSuccess?.(result, ...remainingParams);
+			},
+		});
 
-	return mutation;
-};
+		return mutation;
+	};
 
-export const useCharacterDeleteMutation: typeof queries.character.delete.useMutation = (
-	options
-) => {
-	const dispatch = useInventoryStoreDispatch();
-	const mutation = queries.character.delete.useMutation({
-		...options,
-		onSuccess: (result, input, context) => {
-			console.log("(sheetMutationHooks) result: ", result);
-			dispatch({
-				type: "remove-character",
-				payload: input,
-			});
+export const useCharacterDeleteMutation: typeof queries.character.delete.useMutation =
+	(options) => {
+		const dispatch = useInventoryStoreDispatch();
+		const mutation = queries.character.delete.useMutation({
+			...options,
+			onSuccess: (result, input, context) => {
+				console.log("(sheetMutationHooks) result: ", result);
+				dispatch({
+					type: "remove-character",
+					payload: input,
+				});
 
-			return options?.onSuccess?.(result, input, context);
-		},
-	});
+				return options?.onSuccess?.(result, input, context);
+			},
+		});
 
-	return mutation;
-};
+		return mutation;
+	};
 
-export const useCharacterUpdateMutation: typeof queries.character.update.useMutation = (
-	options
-) => {
-	const dispatch = useInventoryStoreDispatch();
-	const mutation = queries.character.update.useMutation({
-		...options,
-		onSuccess: (result, ...remainingParams) => {
-			dispatch({
-				type: "update-character",
-				payload: {
-					data: result,
-					characterId: result.id,
-				},
-			});
+export const useCharacterUpdateMutation: typeof queries.character.update.useMutation =
+	(options) => {
+		const dispatch = useInventoryStoreDispatch();
+		const mutation = queries.character.update.useMutation({
+			...options,
+			onSuccess: (result, ...remainingParams) => {
+				dispatch({
+					type: "update-character",
+					payload: {
+						data: result,
+						characterId: result.id,
+					},
+				});
 
-			return options?.onSuccess?.(result, ...remainingParams);
-		},
-	});
+				return options?.onSuccess?.(result, ...remainingParams);
+			},
+		});
 
-	return mutation;
-};
+		return mutation;
+	};
 
-export const useSheetNameChangeMutation: typeof queries.sheet.setName.useMutation = (
-	options
-) => {
-	const dispatch = useInventoryStoreDispatch();
-	const mutation = queries.sheet.setName.useMutation({
-		...options,
-		onSuccess: (result, ...remainingParams) => {
-			dispatch({
-				type: "set-sheet-name",
-				payload: result.name,
-			});
+export const useSheetNameChangeMutation: typeof queries.sheet.setName.useMutation =
+	(options) => {
+		const dispatch = useInventoryStoreDispatch();
+		const mutation = queries.sheet.setName.useMutation({
+			...options,
+			onSuccess: (result, ...remainingParams) => {
+				dispatch({
+					type: "set-sheet-name",
+					payload: result.name,
+				});
 
-			return options?.onSuccess?.(result, ...remainingParams);
-		},
-	});
+				return options?.onSuccess?.(result, ...remainingParams);
+			},
+		});
 
-	return mutation;
-};
+		return mutation;
+	};

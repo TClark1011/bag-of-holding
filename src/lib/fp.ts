@@ -13,7 +13,10 @@ export * from "@mobily/ts-belt";
  * @returns A function that takes one parameter
  * and returns that parameter.
  */
-export const expectParam = <T>() => (value: T) => value;
+export const expectParam =
+	<T>() =>
+	(value: T) =>
+		value;
 
 /**
  * Create a function that will return the passed
@@ -24,7 +27,10 @@ export const expectParam = <T>() => (value: T) => value;
  * @returns A function that will return the
  * passed value
  */
-export const give = <T>(value: T) => () => value;
+export const give =
+	<T>(value: T) =>
+	() =>
+		value;
 
 export const get = D.getUnsafe;
 

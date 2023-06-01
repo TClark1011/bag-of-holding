@@ -7,6 +7,7 @@
  * @returns A function that generates a test-id using a provided
  * label string
  */
-export const testIdGeneratorFactory = (
-	componentName: string
-): ((a: string) => string) => (label: string) => componentName + "__" + label;
+export const testIdGeneratorFactory =
+	(componentName: string): ((a: string) => string) =>
+	(label: string) =>
+		componentName + "__" + label;

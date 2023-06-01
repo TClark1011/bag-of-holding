@@ -1,4 +1,3 @@
-/* eslint-disable jsdoc/require-jsdoc */
 import {
 	FilterableItemProperty,
 	FullSheetEntityProperty,
@@ -31,21 +30,25 @@ export type InventoryStoreSelector<Selection> = (
  *
  * @param selector the selector
  */
-export const fromSheet = <Selection>(selector: (p: FullSheet) => Selection) => (
-	state: InventoryStoreProps
-) => selector(state.sheet);
+export const fromSheet =
+	<Selection>(selector: (p: FullSheet) => Selection) =>
+	(state: InventoryStoreProps) =>
+		selector(state.sheet);
 
-export const fromUI = <Selection>(
-	selector: (p: InventoryStoreProps["ui"]) => Selection
-): InventoryStoreSelector<Selection> => (state) => selector(state.ui);
+export const fromUI =
+	<Selection>(
+		selector: (p: InventoryStoreProps["ui"]) => Selection
+	): InventoryStoreSelector<Selection> =>
+	(state) =>
+		selector(state.ui);
 
 export const selectCharacterDialogMode: InventoryStoreSelector<
 	CharacterDialogStateProps["mode"]
 > = (s) => s.ui.characterDialog.mode;
 
-export const selectCharacterBeingEdited: InventoryStoreSelector<Character | null> = (
-	s
-) => {
+export const selectCharacterBeingEdited: InventoryStoreSelector<
+	Character | null
+> = (s) => {
 	const idOfCharacterBeingEdited = match(s.ui.characterDialog)
 		.with({ mode: "edit" }, ({ data }) => data.characterId)
 		.otherwise(() => null);
@@ -84,14 +87,16 @@ export const selectEntityWithId = <Property extends FullSheetEntityProperty>(
 	id: string,
 	property: Property
 ): InventoryStoreSelector<GetEntityByProperty<Property> | undefined> =>
-		fromSheet(
-			flow(D.getUnsafe(property), (entities) => [...entities].find(hasId(id)))
-		);
+	fromSheet(
+		flow(D.getUnsafe(property), (entities) => [...entities].find(hasId(id)))
+	);
 
-export const selectPropertyFilter = (
-	property: FilterableItemProperty
-): InventoryStoreSelector<(string | null)[] | null> => (state) =>
-	state.ui.filters[property];
+export const selectPropertyFilter =
+	(
+		property: FilterableItemProperty
+	): InventoryStoreSelector<(string | null)[] | null> =>
+	(state) =>
+		state.ui.filters[property];
 
 export const selectItemWithId = (id: string): InventoryStoreSelector<Item> =>
 	fromSheet((sheet) => {
@@ -111,10 +116,10 @@ export const selectCharacterWithId = (
 		return character;
 	});
 
-export const selectPropertyFilterMenuIsOpen = (
-	property: FilterableItemProperty
-): InventoryStoreSelector<boolean> => (state) =>
-	state.ui.openFilterMenu === property;
+export const selectPropertyFilterMenuIsOpen =
+	(property: FilterableItemProperty): InventoryStoreSelector<boolean> =>
+	(state) =>
+		state.ui.openFilterMenu === property;
 
 export const selectItemBeingEdited: InventoryStoreSelector<Item | null> = (s) =>
 	s.ui.itemDialog?.mode === "edit"
@@ -142,19 +147,21 @@ export const selectAllPossibleFilterValuesOnProperty = (
  *
  * @param property The property of the filter to lookup
  */
-export const selectEffectivePropertyFilter = (
-	property: FilterableItemProperty
-): InventoryStoreSelector<(string | null)[]> => (state) => {
-	const actualFilter = selectPropertyFilter(property)(state);
+export const selectEffectivePropertyFilter =
+	(
+		property: FilterableItemProperty
+	): InventoryStoreSelector<(string | null)[]> =>
+	(state) => {
+		const actualFilter = selectPropertyFilter(property)(state);
 
-	if (actualFilter === null) {
-		// If the filters are empty (meaning the user can see all values) we
-		// return all the possible values
-		return selectAllPossibleFilterValuesOnProperty(property)(state);
-	}
+		if (actualFilter === null) {
+			// If the filters are empty (meaning the user can see all values) we
+			// return all the possible values
+			return selectAllPossibleFilterValuesOnProperty(property)(state);
+		}
 
-	return actualFilter;
-};
+		return actualFilter;
+	};
 
 const propertySorters: Record<
 	SortableItemProperty,
@@ -164,10 +171,14 @@ const propertySorters: Record<
 		sheet.items.find(hasId(item.id))?.name ?? "",
 	name: () => D.getUnsafe("name"),
 	category: () => D.getUnsafe("category"),
-	weight: () => ({ weight, quantity }) =>
-		new Big(weight ?? 0).times(quantity).toNumber(),
-	value: () => ({ value, quantity }) =>
-		new Big(value ?? 0).times(quantity).toNumber(),
+	weight:
+		() =>
+		({ weight, quantity }) =>
+			new Big(weight ?? 0).times(quantity).toNumber(),
+	value:
+		() =>
+		({ value, quantity }) =>
+			new Big(value ?? 0).times(quantity).toNumber(),
 	quantity: () => D.getUnsafe("quantity"),
 };
 
@@ -190,8 +201,8 @@ export const selectVisibleItems: InventoryStoreSelector<Item[]> = (state) =>
 		(items) =>
 			state.ui.sorting
 				? A.sortBy(
-					items,
-					propertySorters[state.ui.sorting.property](state.sheet)
+						items,
+						propertySorters[state.ui.sorting.property](state.sheet)
 				  )
 				: items,
 		(items) =>

@@ -137,18 +137,20 @@ const inventoryReducer = (
 							draftState.items = draftState.items.map((item) =>
 								characterIsCarrying(removingMember, item)
 									? {
-										...item,
-										carriedByCharacterId: (removingMember.deleteMethod as CharacterDeleteMethodFields & {
-												to: string;
-											}).to,
-										/**
-										 * ? Have to use typecasting here even though it seems like I
-										 * ? shouldn't have to. When I write out
-										 * ? `removingMember.deleteMethod` underneath this case statement,
-										 * ? typescript recognises that it has mode "move" and as such
-										 * ? has a "to" field. But when I try to use "to" here, it insists,
-										 * ? that mode is "remove" and therefore does not have a "to" field.
-										 */
+											...item,
+											carriedByCharacterId: (
+												removingMember.deleteMethod as CharacterDeleteMethodFields & {
+													to: string;
+												}
+											).to,
+											/**
+											 * ? Have to use typecasting here even though it seems like I
+											 * ? shouldn't have to. When I write out
+											 * ? `removingMember.deleteMethod` underneath this case statement,
+											 * ? typescript recognises that it has mode "move" and as such
+											 * ? has a "to" field. But when I try to use "to" here, it insists,
+											 * ? that mode is "remove" and therefore does not have a "to" field.
+											 */
 									  }
 									: item
 							);

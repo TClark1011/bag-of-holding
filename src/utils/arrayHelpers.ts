@@ -17,9 +17,10 @@ export const getUniqueValuesOf = <Element, Selection>(
  *
  * @param selector The selector function
  */
-export const _getUniqueValuesOf = <Element, Selection>(
-	selector: (i: Element) => Selection
-) => (arr: Element[]) => getUniqueValuesOf(arr, selector);
+export const _getUniqueValuesOf =
+	<Element, Selection>(selector: (i: Element) => Selection) =>
+	(arr: Element[]) =>
+		getUniqueValuesOf(arr, selector);
 
 /**
  * Get the difference between 2 arrays
@@ -35,5 +36,7 @@ export const arrayDiff = <Element>(a: Element[], b: Element[]) =>
  *
  * @param b The first array
  */
-export const _arrayDiff = <Element>(b: Element[]) => (a: Element[]) =>
-	arrayDiff(a, b);
+export const _arrayDiff =
+	<Element>(b: Element[]) =>
+	(a: Element[]) =>
+		arrayDiff(a, b);

@@ -18,6 +18,7 @@ export const characterIsCarrying = (member: Character, item: Item): boolean =>
  *
  * @param characterId The id of the character to check for
  */
-export const itemIsCarriedByCharacterId = (characterId: string) => (
-	item: Item
-): boolean => item.carriedByCharacterId === characterId;
+export const itemIsCarriedByCharacterId =
+	(characterId: string) =>
+	(item: Item): boolean =>
+		item.carriedByCharacterId === characterId;

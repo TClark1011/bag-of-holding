@@ -39,9 +39,8 @@ export type FullSheetEntityProperty = z.infer<
 	typeof fullSheetEntityPropertySchema
 >;
 
-export type GetEntityByProperty<
-	EntityName extends FullSheetEntityProperty
-> = FullSheet[EntityName][number];
+export type GetEntityByProperty<EntityName extends FullSheetEntityProperty> =
+	FullSheet[EntityName][number];
 
 export const sortableItemPropertySchema = itemSchema
 	.pick({

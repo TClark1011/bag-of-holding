@@ -27,16 +27,15 @@ export const setSheetNameActionSchema = payloadActionSchema(
 	z.string()
 );
 
-export const resolvedSetSheetNameActionSchema = staticResolvedActionSchemaFields.extend(
-	{
+export const resolvedSetSheetNameActionSchema =
+	staticResolvedActionSchemaFields.extend({
 		type: setSheetNameActionSchema.shape.type,
 		originalAction: setSheetNameActionSchema,
 		resolvedPayload: z.object({
 			sheetId: z.string(),
 			newName: z.string(),
 		}),
-	}
-);
+	});
 /* #endregion */
 
 /* #region  Character Actions  */
@@ -84,13 +83,12 @@ export const characterCreationActionSchema = payloadActionSchema(
 	characterSchema.pick({ carryCapacity: true, name: true })
 );
 
-export const resolvedCharacterCreationActionSchema = staticResolvedActionSchemaFields.extend(
-	{
+export const resolvedCharacterCreationActionSchema =
+	staticResolvedActionSchemaFields.extend({
 		type: characterCreationActionSchema.shape.type,
 		originalAction: characterCreationActionSchema,
 		resolvedPayload: characterSchema,
-	}
-);
+	});
 
 /* #endregion */
 
