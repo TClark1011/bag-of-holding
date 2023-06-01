@@ -95,15 +95,6 @@ const determineIconSet = (property: ProcessableItemProperty) =>
 
 /**
  * A component to be used as the column headers
- *
- * @param props The props
- * @param props.property The property that
- * the column represents
- * @param [props.allowFilter] Whether or not to show a button
- * to open the filter interface for the column. If not specified, defaults
- * to not showing the filter button.
- * @param props.children The children
- * @returns The rendered stuff
  */
 const TableHeader: React.FC<
 	TableCellProps & {

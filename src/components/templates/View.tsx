@@ -1,5 +1,5 @@
 import { Box, BoxProps } from "@chakra-ui/layout";
-import React from "react";
+import React, { PropsWithChildren } from "react";
 import { use100vh } from "react-div-100vh";
 import {
 	Meta,
@@ -12,13 +12,14 @@ import { useAnalyticsPageView } from "$analytics/hooks";
 import { AnalyticsPageViewProps } from "$analytics/types";
 
 type ExtraProps = MetaProps & TopNavProps;
-export type ViewProps = ExtraProps & {
-	showTopNav?: boolean;
-	minFullHeight?: boolean;
-	accountForTopNav?: boolean;
-	analyticsPageViewProps?: AnalyticsPageViewProps;
-	doNotLogPageView?: boolean;
-};
+export type ViewProps = ExtraProps &
+	PropsWithChildren & {
+		showTopNav?: boolean;
+		minFullHeight?: boolean;
+		accountForTopNav?: boolean;
+		analyticsPageViewProps?: AnalyticsPageViewProps;
+		doNotLogPageView?: boolean;
+	};
 
 /**
  * A template component for constructing views within the
@@ -43,7 +44,6 @@ export type ViewProps = ExtraProps & {
  * this page is viewed
  * @param [props.doNotLogPageView=false] If true, a pageView event will not
  * be logged in analytics.
- * @param props.children The main content
  * @returns Rendered view
  */
 const View: React.FC<ViewProps> = ({

@@ -7,11 +7,11 @@ import {
 	ModalProps,
 } from "@chakra-ui/react";
 
-export interface DialogProps extends ModalProps {
+export type DialogProps = ModalProps & {
 	header?: React.ReactChild;
 	noOverlay?: boolean;
 	noCloseButton?: boolean;
-}
+};
 
 /**
  * Component for easily composing Dialogs by making use of the

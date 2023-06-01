@@ -5,20 +5,21 @@ import {
 	ModalBody,
 	ModalFooter,
 } from "@chakra-ui/react";
-import React from "react";
+import React, { PropsWithChildren } from "react";
 import Dialog, { DialogProps } from "./Dialog";
 
 type CustomDialogProps = Omit<DialogProps, "children" | "onClose">;
 
-export interface ConfirmationDialogProps extends CustomDialogProps {
-	onConfirm: () => void;
-	onCancel: () => void;
-	onClose?: () => void;
-	confirmLabel?: string;
-	cancelLabel?: string;
-	confirmProps?: ButtonProps;
-	cancelProps?: ButtonProps;
-}
+export type ConfirmationDialogProps = PropsWithChildren &
+	CustomDialogProps & {
+		onConfirm: () => void;
+		onCancel: () => void;
+		onClose?: () => void;
+		confirmLabel?: string;
+		cancelLabel?: string;
+		confirmProps?: ButtonProps;
+		cancelProps?: ButtonProps;
+	};
 
 /**
  * A dialog for requiring user confirmation before
@@ -42,7 +43,6 @@ export interface ConfirmationDialogProps extends CustomDialogProps {
  * @param [props.onClose=props.onCancel]
  * Function to close the dialog. If not provided
  * it is set to be equal to onCancel
- * @param props.children The
  * content to be used in the body of the dialog
  * @returns Rendered stuff
  */

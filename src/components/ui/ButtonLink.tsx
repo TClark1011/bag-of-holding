@@ -4,12 +4,10 @@ import { FlexibleLinkProps, FlexibleLink } from "$root/components";
 /**
  * A button that acts as a link
  *
- * @param props The props
  * @param props.href The link destination
  * @param [props.useNextLink] see 'FlexibleLinkProps'
  * @param [props.nextLinkProps] see 'FlexibleLinkProps'
  * @param [props.chakraLinkProps] see 'FlexibleLinkProps'
- * @returns Component stuff
  */
 const ButtonLink: React.FC<ButtonProps & FlexibleLinkProps> = ({
 	href,
