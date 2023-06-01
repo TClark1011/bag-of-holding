@@ -39,7 +39,7 @@ import { matchesSchema } from "$zod-helpers";
 import {
 	filterableItemPropertySchema,
 	sortableItemPropertySchema,
-} from "$extra-schemas";
+} from "$sheets/types";
 
 const getTestId = testIdGeneratorFactory("InventoryTable");
 

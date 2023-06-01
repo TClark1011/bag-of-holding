@@ -174,14 +174,14 @@ testWithExistingSheet("Advanced Operations", async ({ page, sheet }) => {
 		A.map(D.get("category")),
 		A.uniq
 	) as NonEmptyArray<string>;
-	const memberToFilterOut = takeRandom(
-		sheet.characters as NonEmptyArray<Character>
-	);
-	const isCarriedByFilteredOutMember = flow(
-		(val: Item) => val,
+
+	const memberToFilterOut = takeRandom(sheet.characters);
+
+	const itemIsCarriedByFilteredOutMember: (item: Item) => boolean = flow(
 		D.getUnsafe("carriedByCharacterId"),
 		F.equals(memberToFilterOut?.id)
 	);
+
 	const getNumberOfItemRowsCarriedByMember = async ({ name }: Character) => {
 		const rows = await page.$$(
 			selectWithinTable(
@@ -213,8 +213,8 @@ testWithExistingSheet("Advanced Operations", async ({ page, sheet }) => {
 	});
 
 	const filteredAndSortedItems = pipe(
-		sheet.items,
-		A.reject(isCarriedByFilteredOutMember),
+		sheet.items as Item[],
+		A.reject(itemIsCarriedByFilteredOutMember),
 		A.sortBy(D.get("name"))
 	);
 	expect(await countItemRows(page)).toBe(filteredAndSortedItems.length);
@@ -251,7 +251,7 @@ testWithExistingSheet("Advanced Operations", async ({ page, sheet }) => {
 
 	// ### Filter out all members
 	const categoryToFilterOut = takeRandom(itemCategories);
-	const itemIsCarriedByFilteredOutMember = (item: Item) =>
+	const itemBelongsToFilteredOutCategory = (item: Item) =>
 		pipe(item, D.get("category"), F.equals(categoryToFilterOut));
 
 	await page.click(selectWithinColumnHeader("Category", columnFilterButton));
@@ -264,7 +264,7 @@ testWithExistingSheet("Advanced Operations", async ({ page, sheet }) => {
 
 	const itemsWithCategoryFilter = A.reject(
 		itemsSortedByValue,
-		itemIsCarriedByFilteredOutMember
+		itemBelongsToFilteredOutCategory
 	);
 
 	expect(await countItemRows(page)).toBe(itemsWithCategoryFilter.length);

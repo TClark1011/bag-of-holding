@@ -6,7 +6,7 @@ import {
 	toggleArrayItem,
 	updateItemWithId,
 } from "$root/utils";
-import { CharacterRemovalStrategy, FullSheet } from "$sheets/types";
+import { CharacterRemovalStrategy } from "$sheets/types";
 import { itemIsCarriedByCharacterId } from "$sheets/utils";
 import { composeCharacter } from "$sheets/utils/sheetEntityComposers";
 import { createState, withReducer } from "$zustand";
@@ -24,7 +24,11 @@ import {
 	InventoryStoreAction,
 	ResolvedInventoryStoreAction,
 } from "$sheets/store/inventoryActions";
-import { FilterableItemProperty, SortableItemProperty } from "$extra-schemas";
+import {
+	FilterableItemProperty,
+	FullSheet,
+	SortableItemProperty,
+} from "$sheets/types";
 import {
 	selectEffectivePropertyFilter,
 	selectAllPossibleFilterValuesOnProperty,

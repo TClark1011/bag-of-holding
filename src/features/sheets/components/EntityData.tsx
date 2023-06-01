@@ -1,4 +1,4 @@
-import { FullSheetEntityProperty, GetEntityByProperty } from "$extra-schemas";
+import { FullSheetEntityProperty, GetEntityByProperty } from "$sheets/types";
 import { selectEntityWithId, useInventoryStore } from "$sheets/store";
 import { Box, BoxProps } from "@chakra-ui/react";
 import { flow } from "@mobily/ts-belt";
