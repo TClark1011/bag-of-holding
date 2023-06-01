@@ -1,6 +1,7 @@
 import { ExtractResolvedPayloadActions, resolveSimpleAction } from "$actions";
 import {
 	arrayDiff,
+	mustBeNever,
 	rejectItemWithId,
 	toggleArrayItem,
 	updateItemWithId,
@@ -118,14 +119,15 @@ const handleCharacterRemoval = (
 		draftSheet.characters = rejectItemWithId<Character>(characterId)(
 			sheet.characters
 		);
-		match(strategy)
-			.with({ type: "item-delete" }, () => {
+
+		switch (strategy.type) {
+			case "item-delete":
 				draftSheet.items = A.reject(
 					draftSheet.items,
 					itemIsCarriedByCharacterId(characterId)
 				);
-			})
-			.with({ type: "item-to-nobody" }, () => {
+				break;
+			case "item-to-nobody":
 				draftSheet.items = A.map(
 					draftSheet.items,
 					F.when(
@@ -133,17 +135,19 @@ const handleCharacterRemoval = (
 						D.set("carriedByCharacterId", null)
 					)
 				);
-			})
-			.with({ type: "item-pass" }, ({ data }) => {
+				break;
+			case "item-pass":
 				draftSheet.items = A.map(
 					draftSheet.items,
 					F.when(
 						itemIsCarriedByCharacterId(characterId),
-						D.set("carriedByCharacterId", data.toCharacterId)
+						D.set("carriedByCharacterId", strategy.data.toCharacterId)
 					)
 				);
-			})
-			.exhaustive();
+				break;
+			default:
+				mustBeNever(strategy); // type error if switch is not exhaustive
+		}
 	});
 
 const resolveInventoryAction = (
