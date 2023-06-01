@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.4.0](https://github.com/TClark1011/bag-of-holding/compare/v1.3.1...v1.4.0) (2023-06-01)
+
+
+### Features
+
+* **frontend:** 🎸 rework how character/sheet dialogs work ([0ca857e](https://github.com/TClark1011/bag-of-holding/commit/0ca857eeef43bffb8e750019140cb694c2d27032))
+
+
+### Bug Fixes
+
+* **fullstack:** 🐛 fixed trpc deps ([704acc8](https://github.com/TClark1011/bag-of-holding/commit/704acc8766ac14d107a23e7526b957f6290b0a8b))
+* **fullstack:** 🐛 fixed type errors ([3ade21d](https://github.com/TClark1011/bag-of-holding/commit/3ade21d8c677f7740b4beb5636ed0bca7e7875e7))
+
 ### [1.3.1](https://github.com/TClark1011/bag-of-holding/compare/v1.3.0...v1.3.1) (2022-11-16)
 
 ## [1.3.0](https://github.com/TClark1011/bag-of-holding/compare/v1.2.8...v1.3.0) (2022-11-10)
