@@ -16,7 +16,6 @@ import { D, flow } from "@mobily/ts-belt";
 import { Sheet } from "@prisma/client";
 import { isAfter } from "date-fns/fp";
 import { useCallback } from "react";
-import { match } from "ts-pattern";
 
 const useSheetUpdateIsNewerChecker = () => {
 	const localUpdatedAt = useInventoryStore(fromSheet((s) => s.updatedAt));
@@ -68,28 +67,32 @@ const InventoryDataFetchingEffects = () => {
 			addCharacterMutation,
 			deleteCharacterMutation,
 			updateCharacterMutation,
-		].some(D.getUnsafe("isLoading")), //do not refetch while mutations are in progress
+		].some((mutation) => mutation.isLoading), //do not refetch while mutations are in progress
 		refetchInterval: 1000 * 6,
 		refetchIntervalInBackground: true,
 	});
 
 	useStoreEffect(useLastInventoryStoreAction, ({ lastAction }) => {
 		if (lastAction === null || lastAction.type === "set-sheet") return;
-		match(lastAction)
-			.with({ type: "set-sheet-name" }, (action) =>
-				setSheetNameMutation.mutate(action)
-			)
-			.with({ type: "add-character" }, (action) =>
-				addCharacterMutation.mutate(action)
-			)
-			.with({ type: "remove-character" }, (action) =>
-				deleteCharacterMutation.mutate(action.originalAction)
-			)
-			.with({ type: "update-character" }, (action) =>
-				updateCharacterMutation.mutate(action.originalAction)
-			)
-			.otherwise(() => {});
+
+		switch (lastAction.type) {
+			case "set-sheet-name":
+				setSheetNameMutation.mutate(lastAction.resolvedPayload);
+				break;
+			case "add-character":
+				addCharacterMutation.mutate(lastAction.resolvedPayload);
+				break;
+			case "remove-character":
+				deleteCharacterMutation.mutate(lastAction.originalAction.payload);
+				break;
+			case "update-character":
+				updateCharacterMutation.mutate(lastAction.originalAction.payload);
+				break;
+			default:
+				break;
+		}
 	});
+
 	return null;
 };
 

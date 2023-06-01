@@ -49,6 +49,7 @@ const thoroughColorModeSelector = (colorMode: string, color: string) => {
  * @returns The application
  */
 const MyApp = ({ Component, pageProps }: AppProps): React.ReactElement => {
+	const TypeBugWorkAroundComponent = Component as any; // This won't be needed once we upgrade to react 18
 	return (
 		<ChakraProvider theme={theme}>
 			<ColorModeScript initialColorMode={theme.config.initialColorMode} />
@@ -65,7 +66,7 @@ const MyApp = ({ Component, pageProps }: AppProps): React.ReactElement => {
 					${thoroughColorModeSelector("light", "white")}
 				`}
 			/>
-			<Component {...pageProps} />
+			<TypeBugWorkAroundComponent {...pageProps} />
 		</ChakraProvider>
 	);
 };
