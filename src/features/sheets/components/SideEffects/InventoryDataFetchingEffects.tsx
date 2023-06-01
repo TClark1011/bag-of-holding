@@ -9,9 +9,7 @@ import {
 	fromSheet,
 	useInventoryStore,
 	useInventoryStoreDispatch,
-	useLastInventoryStoreAction,
 } from "$sheets/store";
-import { useStoreEffect } from "$zustand";
 import { D, flow } from "@mobily/ts-belt";
 import { Sheet } from "@prisma/client";
 import { isAfter } from "date-fns/fp";
@@ -49,6 +47,7 @@ const InventoryDataFetchingEffects = () => {
 	const sheetId = useInventoryStore(fromSheet((s) => s.id));
 	const deriveIfSheetUpdateIsNewer = useSheetUpdateIsNewerChecker();
 
+	// Constantly refetch the sheet
 	queries.sheet.getFull.useQuery(sheetId, {
 		onSuccess: (data) => {
 			if (data && deriveIfSheetUpdateIsNewer(data)) {
@@ -70,27 +69,6 @@ const InventoryDataFetchingEffects = () => {
 		].some((mutation) => mutation.isLoading), //do not refetch while mutations are in progress
 		refetchInterval: 1000 * 6,
 		refetchIntervalInBackground: true,
-	});
-
-	useStoreEffect(useLastInventoryStoreAction, ({ lastAction }) => {
-		if (lastAction === null || lastAction.type === "set-sheet") return;
-
-		switch (lastAction.type) {
-			case "set-sheet-name":
-				setSheetNameMutation.mutate(lastAction.resolvedPayload);
-				break;
-			case "add-character":
-				addCharacterMutation.mutate(lastAction.resolvedPayload);
-				break;
-			case "remove-character":
-				deleteCharacterMutation.mutate(lastAction.originalAction.payload);
-				break;
-			case "update-character":
-				updateCharacterMutation.mutate(lastAction.originalAction.payload);
-				break;
-			default:
-				break;
-		}
 	});
 
 	return null;
