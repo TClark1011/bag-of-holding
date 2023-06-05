@@ -3,27 +3,6 @@ on: pull_request
 env:
   DATABASE_URL: postgres://postgres_user:postgres_password@localhost:5432/postgres_db
 jobs:
-  update-icons:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-      - run: git config --global user.email "thomassiclark@gmail.com"
-      - run: git config --global user.name "version bot"
-      - uses: actions/setup-node@v2
-        with:
-          node-version: "18"
-      - run: yarn ci
-      - run: yarn gen:pwa --redis
-        env:
-          REDIS_CONNECTION_STRING: ${{ secrets.REDIS_CONNECTION_STRING }}
-      - run: git add .
-      - run: git commit -m "chore:update icons [AUTOMATED COMMIT]" --no-verify
-        continue-on-error: true
-        id: commit-step
-      - run: git push
-        if: ${{ steps.commit-step.outcome == 'success'}}
   integration-tests:
     runs-on: ubuntu-latest
     services:
