@@ -45,18 +45,33 @@ const app = command({
 			defaultValue: () => 8080,
 			description: "The port to run the server on",
 		}),
+		force: flag({
+			type: booleanArg,
+			long: "force",
+			short: "f",
+			defaultValue: () => false,
+			description:
+				"Force the generation of PWA assets, even if the favicon has not changed since the last commit",
+		}),
 	},
-	handler: async ({ silent, port: PORT }) => {
+	handler: async ({ silent, port: PORT, force }) => {
 		const filesChangedSinceLastCommit = getListOfFilesChangedSinceLastCommit();
 
-		if (!filesChangedSinceLastCommit.includes("public/favicon.svg")) {
+		const faviconHasChanged =
+			filesChangedSinceLastCommit.includes("public/favicon.svg");
+
+		if (!faviconHasChanged && !force) {
 			console.log(
 				"Skipping PWA asset generation because the favicon has not changed since the last commit"
 			);
 			process.exit(0);
 		}
 
-		console.log("Favicon has been changed, Generating PWA assets...");
+		if (force) {
+			console.log("Forcing PWA asset generation...");
+		} else {
+			console.log("Favicon has been changed, Generating PWA assets...");
+		}
 
 		const server = createServer((req, res) => {
 			// The asset generator library works by scraping a website, so
