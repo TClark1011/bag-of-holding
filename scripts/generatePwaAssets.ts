@@ -1,6 +1,4 @@
 import { generateImages } from "pwa-asset-generator";
-import { rm } from "fs";
-import { promisify } from "util";
 import { createServer } from "http";
 import serveHandler from "serve-handler";
 import {
@@ -11,10 +9,23 @@ import {
 	number as numberArg,
 	run,
 } from "cmd-ts";
+import { execSync } from "child_process";
+import { A, F, pipe } from "@mobily/ts-belt";
 
 /* #region Utils */
-const rmPromise = promisify(rm);
 
+const getListOfFilesChangedSinceLastCommit = (): string[] => {
+	const stagedFiles = execSync("git diff --cached --name-only")
+		.toString()
+		.trim()
+		.split("\n");
+	const nonStagedFiles = execSync("git diff --name-only")
+		.toString()
+		.trim()
+		.split("\n");
+
+	return pipe([...stagedFiles, ...nonStagedFiles], A.uniq, F.toMutable);
+};
 /* #endregion */
 
 const app = command({
@@ -36,6 +47,17 @@ const app = command({
 		}),
 	},
 	handler: async ({ silent, port: PORT }) => {
+		const filesChangedSinceLastCommit = getListOfFilesChangedSinceLastCommit();
+
+		if (!filesChangedSinceLastCommit.includes("public/favicon.svg")) {
+			console.log(
+				"Skipping PWA asset generation because the favicon has not changed since the last commit"
+			);
+			process.exit(0);
+		}
+
+		console.log("Favicon has been changed, Generating PWA assets...");
+
 		const server = createServer((req, res) => {
 			// The asset generator library works by scraping a website, so
 			// we spin up a server to just serve the favicon file
@@ -56,8 +78,6 @@ const app = command({
 
 		try {
 			server.listen(PORT);
-
-			await rmPromise("public/icons", { recursive: true, force: true });
 
 			await generateImages(`http://localhost:${PORT}`, "public/icons", {
 				manifest: "public/manifest.json",
