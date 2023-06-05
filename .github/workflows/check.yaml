@@ -16,6 +16,8 @@ jobs:
           node-version: "18"
       - run: yarn ci
       - run: yarn gen:pwa
+        env:
+          REDIS_CONNECTION_STRING: ${{ secrets.REDIS_CONNECTION_STRING }}
       - run: git add .
       - run: 'git commit -m "chore: update icons"'
       - run: git push
