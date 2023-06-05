@@ -13,6 +13,7 @@ import {
 	number as numberArg,
 	run,
 } from "cmd-ts";
+import { exec } from "child_process";
 
 /* #region Utils */
 const rmPromise = promisify(rm);
@@ -24,12 +25,11 @@ const REDIS_KEY = "iconsLastGeneratedAt";
 const app = command({
 	name: "generatePwaAssets",
 	args: {
-		noRedis: flag({
+		useRedis: flag({
 			type: booleanArg,
-			long: "no-redis",
+			long: "redis",
 			defaultValue: () => false,
-			description:
-				"Do not connect to redis to read or write the last generated at date. This will also force the generation of new icons",
+			description: "Connect to redis to read/write the last generated at date",
 		}),
 		silent: flag({
 			type: booleanArg,
@@ -53,11 +53,23 @@ const app = command({
 			defaultValue: () => 8080,
 			description: "The port to run the server on",
 		}),
+		performGitActions: flag({
+			type: booleanArg,
+			long: "git-actions",
+			defaultValue: () => false,
+			description: "Perform git actions to commit and push the changes",
+		}),
 	},
-	handler: async ({ noRedis, silent, force, port: PORT }) => {
-		const redis: Redis | undefined = noRedis
-			? undefined
-			: new Redis(process.env.REDIS_CONNECTION_STRING ?? "");
+	handler: async ({
+		useRedis,
+		silent,
+		force,
+		port: PORT,
+		performGitActions,
+	}) => {
+		const redis: Redis | undefined = useRedis
+			? new Redis(process.env.REDIS_CONNECTION_STRING ?? "")
+			: undefined;
 
 		const faviconFileStats = statSync("public/favicon.svg");
 
@@ -119,6 +131,12 @@ const app = command({
 				pathOverride: "icons",
 				log: !silent,
 			});
+
+			if (performGitActions) {
+				exec("git add .");
+				exec("git commit -m 'chore:update PWA icons'");
+				exec("git push");
+			}
 
 			await redis?.set(REDIS_KEY, new Date().toISOString());
 		} catch (e) {

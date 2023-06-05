@@ -7,20 +7,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        with:
-          fetch-depth: "0"
       - run: git config --global user.email "thomassiclark@gmail.com"
       - run: git config --global user.name "version bot"
       - uses: actions/setup-node@v2
         with:
           node-version: "18"
       - run: yarn ci
-      - run: yarn gen:pwa
+      - run: yarn gen:pwa --redis --git-actions
         env:
           REDIS_CONNECTION_STRING: ${{ secrets.REDIS_CONNECTION_STRING }}
-      - run: git add .
-      - run: 'git commit -m "chore: update icons"'
-      - run: git push origin ${{ github.event.pull_request.head.ref }}
   integration-tests:
     runs-on: ubuntu-latest
     services:
