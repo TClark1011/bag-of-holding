@@ -20,7 +20,7 @@ jobs:
           REDIS_CONNECTION_STRING: ${{ secrets.REDIS_CONNECTION_STRING }}
       - run: git add .
       - run: 'git commit -m "chore: update icons"'
-      - run: git push
+      - run: git push ${{ github.event.pull_request.base.ref }}
   integration-tests:
     runs-on: ubuntu-latest
     services:
