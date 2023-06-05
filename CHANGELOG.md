@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.5.0](https://github.com/TClark1011/bag-of-holding/compare/v1.4.2...v1.5.0) (2023-06-05)
+
+
+### Features
+
+* **fullstack:** 🎸 setup as PWA ([779fba0](https://github.com/TClark1011/bag-of-holding/commit/779fba0d69c62540843d52d4ca9487fce529937c))
+* **scripts:** 🎸 can now force PWA icon script to generate ([6c781e5](https://github.com/TClark1011/bag-of-holding/commit/6c781e574be14c086cad25b07856b0943401dd29))
+
 ### [1.4.2](https://github.com/TClark1011/bag-of-holding/compare/v1.4.1...v1.4.2) (2023-06-01)
 
 
