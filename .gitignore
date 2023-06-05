@@ -38,3 +38,7 @@ yarn-error.log*
 tsconfig.tsbuildinfo
 
 prisma/schemas
+
+# auto-generated service worker files
+public/sw.js*
+public/workbox-*.js*

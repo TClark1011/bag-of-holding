@@ -6,6 +6,7 @@ import { appName } from "$root/constants";
 import { Meta } from "$root/components";
 import { AppProps } from "next/dist/shared/lib/router/router";
 import { css, Global } from "@emotion/react";
+import webAppManifest from "~PWA-MANIFEST";
 
 import "$root/assets/fonts/Coves/stylesheet.css";
 import "@fontsource/roboto";
@@ -56,9 +57,18 @@ const MyApp = ({ Component, pageProps }: AppProps): React.ReactElement => {
 			<Meta />
 			<Head>
 				<link rel="icon" href="/favicon.svg" key="favicon" />
+				<link rel="manifest" href="/manifest.json" />
+
 				<meta name="twitter:card" content="summary" />
 				<meta property="og:site_name" content={appName} />
 				<meta property="og:type" content="website" />
+
+				<meta name="application-name" content={webAppManifest.name} />
+				<meta name="apple-mobile-web-app-capable" content="yes" />
+				<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+				<meta name="apple-mobile-web-app-title" content={webAppManifest.name} />
+				<meta name="mobile-web-app-capable" content="yes" />
+				<meta name="theme-color" content={webAppManifest.theme_color} />
 			</Head>
 			<Global
 				styles={css`

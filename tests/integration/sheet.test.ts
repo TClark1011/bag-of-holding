@@ -15,6 +15,7 @@ import {
 	getNameOfItemInTableAtRowIndex,
 	getSheetTitle,
 	performActionOnMultipleClients,
+	waitABit,
 } from "$tests/utils/sheetAutomations";
 import {
 	characterDialogSaveButton,
@@ -162,6 +163,9 @@ testWithExistingSheet("Advanced Operations", async ({ page, sheet }) => {
 	// Check default is sorting by name
 	expect(await getNameOfItemInTable(0)).toBe(A.head(sortedItemNames));
 	await clickColumnSortButton("Name");
+
+	waitABit();
+
 	// Sorting should be reversed after clicking on the name column header
 	expect(await getNameOfItemInTable(0)).toBe(A.last(sortedItemNames));
 
@@ -235,10 +239,14 @@ testWithExistingSheet("Advanced Operations", async ({ page, sheet }) => {
 	);
 	await clickColumnSortButton("Value");
 
+	waitABit();
+
 	expect(await getNameOfItemInTable(0)).toBe(A.head(itemsSortedByValue)?.name);
 	expect(await getNameOfItemInTable(-1)).toBe(A.last(itemsSortedByValue)?.name);
 
 	await clickColumnSortButton("Value");
+
+	waitABit();
 
 	expect(await getNameOfItemInTable(0)).toBe(A.last(itemsSortedByValue)?.name);
 	expect(await getNameOfItemInTable(-1)).toBe(A.head(itemsSortedByValue)?.name);
@@ -284,6 +292,7 @@ testWithExistingSheet("Advanced Operations", async ({ page, sheet }) => {
 
 	// Type search query
 	await fillSearchBar(page, searchQuery);
+
 	expect(await countItemRows(page)).toBe(
 		itemNamesThatContainSearchQuery.length
 	);
@@ -294,6 +303,7 @@ testWithExistingSheet("Advanced Operations", async ({ page, sheet }) => {
 
 	// ### Reset all filters
 	await page.click("text=Reset Filters");
+	waitABit();
 	expect(await countItemRows(page)).toBe(sheet.items.length);
 });
 
