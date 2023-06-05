@@ -13,7 +13,7 @@ import {
 	number as numberArg,
 	run,
 } from "cmd-ts";
-import { exec, spawnSync } from "child_process";
+import { spawnSync } from "child_process";
 
 /* #region Utils */
 const rmPromise = promisify(rm);

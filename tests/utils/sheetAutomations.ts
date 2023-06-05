@@ -147,6 +147,8 @@ export const countItemRows = async (client: Page) =>
 		N.subtract(1)
 	);
 
+const SEARCH_BAR_INTERACTION_BUFFER_MS = 100;
+
 /**
  * Fill the search bar in a sheet
  *
@@ -157,14 +159,14 @@ export const countItemRows = async (client: Page) =>
  */
 export const fillSearchBar = async (client: Page, searchTerm: string) => {
 	await client.fill(searchBar, searchTerm);
-	await wait(SEARCH_BAR_DELAY_MS + 50);
+	await wait(SEARCH_BAR_DELAY_MS + SEARCH_BAR_INTERACTION_BUFFER_MS);
 };
 
 export const clearSearchbar = async (client: Page) => {
 	await client.focus(searchBar);
 	await client.keyboard.press("Meta+A");
 	await client.keyboard.press("Backspace");
-	await wait(SEARCH_BAR_DELAY_MS + 50);
+	await wait(SEARCH_BAR_DELAY_MS + SEARCH_BAR_INTERACTION_BUFFER_MS);
 };
 
 /**
