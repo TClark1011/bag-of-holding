@@ -104,7 +104,6 @@
 		"faker": "^5.4.0",
 		"git-cz": "^4.7.6",
 		"husky": "^7.0.0",
-		"ioredis": "^5.3.2",
 		"jest": "^27.1.1",
 		"jest-compact-reporter": "^1.2.9",
 		"jest-dom": "^4.0.0",
