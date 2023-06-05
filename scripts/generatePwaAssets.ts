@@ -13,7 +13,7 @@ import {
 	number as numberArg,
 	run,
 } from "cmd-ts";
-import { exec } from "child_process";
+import { exec, spawnSync } from "child_process";
 
 /* #region Utils */
 const rmPromise = promisify(rm);
@@ -67,6 +67,10 @@ const app = command({
 		port: PORT,
 		performGitActions,
 	}) => {
+		if (performGitActions) {
+			console.log("Git actions will be performed");
+		}
+
 		const redis: Redis | undefined = useRedis
 			? new Redis(process.env.REDIS_CONNECTION_STRING ?? "")
 			: undefined;
@@ -133,9 +137,16 @@ const app = command({
 			});
 
 			if (performGitActions) {
-				exec("git add .");
-				exec("git commit -m 'chore:update PWA icons'");
-				exec("git push");
+				spawnSync("git", ["add", "."]);
+				spawnSync("git", [
+					"commit",
+					"-m",
+					'"chore:update PWA icons"',
+					"--no-verify",
+				]);
+				spawnSync("git", ["push"]);
+				// exec("git commit -m 'chore:update PWA icons'");
+				// exec("git push");
 			}
 
 			await redis?.set(REDIS_KEY, new Date().toISOString());
