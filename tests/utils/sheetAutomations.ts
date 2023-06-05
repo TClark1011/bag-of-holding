@@ -147,7 +147,7 @@ export const countItemRows = async (client: Page) =>
 		N.subtract(1)
 	);
 
-const SEARCH_BAR_INTERACTION_BUFFER_MS = 100;
+const SEARCH_BAR_INTERACTION_BUFFER_MS = 200;
 
 /**
  * Fill the search bar in a sheet
