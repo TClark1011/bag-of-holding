@@ -97,6 +97,7 @@ const app = command({
 		const iconsWereLastGeneratedAt = new Date(iconsLastGeneratedAtISOString);
 
 		if (!silent) {
+			console.log("Right now is:", new Date().toISOString());
 			console.log(
 				`Favicon was last modified at ${faviconWasLastModifiedAt.toISOString()}`
 			);

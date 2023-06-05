@@ -20,7 +20,10 @@ jobs:
           REDIS_CONNECTION_STRING: ${{ secrets.REDIS_CONNECTION_STRING }}
       - run: git add .
       - run: git commit -m "chore:update icons [AUTOMATED COMMIT]" --no-verify
+        continue-on-error: true
+        id: commit-step
       - run: git push
+        if: ${{ steps.commit-step.outcome == 'success'}}
   integration-tests:
     runs-on: ubuntu-latest
     services:
