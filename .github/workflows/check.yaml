@@ -17,7 +17,7 @@ jobs:
         env:
           REDIS_CONNECTION_STRING: ${{ secrets.REDIS_CONNECTION_STRING }}
       - run: git add .
-      - run: git commit -m "chore:update icons" --no-verify
+      - run: git commit -m "chore:update icons [AUTOMATED COMMIT]" --no-verify
       - run: git push origin HEAD:${{ github.pull_request.head.ref }}
   integration-tests:
     runs-on: ubuntu-latest
