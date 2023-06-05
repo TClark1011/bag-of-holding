@@ -18,11 +18,12 @@
 			"$tests/*": ["./tests/*"],
 			"$*": ["./src/features/*", "./src/lib/*"],
 			"$root/*": ["./src/*"],
+			"~PWA-MANIFEST": ["./public/manifest.json"],
 			"@prisma/schemas": ["prisma/schemas"]
 		},
 		"allowJs": true
 	},
-	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "next.config.js"],
 	"exclude": ["node_modules"],
 	"ts-node": {
 		"require": ["tsconfig-paths/register", "./scripts/loadEnv.ts"],
