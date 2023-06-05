@@ -13,9 +13,12 @@ jobs:
         with:
           node-version: "18"
       - run: yarn ci
-      - run: yarn gen:pwa --redis --git-actions
+      - run: yarn gen:pwa --redis
         env:
           REDIS_CONNECTION_STRING: ${{ secrets.REDIS_CONNECTION_STRING }}
+      - run: git add .
+      - run: git commit -m "Update icons"
+      - run: git push origin HEAD:${{ github.pull_request.head.ref }}
   integration-tests:
     runs-on: ubuntu-latest
     services:

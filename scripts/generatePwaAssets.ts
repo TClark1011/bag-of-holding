@@ -1,5 +1,5 @@
 import { generateImages } from "pwa-asset-generator";
-import { rm, statSync } from "fs";
+import { rm } from "fs";
 import { promisify } from "util";
 import { createServer } from "http";
 import { isAfter } from "date-fns";
@@ -13,12 +13,20 @@ import {
 	number as numberArg,
 	run,
 } from "cmd-ts";
-import { spawnSync } from "child_process";
+import { execSync } from "child_process";
 
 /* #region Utils */
 const rmPromise = promisify(rm);
 
-const REDIS_KEY = "iconsLastGeneratedAt";
+const REDIS_STORAGE_KEY = "iconsLastGeneratedAt";
+
+const getDateFileWasModifiedAt = (filePath: string) => {
+	const dateString = execSync(`git log -1 --format=%cd "${filePath}"`)
+		.toString()
+		.trim();
+
+	return new Date(dateString);
+};
 
 /* #endregion */
 
@@ -30,6 +38,12 @@ const app = command({
 			long: "redis",
 			defaultValue: () => false,
 			description: "Connect to redis to read/write the last generated at date",
+		}),
+		doNotUpdateRedis: flag({
+			type: booleanArg,
+			long: "no-redis-update",
+			defaultValue: () => false,
+			description: "Do not update redis with the last generated at date",
 		}),
 		silent: flag({
 			type: booleanArg,
@@ -53,24 +67,17 @@ const app = command({
 			defaultValue: () => 8080,
 			description: "The port to run the server on",
 		}),
-		performGitActions: flag({
-			type: booleanArg,
-			long: "git-actions",
-			defaultValue: () => false,
-			description: "Perform git actions to commit and push the changes",
-		}),
 	},
 	handler: async ({
 		useRedis,
 		silent,
 		force,
 		port: PORT,
-		performGitActions,
+		doNotUpdateRedis,
 	}) => {
+		const shouldUpdateRedis = !doNotUpdateRedis;
+
 		if (!silent) {
-			if (performGitActions) {
-				console.log("Git actions will be performed");
-			}
 			if (useRedis) {
 				console.log("Redis will be used to store the last generated at date");
 			}
@@ -80,12 +87,13 @@ const app = command({
 			? new Redis(process.env.REDIS_CONNECTION_STRING ?? "")
 			: undefined;
 
-		const faviconFileStats = statSync("public/favicon.svg");
+		const redisFetchResult = await redis?.get(REDIS_STORAGE_KEY);
 
 		const iconsLastGeneratedAtISOString =
-			(await redis?.get(REDIS_KEY)) ?? new Date(0).toISOString();
+			redisFetchResult ?? new Date(0).toISOString();
 
-		const faviconWasLastModifiedAt = new Date(faviconFileStats.mtime);
+		const faviconWasLastModifiedAt =
+			getDateFileWasModifiedAt("public/favicon.svg");
 		const iconsWereLastGeneratedAt = new Date(iconsLastGeneratedAtISOString);
 
 		if (!silent) {
@@ -150,20 +158,9 @@ const app = command({
 				log: !silent,
 			});
 
-			if (performGitActions) {
-				spawnSync("git", ["add", "."]);
-				spawnSync("git", [
-					"commit",
-					"-m",
-					'"chore:update PWA icons"',
-					"--no-verify",
-				]);
-				spawnSync("git", ["push"]);
-				// exec("git commit -m 'chore:update PWA icons'");
-				// exec("git push");
+			if (shouldUpdateRedis) {
+				await redis?.set(REDIS_STORAGE_KEY, new Date().toISOString());
 			}
-
-			await redis?.set(REDIS_KEY, new Date().toISOString());
 		} catch (e) {
 			thereWasAnError = true;
 		} finally {

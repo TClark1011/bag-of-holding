@@ -6,6 +6,8 @@ import { A, N, pipe, S } from "@mobily/ts-belt";
 import { Page, expect, PageScreenshotOptions } from "@playwright/test";
 import { Item } from "@prisma/client";
 
+const SEARCH_BAR_INTERACTION_BUFFER_MS = 200;
+
 /**
  * Fill out the form used for creating/editing items
  * in a sheet
@@ -147,8 +149,6 @@ export const countItemRows = async (client: Page) =>
 		N.subtract(1)
 	);
 
-const SEARCH_BAR_INTERACTION_BUFFER_MS = 200;
-
 /**
  * Fill the search bar in a sheet
  *
@@ -214,3 +214,5 @@ export const getNameOfItemInTableAtRowIndex = async (
  * found, an error is thrown.
  */
 export const getSheetTitle = (client: Page) => client.innerText("h2");
+
+export const waitABit = () => wait(100);
