@@ -67,8 +67,13 @@ const app = command({
 		port: PORT,
 		performGitActions,
 	}) => {
-		if (performGitActions) {
-			console.log("Git actions will be performed");
+		if (!silent) {
+			if (performGitActions) {
+				console.log("Git actions will be performed");
+			}
+			if (useRedis) {
+				console.log("Redis will be used to store the last generated at date");
+			}
 		}
 
 		const redis: Redis | undefined = useRedis
@@ -82,6 +87,15 @@ const app = command({
 
 		const faviconWasLastModifiedAt = new Date(faviconFileStats.mtime);
 		const iconsWereLastGeneratedAt = new Date(iconsLastGeneratedAtISOString);
+
+		if (!silent) {
+			console.log(
+				`Favicon was last modified at ${faviconWasLastModifiedAt.toISOString()}`
+			);
+			console.log(
+				`Icons were last generated at ${iconsWereLastGeneratedAt.toISOString()}`
+			);
+		}
 
 		const needToGenerateNewIcons = isAfter(
 			faviconWasLastModifiedAt,
