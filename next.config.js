@@ -7,12 +7,12 @@ const withPWA = require("next-pwa");
 const injectPlugins = flow(
 	withPWA({
 		dest: "public",
+		disable: process.env.NODE_ENV === "development",
 	}),
 	withSuperjson()
 );
 
 module.exports = injectPlugins({
-	webpack: true,
 	env: {
 		MONTHS_INACTIVE_OLD_SHEET_DELETE: "3",
 		// Default value so tests don't throw an error
