@@ -10,7 +10,7 @@ import { IdentifiedObject } from "$root/types";
  * @returns An array containing the ids of
  * the entities
  */
-const getIds = <T extends IdentifiedObject>(entities: T[]): string[] =>
+const getIds = <T extends IdentifiedObject>(entities: T[]): T["id"][] =>
 	entities.map((item) => item.id);
 
 export default getIds;
