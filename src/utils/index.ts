@@ -14,6 +14,8 @@ export { default as getOldSheetCutOff } from "./getOldSheetCutOff";
 export { default as isUrl } from "./isUrl";
 export { default as toggleArrayItem } from "./toggleArrayItem";
 export { default as mustBeNever } from "./mustBeNever";
+export { default as upsert } from "./upsert";
+export { default as simpleEquality } from "./simpleEquality";
 
 export * from "./entityHelpers";
 export * from "./logHelpers";

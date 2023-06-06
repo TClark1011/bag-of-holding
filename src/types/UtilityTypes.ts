@@ -1,8 +1,9 @@
 import { useEffect } from "react";
 
-export type IdentifiedObject = {
-	id: string;
-};
+export type IdentifiedObject<IdType extends string | number = string | number> =
+	{
+		id: IdType;
+	};
 
 export type OmitId<T extends IdentifiedObject> = Omit<T, "id" | "id">;
 
@@ -14,13 +15,6 @@ export type StrictExtract<Base, Sub extends Base> = Extract<Base, Sub>;
 
 export type Updater<T> = (prev: T) => T;
 
-// export type ReplaceValue<
-// 	Obj extends Record<string, unknown>,
-// 	ValueToReplace,
-// 	ReplacementValue
-// > = {
-// 	[Key in keyof Obj]: Exclude<Obj[Key], ValueToReplace> | ReplacementValue;
-// };
 export type ReplaceValue<
 	Obj extends Record<string, unknown>,
 	ValueToReplace,
@@ -38,3 +32,5 @@ export type TypeGuardFromBlank<IsType> = (input: any) => input is IsType;
 export type NarrowingTypeGuard<BaseType, SubType extends BaseType> = (
 	input: BaseType
 ) => input is SubType;
+
+export type Fn<Params extends any[], Return> = (...args: Params) => Return;

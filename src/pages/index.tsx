@@ -1,4 +1,4 @@
-import { Box, Button, Center, VStack } from "@chakra-ui/react";
+import { Box, Button, Center, Divider, VStack } from "@chakra-ui/react";
 import { testIdGeneratorFactory } from "$tests/utils/testUtils";
 import {
 	infoPageUrl,
@@ -12,13 +12,15 @@ import {
 	H2,
 	ButtonLink,
 	BagOfHoldingIcon,
-	WelcomeBack,
+	H3,
 } from "$root/components";
 import queries from "$root/hooks/queries";
 import { useRouter } from "next/router";
 import { getSheetLink } from "$root/utils";
 import { FC, useState } from "react";
 import useRenderLogging from "$root/hooks/useRenderLogging";
+import { useRememberedSheets } from "$sheets/store";
+import { useNextHydrationMatchWorkaround } from "$root/hooks";
 
 const getTestId = testIdGeneratorFactory("Home");
 
@@ -35,6 +37,12 @@ export const homePageTestIds = {
 const Home: FC = () => {
 	useRenderLogging("Home");
 
+	const storedRememberedSheets = useRememberedSheets();
+	const rememberedSheets = useNextHydrationMatchWorkaround(
+		storedRememberedSheets,
+		[]
+	);
+
 	const router = useRouter();
 	const [isLoading, setIsLoading] = useState(false);
 	const createSheetMutation = queries.sheet.create.useMutation({
@@ -43,9 +51,13 @@ const Home: FC = () => {
 		},
 		onError: () => {
 			setIsLoading(false);
+			// We could just use the `isLoading` state on the query, however this
+			// method means the loader will appear all the way until the page is
+			// replaced, rather than just until the query is finished
 		},
 		onSuccess: (data) => {
-			router.replace(getSheetLink(data.id) + "?new", getSheetLink(data.id));
+			const path = getSheetLink(data.id);
+			router.push(`${path}?new`, path);
 		},
 	});
 
@@ -93,10 +105,31 @@ const Home: FC = () => {
 								>
 									What is this?
 								</ButtonLink>
+
+								<Divider />
+
+								{rememberedSheets.length > 0 && (
+									<>
+										<H3 fontSize="md">Recently Visited Sheets</H3>
+										<Center flexWrap="wrap" w={[400, 400, 600]} gap="group">
+											{rememberedSheets.map((sheet) => (
+												<ButtonLink
+													href={getSheetLink(sheet.id)}
+													variant="outline"
+													key={sheet.id}
+													w={64}
+													justifySelf="center"
+													data-testid="remembered-sheet-link"
+												>
+													{sheet.name}
+												</ButtonLink>
+											))}
+										</Center>
+									</>
+								)}
 							</VStack>
 						</Center>
 					</VStack>
-					<WelcomeBack display="none" />
 				</Box>
 			</Center>
 		</View>
