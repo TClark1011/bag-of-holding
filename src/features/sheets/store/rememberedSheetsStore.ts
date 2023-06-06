@@ -76,7 +76,7 @@ const useRememberedSheetsStore = pipe(
 const sortRememberedSheetsByVisitedAt: Fn<
 	[RememberedSheet[]],
 	RememberedSheet[]
-> = A.sortBy(flow(get("visitedAt"), getTime));
+> = flow(A.sortBy(flow(get("visitedAt"), getTime)), A.reverse);
 
 const selectRememberedSheets: Fn<[RememberedSheetsState], RememberedSheet[]> =
 	flow(get("rememberedSheets"), sortRememberedSheetsByVisitedAt, A.take(4));
