@@ -63,9 +63,7 @@ test("Create New Sheet, Close Welcome", async ({ page }) => {
 
 	await page.click("text=Get Started");
 
-	await page.waitForNavigation({
-		url: "**/sheets/*",
-	});
+	await page.waitForURL("**/sheets/*");
 
 	await page.$("text=Welcome!");
 	await page.click(cssSelectorWithText("button", "Close"));

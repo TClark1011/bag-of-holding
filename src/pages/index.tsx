@@ -119,6 +119,7 @@ const Home: FC = () => {
 													key={sheet.id}
 													w={64}
 													justifySelf="center"
+													data-testid="remembered-sheet-link"
 												>
 													{sheet.name}
 												</ButtonLink>
