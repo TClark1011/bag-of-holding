@@ -31,7 +31,9 @@ const ContactPage: React.FC = () => {
 					following email address:
 				</Paragraph>
 				<Center marginY="break">
-					<ButtonLink href={"mailto:"}>{contactEmailAddress}</ButtonLink>
+					<ButtonLink href={`mailto:${contactEmailAddress}`}>
+						{contactEmailAddress}
+					</ButtonLink>
 				</Center>
 			</PageContentContainer>
 		</View>
