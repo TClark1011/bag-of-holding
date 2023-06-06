@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.6.0](https://github.com/TClark1011/bag-of-holding/compare/v1.5.0...v1.6.0) (2023-06-06)
+
+
+### Features
+
+* **frontend:** 🎸 remembered sheets feature ([143202e](https://github.com/TClark1011/bag-of-holding/commit/143202e70a36e278884181957aa9afb7a028a721))
+
+
+### Bug Fixes
+
+* **frontend:** 🐛 contact page email link now works ([57943f1](https://github.com/TClark1011/bag-of-holding/commit/57943f10138d18a9aa028ec9e5b15f441fc391c9))
+* **frontend:** 🐛 remembered sheets sort correctly ([3b747b3](https://github.com/TClark1011/bag-of-holding/commit/3b747b3d71cd2adcc4c8ec8199ba6a69af529f88))
+* **fullstack:** 🐛 fixed incorrect typing on `getIds` util ([da579f6](https://github.com/TClark1011/bag-of-holding/commit/da579f6e168bc773c26b498f311fea82f5912c27))
+
 ## [1.5.0](https://github.com/TClark1011/bag-of-holding/compare/v1.4.2...v1.5.0) (2023-06-05)
 
 
