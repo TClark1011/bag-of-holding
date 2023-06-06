@@ -106,10 +106,9 @@ const Home: FC = () => {
 									What is this?
 								</ButtonLink>
 
-								<Divider />
-
 								{rememberedSheets.length > 0 && (
 									<>
+										<Divider />
 										<H3 fontSize="md">Recently Visited Sheets</H3>
 										<Center flexWrap="wrap" w={[400, 400, 600]} gap="group">
 											{rememberedSheets.map((sheet) => (
