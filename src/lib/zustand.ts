@@ -4,6 +4,8 @@ import { useEffect } from "react";
 export {
 	combine as withSeparateActions,
 	redux as withReducer,
+	persist as withPersistence,
+	devtools as withDevtools,
 } from "zustand/middleware";
 export * from "zustand";
 export { default as createState } from "zustand";

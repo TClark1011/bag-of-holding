@@ -74,3 +74,11 @@ export function guardedIfElse<Input, DesiredSubType extends Input, Output>(
 	}
 	return implementation(optionalInput);
 }
+
+export const basicCurry =
+	<FirstParam, SecondParam, Return>(
+		fn: (firstParam: FirstParam, secondParam: SecondParam) => Return
+	) =>
+	(firstParam: FirstParam) =>
+	(secondParam: SecondParam) =>
+		fn(firstParam, secondParam);

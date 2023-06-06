@@ -13,6 +13,7 @@ import {
 	InventorySheetTable,
 	ItemDialog,
 	InventoryDataFetchingEffects,
+	RememberSheetEffect,
 } from "$sheets/components";
 import { testIdGeneratorFactory } from "$tests/utils/testUtils";
 import { View } from "$root/components";
@@ -77,6 +78,7 @@ const SheetPage: React.FC<SheetPageProps> = ({
 	return (
 		<>
 			<InventoryDataFetchingEffects />
+			<RememberSheetEffect />
 
 			<View
 				showTopNav={false}

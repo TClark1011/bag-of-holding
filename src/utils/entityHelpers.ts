@@ -1,4 +1,4 @@
-import { Updater } from "$root/types";
+import { IdentifiedObject, Updater } from "$root/types";
 import { A, F } from "@mobily/ts-belt";
 
 /**
@@ -8,7 +8,7 @@ import { A, F } from "@mobily/ts-belt";
  * @param id The id to check for
  */
 export const hasId =
-	<Entity extends { id: string }>(id: string) =>
+	<Entity extends IdentifiedObject>(id: Entity["id"]) =>
 	(entity: Entity) =>
 		entity.id === id;
 
@@ -24,16 +24,40 @@ export const hasId =
  * unchanged
  */
 export const updateItemWithId =
-	<Entity extends { id: string }>(targetId: string, updater: Updater<Entity>) =>
+	<Entity extends IdentifiedObject>(
+		targetId: Entity["id"],
+		updater: Updater<Entity>
+	) =>
 	(entities: Entity[]): Entity[] =>
 		entities.map(F.when(hasId(targetId), updater));
 
-/**
- * Remove the item(s) from an array that has a specified id
- *
- * @param targetId The id to target
- */
-export const rejectItemWithId =
-	<Entity extends { id: string }>(targetId: string) =>
-	(entities: Entity[]): Entity[] =>
-		A.reject(entities, hasId(targetId));
+export function rejectItemWithId<T extends IdentifiedObject>(
+	arr: T[],
+	id: T["id"]
+): T[];
+export function rejectItemWithId<T extends IdentifiedObject>(
+	id: T["id"]
+): (arr: T[]) => T[];
+export function rejectItemWithId<T extends IdentifiedObject>(
+	...args: [T[], T["id"]] | [T["id"]]
+) {
+	if (args.length === 2) {
+		const [arr, id] = args;
+		return A.reject(arr, hasId(id));
+	}
+
+	const [id] = args;
+	return (arr: T[]) => rejectItemWithId(arr, id);
+}
+
+export function matchById<T extends IdentifiedObject>(a: T, b: T): boolean;
+export function matchById<T extends IdentifiedObject>(a: T): (b: T) => boolean;
+export function matchById<T extends IdentifiedObject>(...args: [T, T] | [T]) {
+	if (args.length === 2) {
+		const [a, b] = args;
+		return a.id === b.id;
+	}
+
+	const [a] = args;
+	return (b: T) => matchById(a, b);
+}
