@@ -10,7 +10,6 @@ import {
 	ButtonGroup,
 	useColorModeValue,
 } from "@chakra-ui/react";
-import codeToTitle from "code-to-title";
 import {
 	selectEffectivePropertyFilter,
 	selectAllPossibleFilterValuesOnProperty,
@@ -23,7 +22,7 @@ import { A, flow, G } from "@mobily/ts-belt";
 
 interface Props extends Omit<BoxProps, "onChange"> {
 	property: FilterableItemProperty;
-	heading?: string;
+	heading: string;
 }
 
 const sortNullToStart = (arr: (string | null)[]) =>
@@ -41,11 +40,7 @@ const sortNullToStart = (arr: (string | null)[]) =>
  * @param props.onChange Callback to run when the filter is changed
  * @returns Component stuff
  */
-const FilterInterface: React.FC<Props> = ({
-	property,
-	heading = codeToTitle(property),
-	...props
-}) => {
+const FilterInterface: React.FC<Props> = ({ property, heading, ...props }) => {
 	const dispatch = useInventoryStoreDispatch();
 	const uniquePropertyValues = useInventoryStore(
 		flow(selectAllPossibleFilterValuesOnProperty(property), sortNullToStart)

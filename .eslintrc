@@ -24,13 +24,11 @@
 		"ecmaVersion": 12,
 		"sourceType": "module"
 	},
-	"plugins": ["react", "@typescript-eslint", "prettier"],
+	"plugins": ["react", "@typescript-eslint"],
 	"ignorePatterns": ["src/assets/**", "node_modules/**", "prisma/schemas/**"],
 	"rules": {
 		// base
 		"no-warning-comments": "warn",
-		// prettier
-		"prettier/prettier": "error",
 		// react
 		"react/react-in-jsx-scope": "off",
 		"react/prop-types": "off",

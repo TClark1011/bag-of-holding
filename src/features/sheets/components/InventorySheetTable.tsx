@@ -40,6 +40,7 @@ import {
 	filterableItemPropertySchema,
 	sortableItemPropertySchema,
 } from "$sheets/types";
+import { itemPropertyLabels } from "$sheets/constants";
 
 const getTestId = testIdGeneratorFactory("InventoryTable");
 
@@ -142,9 +143,7 @@ const TableHeader: React.FC<
 					isOpen={filterPopoverIsOpen}
 					onClose={onPopoverClose}
 					property={property}
-					{...(property === "carriedByCharacterId" && {
-						heading: "Carried By",
-					})}
+					heading={itemPropertyLabels[property]}
 				>
 					<IconButton
 						aria-label="filter"

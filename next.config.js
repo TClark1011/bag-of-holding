@@ -8,13 +8,14 @@ const injectPlugins = flow(
 	withPWA({
 		dest: "public",
 		disable: process.env.NODE_ENV === "development",
+		disableDevLogs: true
 	}),
 	withSuperjson()
 );
 
 module.exports = injectPlugins({
 	env: {
-		MONTHS_INACTIVE_OLD_SHEET_DELETE: "3",
+		MONTHS_INACTIVE_OLD_SHEET_DELETE: "3"
 		// Default value so tests don't throw an error
 	},
 	redirects: async () => {
@@ -23,14 +24,14 @@ module.exports = injectPlugins({
 					{
 						source: "/sheets/:id*",
 						destination: maintenanceRedirectDestination,
-						permanent: false,
+						permanent: false
 					},
 					{
 						source: "/new",
 						destination: maintenanceRedirectDestination,
-						permanent: false,
-					},
+						permanent: false
+					}
 			  ]
 			: [];
-	},
+	}
 });
