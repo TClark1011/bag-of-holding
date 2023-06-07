@@ -14,8 +14,6 @@ All environment variables used in the codebase are exported from either the `env
 | `NEXT_PUBLIC_MAINTENANCE_MODE`     | If the application is in maintenance mode, must set both this and `UNDERGOING_MIGRATION` to `true` |
 | `MONTHS_INACTIVE_OLD_SHEET_DELETE` | How many months a sheet must be inactive for before it will be deleted                             |
 
-**Redis:** If you want to run the full `gen:pwa` script then you will need to add the var `REDIS_CONNECTION_STRING` to an untracked `.env.local` file, passing it a connection string to a REDIS database. However this should only be required during production builds. To generate the PWA assets during development you can run `yarn gen:pwa --no-redis` which will skip the redis step.
-
 ### Notes
 
 - When performing data migrations against the production database, you must remove all of the URL parameters from the connection string

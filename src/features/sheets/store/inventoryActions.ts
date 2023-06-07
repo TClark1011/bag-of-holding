@@ -1,9 +1,4 @@
-import {
-	Action,
-	FinalActions,
-	PayloadAction,
-	staticResolvedActionSchemaFields,
-} from "$actions";
+import { Action, PayloadAction } from "$actions";
 import {
 	FilterableItemProperty,
 	FullSheet,
@@ -11,21 +6,8 @@ import {
 } from "$sheets/types";
 import { CharacterRemovalStrategy, ItemCreationFields } from "$sheets/types";
 import { Character, Item } from "@prisma/client";
-import { z } from "zod";
 
-type ResolvedAction<
-	OriginalAction extends Action<string>,
-	ResolvedPayload
-> = z.infer<typeof staticResolvedActionSchemaFields> & {
-	type: OriginalAction["type"];
-	originalAction: OriginalAction;
-	resolvedPayload: ResolvedPayload;
-};
-
-type CharacterCreationAction = PayloadAction<
-	"add-character",
-	Pick<Character, "name" | "carryCapacity">
->;
+type CharacterCreationAction = PayloadAction<"add-character", Character>;
 
 type SetSheetNameAction = PayloadAction<"set-sheet-name", string>;
 
@@ -81,17 +63,3 @@ export type InventoryStoreAction =
 	| PayloadAction<"ui.open-character-edit-dialog", { characterId: string }>
 	| Action<"ui.close-character-delete-confirm-dialog">
 	| Action<"ui.handle-character-delete-button">;
-
-export type ResolvedInventoryStoreAction =
-	| ResolvedAction<CharacterCreationAction, Character>
-	| ResolvedAction<
-			SetSheetNameAction,
-			{
-				sheetId: string;
-				newName: string;
-			}
-	  >;
-
-export type FinalInventoryStoreAction = FinalActions<
-	InventoryStoreAction | ResolvedInventoryStoreAction
->;

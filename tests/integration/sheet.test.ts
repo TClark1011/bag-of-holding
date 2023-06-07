@@ -3,7 +3,7 @@ import { takeRandom } from "$root/utils";
 import { Item, Character } from "@prisma/client";
 import { getItemTotalValue, searchComparison } from "$sheets/utils";
 import {
-	testWithNewSheet,
+	testDualClientsWithNewSheet,
 	testWithExistingSheet,
 } from "$tests/fixtures/playwrightFixtures";
 import getMostCommonLetterCombo from "$tests/utils/getMostCommonLetterCombo";
@@ -73,26 +73,29 @@ test("Create New Sheet, Close Welcome", async ({ page }) => {
 	expect(await getSheetTitle(page)).toBe("New Sheet");
 });
 
-testWithNewSheet("Change Sheet Name", async ({ clientA, clientB }) => {
-	await clientA.click(sheetOptionsButton);
-	await clientA.waitForSelector("text=Edit Sheet Name");
+testDualClientsWithNewSheet(
+	"Change Sheet Name",
+	async ({ clientA, clientB }) => {
+		await clientA.click(sheetOptionsButton);
+		await clientA.waitForSelector("text=Edit Sheet Name");
 
-	const testName = "Test Sheet Name";
-	await clientA.fill("#name", testName);
-	await clientA.click("text=Save");
+		const testName = "Test Sheet Name";
+		await clientA.fill("#name", testName);
+		await clientA.click("text=Save");
 
-	await clientA.waitForSelector("text=Edit Sheet Name", {
-		state: "hidden",
-	});
+		await clientA.waitForSelector("text=Edit Sheet Name", {
+			state: "hidden",
+		});
 
-	expect(await getSheetTitle(clientA)).toBe(testName);
+		expect(await getSheetTitle(clientA)).toBe(testName);
 
-	await clientB.waitForSelector(`text=${testName}`, {
-		timeout: 10000,
-	});
-});
+		await clientB.waitForSelector(`text=${testName}`, {
+			timeout: 10000,
+		});
+	}
+);
 
-testWithNewSheet(
+testDualClientsWithNewSheet(
 	"Create Character, Give Items",
 	async ({ clientA, clientB }) => {
 		await clientA.click("text=Add Character");
@@ -423,88 +426,103 @@ testWithExistingSheet("Advanced Operations", async ({ page, sheet }) => {
 // );
 
 test.describe("Simultaneous Updates", () => {
-	testWithNewSheet("2 clients add members", async ({ clientA, clientB }) => {
-		const bothClients = [clientA, clientB];
-		const memberNames = ["client A member", "client B member"] as const;
-		const [clientAMemberName, clientBMemberName] = memberNames;
+	testDualClientsWithNewSheet(
+		"2 clients add members",
+		async ({ clientA, clientB }) => {
+			const bothClients = [clientA, clientB];
+			const memberNames = ["client A member", "client B member"] as const;
+			const [clientAMemberName, clientBMemberName] = memberNames;
 
-		// Open options menu
-		await performActionOnMultipleClients(bothClients, (client) =>
-			client.click(sheetAddCharacterButton)
-		);
-
-		// Fill out member name fields
-		await performActionOnMultipleClients(bothClients, (client, index) =>
-			client.fill("[name='name']", memberNames[index])
-		);
-		// Click save button
-		await performActionOnMultipleClients(bothClients, (client) =>
-			client.click(characterDialogSaveButton)
-		);
-
-		const getClientMemberTags = () =>
-			performActionOnMultipleClients(bothClients, (client) =>
-				client.$$(sheetCharacterTag)
+			// Open options menu
+			await performActionOnMultipleClients(bothClients, (client) =>
+				client.click(sheetAddCharacterButton)
 			);
 
-		await wait(500);
-
-		const [clientAMemberTags, clientBMemberTags] = await getClientMemberTags();
-
-		// Before the refetch occurs, each sheet can only see 1 member
-		expect(clientAMemberTags).toHaveLength(1);
-		expect(await clientAMemberTags[0].innerText()).toBe(clientAMemberName);
-		expect(clientBMemberTags).toHaveLength(1);
-		expect(await clientBMemberTags[0].innerText()).toBe(clientBMemberName);
-
-		await wait(SHEET_REFETCH_INTERVAL_MS + 1000);
-
-		const refetchedClientTags = await getClientMemberTags();
-		await performActionOnMultipleClients(bothClients, async (client, index) => {
-			const memberTags = refetchedClientTags[index];
-			const memberTagContents = await Promise.all(
-				memberTags.map((tag) => tag.innerText())
+			// Fill out member name fields
+			await performActionOnMultipleClients(bothClients, (client, index) =>
+				client.fill("[name='name']", memberNames[index])
+			);
+			// Click save button
+			await performActionOnMultipleClients(bothClients, (client) =>
+				client.click(characterDialogSaveButton)
 			);
 
-			expect(memberTags).toHaveLength(2);
-			expect([...memberTagContents].sort()).toEqual([...memberNames].sort());
-		});
-	});
+			const getClientMemberTags = () =>
+				performActionOnMultipleClients(bothClients, (client) =>
+					client.$$(sheetCharacterTag)
+				);
 
-	testWithNewSheet("2 clients add items", async ({ clientA, clientB }) => {
-		const bothClients = [clientA, clientB];
-		const items = bothClients.map(() => generateRandomInventoryItem()) as [
-			Item,
-			Item
-		];
+			await wait(500);
 
-		await performActionOnMultipleClients(bothClients, (client) =>
-			client.click(sheetNewItemButton)
-		);
-		await performActionOnMultipleClients(bothClients, async (client, index) => {
-			const { name } = items[index];
+			const [clientAMemberTags, clientBMemberTags] =
+				await getClientMemberTags();
 
-			await wait(100);
-			await client.fill("#name", name);
-			await client.click(sheetNewItemSaveButton);
-			await wait(100);
+			// Before the refetch occurs, each sheet can only see 1 member
+			expect(clientAMemberTags).toHaveLength(1);
+			expect(await clientAMemberTags[0].innerText()).toBe(clientAMemberName);
+			expect(clientBMemberTags).toHaveLength(1);
+			expect(await clientBMemberTags[0].innerText()).toBe(clientBMemberName);
 
-			expect(await countItemRows(client)).toBe(1);
-			expect(await getNameOfItemInTableAtRowIndex(client, 0)).toBe(name);
-		});
+			await wait(SHEET_REFETCH_INTERVAL_MS + 1000);
 
-		await wait(SHEET_REFETCH_INTERVAL_MS + 1000);
+			const refetchedClientTags = await getClientMemberTags();
+			await performActionOnMultipleClients(
+				bothClients,
+				async (client, index) => {
+					const memberTags = refetchedClientTags[index];
+					const memberTagContents = await Promise.all(
+						memberTags.map((tag) => tag.innerText())
+					);
 
-		const sortedItems = A.sortBy(items, D.get("name"));
-		await performActionOnMultipleClients(bothClients, async (client) => {
-			expect(await countItemRows(client)).toBe(2);
-
-			expect(await getNameOfItemInTableAtRowIndex(client, 0)).toBe(
-				sortedItems[0].name
+					expect(memberTags).toHaveLength(2);
+					expect([...memberTagContents].sort()).toEqual(
+						[...memberNames].sort()
+					);
+				}
 			);
-			expect(await getNameOfItemInTableAtRowIndex(client, 1)).toBe(
-				sortedItems[1].name
+		}
+	);
+
+	testDualClientsWithNewSheet(
+		"2 clients add items",
+		async ({ clientA, clientB }) => {
+			const bothClients = [clientA, clientB];
+			const items = bothClients.map(() => generateRandomInventoryItem()) as [
+				Item,
+				Item
+			];
+
+			await performActionOnMultipleClients(bothClients, (client) =>
+				client.click(sheetNewItemButton)
 			);
-		});
-	});
+			await performActionOnMultipleClients(
+				bothClients,
+				async (client, index) => {
+					const { name } = items[index];
+
+					await wait(100);
+					await client.fill("#name", name);
+					await client.click(sheetNewItemSaveButton);
+					await wait(100);
+
+					expect(await countItemRows(client)).toBe(1);
+					expect(await getNameOfItemInTableAtRowIndex(client, 0)).toBe(name);
+				}
+			);
+
+			await wait(SHEET_REFETCH_INTERVAL_MS + 1000);
+
+			const sortedItems = A.sortBy(items, D.get("name"));
+			await performActionOnMultipleClients(bothClients, async (client) => {
+				expect(await countItemRows(client)).toBe(2);
+
+				expect(await getNameOfItemInTableAtRowIndex(client, 0)).toBe(
+					sortedItems[0].name
+				);
+				expect(await getNameOfItemInTableAtRowIndex(client, 1)).toBe(
+					sortedItems[1].name
+				);
+			});
+		}
+	);
 });

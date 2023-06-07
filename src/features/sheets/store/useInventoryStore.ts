@@ -1,5 +1,4 @@
 /* eslint-disable no-case-declarations */
-import { ExtractResolvedPayloadActions, resolveSimpleAction } from "$actions";
 import {
 	arrayDiff,
 	mustBeNever,
@@ -12,22 +11,13 @@ import {
 	numericItemPropertySchema,
 } from "$sheets/types";
 import { itemIsCarriedByCharacterId } from "$sheets/utils";
-import { composeCharacter } from "$sheets/utils/sheetEntityComposers";
-import { createState, withReducer } from "$zustand";
+import { createState, withDevtools, withReducer } from "$zustand";
 import { A, D, F, pipe } from "@mobily/ts-belt";
 import { Character, Item } from "@prisma/client";
-import cuid from "cuid";
 import produce from "immer";
 import { Reducer } from "react";
-import { match } from "ts-pattern";
-import { devtools } from "zustand/middleware";
-import { z } from "zod";
 import { matchesSchema } from "$zod-helpers";
-import {
-	FinalInventoryStoreAction,
-	InventoryStoreAction,
-	ResolvedInventoryStoreAction,
-} from "$sheets/store/inventoryActions";
+import { InventoryStoreAction } from "$sheets/store/inventoryActions";
 import {
 	FilterableItemProperty,
 	FullSheet,
@@ -77,7 +67,7 @@ export type FiltersState = Record<
 
 export type InventoryStoreProps = {
 	sheet: FullSheet;
-	resolvedActionIds: string[];
+	actionIds: string[];
 	ui: {
 		characterDialog: CharacterDialogStateProps;
 		sheetNameDialogIsOpen: boolean;
@@ -107,7 +97,7 @@ const initialInventoryStoreState: InventoryStoreProps = {
 		name: "",
 		updatedAt: new Date(),
 	},
-	resolvedActionIds: [],
+	actionIds: [],
 	ui: {
 		characterDialog: {
 			mode: "closed",
@@ -125,10 +115,6 @@ const initialInventoryStoreState: InventoryStoreProps = {
 		welcomeDialogIsOpen: false,
 	},
 };
-
-export const useLastInventoryStoreAction = createState(() => ({
-	lastAction: null as FinalInventoryStoreAction | null,
-}));
 
 const handleCharacterRemoval = (
 	sheet: FullSheet,
@@ -170,31 +156,6 @@ const handleCharacterRemoval = (
 		}
 	});
 
-const resolveInventoryAction = (
-	sheet: FullSheet,
-	action: InventoryStoreAction,
-	actionId = cuid()
-): FinalInventoryStoreAction => {
-	const resolvedPayload = match<
-		InventoryStoreAction,
-		| ExtractResolvedPayloadActions<ResolvedInventoryStoreAction>["resolvedPayload"]
-		| undefined
-	>(action)
-		.with({ type: "add-character" }, ({ payload }) =>
-			composeCharacter({ ...payload, sheetId: sheet.id })
-		)
-		.with({ type: "set-sheet-name" }, ({ payload }) => ({
-			sheetId: sheet.id,
-			newName: payload,
-		}))
-		.otherwise(() => undefined);
-	const baseResolvedAction = resolveSimpleAction(action, actionId);
-	return {
-		...baseResolvedAction,
-		...(resolvedPayload && { resolvedPayload }),
-	} as never;
-};
-
 const numericSortingDirectionProgression =
 	createLoopedProgression<null | SortingDirection>([
 		null,
@@ -216,64 +177,51 @@ const inventoryStoreReducer: Reducer<
 	InventoryStoreAction
 > = (prevState, action) =>
 	produce(prevState, (draftState) => {
-		const actionId = matchesSchema(action, z.object({ id: z.string() }))
-			? action.id
-			: cuid();
-
-		const resolvedAction = resolveInventoryAction(
-			draftState.sheet,
-			action,
-			actionId
-		);
-
-		// If this action has already been applied, do not continue
-		if (draftState.resolvedActionIds.includes(resolvedAction.id)) return;
-
-		switch (resolvedAction.type) {
+		switch (action.type) {
 			case "set-sheet":
-				draftState.sheet = resolvedAction.originalAction.payload as FullSheet;
+				draftState.sheet = action.payload as FullSheet;
 				break;
 			case "set-sheet-name":
-				draftState.sheet.name = resolvedAction.originalAction.payload;
+				draftState.sheet.name = action.payload;
 				break;
 			case "add-item":
 				draftState.sheet.items.push({
 					id: Math.random().toString(),
-					...resolvedAction.originalAction.payload,
+					...action.payload,
 				});
 				break;
 			case "remove-item":
-				draftState.sheet.items = rejectItemWithId<Item>(
-					resolvedAction.originalAction.payload.itemId
-				)(draftState.sheet.items);
+				draftState.sheet.items = rejectItemWithId<Item>(action.payload.itemId)(
+					draftState.sheet.items
+				);
 				break;
 			case "update-item":
 				draftState.sheet.items = updateItemWithId<Item>(
-					resolvedAction.originalAction.payload.itemId,
-					D.merge(resolvedAction.originalAction.payload.data)
+					action.payload.itemId,
+					D.merge(action.payload.data)
 				)(draftState.sheet.items);
 				break;
 			case "remove-character":
 				draftState.sheet = handleCharacterRemoval(
 					draftState.sheet,
-					resolvedAction.originalAction.payload.characterId,
-					resolvedAction.originalAction.payload.strategy
+					action.payload.characterId,
+					action.payload.strategy
 				);
 				break;
 			case "add-character":
-				draftState.sheet.characters.push(resolvedAction.resolvedPayload);
+				draftState.sheet.characters.push(action.payload);
 				break;
 			case "update-character":
 				draftState.sheet.characters = updateItemWithId<Character>(
-					resolvedAction.originalAction.payload.characterId,
-					D.merge(resolvedAction.originalAction.payload.data)
+					action.payload.characterId,
+					D.merge(action.payload.data)
 				)(draftState.sheet.characters);
 				break;
 			case "ui.open-character-edit-dialog":
 				draftState.ui.characterDialog = {
 					mode: "edit",
 					data: {
-						characterId: resolvedAction.originalAction.payload.characterId,
+						characterId: action.payload.characterId,
 						deleteModalIsOpen: false,
 					},
 				};
@@ -305,35 +253,26 @@ const inventoryStoreReducer: Reducer<
 				draftState.ui.sheetNameDialogIsOpen = false;
 				break;
 			case "ui.toggle-filter":
-				draftState.ui.filters[resolvedAction.originalAction.payload.property] =
-					toggleArrayItem(
-						selectEffectivePropertyFilter(
-							resolvedAction.originalAction.payload.property
-						)(draftState),
-						resolvedAction.originalAction.payload.value
-					);
+				draftState.ui.filters[action.payload.property] = toggleArrayItem(
+					selectEffectivePropertyFilter(action.payload.property)(draftState),
+					action.payload.value
+				);
 				break;
 			case "ui.invert-filter":
-				draftState.ui.filters[resolvedAction.originalAction.payload] =
-					arrayDiff(
-						draftState.ui.filters[resolvedAction.originalAction.payload] ??
-							selectAllPossibleFilterValuesOnProperty(
-								resolvedAction.originalAction.payload
-							)(draftState),
-						selectAllPossibleFilterValuesOnProperty(
-							resolvedAction.originalAction.payload
-						)(draftState)
-					);
+				draftState.ui.filters[action.payload] = arrayDiff(
+					draftState.ui.filters[action.payload] ??
+						selectAllPossibleFilterValuesOnProperty(action.payload)(draftState),
+					selectAllPossibleFilterValuesOnProperty(action.payload)(draftState)
+				);
 				break;
 			case "ui.clear-filter":
-				draftState.ui.filters[resolvedAction.originalAction.payload] = [];
+				draftState.ui.filters[action.payload] = [];
 				break;
 			case "ui.reset-filter":
-				draftState.ui.filters[resolvedAction.originalAction.payload] = null;
+				draftState.ui.filters[action.payload] = null;
 				break;
 			case "ui.toggle-sort":
-				const propertyTargetedForSorting =
-					resolvedAction.originalAction.payload;
+				const propertyTargetedForSorting = action.payload;
 
 				const targetedPropertyIsNumeric = isNumericItemProperty(
 					propertyTargetedForSorting
@@ -370,13 +309,13 @@ const inventoryStoreReducer: Reducer<
 				} else {
 					draftState.ui.sorting = {
 						direction: newSortingDirection,
-						property: resolvedAction.originalAction.payload,
+						property: action.payload,
 					};
 				}
 
 				break;
 			case "ui.open-filter-menu":
-				draftState.ui.openFilterMenu = resolvedAction.originalAction.payload;
+				draftState.ui.openFilterMenu = action.payload;
 				break;
 			case "ui.close-filter-menu":
 				draftState.ui.openFilterMenu = null;
@@ -389,14 +328,14 @@ const inventoryStoreReducer: Reducer<
 			case "ui.open-item-edit-dialog":
 				draftState.ui.itemDialog = {
 					mode: "edit",
-					characterId: resolvedAction.originalAction.payload,
+					characterId: action.payload,
 				};
 				break;
 			case "ui.close-item-dialog":
 				draftState.ui.itemDialog = null;
 				break;
 			case "ui.set-search-value":
-				draftState.ui.searchBarValue = resolvedAction.originalAction.payload;
+				draftState.ui.searchBarValue = action.payload;
 				break;
 			case "ui.open-filter-dialog":
 				draftState.ui.filterDialogIsOpen = true;
@@ -417,19 +356,19 @@ const inventoryStoreReducer: Reducer<
 				draftState.ui.welcomeDialogIsOpen = false;
 				break;
 			default:
-				mustBeNever(resolvedAction);
+				mustBeNever(action);
 		}
-
-		draftState.resolvedActionIds.push(resolvedAction.id);
-		useLastInventoryStoreAction.setState({
-			lastAction: resolvedAction,
-		});
 	});
 
-const useInventoryStore = createState(
-	devtools(withReducer(inventoryStoreReducer, initialInventoryStoreState), {
-		name: "inventory",
-	})
+const baseInventoryStore = withReducer(
+	inventoryStoreReducer,
+	initialInventoryStoreState
+);
+
+const useInventoryStore = pipe(
+	baseInventoryStore,
+	(s) => withDevtools(s, { name: "inventory" }),
+	(s) => createState(s)
 );
 
 export const useInventoryStoreDispatch = () =>

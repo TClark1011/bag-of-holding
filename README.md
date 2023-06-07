@@ -14,6 +14,7 @@ Bag of Holding is a web app that lets all the players in a tabletop RPG session 
 - [React](https://github.com/facebook/react), bootstrapped with [Next.js](https://github.com/vercel/next.js/) via `create-next-app` and [Chakra UI](https://github.com/chakra-ui/chakra-ui/) for styling
 - PostgreSQL Database hosted on [Supabase](https://app.supabase.com/)
 - Hosted on [Vercel](https://vercel.com/)
+- [tRPC](https://trpc.io/) backend
 
 ## Installation
 
@@ -39,6 +40,12 @@ It is recommended that you install the following extensions before starting work
 ### Workflow
 
 When making commits to this repository run `yarn commit` in your terminal and follow the prompts to generate a high quality message that will be accepted.
+
+## Credits
+
+- I borrowed some of [this](https://github.com/mvasin/react-div-100vh) library and copy/pasted
+  it directly into the project because I only needed some of it and wanted to cut down on dependencies.
+  It is licensed under the MIT license.
 
 ## License
 
