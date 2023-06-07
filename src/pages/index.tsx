@@ -1,4 +1,4 @@
-import { Box, Button, Center, Divider, VStack } from "@chakra-ui/react";
+import { Box, Center, Divider, VStack } from "@chakra-ui/react";
 import { testIdGeneratorFactory } from "$tests/utils/testUtils";
 import {
 	infoPageUrl,
@@ -13,14 +13,14 @@ import {
 	ButtonLink,
 	BagOfHoldingIcon,
 	H3,
+	GetStartedButton,
 } from "$root/components";
-import queries from "$root/hooks/queries";
-import { useRouter } from "next/router";
 import { getSheetLink } from "$root/utils";
-import { FC, useState } from "react";
+import { FC } from "react";
 import useRenderLogging from "$root/hooks/useRenderLogging";
 import { useRememberedSheets } from "$sheets/store";
 import { useNextHydrationMatchWorkaround } from "$root/hooks";
+import { MAINTENANCE_MODE } from "$root/config";
 
 const getTestId = testIdGeneratorFactory("Home");
 
@@ -42,24 +42,6 @@ const Home: FC = () => {
 		storedRememberedSheets,
 		[]
 	);
-
-	const router = useRouter();
-	const [isLoading, setIsLoading] = useState(false);
-	const createSheetMutation = queries.sheet.create.useMutation({
-		onMutate: () => {
-			setIsLoading(true);
-		},
-		onError: () => {
-			setIsLoading(false);
-			// We could just use the `isLoading` state on the query, however this
-			// method means the loader will appear all the way until the page is
-			// replaced, rather than just until the query is finished
-		},
-		onSuccess: (data) => {
-			const path = getSheetLink(data.id);
-			router.push(`${path}?new`, path);
-		},
-	});
 
 	return (
 		<View accountForTopNav={false} url={appDomain}>
@@ -83,15 +65,9 @@ const Home: FC = () => {
 						{/* Actions */}
 						<Center>
 							<VStack spacing="break">
-								{/* Get Started Button */}
-								<Button
-									colorScheme="primary"
-									onClick={() => createSheetMutation.mutate()}
-									isLoading={isLoading}
-									loadingText="Creating Sheet"
-								>
-									Get Started
-								</Button>
+								{/* Get Started Button creates a new sheet */}
+								<GetStartedButton />
+
 								{/* Link to info page */}
 								<ButtonLink
 									href={infoPageUrl}
@@ -102,7 +78,8 @@ const Home: FC = () => {
 									What is this?
 								</ButtonLink>
 
-								{rememberedSheets.length > 0 && (
+								{/* Display Remembered Sheets */}
+								{!MAINTENANCE_MODE && rememberedSheets.length > 0 && (
 									<>
 										<Divider />
 										<H3 fontSize="md">Recently Visited Sheets</H3>
