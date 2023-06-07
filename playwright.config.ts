@@ -1,5 +1,6 @@
 import { defineConfig } from "@playwright/test";
 import { loadEnvConfig } from "@next/env";
+import isCI from "is-ci";
 
 loadEnvConfig(process.cwd());
 
@@ -11,7 +12,7 @@ const config = defineConfig({
 	webServer: {
 		command: "yarn start:dev",
 		port: PORT,
-		reuseExistingServer: !process.env.CI,
+		reuseExistingServer: !isCI,
 		timeout: 120 * 1000,
 		env: {
 			PORT: `${PORT}`,
@@ -22,9 +23,8 @@ const config = defineConfig({
 		baseURL: `http://localhost:${PORT}`,
 	},
 	retries: 3,
-	reporter: process.env.CI ? "github" : "list",
+	reporter: isCI ? "github" : "list",
 	timeout: 60000,
-	globalSetup: "./tests/setup/playwright.setup.ts",
 	quiet: true,
 	projects: [
 		{
