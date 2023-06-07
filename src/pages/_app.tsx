@@ -16,6 +16,7 @@ import "@fontsource/roboto/700.css";
 import queries from "$root/hooks/queries";
 
 import { Analytics } from "@vercel/analytics/react";
+import { match } from "ts-pattern";
 
 /**
  * Generate a selector to add a background color
@@ -43,6 +44,14 @@ const thoroughColorModeSelector = (colorMode: string, color: string) => {
 `;
 };
 
+// regex for URL that ends with "sheets/*sheetId*"
+
+const sheetPageUrlRegex =
+	/https?:\/\/(?:w{1,3}\.)?[^\s.]+(?:\.[a-z]+)*(?::\d+)?((?:\/\w+)|(?:-\w+))*\/sheets\/\w+$/g;
+const urlIsForSheetPage = (url: string) => sheetPageUrlRegex.test(url);
+
+const transformSheetIdUrlToGenericSheetUrl = (url: string) =>
+	url.replace(/\/sheets\/\w+$/, "/sheets/[sheetId]");
 /**
  * Core app component
  *
@@ -78,7 +87,21 @@ const MyApp = ({ Component, pageProps }: AppProps): React.ReactElement => {
 				`}
 			/>
 			<Component {...pageProps} />
-			<Analytics />
+			<Analytics
+				beforeSend={({ url, ...event }) => {
+					// If a URL points to a sheet, we want to adjust it to a generic
+					// "/sheets/[sheetId]" URL so that we don't have separate entries
+					// for every sheet page
+					const finalUrl: string = match(url)
+						.when(urlIsForSheetPage, transformSheetIdUrlToGenericSheetUrl)
+						.otherwise((url) => url);
+
+					return {
+						...event,
+						url: finalUrl,
+					};
+				}}
+			/>
 		</ChakraProvider>
 	);
 };
