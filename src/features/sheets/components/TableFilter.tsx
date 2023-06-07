@@ -13,7 +13,7 @@ import { PropsWithChildren } from "react";
 type TableFilterProps = PropsWithChildren &
 	PopoverProps & {
 		property: FilterableItemProperty;
-		heading?: string;
+		heading: string;
 	};
 
 /**

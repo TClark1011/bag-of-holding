@@ -34,7 +34,7 @@ We will gladly accept any help you want to offer us. If you want to contribute t
 It is recommended that you install the following extensions before starting work on Bag of Holding:
 
 - **Prettier (esbenp.prettier-vscode):** An extension for formatting your code.
-- **Prettier ESLint (rvest.vs-code-prettier-eslint):** An extension that allows the `Prettier` extension operate in conjunction with `ESlint`. By using both of these extensions we can make sure we are following a consistent code style which goes a long way to making the codebase consistent and predictable.
+- **ESLint (dbaeumer.vscode-eslint):** An extension for linting your code.
 
 ### Workflow
 
