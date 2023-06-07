@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.7.0](https://github.com/TClark1011/bag-of-holding/compare/v1.6.2...v1.7.0) (2023-06-07)
+
+
+### Features
+
+* **fullstack:** 🎸 switched to vercel analytics ([d5a6b21](https://github.com/TClark1011/bag-of-holding/commit/d5a6b21a2b017c5358b22f98a57eeefd2daaa7f3))
+
 ### [1.6.2](https://github.com/TClark1011/bag-of-holding/compare/v1.6.1...v1.6.2) (2023-06-07)
 
 ### [1.6.1](https://github.com/TClark1011/bag-of-holding/compare/v1.6.0...v1.6.1) (2023-06-06)
