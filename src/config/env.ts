@@ -28,3 +28,7 @@ export const UNDERGOING_MIGRATION = process.env.UNDERGOING_MIGRATION === "true";
 export const MONTHS_INACTIVE_OLD_SHEET = Number(
 	getEnvOrThrow("MONTHS_INACTIVE_OLD_SHEET_DELETE", false)
 );
+
+export const IN_PREVIEW = process.env.NEXT_PUBLIC_IN_PREVIEW === "true";
+
+export const IN_DEV = process.env.NODE_ENV === "development";

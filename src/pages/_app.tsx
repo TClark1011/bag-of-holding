@@ -1,6 +1,6 @@
 import { ChakraProvider, ColorModeScript } from "@chakra-ui/react";
 import React from "react";
-import { theme } from "$root/config";
+import { IN_DEV, IN_PREVIEW, theme } from "$root/config";
 import Head from "next/head";
 import { appName } from "$root/constants";
 import { Meta } from "$root/components";
@@ -44,14 +44,13 @@ const thoroughColorModeSelector = (colorMode: string, color: string) => {
 `;
 };
 
-// regex for URL that ends with "sheets/*sheetId*"
-
 const sheetPageUrlRegex =
 	/https?:\/\/(?:w{1,3}\.)?[^\s.]+(?:\.[a-z]+)*(?::\d+)?((?:\/\w+)|(?:-\w+))*\/sheets\/\w+$/g;
 const urlIsForSheetPage = (url: string) => sheetPageUrlRegex.test(url);
 
 const transformSheetIdUrlToGenericSheetUrl = (url: string) =>
-	url.replace(/\/sheets\/\w+$/, "/sheets/[sheetId]");
+	url.replace(/\/sheets\/\w+$/, "/sheets/*sheet-id*");
+
 /**
  * Core app component
  *
@@ -88,10 +87,11 @@ const MyApp = ({ Component, pageProps }: AppProps): React.ReactElement => {
 			/>
 			<Component {...pageProps} />
 			<Analytics
+				debug={IN_DEV || IN_PREVIEW}
 				beforeSend={({ url, ...event }) => {
 					// If a URL points to a sheet, we want to adjust it to a generic
-					// "/sheets/[sheetId]" URL so that we don't have separate entries
-					// for every sheet page
+					// URL that does not contain the specific ID, that way we won't
+					// have separate entries for every sheet
 					const finalUrl: string = match(url)
 						.when(urlIsForSheetPage, transformSheetIdUrlToGenericSheetUrl)
 						.otherwise((url) => url);
