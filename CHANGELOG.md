@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.7.2](https://github.com/TClark1011/bag-of-holding/compare/v1.7.1...v1.7.2) (2023-06-07)
+
+
+### Bug Fixes
+
+* **frontend:** sheet page urls now use generic url in analytics ([0615fcb](https://github.com/TClark1011/bag-of-holding/commit/0615fcb912511452e5f40f4cfb0a47cec5e6b4fe))
+
 ### [1.7.1](https://github.com/TClark1011/bag-of-holding/compare/v1.7.0...v1.7.1) (2023-06-07)
 
 
