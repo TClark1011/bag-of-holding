@@ -1,6 +1,5 @@
 import { Box, BoxProps } from "@chakra-ui/layout";
 import React, { PropsWithChildren } from "react";
-import { use100vh } from "react-div-100vh";
 import {
 	Meta,
 	MetaProps,
@@ -8,6 +7,7 @@ import {
 	TopNavProps,
 	TopNav,
 } from "$root/components";
+import useViewportHeight from "$use-viewport-height";
 
 type ExtraProps = MetaProps & TopNavProps;
 export type ViewProps = ExtraProps &
@@ -26,14 +26,14 @@ const View: React.FC<ViewProps> = ({
 	children,
 	...metaProps
 }) => {
-	const screenHeight = use100vh();
+	const viewportHeight = useViewportHeight();
 
 	const contentContainerProps: Pick<
 		BoxProps,
 		"height" | "minHeight" | "paddingX" | "paddingTop"
 	> = {
 		...(minFullHeight
-			? { minHeight: screenHeight ?? undefined, height: 1 }
+			? { minHeight: viewportHeight ?? undefined, height: 1 }
 			: {}),
 		paddingTop: accountForTopNav ? topNavHeight : undefined,
 	};

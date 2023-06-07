@@ -25,21 +25,22 @@ const testNewlyCreatedSheet = test.extend({
 	},
 });
 
-export const testWithNewSheet = testNewlyCreatedSheet.extend<ClientFields>({
-	clientA: async ({ page, context }, use) => {
-		const result = await context.newPage();
-		await result.goto(page.url());
-		await use(result);
-	},
-	clientB: async ({ page, context }, use) => {
-		const result = await context.newPage();
-		await result.goto(page.url());
-		await use(result);
-	},
-	waitForRefetch: async ({ page }, use) => {
-		await use(() => page.waitForTimeout(3000));
-	},
-});
+export const testDualClientsWithNewSheet =
+	testNewlyCreatedSheet.extend<ClientFields>({
+		clientA: async ({ page, context }, use) => {
+			const result = await context.newPage();
+			await result.goto(page.url());
+			await use(result);
+		},
+		clientB: async ({ page, context }, use) => {
+			const result = await context.newPage();
+			await result.goto(page.url());
+			await use(result);
+		},
+		waitForRefetch: async ({ page }, use) => {
+			await use(() => page.waitForTimeout(3000));
+		},
+	});
 
 type ExistingSheetFixtureProps = {
 	sheet: FullSheet;

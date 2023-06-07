@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const { withSuperjson } = require("next-superjson");
-const maintenanceRedirectDestination = "/";
 const { flow } = require("@mobily/ts-belt");
 const withPWA = require("next-pwa");
 
@@ -23,14 +22,9 @@ module.exports = injectPlugins({
 			? [
 					{
 						source: "/sheets/:id*",
-						destination: maintenanceRedirectDestination,
+						destination: "/",
 						permanent: false
 					},
-					{
-						source: "/new",
-						destination: maintenanceRedirectDestination,
-						permanent: false
-					}
 			  ]
 			: [];
 	}
