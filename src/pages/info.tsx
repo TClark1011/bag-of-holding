@@ -32,11 +32,7 @@ const InfoPageQuestion = chakra(H3, {
  */
 const InfoPage: React.FC = () => {
 	return (
-		<View
-			title={createPageTitle("Info")}
-			url={infoPageUrl}
-			analyticsPageViewProps={{ title: "Info" }}
-		>
+		<View title={createPageTitle("Info")} url={infoPageUrl}>
 			<PageContentContainer>
 				<SectionTitle data-testid={infoPageTestIds.sectionTitle}>
 					Info

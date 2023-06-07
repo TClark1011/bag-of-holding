@@ -15,6 +15,8 @@ import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/700.css";
 import queries from "$root/hooks/queries";
 
+import { Analytics } from "@vercel/analytics/react";
+
 /**
  * Generate a selector to add a background color
  * to a page based on a desired color mode
@@ -50,7 +52,6 @@ const thoroughColorModeSelector = (colorMode: string, color: string) => {
  * @returns The application
  */
 const MyApp = ({ Component, pageProps }: AppProps): React.ReactElement => {
-	const TypeBugWorkAroundComponent = Component as any; // This won't be needed once we upgrade to react 18
 	return (
 		<ChakraProvider theme={theme}>
 			<ColorModeScript initialColorMode={theme.config.initialColorMode} />
@@ -76,7 +77,8 @@ const MyApp = ({ Component, pageProps }: AppProps): React.ReactElement => {
 					${thoroughColorModeSelector("light", "white")}
 				`}
 			/>
-			<TypeBugWorkAroundComponent {...pageProps} />
+			<Component {...pageProps} />
+			<Analytics />
 		</ChakraProvider>
 	);
 };

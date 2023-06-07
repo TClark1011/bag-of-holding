@@ -22,7 +22,6 @@ const ContactPage: React.FC = () => {
 			title={createPageTitle("Contact")}
 			url={contactPageUrl}
 			description={`Contact details for ${appName} support`}
-			analyticsPageViewProps={{ title: "Contact" }}
 		>
 			<PageContentContainer>
 				<SectionTitle data-testid={contactPageTitle}>Contact</SectionTitle>
