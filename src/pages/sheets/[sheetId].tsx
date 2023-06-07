@@ -84,7 +84,6 @@ const SheetPage: React.FC<SheetPageProps> = ({
 				showTopNav={false}
 				title={`${appName} - ${name}`}
 				url={getSheetLink(sheetFields.id, true)}
-				analyticsPageViewProps={{ title: "Sheet", url: "/sheets/[sheetId]" }}
 			>
 				<Box as="main">
 					<SheetTopBar />

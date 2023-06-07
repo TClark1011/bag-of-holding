@@ -62,11 +62,7 @@ const Home: FC = () => {
 	});
 
 	return (
-		<View
-			accountForTopNav={false}
-			url={appDomain}
-			analyticsPageViewProps={{ title: "Landing" }}
-		>
+		<View accountForTopNav={false} url={appDomain}>
 			<Center width="full" height="100%" padding="break">
 				<Box>
 					<VStack spacing="break" marginBottom="break">
