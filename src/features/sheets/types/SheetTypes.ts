@@ -3,9 +3,6 @@ import { characterSchema } from "prisma/schemas/character";
 import { itemSchema } from "prisma/schemas/item";
 import { sheetSchema } from "prisma/schemas/sheet";
 import { z } from "zod";
-//? name max length (max length: 24 chars)
-
-//? Information about sheet used for the 'recent sheets' feature
 
 const createSheetValidator = Prisma.validator<Prisma.SheetArgs>();
 
@@ -40,10 +37,6 @@ export interface SheetMenuItemFields
 
 export type FullSheetWithoutUpdatedAt = Omit<FullSheet, "updatedAt">;
 
-export type FilterableItemProperty = z.infer<
-	typeof filterableItemPropertySchema
->;
-
 export type GetEntityByProperty<EntityName extends FullSheetEntityProperty> =
 	FullSheet[EntityName][number];
 
@@ -66,6 +59,13 @@ export const filterableItemPropertySchema = itemSchema
 		category: true,
 	})
 	.keyof();
+
+export type FilterableItemProperty = z.infer<
+	typeof filterableItemPropertySchema
+>;
+
+export const FILTERABLE_ITEM_PROPERTIES: FilterableItemProperty[] =
+	filterableItemPropertySchema.options;
 
 export const fullSheetSchema = sheetSchema.extend({
 	items: itemSchema.array(),

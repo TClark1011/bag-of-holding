@@ -1,4 +1,4 @@
-import { selectCharacterWithId, useInventoryStore } from "$sheets/store";
+import { composeSelectCharacterWithId, useInventoryStore } from "$sheets/store";
 import { Text, TextProps } from "@chakra-ui/layout";
 import { Character } from "@prisma/client";
 import React from "react";
@@ -32,7 +32,9 @@ const PartyMemberData: React.FC<PartyMemberDataProps> = ({
 	fallback = memberId,
 	...props
 }) => {
-	const selectedMember = useInventoryStore(selectCharacterWithId(memberId));
+	const selectedMember = useInventoryStore(
+		composeSelectCharacterWithId(memberId)
+	);
 
 	return selectedMember ? (
 		<Text {...props}>

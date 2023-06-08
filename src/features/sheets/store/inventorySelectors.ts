@@ -5,8 +5,14 @@ import {
 	NumericItemProperty,
 	SortableItemProperty,
 	FullSheet,
+	FILTERABLE_ITEM_PROPERTIES,
 } from "$sheets/types";
-import { findObjectWithId, getUniqueValuesOf, hasId } from "$root/utils";
+import {
+	coerceDudStringToNull,
+	findObjectWithId,
+	getUniqueValuesOf,
+	hasId,
+} from "$root/utils";
 import {
 	CharacterDialogStateProps,
 	InventoryStoreProps,
@@ -16,10 +22,36 @@ import {
 	getItemTotalWeight,
 	searchComparison,
 } from "$sheets/utils";
-import { A, D, F, flow, pipe } from "@mobily/ts-belt";
+import { A, D, F, G, O, flow, pipe } from "@mobily/ts-belt";
 import { Character, Item } from "@prisma/client";
 import Big from "big.js";
 import { match } from "ts-pattern";
+import { get } from "$fp";
+import { Fn, PropertyGetters } from "$root/types";
+
+/**
+ * Gets the "category" field of an item and coerces
+ * an empty string value to null
+ */
+const safelySelectitemCategory: Fn<[Item], string | null> = flow(
+	get("category"),
+	O.fromNullable,
+	O.mapNullable(coerceDudStringToNull),
+	O.toNullable
+);
+
+const itemPropertyGetters: PropertyGetters<Item> = {
+	id: get("id"),
+	name: get("name"),
+	weight: get("weight"),
+	value: get("value"),
+	category: safelySelectitemCategory,
+	quantity: get("quantity"),
+	carriedByCharacterId: get("carriedByCharacterId"),
+	description: get("description"),
+	referenceLink: get("referenceLink"),
+	sheetId: get("sheetId"),
+};
 
 export type InventoryStoreSelector<Selection> = (
 	state: InventoryStoreProps
@@ -58,7 +90,7 @@ export const selectCharacterBeingEdited: InventoryStoreSelector<
 	return s.sheet.characters.find(hasId(idOfCharacterBeingEdited)) ?? null;
 };
 
-export const selectCharacterCarriedItems = (
+export const composeSelectCharacterWithIdCarriedItems = (
 	characterId: string
 ): InventoryStoreSelector<Item[]> =>
 	fromSheet((sheet) =>
@@ -69,9 +101,9 @@ export const selectItemsCarriedByCharacterBeingEdited: InventoryStoreSelector<
 	Item[]
 > = (state) => {
 	const characterBeingEdited = selectCharacterBeingEdited(state);
-	const items = selectCharacterCarriedItems(characterBeingEdited?.id ?? "")(
-		state
-	);
+	const items = composeSelectCharacterWithIdCarriedItems(
+		characterBeingEdited?.id ?? ""
+	)(state);
 	return items;
 };
 
@@ -83,7 +115,9 @@ export const selectSheetName: InventoryStoreSelector<string> = fromSheet(
 	(s) => s.name
 );
 
-export const selectEntityWithId = <Property extends FullSheetEntityProperty>(
+export const composeSelectEntityWithId = <
+	Property extends FullSheetEntityProperty
+>(
 	id: string,
 	property: Property
 ): InventoryStoreSelector<GetEntityByProperty<Property> | undefined> =>
@@ -91,14 +125,16 @@ export const selectEntityWithId = <Property extends FullSheetEntityProperty>(
 		flow(D.getUnsafe(property), (entities) => [...entities].find(hasId(id)))
 	);
 
-export const selectPropertyFilter =
+export const composeSelectPropertyFilter =
 	(
 		property: FilterableItemProperty
 	): InventoryStoreSelector<(string | null)[] | null> =>
 	(state) =>
 		state.ui.filters[property];
 
-export const selectItemWithId = (id: string): InventoryStoreSelector<Item> =>
+export const composeSelectItemWithId = (
+	id: string
+): InventoryStoreSelector<Item> =>
 	fromSheet((sheet) => {
 		const item = findObjectWithId(sheet.items, id);
 
@@ -107,7 +143,7 @@ export const selectItemWithId = (id: string): InventoryStoreSelector<Item> =>
 		return item;
 	});
 
-export const selectCharacterWithId = (
+export const composeSelectCharacterWithId = (
 	id: string
 ): InventoryStoreSelector<Character | undefined> =>
 	fromSheet((sheet) => {
@@ -116,7 +152,7 @@ export const selectCharacterWithId = (
 		return character;
 	});
 
-export const selectPropertyFilterMenuIsOpen =
+export const composeSelectPropertyFilterMenuIsOpen =
 	(property: FilterableItemProperty): InventoryStoreSelector<boolean> =>
 	(state) =>
 		state.ui.openFilterMenu === property;
@@ -132,11 +168,11 @@ export const selectItemBeingEdited: InventoryStoreSelector<Item | null> = (s) =>
  *
  * @param property The property to lookup
  */
-export const selectAllPossibleFilterValuesOnProperty = (
+export const composeSelectAllPossibleFilterValuesOnProperty = (
 	property: FilterableItemProperty
 ): InventoryStoreSelector<(string | null)[]> =>
 	fromSheet((sheet) =>
-		getUniqueValuesOf(sheet.items, (item) => item[property])
+		getUniqueValuesOf(sheet.items, itemPropertyGetters[property])
 	);
 
 /**
@@ -147,17 +183,17 @@ export const selectAllPossibleFilterValuesOnProperty = (
  *
  * @param property The property of the filter to lookup
  */
-export const selectEffectivePropertyFilter =
+export const composeSelectEffectivePropertyFilter =
 	(
 		property: FilterableItemProperty
 	): InventoryStoreSelector<(string | null)[]> =>
 	(state) => {
-		const actualFilter = selectPropertyFilter(property)(state);
+		const actualFilter = composeSelectPropertyFilter(property)(state);
 
 		if (actualFilter === null) {
 			// If the filters are empty (meaning the user can see all values) we
 			// return all the possible values
-			return selectAllPossibleFilterValuesOnProperty(property)(state);
+			return composeSelectAllPossibleFilterValuesOnProperty(property)(state);
 		}
 
 		return actualFilter;
@@ -169,8 +205,8 @@ const propertySorters: Record<
 > = {
 	carriedByCharacterId: (sheet) => (item) =>
 		sheet.items.find(hasId(item.id))?.name ?? "",
-	name: () => D.getUnsafe("name"),
-	category: () => D.getUnsafe("category"),
+	name: () => itemPropertyGetters.name,
+	category: () => itemPropertyGetters.category,
 	weight:
 		() =>
 		({ weight, quantity }) =>
@@ -182,22 +218,33 @@ const propertySorters: Record<
 	quantity: () => D.getUnsafe("quantity"),
 };
 
-export const selectVisibleItems: InventoryStoreSelector<Item[]> = (state) =>
-	pipe(
-		state.sheet.items,
-		A.filter(
-			F.allPass([
-				(item) =>
-					selectEffectivePropertyFilter("carriedByCharacterId")(state).includes(
-						item.carriedByCharacterId
-					),
-				(item) =>
-					selectEffectivePropertyFilter("category")(state).includes(
-						item.category ?? ""
-					),
-				(item) => searchComparison(item.name, state.ui.searchBarValue),
-			])
-		),
+const composeItemMatchesFilter =
+	(state: InventoryStoreProps, property: FilterableItemProperty) =>
+	(item: Item): boolean =>
+		composeSelectEffectivePropertyFilter(property)(state).includes(
+			itemPropertyGetters[property](item)
+		);
+
+const composeItemMatchesSearchValue =
+	(state: InventoryStoreProps) =>
+	(item: Item): boolean =>
+		searchComparison(item.name, state.ui.searchBarValue);
+
+const composeItemFilterFunction = (
+	state: InventoryStoreProps
+): Fn<[Item[]], Item[]> =>
+	A.filter(
+		F.allPass([
+			composeItemMatchesFilter(state, "carriedByCharacterId"),
+			composeItemMatchesFilter(state, "category"),
+			composeItemMatchesSearchValue(state),
+		])
+	);
+
+const composeItemSortFunction = (
+	state: InventoryStoreProps
+): Fn<[Item[]], Item[]> =>
+	flow(
 		(items) =>
 			state.ui.sorting
 				? A.sortBy(
@@ -207,6 +254,13 @@ export const selectVisibleItems: InventoryStoreSelector<Item[]> = (state) =>
 				: items,
 		(items) =>
 			state.ui.sorting?.direction === "ascending" ? items : A.reverse(items)
+	);
+
+export const selectVisibleItems: InventoryStoreSelector<Item[]> = (state) =>
+	pipe(
+		state.sheet.items,
+		composeItemFilterFunction(state),
+		composeItemSortFunction(state)
 	);
 
 export type ColumnSums = Record<NumericItemProperty, number>;
@@ -241,7 +295,7 @@ export const selectAllCharacterColumnTotals: InventoryStoreSelector<
 > = (state) => {
 	const result: CharacterColumnSumsResult[] = [];
 	for (const character of state.sheet.characters) {
-		const items = selectCharacterCarriedItems(character.id)(state);
+		const items = composeSelectCharacterWithIdCarriedItems(character.id)(state);
 		result.push({
 			character,
 			sums: getItemColumnSums(items),
@@ -249,3 +303,27 @@ export const selectAllCharacterColumnTotals: InventoryStoreSelector<
 	}
 	return result;
 };
+
+export const composeSelectItemPropertyFilterHasValues = (
+	property: FilterableItemProperty
+): InventoryStoreSelector<boolean> =>
+	flow(
+		composeSelectAllPossibleFilterValuesOnProperty(property),
+		A.reject(G.isNullable),
+		A.isNotEmpty
+	);
+
+export const selectFilteringIsAvailable: InventoryStoreSelector<boolean> = (
+	state
+) =>
+	A.any(FILTERABLE_ITEM_PROPERTIES, (property) =>
+		composeSelectItemPropertyFilterHasValues(property)(state)
+	);
+
+export const selectAnyFilteringIsBeingDone: InventoryStoreSelector<boolean> = (
+	state
+) =>
+	A.any(
+		FILTERABLE_ITEM_PROPERTIES,
+		(property) => composeSelectPropertyFilter(property)(state) !== null
+	);

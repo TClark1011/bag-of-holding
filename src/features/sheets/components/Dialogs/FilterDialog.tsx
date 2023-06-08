@@ -12,17 +12,19 @@ import { FilterInterface } from "$sheets/components";
 import { useInventoryStoreDispatch, useInventoryStore } from "$sheets/store";
 import { D } from "@mobily/ts-belt";
 import useRenderLogging from "$root/hooks/useRenderLogging";
+import { useIsMobile } from "$root/hooks";
 
 const useFilterDialogModalProps = () => {
 	const dispatch = useInventoryStoreDispatch();
-	const isOpen = useInventoryStore((s) => s.ui.filterDialogIsOpen);
+	const isMobile = useIsMobile();
+	const filterDialogIsOpen = useInventoryStore((s) => s.ui.filterDialogIsOpen);
 	const onClose = () => {
 		dispatch({
 			type: "ui.close-filter-dialog",
 		});
 	};
 
-	return { isOpen, onClose };
+	return { isOpen: filterDialogIsOpen && !isMobile, onClose };
 };
 
 /**

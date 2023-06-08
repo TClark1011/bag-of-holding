@@ -6,19 +6,18 @@ import {
 	ListItem,
 	Text,
 	Checkbox,
-	Button,
-	ButtonGroup,
 	useColorModeValue,
 } from "@chakra-ui/react";
 import {
-	selectEffectivePropertyFilter,
-	selectAllPossibleFilterValuesOnProperty,
+	composeSelectEffectivePropertyFilter,
+	composeSelectAllPossibleFilterValuesOnProperty,
 	useInventoryStore,
 	useInventoryStoreDispatch,
 } from "$sheets/store";
 import { FilterableItemProperty } from "$sheets/types";
 import EntityData from "$sheets/components/EntityData";
 import { A, flow, G } from "@mobily/ts-belt";
+import FilterInterfaceActions from "$sheets/components/FilterInterfaceActions";
 
 interface Props extends Omit<BoxProps, "onChange"> {
 	property: FilterableItemProperty;
@@ -43,9 +42,14 @@ const sortNullToStart = (arr: (string | null)[]) =>
 const FilterInterface: React.FC<Props> = ({ property, heading, ...props }) => {
 	const dispatch = useInventoryStoreDispatch();
 	const uniquePropertyValues = useInventoryStore(
-		flow(selectAllPossibleFilterValuesOnProperty(property), sortNullToStart)
+		flow(
+			composeSelectAllPossibleFilterValuesOnProperty(property),
+			sortNullToStart
+		)
 	);
-	const filter = useInventoryStore(selectEffectivePropertyFilter(property));
+	const filter = useInventoryStore(
+		composeSelectEffectivePropertyFilter(property)
+	);
 
 	const onChange = (value: string | null) => {
 		dispatch({
@@ -54,27 +58,6 @@ const FilterInterface: React.FC<Props> = ({ property, heading, ...props }) => {
 				property,
 				value,
 			},
-		});
-	};
-
-	const onCheckAll = () => {
-		dispatch({
-			type: "ui.reset-filter",
-			payload: property,
-		});
-	};
-
-	const onUncheckAll = () => {
-		dispatch({
-			type: "ui.clear-filter",
-			payload: property,
-		});
-	};
-
-	const onInvert = () => {
-		dispatch({
-			type: "ui.invert-filter",
-			payload: property,
 		});
 	};
 
@@ -93,11 +76,7 @@ const FilterInterface: React.FC<Props> = ({ property, heading, ...props }) => {
 				<Text color={headingColor} fontWeight="bold">
 					{heading}
 				</Text>
-				<ButtonGroup size="xs" isAttached>
-					<Button onClick={onUncheckAll}>Uncheck All</Button>
-					<Button onClick={onCheckAll}>Check All</Button>
-					<Button onClick={onInvert}>Invert</Button>
-				</ButtonGroup>
+				<FilterInterfaceActions property={property} size="xs" />
 			</Flex>
 			<List textAlign="left">
 				{uniquePropertyValues.map((propertyValue) => (

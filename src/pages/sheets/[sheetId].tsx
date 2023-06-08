@@ -27,6 +27,7 @@ import SheetActions from "$sheets/components/SheetActions";
 import CharacterTotals from "$sheets/components/CharacterTotals";
 import useRenderLogging from "$root/hooks/useRenderLogging";
 import { get } from "$fp";
+import MobileFilterDialog from "$sheets/components/Dialogs/MobileFilterDialog";
 
 const getTestId = testIdGeneratorFactory("SheetPage");
 
@@ -102,6 +103,7 @@ const SheetPage: React.FC<SheetPageProps> = ({
 					{/* Dialogs */}
 					<ItemDialog />
 					<FilterDialog />
+					<MobileFilterDialog />
 					<WelcomeDialog />
 					<CharacterDialog />
 					<SheetNameDialog />

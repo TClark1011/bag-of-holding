@@ -1,7 +1,13 @@
 import { SEARCH_BAR_DELAY_MS } from "$root/config";
+import { composeMobileConditionalResponsiveValue } from "$root/hooks";
 import { useDebouncedEffect } from "$root/hooks/debounceHooks";
 import useRenderLogging from "$root/hooks/useRenderLogging";
-import { useInventoryStoreDispatch } from "$sheets/store";
+import {
+	selectAnyFilteringIsBeingDone,
+	selectFilteringIsAvailable,
+	useInventoryStore,
+	useInventoryStoreDispatch,
+} from "$sheets/store";
 import { Button, Input, SimpleGrid, Stack } from "@chakra-ui/react";
 import { FC, useState } from "react";
 
@@ -50,6 +56,10 @@ const SheetActions: FC = () => {
 
 	const dispatch = useInventoryStoreDispatch();
 	const searchInputProps = useSearchInputProps();
+	const filteringIsAvailable = useInventoryStore(selectFilteringIsAvailable);
+	const anyFilteringIsApplied = useInventoryStore(
+		selectAnyFilteringIsBeingDone
+	);
 
 	return (
 		<Stack
@@ -77,9 +87,31 @@ const SheetActions: FC = () => {
 				{...searchInputProps}
 			/>
 			{/* NOTE: Updates may stutter in dev mode but is fine when built */}
-			<SimpleGrid columns={[2, 2, 2, 1]} gap="group">
+			<SimpleGrid
+				columns={composeMobileConditionalResponsiveValue(2, 1)}
+				gap="group"
+			>
+				{/* Filter Options Dialog Button */}
+				<Button
+					width="full"
+					display={composeMobileConditionalResponsiveValue(
+						"inline-flex",
+						"none"
+					)}
+					onClick={() =>
+						dispatch({
+							type: "ui.open-filter-dialog",
+						})
+					}
+					flexGrow={0}
+					isDisabled={!filteringIsAvailable}
+				>
+					Filters
+				</Button>
+
 				{/* Reset Filters Button */}
 				<Button
+					isDisabled={!anyFilteringIsApplied}
 					onClick={() =>
 						dispatch({
 							type: "ui.reset-all-filters",
@@ -87,19 +119,6 @@ const SheetActions: FC = () => {
 					}
 				>
 					Reset Filters
-				</Button>
-				{/* Filter Options Dialog Button */}
-				<Button
-					width="full"
-					display={["inline-flex", "inline-flex", "inline-flex", "none"]}
-					onClick={() =>
-						dispatch({
-							type: "ui.open-filter-dialog",
-						})
-					}
-					flexGrow={0}
-				>
-					Filters
 				</Button>
 			</SimpleGrid>
 		</Stack>

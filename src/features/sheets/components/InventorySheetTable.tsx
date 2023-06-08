@@ -19,7 +19,7 @@ import { testIdGeneratorFactory } from "$tests/utils/testUtils";
 import { ProcessableItemProperty } from "$sheets/types";
 import {
 	selectOverallColumnSums,
-	selectPropertyFilterMenuIsOpen,
+	composeSelectPropertyFilterMenuIsOpen,
 	selectVisibleItems,
 	useInventoryStore,
 	useInventoryStoreDispatch,
@@ -108,7 +108,7 @@ const TableHeader: React.FC<
 	const filterPopoverIsOpen = useInventoryStore(
 		(state) =>
 			matchesSchema(property, filterableItemPropertySchema) &&
-			selectPropertyFilterMenuIsOpen(property)(state)
+			composeSelectPropertyFilterMenuIsOpen(property)(state)
 	);
 	const sortingIcons = determineIconSet(property);
 	const isFilterable = matchesSchema(property, filterableItemPropertySchema);
