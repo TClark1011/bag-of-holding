@@ -152,7 +152,9 @@ const ItemDialog: React.FC = () => {
 						onClose();
 					})}
 				>
-					<ModalHeader>Item Dialog</ModalHeader>
+					<ModalHeader>
+						{isInEditMode ? "Edit Item" : "Create Item"}
+					</ModalHeader>
 					<ModalCloseButton />
 
 					<ModalBody>
@@ -289,7 +291,9 @@ const ItemDialog: React.FC = () => {
 							</Button>
 						)}
 						<Flex gap={2}>
-							<Button variant="ghost">Cancel</Button>
+							<Button variant="ghost" onClick={onClose}>
+								Cancel
+							</Button>
 							<Button
 								type="submit"
 								colorScheme="primary"

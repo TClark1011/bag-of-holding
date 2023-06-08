@@ -1,5 +1,6 @@
 import createSheetFromFlatData from "$backend/createSheetFromFlatData";
 import prisma from "$prisma";
+import { SHEET_REFETCH_INTERVAL_MS } from "$root/config";
 import { FullSheet } from "$sheets/types";
 import { generateRandomInventorySheet } from "$tests/utils/randomGenerators";
 import { test, Page } from "@playwright/test";
@@ -38,7 +39,8 @@ export const testDualClientsWithNewSheet =
 			await use(result);
 		},
 		waitForRefetch: async ({ page }, use) => {
-			await use(() => page.waitForTimeout(3000));
+			// eslint-disable-next-line playwright/no-wait-for-timeout
+			await use(() => page.waitForTimeout(SHEET_REFETCH_INTERVAL_MS));
 		},
 	});
 
