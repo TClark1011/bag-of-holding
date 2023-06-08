@@ -14,6 +14,8 @@ jobs:
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID}}
       - name: install dependencies
         run: yarn ci
+      - name: Install playwright deps
+        run: npx playwright install
       - name: run tests
         env:
           VERCEL_URL: ${{ steps.deploy-vercel.outputs.vercel-deployment }}
