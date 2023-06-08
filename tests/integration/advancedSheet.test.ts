@@ -147,7 +147,7 @@ testDualClientsWithNewSheet(
 		/* #region  First Item */
 		await clientA.locator('[data-testid="add-item-button"]').click();
 		await fillOutItemForm(clientA, firstItem);
-		await clientA.locator("text=Create").click();
+		await clientA.locator("button:text('Create')").click();
 		await performActionOnMultipleClients([clientA, clientB], (client) =>
 			checkItemVisibility(client, firstItem, true)
 		);
@@ -156,7 +156,7 @@ testDualClientsWithNewSheet(
 		/* #region  Second Item */
 		await clientB.locator('[data-testid="add-item-button"]').click();
 		await fillOutItemForm(clientB, secondItem);
-		await clientB.locator("text=Create").click();
+		await clientB.locator("button:text('Create')").click();
 		await performActionOnMultipleClients([clientA, clientB], (client) =>
 			checkItemVisibility(client, firstItem, true)
 		);
@@ -174,7 +174,7 @@ testDualClientsWithNewSheet(
 		/* #region  Third item (give to first character) */
 		await clientA.locator('[data-testid="add-item-button"]').click();
 		await fillOutItemForm(clientA, thirdItem);
-		await clientA.locator("text=Create").click();
+		await clientA.locator("button:text('Create')").click();
 		await performActionOnMultipleClients([clientA], (client) =>
 			checkItemVisibility(client, thirdItem, true)
 		);
@@ -307,7 +307,7 @@ testDualClientsWithNewSheet(
 		/* #region  Create Fourth Item (Give to second character) */
 		await clientA.locator('[data-testid="add-item-button"]').click();
 		await fillOutItemForm(clientA, fourthItem);
-		await clientA.locator("text=Create").click();
+		await clientA.locator("button:text('Create')").click();
 
 		await performActionOnMultipleClients([clientA, clientB], (client) =>
 			checkItemVisibility(client, fourthItem, true)
@@ -409,7 +409,7 @@ testDualClientsWithNewSheet(
 		/* #region  Create Fifth Item, give to fourth character */
 		await clientB.locator("text=Add New Item").click();
 		await fillOutItemForm(clientB, fifthItem);
-		await clientB.locator("text=Create").click();
+		await clientB.locator("button:text('Create')").click();
 		await performActionOnMultipleClients([clientA, clientB], (client) =>
 			checkItemVisibility(client, fifthItem, true)
 		);

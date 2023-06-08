@@ -98,15 +98,29 @@ testDualClientsWithNewSheet(
 testDualClientsWithNewSheet(
 	"Create Character, Give Items",
 	async ({ clientA, clientB }) => {
-		await clientA.click("text=Add Character");
-
+		const nameInputSelector = "input#name";
 		const characterName = shortRandomString();
 
-		const nameInputSelector = "input#name";
-		await clientA.waitForSelector(nameInputSelector);
+		await clientA.click("text=Add Character");
+
+		await clientA
+			.getByRole("dialog", {
+				name: "Create Character",
+			})
+			.waitFor({
+				state: "visible",
+			});
 
 		await clientA.fill(nameInputSelector, characterName);
 		await clientA.click("text=Save");
+
+		await clientA
+			.getByRole("dialog", {
+				name: "Create Character",
+			})
+			.waitFor({
+				state: "hidden",
+			});
 
 		await clientA.waitForSelector(`button:has-text("${characterName}")`);
 		await clientB.waitForSelector(`button:has-text("${characterName}")`);
@@ -115,7 +129,13 @@ testDualClientsWithNewSheet(
 
 		const itemName = shortRandomString();
 
-		await clientA.waitForSelector(nameInputSelector);
+		await clientA
+			.getByRole("dialog", {
+				name: "Create Item",
+			})
+			.waitFor({
+				state: "visible",
+			});
 		await clientA.fill(nameInputSelector, itemName);
 		await (
 			await clientA.$("#carriedByCharacterId")
@@ -123,10 +143,14 @@ testDualClientsWithNewSheet(
 			label: characterName,
 		});
 
-		await clientA.click("text=Create");
-		await clientA.waitForSelector(nameInputSelector, {
-			state: "hidden",
-		});
+		await clientA.click("button:text('Create')");
+		await clientA
+			.getByRole("dialog", {
+				name: "Create Item",
+			})
+			.waitFor({
+				state: "hidden",
+			});
 
 		await clientA.waitForSelector(
 			`tr:has-text("${itemName}"):has-text("${itemName}")`
