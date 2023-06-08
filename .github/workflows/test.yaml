@@ -21,5 +21,3 @@ jobs:
           VERCEL_URL: ${{ steps.deploy-vercel.outputs.preview-url }}
           TESTING_ADMIN_KEY: ${{ secrets.TESTING_ADMIN_KEY}}
         run: yarn test:normal
-      - name: run tests (attempt 2)
-        run: VERCEL_URL=${{ steps.deploy-vercel.outputs.preview-url }} TESTING_ADMIN_KEY=${{ secrets.TESTING_ADMIN_KEY}} yarn test:normal
