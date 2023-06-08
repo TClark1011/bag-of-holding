@@ -17,7 +17,4 @@ jobs:
       - name: Install playwright deps
         run: npx playwright install
       - name: run tests
-        env:
-          VERCEL_URL: ${{ steps.deploy-vercel.outputs.vercel-deployment }}
-          TESTING_ADMIN_KEY: ${{ secrets.TESTING_ADMIN_KEY}}
-        run: yarn test
+        run: VERCEL_URL=${{ steps.deploy-vercel.outputs.vercel-deployment }} TESTING_ADMIN_KEY=${{ secrets.TESTING_ADMIN_KEY}} yarn test
