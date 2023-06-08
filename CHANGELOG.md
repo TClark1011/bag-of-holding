@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.7.4](https://github.com/TClark1011/bag-of-holding/compare/v1.7.3...v1.7.4) (2023-06-08)
+
+
+### Bug Fixes
+
+* **frontend:** 🐛 fixed item dialog cancel and title ([c2cbcfd](https://github.com/TClark1011/bag-of-holding/commit/c2cbcfdf6a69d6867b4cd2a033914632662d633f))
+
 ### [1.7.3](https://github.com/TClark1011/bag-of-holding/compare/v1.7.2...v1.7.3) (2023-06-07)
 
 
