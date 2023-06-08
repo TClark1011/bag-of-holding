@@ -8,6 +8,13 @@ const PORT = 3001;
 
 const vercelPreviewUrl = process.env.VERCEL_URL;
 
+const baseURL = isCI ? vercelPreviewUrl : `http://localhost:${PORT}`;
+
+console.log(
+	"Playwright will run with the following base url: ",
+	vercelPreviewUrl
+);
+
 const config = defineConfig({
 	testDir: "./tests/integration",
 	outputDir: "./playwrightOutput",
@@ -24,7 +31,7 @@ const config = defineConfig({
 		  },
 	use: {
 		actionTimeout: 10 * 1000,
-		baseURL: isCI ? vercelPreviewUrl : `http://localhost:${PORT}`,
+		baseURL,
 	},
 	retries: 3,
 	reporter: isCI ? "github" : "list",
