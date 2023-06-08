@@ -1,9 +1,10 @@
 import createSheetFromFlatData from "$backend/createSheetFromFlatData";
 import prisma from "$prisma";
-import { SHEET_REFETCH_INTERVAL_MS } from "$root/config";
-import { FullSheet } from "$sheets/types";
+import { SHEET_REFETCH_INTERVAL_MS, TESTING_ADMIN_KEY } from "$root/config";
+import { FullSheet, fullSheetSchema } from "$sheets/types";
 import { generateRandomInventorySheet } from "$tests/utils/randomGenerators";
 import { test, Page } from "@playwright/test";
+import SuperJSON from "superjson";
 
 type ClientName = `client${"A" | "B"}`;
 
@@ -11,23 +12,40 @@ type ClientFields = Record<ClientName, Page> & {
 	waitForRefetch: () => Promise<void>;
 };
 
-const testNewlyCreatedSheet = test.extend({
-	page: async ({ page }, use) => {
-		const { name } = generateRandomInventorySheet();
+const getSheetIdFromUrl = (url: string) => {
+	const urlParts = url.split("/");
+	const sheetId = urlParts[urlParts.length - 1];
+	return sheetId;
+};
 
-		const createdSheet = await prisma.sheet.create({
-			data: {
-				name,
-			},
-		});
+export const testSingleClientWithNewSheet = test
+	.extend({
+		page: async ({ page }, use) => {
+			const { name } = generateRandomInventorySheet();
 
-		await page.goto(`sheets/${createdSheet.id}`);
-		await use(page);
-	},
-});
+			await page.goto("/");
+			await page.click("button:text('Get Started')");
+			await page.waitForURL("/sheets/*");
+			await page.click("button:text('Close')");
+			await page.getByRole("textbox", { name: "name" }).fill(name);
+			await page.click("button:text('Save')");
+			// const createdSheet = await prisma.sheet.create({
+			// 	data: {
+			// 		name,
+			// 	},
+			// });
+
+			await use(page);
+		},
+	})
+	.extend<{ sheetId: string }>({
+		sheetId: async ({ page }, use) => {
+			await use(getSheetIdFromUrl(page.url()));
+		},
+	});
 
 export const testDualClientsWithNewSheet =
-	testNewlyCreatedSheet.extend<ClientFields>({
+	testSingleClientWithNewSheet.extend<ClientFields>({
 		clientA: async ({ page, context }, use) => {
 			const result = await context.newPage();
 			await result.goto(page.url());
@@ -47,17 +65,41 @@ export const testDualClientsWithNewSheet =
 type ExistingSheetFixtureProps = {
 	sheet: FullSheet;
 };
-export const testWithExistingSheet = test.extend<ExistingSheetFixtureProps>({
-	// eslint-disable-next-line no-empty-pattern
-	sheet: async ({}, use) => {
-		const sheet = generateRandomInventorySheet();
-		const createdSheet = await createSheetFromFlatData(sheet);
+export const testWithExistingSheet = test
+	.extend<ExistingSheetFixtureProps>({
+		// eslint-disable-next-line no-empty-pattern
+		sheet: async ({ context, baseURL }, use) => {
+			const page = await context.newPage();
+			await page.goto("/");
+			console.log(baseURL);
+			const testSheetResponse = await page.evaluate(
+				([baseUrl, key]) =>
+					fetch(`${baseUrl}/api/get-test-sheet`, {
+						headers: {
+							Authorization: `Bearer: ${key}`,
+						},
+					}).then(
+						(res) =>
+							res.json() as Promise<{
+								superJsonStringifiedSheet: string;
+							}>
+					),
+				[baseURL, TESTING_ADMIN_KEY]
+			);
 
-		await use(createdSheet);
-	},
-	page: async ({ page, sheet }, use) => {
-		await page.goto(`/sheets/${sheet.id}`);
+			const { superJsonStringifiedSheet } = testSheetResponse;
 
-		await use(page);
-	},
-});
+			const sheet = SuperJSON.parse(superJsonStringifiedSheet);
+
+			await use(fullSheetSchema.parse(sheet) as FullSheet);
+
+			await page.close();
+		},
+	})
+	.extend({
+		page: async ({ page, sheet }, use) => {
+			await page.goto(`/sheets/${sheet.id}`);
+
+			await use(page);
+		},
+	});

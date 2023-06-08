@@ -135,7 +135,12 @@ testDualClientsWithNewSheet(
 		const newSheetName = "Test Sheet";
 
 		/* #region  Change Sheet Name */
-		await clientA.click("h2 + button");
+		// await clientA.click("h2 + button");
+		await clientA
+			.getByRole("button", {
+				name: "edit sheet name",
+			})
+			.click();
 		await clientA.locator('input[name="name"]').fill(newSheetName);
 		await clientA.locator("text=Save").click();
 

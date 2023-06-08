@@ -10,13 +10,17 @@ test("Links", async ({ page, baseURL }) => {
 	await page.goto("/");
 
 	await page.click("#contact-link");
-	expect(trimQueryFromUrl(page.url())).toBe(`${baseURL}/contact`);
+
+	await page.waitForURL(`${baseURL}/contact`);
+	// expect(trimQueryFromUrl(page.url())).toBe(`${baseURL}/contact`);
 
 	await page.click("#info-link");
-	expect(trimQueryFromUrl(page.url())).toBe(`${baseURL}/info`);
+	await page.waitForURL(`${baseURL}/info`);
+	// expect(trimQueryFromUrl(page.url())).toBe(`${baseURL}/info`);
 
 	await page.click("#home-link");
-	expect(trimQueryFromUrl(page.url())).toBe(`${baseURL}/`);
+	await page.waitForURL(`${baseURL}`);
+	// expect(trimQueryFromUrl(page.url())).toBe(`${baseURL}/`);
 
 	// External Links
 

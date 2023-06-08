@@ -1,4 +1,4 @@
-import { testWithExistingSheet } from "$tests/fixtures/playwrightFixtures";
+import { testSingleClientWithNewSheet } from "$tests/fixtures/playwrightFixtures";
 import { expect, test } from "@playwright/test";
 
 test.describe("Maintenance Mode", () => {
@@ -14,10 +14,10 @@ test.describe("Maintenance Mode", () => {
 		await expect(await page.locator("button:text('Get Started')")).toBeHidden();
 	});
 
-	testWithExistingSheet(
+	testSingleClientWithNewSheet(
 		"Sheet Page Redirects to Home",
-		async ({ sheet, baseURL, page }) => {
-			await page.goto(`/sheets/${sheet.id}`);
+		async ({ sheetId, baseURL, page }) => {
+			await page.goto(`/sheets/${sheetId}`);
 
 			expect(await page.url()).not.toContain("/sheets/");
 

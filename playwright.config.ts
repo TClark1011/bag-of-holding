@@ -6,21 +6,25 @@ loadEnvConfig(process.cwd());
 
 const PORT = 3001;
 
+const vercelPreviewUrl = process.env.VERCEL_URL;
+
 const config = defineConfig({
 	testDir: "./tests/integration",
 	outputDir: "./playwrightOutput",
-	webServer: {
-		command: "yarn start:dev",
-		port: PORT,
-		reuseExistingServer: !isCI,
-		timeout: 120 * 1000,
-		env: {
-			PORT: `${PORT}`,
-		},
-	},
+	webServer: isCI
+		? undefined
+		: {
+				command: "yarn start:dev",
+				port: PORT,
+				reuseExistingServer: !isCI,
+				timeout: 120 * 1000,
+				env: {
+					PORT: `${PORT}`,
+				},
+		  },
 	use: {
 		actionTimeout: 10 * 1000,
-		baseURL: `http://localhost:${PORT}`,
+		baseURL: isCI ? vercelPreviewUrl : `http://localhost:${PORT}`,
 	},
 	retries: 3,
 	reporter: isCI ? "github" : "list",

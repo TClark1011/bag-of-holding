@@ -32,3 +32,5 @@ export const MONTHS_INACTIVE_OLD_SHEET = Number(
 export const IN_PREVIEW = process.env.NEXT_PUBLIC_IN_PREVIEW === "true";
 
 export const IN_DEV = process.env.NODE_ENV === "development";
+
+export const TESTING_ADMIN_KEY = process.env.TESTING_ADMIN_KEY;

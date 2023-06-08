@@ -5,12 +5,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: amondnet/vercel-action@v20 #deploy
+      - uses: amondnet/vercel-action@v20
         id: deploy-vercel
         with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
-          github-token: ${{ secrets.VERCEL_GITHUB_TOKEN }} #Optional
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID}} #Required
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID}} #Required
-      - name: check deployment output
-        run: echo "${{ steps.deploy-vercel.outputs.preview-url }}"
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          github-token: ${{ secrets.VERCEL_GITHUB_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID}}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID}}
+      - name: install dependencies
+        run: yarn ci
+      - name: run tests
+        env:
+          VERCEL_URL: ${{ steps.deploy-vercel.outputs.vercel-deployment }}
+          TESTING_ADMIN_KEY: ${{ secrets.TESTING_ADMIN_KEY}}
+        run: yarn test
