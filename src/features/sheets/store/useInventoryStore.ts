@@ -34,6 +34,7 @@ import {
 	LoopedProgression,
 	updateLoopedProgressionToPositionOfValue,
 } from "$root/utils/loopedProgression";
+import { disappearingHashBooleanAtom } from "$jotai-history-toggle";
 
 export type ItemDialogStateProps =
 	| {
@@ -77,10 +78,12 @@ export type InventoryStoreProps = {
 		openFilterMenu: null | FilterableItemProperty;
 		itemDialog: ItemDialogStateProps | null;
 		searchBarValue: string;
-		filterDialogIsOpen: boolean;
 		welcomeDialogIsOpen: boolean;
 	};
 };
+
+export const filterDialogIsOpenAtom =
+	disappearingHashBooleanAtom("filter-open");
 
 const defaultSorting: InventoryStoreProps["ui"]["sorting"] = {
 	property: "name",
@@ -108,7 +111,6 @@ const initialInventoryStoreState: InventoryStoreProps = {
 		openFilterMenu: null,
 		itemDialog: null,
 		searchBarValue: "",
-		filterDialogIsOpen: false,
 		welcomeDialogIsOpen: false,
 	},
 };
@@ -375,12 +377,6 @@ const inventoryStoreReducer: Reducer<
 				break;
 			case "ui.set-search-value":
 				draftState.ui.searchBarValue = action.payload;
-				break;
-			case "ui.open-filter-dialog":
-				draftState.ui.filterDialogIsOpen = true;
-				break;
-			case "ui.close-filter-dialog":
-				draftState.ui.filterDialogIsOpen = false;
 				break;
 			case "ui.reset-all-filters":
 				draftState.ui.filters = {

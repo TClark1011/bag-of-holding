@@ -35,8 +35,6 @@ export type InventoryStoreAction =
 	  >
 	// UI Actions...
 	| PayloadAction<"ui.set-search-value", string>
-	| Action<"ui.open-filter-dialog">
-	| Action<"ui.close-filter-dialog">
 	| Action<"ui.reset-all-filters">
 	| Action<"ui.open-welcome-dialog">
 	| Action<"ui.close-welcome-dialog">

@@ -8,7 +8,10 @@ export const itemSchema = z.object({
 	weight: z.number().min(0).nullish(),
 	quantity: z.number().min(0),
 	referenceLink: z.string().nullish(),
-	category: z.string().nullish(),
+	category: z
+		.string()
+		.transform((val) => val?.trim() || null)
+		.nullish(),
 	value: z.number().min(0).nullish(),
 	carriedByCharacterId: z.string().nullish(),
 	sheetId: z.string(),
