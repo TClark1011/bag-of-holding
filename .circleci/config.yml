@@ -22,7 +22,13 @@ jobs:
       - checkout
       - node/install-packages:
           pkg-manager: yarn
+      - restore_cache:
+          key: playwright-{{ checksum "yarn.lock" }}
       - run: npx playwright install --with-deps
+      - save_cache:
+          key: playwright-{{ checksum "yarn.lock" }}
+          paths:
+            - ~/.cache/ms-playwright
       - run:
           name: Wait for db
           command: |
@@ -34,13 +40,10 @@ jobs:
             echo Failed waiting for Postgres && exit 1
       - run:
           name: Apply database migrations
-          command: yarn prisma migrate dev --skip-generate
+          command: yarn prisma migrate dev --skip-generate/4
       - run:
           name: Run test
-          command: SHARD="$((${CIRCLE_NODE_INDEX}+1))"; yarn test -- --shard=${SHARD}/${CIRCLE_NODE_TOTAL}
-      # - run:
-      #     name: Run test
-      #     command: PLAYWRIGHT_JUNIT_OUTPUT_NAME=results.xml yarn test
+          command: SHARD="$((${CIRCLE_NODE_INDEX}+1))"; yarn test:normal --shard=${SHARD}/${CIRCLE_NODE_TOTAL} && yarn test:maintenance-mode --shard=${SHARD}/${CIRCLE_NODE_TOTAL}
       - store_test_results:
           path: results.xml
       - store_artifacts:
