@@ -58,3 +58,10 @@ export const undefinedFieldsToNull = <T extends Record<string, any>>(obj: T) =>
  */
 export const nullFieldsToUndefined = <T extends Record<string, any>>(obj: T) =>
 	swapValueTypes(obj, G.isNull, () => undefined);
+
+/**
+ * Takes a string, and returns null if the string is a "dud"
+ * string. A string is considered a "dud" if it is either
+ * empty or only contains whitespace.
+ */
+export const coerceDudStringToNull = (str: string) => str.trim() || null;

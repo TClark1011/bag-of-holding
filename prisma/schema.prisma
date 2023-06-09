@@ -45,7 +45,9 @@ model Item {
   weight        Float? /// @zod.min(0)
   quantity      Float   @default(1) /// @zod.min(0)
   referenceLink String? // Usually a link to the rules for the item
-  category      String?
+  category      String? /// @zod.transform(val => val?.trim() || null)
+  // transformation on category means an empty string, or a string
+  // containing only whitespace, will be transformed to null
   value         Float? /// @zod.min(0)
 
   carriedByCharacter   Character? @relation(fields: [carriedByCharacterId], references: [id], onDelete: SetNull)

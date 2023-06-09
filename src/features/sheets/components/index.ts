@@ -3,6 +3,7 @@ export { default as InventorySheetTable } from "./InventorySheetTable";
 export { default as CharacterTotalsTable } from "./CharacterTotalsTable";
 export { default as TableFilter } from "./TableFilter";
 export { default as PartyMemberData } from "./PartyMemberData";
+export { default as BigFilterInterface } from "./BigFilterInterface";
 
 export * from "./PartyMemberData";
 export * from "./InventorySheetTable";

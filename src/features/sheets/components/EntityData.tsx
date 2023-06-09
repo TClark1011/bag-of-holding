@@ -1,5 +1,5 @@
 import { FullSheetEntityProperty, GetEntityByProperty } from "$sheets/types";
-import { selectEntityWithId, useInventoryStore } from "$sheets/store";
+import { composeSelectEntityWithId, useInventoryStore } from "$sheets/store";
 import { Box, BoxProps } from "@chakra-ui/react";
 import { flow } from "@mobily/ts-belt";
 import { FC, useMemo } from "react";
@@ -14,13 +14,8 @@ export type EntityDataProps<EntityName extends FullSheetEntityProperty> =
 	};
 
 /**
- * Display data from an entity (either an Item or Character). Takes
- * the id of the target entity and looks it up in the store.
- *
- * @param props The props
- * @param props.entityType The type of entity to display
- * @param props.selector Select the data of the entity to display
- * @param props.entityId The id of the entity to display data from
+ * Display the data from an entity in the inventory, eg;
+ * an Item or a Character.
  */
 const EntityData = <EntityName extends FullSheetEntityProperty>({
 	entityType,
@@ -29,7 +24,7 @@ const EntityData = <EntityName extends FullSheetEntityProperty>({
 	...boxProps
 }: EntityDataProps<EntityName>) => {
 	const memoisedSelector = useMemo(
-		() => flow(selectEntityWithId(entityId, entityType), selector),
+		() => flow(composeSelectEntityWithId(entityId, entityType), selector),
 		[entityId, selector]
 	);
 	const data = useInventoryStore(memoisedSelector);

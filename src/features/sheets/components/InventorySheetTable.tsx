@@ -19,7 +19,7 @@ import { testIdGeneratorFactory } from "$tests/utils/testUtils";
 import { ProcessableItemProperty } from "$sheets/types";
 import {
 	selectOverallColumnSums,
-	selectPropertyFilterMenuIsOpen,
+	composeSelectPropertyFilterMenuIsOpen,
 	selectVisibleItems,
 	useInventoryStore,
 	useInventoryStoreDispatch,
@@ -41,6 +41,7 @@ import {
 	sortableItemPropertySchema,
 } from "$sheets/types";
 import { itemPropertyLabels } from "$sheets/constants";
+import { useBreakpointVisibleColumns } from "$sheets/hooks";
 
 const getTestId = testIdGeneratorFactory("InventoryTable");
 
@@ -53,10 +54,6 @@ export const inventoryTableTestIds = {
 	carriedByColumnHeader: getTestId("CarriedByColumnHeader"),
 	categoryColumnHeader: getTestId("CategoryColumnHeader"),
 };
-
-const col4Display = ["none", "table-cell"];
-const col5Display = ["none", "none", "table-cell"];
-const col6Display = ["none", "none", "none", "table-cell"];
 
 export interface InventorySheetTableProps extends TableProps {
 	onRowClick: (item?: Item) => void;
@@ -108,7 +105,7 @@ const TableHeader: React.FC<
 	const filterPopoverIsOpen = useInventoryStore(
 		(state) =>
 			matchesSchema(property, filterableItemPropertySchema) &&
-			selectPropertyFilterMenuIsOpen(property)(state)
+			composeSelectPropertyFilterMenuIsOpen(property)(state)
 	);
 	const sortingIcons = determineIconSet(property);
 	const isFilterable = matchesSchema(property, filterableItemPropertySchema);
@@ -181,6 +178,8 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 	const columnSums = useInventoryStore(selectOverallColumnSums);
 	const processedItems = useInventoryStore(selectVisibleItems);
 
+	const visibleColumns = useBreakpointVisibleColumns();
+
 	return (
 		<Table
 			colorScheme="gray"
@@ -218,34 +217,37 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 							Weight
 						</Tooltip>
 					</TableHeader>
-					<TableHeader
-						property="value"
-						display={col4Display}
-						data-testid={inventoryTableTestIds.valueColumnHeader}
-					>
-						<Tooltip
-							label="The value shown is the total value of all the instances of an item."
-							placement="top"
-							openDelay={500}
-							hasArrow
+					{visibleColumns >= 4 && (
+						<TableHeader
+							property="value"
+							data-testid={inventoryTableTestIds.valueColumnHeader}
 						>
-							Value
-						</Tooltip>
-					</TableHeader>
-					<TableHeader
-						property="carriedByCharacterId"
-						display={col5Display}
-						data-testid={inventoryTableTestIds.carriedByColumnHeader}
-					>
-						Carried By
-					</TableHeader>
-					<TableHeader
-						property="category"
-						display={col6Display}
-						data-testid={inventoryTableTestIds.categoryColumnHeader}
-					>
-						Category
-					</TableHeader>
+							<Tooltip
+								label="The value shown is the total value of all the instances of an item."
+								placement="top"
+								openDelay={500}
+								hasArrow
+							>
+								Value
+							</Tooltip>
+						</TableHeader>
+					)}
+					{visibleColumns >= 5 && (
+						<TableHeader
+							property="carriedByCharacterId"
+							data-testid={inventoryTableTestIds.carriedByColumnHeader}
+						>
+							Carried By
+						</TableHeader>
+					)}
+					{visibleColumns >= 6 && (
+						<TableHeader
+							property="category"
+							data-testid={inventoryTableTestIds.categoryColumnHeader}
+						>
+							Category
+						</TableHeader>
+					)}
 				</Tr>
 			</Thead>
 			<Tbody>
@@ -284,20 +286,24 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 							{getItemTotalWeight(item)}
 						</TableCell>
 						{/* Item Total Value */}
-						<TableCell data-column="value" display={col4Display}>
-							{getItemTotalValue(item)}
-						</TableCell>
+						{visibleColumns >= 4 && (
+							<TableCell data-column="value">
+								{getItemTotalValue(item)}
+							</TableCell>
+						)}
 						{/* Item "carriedByCharacterId" */}
-						<TableCell data-column="carriedByCharacterId" display={col5Display}>
-							<PartyMemberData
-								memberId={item.carriedByCharacterId ?? ""}
-								property="name"
-							/>
-						</TableCell>
+						{visibleColumns >= 5 && (
+							<TableCell data-column="carriedByCharacterId">
+								<PartyMemberData
+									memberId={item.carriedByCharacterId ?? ""}
+									property="name"
+								/>
+							</TableCell>
+						)}
 						{/* Item Category */}
-						<TableCell data-column="category" display={col6Display}>
-							{item.category}
-						</TableCell>
+						{visibleColumns >= 6 && (
+							<TableCell data-column="category">{item.category}</TableCell>
+						)}
 					</Tr>
 				))}
 				<Tr>
@@ -309,12 +315,14 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 						{/* Sum of item Weights */}
 						{columnSums.weight}
 					</TableCell>
-					<TableCell display={col4Display}>
-						{/* Sum of item values */}
-						{columnSums.value}
-					</TableCell>
-					<TableCell display={col5Display} />
-					<TableCell display={col6Display} />
+					{visibleColumns >= 4 && (
+						<TableCell>
+							{/* Sum of item values */}
+							{columnSums.value}
+						</TableCell>
+					)}
+					{visibleColumns >= 5 && <TableCell />}
+					{visibleColumns >= 6 && <TableCell />}
 				</Tr>
 			</Tbody>
 		</Table>

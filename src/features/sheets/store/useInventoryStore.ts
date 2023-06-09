@@ -1,4 +1,3 @@
-/* eslint-disable no-case-declarations */
 import {
 	arrayDiff,
 	mustBeNever,
@@ -24,8 +23,8 @@ import {
 	SortableItemProperty,
 } from "$sheets/types";
 import {
-	selectEffectivePropertyFilter,
-	selectAllPossibleFilterValuesOnProperty,
+	composeSelectEffectivePropertyFilter,
+	composeSelectAllPossibleFilterValuesOnProperty,
 } from "$sheets/store/inventorySelectors";
 import { SortingDirection } from "$root/types";
 import {
@@ -67,7 +66,6 @@ export type FiltersState = Record<
 
 export type InventoryStoreProps = {
 	sheet: FullSheet;
-	actionIds: string[];
 	ui: {
 		characterDialog: CharacterDialogStateProps;
 		sheetNameDialogIsOpen: boolean;
@@ -97,7 +95,6 @@ const initialInventoryStoreState: InventoryStoreProps = {
 		name: "",
 		updatedAt: new Date(),
 	},
-	actionIds: [],
 	ui: {
 		characterDialog: {
 			mode: "closed",
@@ -253,17 +250,57 @@ const inventoryStoreReducer: Reducer<
 				draftState.ui.sheetNameDialogIsOpen = false;
 				break;
 			case "ui.toggle-filter":
-				draftState.ui.filters[action.payload.property] = toggleArrayItem(
-					selectEffectivePropertyFilter(action.payload.property)(draftState),
-					action.payload.value
-				);
+				(() => {
+					const currentEffectivePropertyFilter =
+						composeSelectEffectivePropertyFilter(action.payload.property)(
+							draftState
+						);
+					const newFilteringState = toggleArrayItem(
+						currentEffectivePropertyFilter,
+						action.payload.value
+					);
+
+					const allPossibleFilterValuesForProperty =
+						composeSelectAllPossibleFilterValuesOnProperty(
+							action.payload.property
+						)(draftState);
+
+					const newSortingStateMatchesAllPossibleValues =
+						newFilteringState.length ===
+						allPossibleFilterValuesForProperty.length;
+
+					if (newSortingStateMatchesAllPossibleValues) {
+						draftState.ui.filters[action.payload.property] = null;
+					} else {
+						draftState.ui.filters[action.payload.property] = newFilteringState;
+					}
+				})();
 				break;
 			case "ui.invert-filter":
-				draftState.ui.filters[action.payload] = arrayDiff(
-					draftState.ui.filters[action.payload] ??
-						selectAllPossibleFilterValuesOnProperty(action.payload)(draftState),
-					selectAllPossibleFilterValuesOnProperty(action.payload)(draftState)
-				);
+				(() => {
+					const allPossibleFilterValuesForProperty =
+						composeSelectAllPossibleFilterValuesOnProperty(action.payload)(
+							draftState
+						);
+
+					const currentEffectivePropertyFilter =
+						draftState.ui.filters[action.payload] ??
+						allPossibleFilterValuesForProperty;
+
+					const invertedFilter = arrayDiff(
+						allPossibleFilterValuesForProperty,
+						currentEffectivePropertyFilter
+					);
+
+					const newSortingStateMatchesAllPossibleValues =
+						invertedFilter.length === allPossibleFilterValuesForProperty.length;
+
+					if (newSortingStateMatchesAllPossibleValues) {
+						draftState.ui.filters[action.payload] = null;
+					} else {
+						draftState.ui.filters[action.payload] = invertedFilter;
+					}
+				})();
 				break;
 			case "ui.clear-filter":
 				draftState.ui.filters[action.payload] = [];
@@ -272,46 +309,48 @@ const inventoryStoreReducer: Reducer<
 				draftState.ui.filters[action.payload] = null;
 				break;
 			case "ui.toggle-sort":
-				const propertyTargetedForSorting = action.payload;
+				(() => {
+					const propertyTargetedForSorting = action.payload;
 
-				const targetedPropertyIsNumeric = isNumericItemProperty(
-					propertyTargetedForSorting
-				);
+					const targetedPropertyIsNumeric = isNumericItemProperty(
+						propertyTargetedForSorting
+					);
 
-				const sortingDirectionProgression: LoopedProgression<SortingDirection | null> =
-					targetedPropertyIsNumeric
-						? numericSortingDirectionProgression
-						: textSortingDirectionProgression;
+					const sortingDirectionProgression: LoopedProgression<SortingDirection | null> =
+						targetedPropertyIsNumeric
+							? numericSortingDirectionProgression
+							: textSortingDirectionProgression;
 
-				const targetPropertyWasAlreadyBeingSortedBy =
-					draftState.ui.sorting?.property === propertyTargetedForSorting;
+					const targetPropertyWasAlreadyBeingSortedBy =
+						draftState.ui.sorting?.property === propertyTargetedForSorting;
 
-				const currentSortingValueForTargetProperty: SortingDirection | null =
-					targetPropertyWasAlreadyBeingSortedBy
-						? draftState.ui.sorting?.direction ?? null
-						: null;
+					const currentSortingValueForTargetProperty: SortingDirection | null =
+						targetPropertyWasAlreadyBeingSortedBy
+							? draftState.ui.sorting?.direction ?? null
+							: null;
 
-				const newSortingDirection = pipe(
-					sortingDirectionProgression,
-					(p) =>
-						updateLoopedProgressionToPositionOfValue(
-							p,
-							currentSortingValueForTargetProperty
-						),
-					goNextOnLoopedProgression,
-					getLoopedProgressionValue
-				);
+					const newSortingDirection = pipe(
+						sortingDirectionProgression,
+						(p) =>
+							updateLoopedProgressionToPositionOfValue(
+								p,
+								currentSortingValueForTargetProperty
+							),
+						goNextOnLoopedProgression,
+						getLoopedProgressionValue
+					);
 
-				if (newSortingDirection === null) {
-					draftState.ui.sorting = defaultSorting;
-					// We never want to have no sorting, so we set it to the default
-					// (ascending by name) rather than go to null
-				} else {
-					draftState.ui.sorting = {
-						direction: newSortingDirection,
-						property: action.payload,
-					};
-				}
+					if (newSortingDirection === null) {
+						draftState.ui.sorting = defaultSorting;
+						// We never want to have no sorting, so we set it to the default
+						// (ascending by name) rather than go to null
+					} else {
+						draftState.ui.sorting = {
+							direction: newSortingDirection,
+							property: action.payload,
+						};
+					}
+				})();
 
 				break;
 			case "ui.open-filter-menu":

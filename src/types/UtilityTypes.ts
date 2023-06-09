@@ -34,3 +34,7 @@ export type NarrowingTypeGuard<BaseType, SubType extends BaseType> = (
 ) => input is SubType;
 
 export type Fn<Params extends any[], Return> = (...args: Params) => Return;
+
+export type PropertyGetters<T> = {
+	[Key in keyof T]: (a: T) => T[Key];
+};

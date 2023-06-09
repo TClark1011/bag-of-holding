@@ -7,55 +7,51 @@ import {
 	ModalOverlay,
 	Modal,
 } from "@chakra-ui/react";
-import { FilterableItemProperty } from "$sheets/types";
-import { FilterInterface } from "$sheets/components";
+import { BigFilterInterface } from "$sheets/components";
 import { useInventoryStoreDispatch, useInventoryStore } from "$sheets/store";
-import { D } from "@mobily/ts-belt";
 import useRenderLogging from "$root/hooks/useRenderLogging";
+import { useIsMobile } from "$root/hooks";
 
 const useFilterDialogModalProps = () => {
 	const dispatch = useInventoryStoreDispatch();
-	const isOpen = useInventoryStore((s) => s.ui.filterDialogIsOpen);
+	const isMobile = useIsMobile();
+	const filterDialogIsOpen = useInventoryStore((s) => s.ui.filterDialogIsOpen);
 	const onClose = () => {
 		dispatch({
 			type: "ui.close-filter-dialog",
 		});
 	};
 
-	return { isOpen, onClose };
+	return { isOpen: filterDialogIsOpen && !isMobile, onClose };
 };
 
 /**
- * Dialog for filtering the table on mobile devices
+ * Dialog for filtering the table on viewports too narrow to view
+ * the filterable columns, but not so narrow to be considered mobile.
  *
- * @returns Component stuff
+ * For mobile devices we have a separate "MobileFilterDialog"
+ * component.
  */
 const FilterDialog: React.FC = () => {
 	useRenderLogging("FilterDialog");
+
 	const modalProps = useFilterDialogModalProps();
-	const filters = useInventoryStore((s) => s.ui.filters);
 	return (
 		<Modal {...modalProps}>
 			<ModalOverlay />
 			<ModalContent>
 				<ModalBody>
-					<VStack spacing="break" width="full" display="block">
-						{D.toPairs(filters).map(([property, filter], index) => (
-							<FilterInterface
-								heading={
-									property === "carriedByCharacterId"
-										? "Carried By"
-										: "Category"
-								}
-								property={property as FilterableItemProperty}
-								/**
-								 * Type casting is guaranteed to be safe here, its only required
-								 * due to limitation with auto type recognition
-								 */
-								filter={filter ?? []}
-								key={index}
-							/>
-						))}
+					<VStack spacing="group" width="full">
+						<BigFilterInterface
+							property="carriedByCharacterId"
+							heading="Carried By"
+							hideIfEmpty
+						/>
+						<BigFilterInterface
+							property="category"
+							heading="Category"
+							hideIfEmpty
+						/>
 					</VStack>
 				</ModalBody>
 				<ModalFooter>
