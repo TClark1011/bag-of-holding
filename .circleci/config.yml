@@ -1,8 +1,8 @@
+version: 2.1
 orbs:
   node: circleci/node@5.0.2
 jobs:
   test: # this can be any name you choose
-    executor: node/default # use the default executor defined within the orb
     docker:
       - image: cimg/node:18.16.0
     steps:
@@ -18,4 +18,5 @@ jobs:
           name: Run tests
       - persist_to_workspace: # cache stuff
           root: ~/project
-          paths: .
+          paths:
+            - .
