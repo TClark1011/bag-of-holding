@@ -55,7 +55,7 @@ test.describe("Item Dialog Cancel", () => {
 
 		await page
 			.getByRole("dialog", {
-				name: "Create Item",
+				name: "Edit Item",
 			})
 			.waitFor({
 				state: "visible",
@@ -65,7 +65,7 @@ test.describe("Item Dialog Cancel", () => {
 
 		await page
 			.getByRole("dialog", {
-				name: "Create Item",
+				name: "Edit Item Item",
 			})
 			.waitFor({
 				state: "hidden",

@@ -163,9 +163,12 @@ export const fillSearchBar = async (client: Page, searchTerm: string) => {
 };
 
 export const clearSearchbar = async (client: Page) => {
+	const currentSearchValue = await client.inputValue(searchBar);
+
 	await client.focus(searchBar);
-	await client.keyboard.press("Meta+A");
-	await client.keyboard.press("Backspace");
+	for (let i = 0; i < currentSearchValue.length; i++) {
+		await client.keyboard.press("Backspace");
+	}
 	await wait(SEARCH_BAR_DELAY_MS + SEARCH_BAR_INTERACTION_BUFFER_MS);
 };
 

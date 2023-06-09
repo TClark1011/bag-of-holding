@@ -37,8 +37,6 @@ yarn-error.log*
 # type-check result output file
 tsconfig.tsbuildinfo
 
-prisma/schemas
-
 # auto-generated service worker files
 public/sw.js*
 public/workbox-*.js*
