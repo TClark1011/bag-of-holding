@@ -27,6 +27,18 @@ jobs:
       #     name: Run test
       #     command: SHARD="$((${CIRCLE_NODE_INDEX}+1))"; yarn test -- --shard=${SHARD}/${CIRCLE_NODE_TOTAL}
       - run:
+          name: Wait for db
+          command: |
+            for i in {1..60}; do
+              nc -z localhost 5432 && echo Success && exit 0
+              echo -n .
+              sleep 1
+            done
+            echo Failed waiting for Postgres && exit 1
+      - run:
+          name: Apply database migrations
+          command: yarn prisma migrate dev --skip-generate
+      - run:
           name: Run test
           command: yarn test:normal sheet
       # - store_test_results:
