@@ -17,6 +17,7 @@ jobs:
       #   auth:
       #     username: user
       #     password: password
+    parallelism: 4
     steps:
       - checkout
       - node/install-packages:
@@ -24,7 +25,7 @@ jobs:
       - run: npx playwright install --with-deps
       - run:
           name: Run test
-          command: PLAYWRIGHT_JUNIT_OUTPUT_NAME=results.xml yarn test --reporter=junit
+          command: SHARD="$((${CIRCLE_NODE_INDEX}+1))"; yarn test -- --shard=${SHARD}/${CIRCLE_NODE_TOTAL}
       - store_test_results:
           path: results.xml
       - persist_to_workspace: # cache stuff
