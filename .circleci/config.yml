@@ -11,10 +11,10 @@ jobs:
           pkg-manager: yarn
           override-ci-command: yarn ci
       - run:
-          command: npx playwright install-deps
+          command: PLAYWRIGHT_BROWSERS_PATH=/usr/lib/playwright yarn add playwright-chromium@1.11.1
           name: Install playwright deps
       - run:
-          command: yarn test
+          command: PLAYWRIGHT_BROWSERS_PATH=/usr/lib/playwright yarn test
           name: Run tests
       - persist_to_workspace: # cache stuff
           root: ~/project
