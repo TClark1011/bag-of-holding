@@ -11,7 +11,7 @@ type ClientFields = Record<ClientName, Page> & {
 	waitForRefetch: () => Promise<void>;
 };
 
-const testNewlyCreatedSheet = test.extend({
+export const testWithNewlyCreatedSheet = test.extend({
 	page: async ({ page }, use) => {
 		const { name } = generateRandomInventorySheet();
 
@@ -26,8 +26,28 @@ const testNewlyCreatedSheet = test.extend({
 	},
 });
 
+export const testWithNewSheetNoWelcomeDialog = testWithNewlyCreatedSheet.extend(
+	{
+		page: async ({ page }, use) => {
+			await page.getByRole("button", {
+				name: "close",
+			});
+
+			await page.getByRole("button", {
+				name: "save",
+			});
+
+			await page.getByRole("dialog", {
+				name: "Edit Sheet Name",
+			});
+
+			await use(page);
+		},
+	}
+);
+
 export const testDualClientsWithNewSheet =
-	testNewlyCreatedSheet.extend<ClientFields>({
+	testWithNewlyCreatedSheet.extend<ClientFields>({
 		clientA: async ({ page, context }, use) => {
 			const result = await context.newPage();
 			await result.goto(page.url());

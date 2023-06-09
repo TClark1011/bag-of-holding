@@ -9,6 +9,7 @@ const PORT = 3001;
 const config = defineConfig({
 	testDir: "./tests/integration",
 	outputDir: "./playwrightOutput",
+	preserveOutput: "failures-only",
 	webServer: {
 		command: "yarn start:dev",
 		port: PORT,
@@ -21,6 +22,8 @@ const config = defineConfig({
 	use: {
 		actionTimeout: 10 * 1000,
 		baseURL: `http://localhost:${PORT}`,
+		screenshot: "only-on-failure",
+		video: "on-first-retry",
 	},
 	retries: 3,
 	reporter: isCI ? "github" : "list",

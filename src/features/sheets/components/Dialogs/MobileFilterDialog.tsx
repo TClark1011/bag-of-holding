@@ -1,11 +1,7 @@
+import { useDisappearingHashBooleanAtom } from "$jotai-history-toggle";
 import { useIsMobile, useRenderLogging } from "$root/hooks";
 import BigFilterInterface from "$sheets/components/BigFilterInterface";
-import {
-	InventoryStoreProps,
-	composeSelectItemPropertyFilterHasValues,
-	useInventoryStore,
-	useInventoryStoreDispatch,
-} from "$sheets/store";
+import { filterDialogIsOpenAtom } from "$sheets/store";
 import {
 	Drawer,
 	DrawerBody,
@@ -17,27 +13,15 @@ import {
 } from "@chakra-ui/react";
 import { FC } from "react";
 
-const selectFilterDialogIsOpen = (state: InventoryStoreProps) =>
-	state.ui.filterDialogIsOpen;
-
 const MobileFilterDialog: FC = () => {
 	useRenderLogging("MobileFilterDialog");
 
-	const dispatch = useInventoryStoreDispatch();
 	const isMobile = useIsMobile();
 
-	const isOpen = useInventoryStore(selectFilterDialogIsOpen);
-	const onClose = () =>
-		dispatch({
-			type: "ui.close-filter-dialog",
-		});
-
-	const carriedByHasFilterValues = useInventoryStore(
-		composeSelectItemPropertyFilterHasValues("carriedByCharacterId")
+	const { isOn: isOpen, set: setIsOpen } = useDisappearingHashBooleanAtom(
+		filterDialogIsOpenAtom
 	);
-	const categoryHasFilterValues = useInventoryStore(
-		composeSelectItemPropertyFilterHasValues("category")
-	);
+	const onClose = () => setIsOpen(false);
 
 	return (
 		<Drawer isOpen={isOpen && isMobile} onClose={onClose} placement="bottom">
@@ -48,15 +32,16 @@ const MobileFilterDialog: FC = () => {
 				<DrawerHeader>Filters</DrawerHeader>
 				<DrawerBody>
 					<VStack spacing="group">
-						{carriedByHasFilterValues && (
-							<BigFilterInterface
-								property="carriedByCharacterId"
-								heading="Carried By"
-							/>
-						)}
-						{categoryHasFilterValues && (
-							<BigFilterInterface property="category" heading="Category" />
-						)}
+						<BigFilterInterface
+							property="carriedByCharacterId"
+							heading="Carried By"
+							hideIfEmpty
+						/>
+						<BigFilterInterface
+							property="category"
+							heading="Category"
+							hideIfEmpty
+						/>
 					</VStack>
 				</DrawerBody>
 			</DrawerContent>

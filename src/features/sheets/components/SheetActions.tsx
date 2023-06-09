@@ -1,12 +1,10 @@
+import { useDisappearingHashBooleanAtom } from "$jotai-history-toggle";
 import { SEARCH_BAR_DELAY_MS } from "$root/config";
-import { composeMobileConditionalResponsiveValue } from "$root/hooks";
 import { useDebouncedEffect } from "$root/hooks/debounceHooks";
 import useRenderLogging from "$root/hooks/useRenderLogging";
+import { useAllColumnsAreVisible } from "$sheets/hooks";
 import {
-	useAllColumnsAreVisible,
-	useBreakpointVisibleColumns,
-} from "$sheets/hooks";
-import {
+	filterDialogIsOpenAtom,
 	selectAnyFilteringIsBeingDone,
 	selectFilteringIsAvailable,
 	useInventoryStore,
@@ -67,6 +65,10 @@ const SheetActions: FC = () => {
 
 	const allColumnsAreVisible = useAllColumnsAreVisible();
 
+	const { set: setFilterDialogIsOpen } = useDisappearingHashBooleanAtom(
+		filterDialogIsOpenAtom
+	);
+
 	return (
 		<Stack
 			minHeight={16}
@@ -102,11 +104,7 @@ const SheetActions: FC = () => {
 				<Button
 					width="full"
 					hidden={allColumnsAreVisible}
-					onClick={() =>
-						dispatch({
-							type: "ui.open-filter-dialog",
-						})
-					}
+					onClick={() => setFilterDialogIsOpen(true)}
 					flexGrow={0}
 					isDisabled={!filteringIsAvailable}
 				>

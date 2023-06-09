@@ -6,23 +6,23 @@ import {
 	ModalContent,
 	ModalOverlay,
 	Modal,
+	ModalHeader,
 } from "@chakra-ui/react";
 import { BigFilterInterface } from "$sheets/components";
-import { useInventoryStoreDispatch, useInventoryStore } from "$sheets/store";
+import { filterDialogIsOpenAtom } from "$sheets/store";
 import useRenderLogging from "$root/hooks/useRenderLogging";
 import { useIsMobile } from "$root/hooks";
+import { useDisappearingHashBooleanAtom } from "$jotai-history-toggle";
 
 const useFilterDialogModalProps = () => {
-	const dispatch = useInventoryStoreDispatch();
 	const isMobile = useIsMobile();
-	const filterDialogIsOpen = useInventoryStore((s) => s.ui.filterDialogIsOpen);
-	const onClose = () => {
-		dispatch({
-			type: "ui.close-filter-dialog",
-		});
-	};
+	const { set: setFilterDialogIsOpen, isOn: filterDialogIsOpen } =
+		useDisappearingHashBooleanAtom(filterDialogIsOpenAtom);
 
-	return { isOpen: filterDialogIsOpen && !isMobile, onClose };
+	return {
+		isOpen: filterDialogIsOpen && !isMobile,
+		onClose: () => setFilterDialogIsOpen(false),
+	};
 };
 
 /**
@@ -40,6 +40,7 @@ const FilterDialog: React.FC = () => {
 		<Modal {...modalProps}>
 			<ModalOverlay />
 			<ModalContent>
+				<ModalHeader>Filters</ModalHeader>
 				<ModalBody>
 					<VStack spacing="group" width="full">
 						<BigFilterInterface

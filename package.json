@@ -49,6 +49,8 @@
 		"date-fns": "^2.19.0",
 		"framer-motion": "^10.12.16",
 		"immer": "^9.0.6",
+		"jotai": "^2.1.1",
+		"jotai-location": "^0.5.1",
 		"next": "^12.3.1",
 		"next-superjson": "^0.0.4",
 		"react": "^18.2.0",
