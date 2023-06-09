@@ -4,13 +4,24 @@ orbs:
 jobs:
   run-test:
     docker:
-      - image: mcr.microsoft.com/playwright:v1.23.1-focal
+      - image: mcr.microsoft.com/playwright:v1.35.0-jammy
+        environment:
+          DATABASE_URL: postgresql://postgres@localhost/circle_test
+        auth:
+          username: user
+          password: password
+      # - image: cimg/postgres:14.0
+      #   environment:
+      #     POSTGRES_USER: postgres
+      #   auth:
+      #     username: user
+      #     password: password
     steps:
       - checkout
       - node/install-packages:
           pkg-manager: yarn
           override-ci-command: yarn ci
-      - run: npx playwright install
+      - run: npx playwright install --with-deps
       - run:
           name: Run test
           command: PLAYWRIGHT_JUNIT_OUTPUT_NAME=results.xml yarn test --reporter=junit --project=chromium
