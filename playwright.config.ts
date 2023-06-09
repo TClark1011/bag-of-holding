@@ -9,6 +9,7 @@ const PORT = 3001;
 const config = defineConfig({
 	testDir: "./tests/integration",
 	outputDir: "./playwrightOutput",
+	preserveOutput: "failures-only",
 	webServer: {
 		command: "yarn start:dev",
 		port: PORT,
