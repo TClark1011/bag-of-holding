@@ -17,15 +17,12 @@ jobs:
         auth:
           username: mydockerhub-user
           password: $DOCKERHUB_PASSWORD
-    # parallelism: 4
+    parallelism: 4
     steps:
       - checkout
       - node/install-packages:
           pkg-manager: yarn
       - run: npx playwright install --with-deps
-      # - run:
-      #     name: Run test
-      #     command: SHARD="$((${CIRCLE_NODE_INDEX}+1))"; yarn test -- --shard=${SHARD}/${CIRCLE_NODE_TOTAL}
       - run:
           name: Wait for db
           command: |
@@ -40,7 +37,10 @@ jobs:
           command: yarn prisma migrate dev --skip-generate
       - run:
           name: Run test
-          command: PLAYWRIGHT_JUNIT_OUTPUT_NAME=results.xml yarn test:normal sheet
+          command: SHARD="$((${CIRCLE_NODE_INDEX}+1))"; yarn test -- --shard=${SHARD}/${CIRCLE_NODE_TOTAL}
+      # - run:
+      #     name: Run test
+      #     command: PLAYWRIGHT_JUNIT_OUTPUT_NAME=results.xml yarn test
       - store_test_results:
           path: results.xml
       - store_artifacts:
