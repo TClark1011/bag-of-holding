@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.8.0](https://github.com/TClark1011/bag-of-holding/compare/v1.7.6...v1.8.0) (2023-06-09)
+
+
+### Features
+
+* **frontend:** 🎸 improved mobile filtering UI ([4d8d316](https://github.com/TClark1011/bag-of-holding/commit/4d8d316cacba49d6f3b65ba4b4898857cb2b8652))
+* **frontend:** 🎸 main filter dialog now uses larger UI ([cd9a4ac](https://github.com/TClark1011/bag-of-holding/commit/cd9a4ac8b8ed6f3c4522cdfecab35b467047bc70))
+
+
+### Bug Fixes
+
+* **frontend:** 🐛 item dialog now closes on cancel ([6b7aa6b](https://github.com/TClark1011/bag-of-holding/commit/6b7aa6b1af182e3339da771ea69df8ef3c68eb4f))
+
 ### [1.7.6](https://github.com/TClark1011/bag-of-holding/compare/v1.7.5...v1.7.6) (2023-06-09)
 
 ### [1.7.5](https://github.com/TClark1011/bag-of-holding/compare/v1.7.4...v1.7.5) (2023-06-09)
