@@ -24,7 +24,7 @@ jobs:
       - run: npx playwright install --with-deps
       - run:
           name: Run test
-          command: PLAYWRIGHT_JUNIT_OUTPUT_NAME=results.xml yarn test --reporter=junit --project=chromium
+          command: PLAYWRIGHT_JUNIT_OUTPUT_NAME=results.xml yarn test --reporter=junit
       - store_test_results:
           path: results.xml
       - persist_to_workspace: # cache stuff
