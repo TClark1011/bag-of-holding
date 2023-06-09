@@ -5,8 +5,9 @@ import wait from "$tests/utils/wait";
 import { A, N, pipe, S } from "@mobily/ts-belt";
 import { Page, expect, PageScreenshotOptions } from "@playwright/test";
 import { Item } from "@prisma/client";
+import isCI from "is-ci";
 
-const SEARCH_BAR_INTERACTION_BUFFER_MS = 200;
+const SEARCH_BAR_INTERACTION_BUFFER_MS = isCI ? 2000 : 200;
 
 /**
  * Fill out the form used for creating/editing items

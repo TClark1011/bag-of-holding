@@ -23,8 +23,8 @@ const config = defineConfig({
 		baseURL: `http://localhost:${PORT}`,
 	},
 	retries: 3,
-	reporter: isCI ? "github" : "list",
-	timeout: 60000,
+	reporter: isCI ? "junit" : "list",
+	timeout: isCI ? 180 * 1000 : 60 * 1000,
 	quiet: true,
 	projects: [
 		{
