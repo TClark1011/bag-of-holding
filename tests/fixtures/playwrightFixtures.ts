@@ -68,8 +68,7 @@ export const testWithExistingSheet = test
 		// eslint-disable-next-line no-empty-pattern
 		sheet: async ({ context, baseURL }, use) => {
 			const page = await context.newPage();
-			await page.goto("/");
-			console.log(baseURL);
+			await page.goto("/"); // required because of cross-origin fetch issues
 			const testSheetResponse = await page.evaluate(
 				([baseUrl, key]) =>
 					fetch(`${baseUrl}/api/get-test-sheet`, {
