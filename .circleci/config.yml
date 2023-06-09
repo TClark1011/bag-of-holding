@@ -24,4 +24,4 @@ workflows:
   version: 2
   test:
     jobs:
-      - test
+      - run-test
