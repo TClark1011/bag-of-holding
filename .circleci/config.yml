@@ -11,7 +11,7 @@ jobs:
           pkg-manager: yarn
           override-ci-command: yarn ci
       - run:
-          command: npx playwright install
+          command: npx playwright install-deps
           name: Install playwright deps
       - run:
           command: yarn test
