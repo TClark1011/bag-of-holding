@@ -4,12 +4,13 @@ orbs:
 jobs:
   run-test:
     docker:
-      - image: mcr.microsoft.com/playwright:v1.35.0-jammy
-        environment:
-          DATABASE_URL: postgresql://postgres@localhost/circle_test
-        auth:
-          username: user
-          password: password
+      - image: circleci/node:18
+      # - image: mcr.microsoft.com/playwright:v1.35.0-jammy
+      #   environment:
+      #     DATABASE_URL: postgresql://postgres@localhost/circle_test
+      #   auth:
+      #     username: user
+      #     password: password
       # - image: cimg/postgres:14.0
       #   environment:
       #     POSTGRES_USER: postgres
@@ -20,7 +21,6 @@ jobs:
       - checkout
       - node/install-packages:
           pkg-manager: yarn
-          override-ci-command: yarn ci
       - run: npx playwright install --with-deps
       - run:
           name: Run test
