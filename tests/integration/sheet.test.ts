@@ -1,3 +1,4 @@
+/* eslint-disable playwright/no-wait-for-timeout */
 import { NonEmptyArray } from "$root/types";
 import { takeRandom } from "$root/utils";
 import { Item, Character } from "@prisma/client";
@@ -15,7 +16,6 @@ import {
 	getNameOfItemInTableAtRowIndex,
 	getSheetTitle,
 	performActionOnMultipleClients,
-	waitABit,
 } from "$tests/utils/sheetAutomations";
 import {
 	characterDialogSaveButton,
@@ -30,7 +30,6 @@ import {
 	sheetNewItemSaveButton,
 	sheetOptionsButton,
 } from "$tests/utils/usefulSelectors";
-import wait from "$tests/utils/wait";
 import { A, D, F, flow, pipe, S } from "@mobily/ts-belt";
 import test, { expect } from "@playwright/test";
 import { SHEET_REFETCH_INTERVAL_MS } from "$root/config";
@@ -189,7 +188,7 @@ testWithExistingSheet("Advanced Operations", async ({ page, sheet }) => {
 	expect(await getNameOfItemInTable(0)).toBe(A.head(sortedItemNames));
 	await clickColumnSortButton("Name");
 
-	waitABit();
+	await page.waitForTimeout(100);
 
 	// Sorting should be reversed after clicking on the name column header
 	expect(await getNameOfItemInTable(0)).toBe(A.last(sortedItemNames));
@@ -264,14 +263,14 @@ testWithExistingSheet("Advanced Operations", async ({ page, sheet }) => {
 	);
 	await clickColumnSortButton("Value");
 
-	waitABit();
+	await page.waitForTimeout(100);
 
 	expect(await getNameOfItemInTable(0)).toBe(A.head(itemsSortedByValue)?.name);
 	expect(await getNameOfItemInTable(-1)).toBe(A.last(itemsSortedByValue)?.name);
 
 	await clickColumnSortButton("Value");
 
-	waitABit();
+	await page.waitForTimeout(100);
 
 	expect(await getNameOfItemInTable(0)).toBe(A.last(itemsSortedByValue)?.name);
 	expect(await getNameOfItemInTable(-1)).toBe(A.head(itemsSortedByValue)?.name);
@@ -328,7 +327,7 @@ testWithExistingSheet("Advanced Operations", async ({ page, sheet }) => {
 
 	// ### Reset all filters
 	await page.click("text=Reset Filters");
-	waitABit();
+	await page.waitForTimeout(100);
 	expect(await countItemRows(page)).toBe(sheet.items.length);
 });
 
@@ -476,7 +475,7 @@ test.describe("Simultaneous Updates", () => {
 					client.$$(sheetCharacterTag)
 				);
 
-			await wait(500);
+			await clientA.waitForTimeout(500);
 
 			const [clientAMemberTags, clientBMemberTags] =
 				await getClientMemberTags();
@@ -487,7 +486,7 @@ test.describe("Simultaneous Updates", () => {
 			expect(clientBMemberTags).toHaveLength(1);
 			expect(await clientBMemberTags[0].innerText()).toBe(clientBMemberName);
 
-			await wait(SHEET_REFETCH_INTERVAL_MS + 1000);
+			await clientA.waitForTimeout(SHEET_REFETCH_INTERVAL_MS + 1000);
 
 			const refetchedClientTags = await getClientMemberTags();
 			await performActionOnMultipleClients(
@@ -524,17 +523,17 @@ test.describe("Simultaneous Updates", () => {
 				async (client, index) => {
 					const { name } = items[index];
 
-					await wait(100);
+					await client.waitForTimeout(100);
 					await client.fill("#name", name);
 					await client.click(sheetNewItemSaveButton);
-					await wait(100);
+					await client.waitForTimeout(100);
 
 					expect(await countItemRows(client)).toBe(1);
 					expect(await getNameOfItemInTableAtRowIndex(client, 0)).toBe(name);
 				}
 			);
 
-			await wait(SHEET_REFETCH_INTERVAL_MS + 1000);
+			await clientA.waitForTimeout(SHEET_REFETCH_INTERVAL_MS + 1000);
 
 			const sortedItems = A.sortBy(items, D.get("name"));
 			await performActionOnMultipleClients(bothClients, async (client) => {
