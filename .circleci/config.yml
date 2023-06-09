@@ -1,6 +1,7 @@
 version: 2.1
 orbs:
   node: circleci/node@5.0.2
+
 jobs:
   test: # this can be any name you choose
     docker:
@@ -11,10 +12,10 @@ jobs:
           pkg-manager: yarn
           override-ci-command: yarn ci
       - run:
-          command: PLAYWRIGHT_BROWSERS_PATH=/playwright-browsers yarn add playwright-chromium@1.11.1
+          command: PLAYWRIGHT_BROWSERS_PATH=/node_modules/playwright-browsers yarn add playwright-chromium@1.11.1
           name: Install playwright deps
       - run:
-          command: PLAYWRIGHT_BROWSERS_PATH=/playwright-browsers yarn test
+          command: PLAYWRIGHT_BROWSERS_PATH=/node_modules/playwright-browsers yarn test
           name: Run tests
       - persist_to_workspace: # cache stuff
           root: ~/project
