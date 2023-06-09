@@ -5,18 +5,18 @@ jobs:
   run-test:
     docker:
       - image: cimg/node:18.16.0
-      # - image: mcr.microsoft.com/playwright:v1.35.0-jammy
-      #   environment:
-      #     DATABASE_URL: postgresql://postgres@localhost/circle_test
-      #   auth:
-      #     username: user
-      #     password: password
-      # - image: cimg/postgres:14.0
-      #   environment:
-      #     POSTGRES_USER: postgres
-      #   auth:
-      #     username: user
-      #     password: password
+      - image: mcr.microsoft.com/playwright:v1.35.0-jammy
+        environment:
+          DATABASE_URL: postgresql://postgres@localhost/circle_test
+        auth:
+          username: user
+          password: password
+      - image: cimg/postgres:14.0
+        environment:
+          POSTGRES_USER: postgres
+        auth:
+          username: user
+          password: password
     parallelism: 4
     steps:
       - checkout
