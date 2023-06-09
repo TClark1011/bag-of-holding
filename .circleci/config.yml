@@ -45,6 +45,11 @@ jobs:
             PLAYWRIGHT_JUNIT_OUTPUT_NAME: results.xml
       - store_test_results:
           path: results.xml
+      - store_artifacts:
+          path: screenshots
+      - store_artifacts:
+          path: playwrightOutput
+
       - persist_to_workspace: # cache stuff
           root: ~/project
           paths:
