@@ -6,25 +6,29 @@ jobs:
     docker:
       - image: cimg/node:18.16.0
         environment:
-          DATABASE_URL: postgresql://postgres@localhost/circle_test
+          DATABASE_URL: postgresql://user@localhost/db
         auth:
-          username: user
-          password: password
+          username: mydockerhub-user
+          password: $DOCKERHUB_PASSWORD
       - image: cimg/postgres:14.0
         environment:
-          POSTGRES_USER: postgres
+          POSTGRES_USER: user
+          POSTGRES_DB: db
         auth:
-          username: user
-          password: password
-    parallelism: 4
+          username: mydockerhub-user
+          password: $DOCKERHUB_PASSWORD
+    # parallelism: 4
     steps:
       - checkout
       - node/install-packages:
           pkg-manager: yarn
       - run: npx playwright install --with-deps
+      # - run:
+      #     name: Run test
+      #     command: SHARD="$((${CIRCLE_NODE_INDEX}+1))"; yarn test -- --shard=${SHARD}/${CIRCLE_NODE_TOTAL}
       - run:
           name: Run test
-          command: SHARD="$((${CIRCLE_NODE_INDEX}+1))"; yarn test -- --shard=${SHARD}/${CIRCLE_NODE_TOTAL}
+          command: yarn test:normal sheet
       # - store_test_results:
       #     path: results.xml
       - persist_to_workspace: # cache stuff
