@@ -15,6 +15,7 @@
 		"dev-db:studio": "yarn prisma studio",
 		"test:normal": "playwright test --project=normal",
 		"test:maintenance-mode": "dotenv -e .env.maintenance -- playwright test --project=maintenance",
+		"test:live": "playwright test --config playwright.config.live.ts",
 		"test": "yarn test:normal && yarn test:maintenance-mode",
 		"commit": "git cz",
 		"check-types": "tsc --noEmit",
