@@ -1,22 +1,21 @@
 version: 2.1
 orbs:
   node: circleci/node@5.0.2
-
 jobs:
-  test: # this can be any name you choose
+  run-test:
     docker:
-      - image: cimg/node:18.16.0
+      - image: mcr.microsoft.com/playwright:v1.23.1-focal
     steps:
       - checkout
       - node/install-packages:
           pkg-manager: yarn
           override-ci-command: yarn ci
+      - run: npx playwright install
       - run:
-          command: PLAYWRIGHT_BROWSERS_PATH=/node_modules/playwright-browsers yarn add playwright-chromium@1.11.1
-          name: Install playwright deps
-      - run:
-          command: PLAYWRIGHT_BROWSERS_PATH=/node_modules/playwright-browsers yarn test
-          name: Run tests
+          name: Run test
+          command: PLAYWRIGHT_JUNIT_OUTPUT_NAME=results.xml yarn test --reporter=junit --project=chromium
+      - store_test_results:
+          path: results.xml
       - persist_to_workspace: # cache stuff
           root: ~/project
           paths:
