@@ -40,9 +40,7 @@ jobs:
           command: yarn prisma migrate dev --skip-generate
       - run:
           name: Run test
-          command: yarn test:normal sheet
-          environment:
-            PLAYWRIGHT_JUNIT_OUTPUT_NAME: results.xml
+          command: PLAYWRIGHT_JUNIT_OUTPUT_NAME=results.xml yarn test:normal sheet
       - store_test_results:
           path: results.xml
       - store_artifacts:

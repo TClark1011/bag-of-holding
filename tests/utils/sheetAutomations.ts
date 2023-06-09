@@ -1,7 +1,6 @@
 import { SEARCH_BAR_DELAY_MS } from "$root/config";
 import { getItemTotalValue } from "$sheets/utils";
 import { searchBar, selectWithinTable } from "$tests/utils/usefulSelectors";
-import wait from "$tests/utils/wait";
 import { A, N, pipe, S } from "@mobily/ts-belt";
 import { Page, expect, PageScreenshotOptions } from "@playwright/test";
 import { Item } from "@prisma/client";
@@ -166,9 +165,11 @@ export const fillSearchBar = async (client: Page, searchTerm: string) => {
 };
 
 export const clearSearchbar = async (client: Page) => {
+	const searchBarValue = await client.inputValue(searchBar);
 	await client.focus(searchBar);
-	await client.keyboard.press("Meta+A");
-	await client.keyboard.press("Backspace");
+	for (let i = 0; i < searchBarValue.length; i++) {
+		await client.keyboard.press("Backspace");
+	}
 	await client.waitForTimeout(
 		SEARCH_BAR_DELAY_MS + SEARCH_BAR_INTERACTION_BUFFER_MS
 	);
