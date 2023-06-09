@@ -17,12 +17,13 @@ import {
 	Text,
 	VStack,
 } from "@chakra-ui/react";
-import { D, O, flow } from "@mobily/ts-belt";
+import { A, D, G, O, flow, pipe } from "@mobily/ts-belt";
 import { FC } from "react";
 
 export type BigFilterInterfaceProps = StyleProps & {
 	property: FilterableItemProperty;
 	heading: string;
+	hideIfEmpty?: boolean;
 };
 
 /**
@@ -32,6 +33,7 @@ export type BigFilterInterfaceProps = StyleProps & {
 const BigFilterInterface: FC<BigFilterInterfaceProps> = ({
 	property,
 	heading,
+	hideIfEmpty = false,
 	...styleProps
 }) => {
 	useRenderLogging("BigFilterInterface", [property]);
@@ -44,6 +46,10 @@ const BigFilterInterface: FC<BigFilterInterfaceProps> = ({
 	const effectiveItemFilter = useInventoryStore(
 		composeSelectEffectivePropertyFilter(property)
 	);
+
+	if (hideIfEmpty && pipe(values, A.reject(G.isNull), A.isEmpty)) {
+		return null;
+	}
 
 	return (
 		<VStack

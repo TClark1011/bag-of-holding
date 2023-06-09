@@ -3,6 +3,10 @@ import { composeMobileConditionalResponsiveValue } from "$root/hooks";
 import { useDebouncedEffect } from "$root/hooks/debounceHooks";
 import useRenderLogging from "$root/hooks/useRenderLogging";
 import {
+	useAllColumnsAreVisible,
+	useBreakpointVisibleColumns,
+} from "$sheets/hooks";
+import {
 	selectAnyFilteringIsBeingDone,
 	selectFilteringIsAvailable,
 	useInventoryStore,
@@ -61,6 +65,8 @@ const SheetActions: FC = () => {
 		selectAnyFilteringIsBeingDone
 	);
 
+	const allColumnsAreVisible = useAllColumnsAreVisible();
+
 	return (
 		<Stack
 			minHeight={16}
@@ -75,7 +81,7 @@ const SheetActions: FC = () => {
 						type: "ui.open-new-item-dialog",
 					})
 				}
-				flexGrow={0}
+				flexShrink={0}
 			>
 				Add New Item
 			</Button>
@@ -88,16 +94,14 @@ const SheetActions: FC = () => {
 			/>
 			{/* NOTE: Updates may stutter in dev mode but is fine when built */}
 			<SimpleGrid
-				columns={composeMobileConditionalResponsiveValue(2, 1)}
+				flexShrink={0}
+				columns={allColumnsAreVisible ? 1 : 2}
 				gap="group"
 			>
 				{/* Filter Options Dialog Button */}
 				<Button
 					width="full"
-					display={composeMobileConditionalResponsiveValue(
-						"inline-flex",
-						"none"
-					)}
+					hidden={allColumnsAreVisible}
 					onClick={() =>
 						dispatch({
 							type: "ui.open-filter-dialog",

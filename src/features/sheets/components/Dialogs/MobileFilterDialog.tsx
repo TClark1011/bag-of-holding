@@ -2,8 +2,6 @@ import { useIsMobile, useRenderLogging } from "$root/hooks";
 import BigFilterInterface from "$sheets/components/BigFilterInterface";
 import {
 	InventoryStoreProps,
-	composeSelectAllPossibleFilterValuesOnProperty,
-	composeSelectEffectivePropertyFilter,
 	composeSelectItemPropertyFilterHasValues,
 	useInventoryStore,
 	useInventoryStoreDispatch,
@@ -17,7 +15,6 @@ import {
 	DrawerOverlay,
 	VStack,
 } from "@chakra-ui/react";
-import { A, F, G, N, S, flow } from "@mobily/ts-belt";
 import { FC } from "react";
 
 const selectFilterDialogIsOpen = (state: InventoryStoreProps) =>
@@ -50,7 +47,7 @@ const MobileFilterDialog: FC = () => {
 
 				<DrawerHeader>Filters</DrawerHeader>
 				<DrawerBody>
-					<VStack spacing={4}>
+					<VStack spacing="group">
 						{carriedByHasFilterValues && (
 							<BigFilterInterface
 								property="carriedByCharacterId"
