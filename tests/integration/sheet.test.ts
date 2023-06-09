@@ -16,6 +16,7 @@ import {
 	getNameOfItemInTableAtRowIndex,
 	getSheetTitle,
 	performActionOnMultipleClients,
+	screenshot,
 } from "$tests/utils/sheetAutomations";
 import {
 	characterDialogSaveButton,
@@ -317,12 +318,17 @@ testWithExistingSheet("Advanced Operations", async ({ page, sheet }) => {
 	// Type search query
 	await fillSearchBar(page, searchQuery);
 
+	await screenshot(page, "just-filled-searchbar");
+
 	expect(await countItemRows(page)).toBe(
 		itemNamesThatContainSearchQuery.length
 	);
 
 	// Reset the search
 	await clearSearchbar(page);
+
+	await screenshot(page, "just-cleared-searchbar");
+
 	expect(await countItemRows(page)).toBe(itemsWithCategoryFilter.length);
 
 	// ### Reset all filters
