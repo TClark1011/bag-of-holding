@@ -5,7 +5,6 @@ jobs:
   run-test:
     docker:
       - image: cimg/node:18.16.0
-      - image: mcr.microsoft.com/playwright:v1.35.0-jammy
         environment:
           DATABASE_URL: postgresql://postgres@localhost/circle_test
         auth:
@@ -26,8 +25,8 @@ jobs:
       - run:
           name: Run test
           command: SHARD="$((${CIRCLE_NODE_INDEX}+1))"; yarn test -- --shard=${SHARD}/${CIRCLE_NODE_TOTAL}
-      - store_test_results:
-          path: results.xml
+      # - store_test_results:
+      #     path: results.xml
       - persist_to_workspace: # cache stuff
           root: ~/project
           paths:
