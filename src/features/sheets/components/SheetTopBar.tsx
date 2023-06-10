@@ -10,7 +10,6 @@ import {
 	DarkMode,
 	Flex,
 	Heading,
-	HStack,
 	IconButton,
 	LightMode,
 } from "@chakra-ui/react";
@@ -54,7 +53,7 @@ const SheetTopBar: FC = () => {
 				{/* Color Mode Switch */}
 				<ColorModeSwitch useDarkModeColors />
 			</Flex>
-			<HStack spacing="group">
+			<Flex gap="group" wrap="wrap">
 				<LightMode>
 					{characters.map((char) => (
 						<Button
@@ -90,7 +89,7 @@ const SheetTopBar: FC = () => {
 						Add Character
 					</Button>
 				</LightMode>
-			</HStack>
+			</Flex>
 		</Box>
 	);
 };
