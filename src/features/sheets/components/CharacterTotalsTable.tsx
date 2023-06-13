@@ -18,7 +18,7 @@ export const characterTotalsTableTestIds = {
  * @returns The rendered stuff
  */
 const CharacterTotalsTable: React.FC<TableProps> = ({ ...props }) => {
-	const sums = useInventoryStore(selectAllCharacterColumnTotals);
+	const sums = useInventoryStore(selectAllCharacterColumnTotals, []);
 	return (
 		<Table {...props} data-testid={characterTotalsTableTestIds.root}>
 			<Thead>

@@ -41,10 +41,12 @@ const BigFilterInterface: FC<BigFilterInterfaceProps> = ({
 	const dispatch = useInventoryStoreDispatch();
 
 	const values = useInventoryStore(
-		composeSelectAllPossibleFilterValuesOnProperty(property)
+		composeSelectAllPossibleFilterValuesOnProperty(property),
+		[property]
 	);
 	const effectiveItemFilter = useInventoryStore(
-		composeSelectEffectivePropertyFilter(property)
+		composeSelectEffectivePropertyFilter(property),
+		[property]
 	);
 
 	if (hideIfEmpty && pipe(values, A.reject(G.isNull), A.isEmpty)) {

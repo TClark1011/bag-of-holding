@@ -183,7 +183,7 @@ export const clearSearchbar = async (client: Page) => {
 export const performActionOnMultipleClients = <T>(
 	clients: Page[],
 	callback: (p: Page, index: number) => Promise<T>
-) => Promise.all(clients.map(callback));
+): Promise<T[]> => Promise.all(clients.map(callback));
 
 /**
  * Return the name of the item in the given row

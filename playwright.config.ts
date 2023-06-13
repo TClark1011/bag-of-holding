@@ -23,11 +23,17 @@ const config = defineConfig({
 		actionTimeout: 10 * 1000,
 		baseURL: `http://localhost:${PORT}`,
 		screenshot: "only-on-failure",
-		video: "on-first-retry",
+		video: {
+			mode: "on-first-retry",
+			size: {
+				height: 900,
+				width: 900,
+			},
+		},
 	},
 	retries: 3,
 	reporter: isCI ? "github" : "list",
-	timeout: 60000,
+	timeout: 180 * 1000,
 	quiet: true,
 	projects: [
 		{

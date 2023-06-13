@@ -13,7 +13,7 @@ import {
 
 const useWelcomeDialogModalProps = () => {
 	const dispatch = useInventoryStoreDispatch();
-	const isOpen = useInventoryStore((s) => s.ui.welcomeDialogIsOpen);
+	const isOpen = useInventoryStore((s) => s.ui.welcomeDialogIsOpen, []);
 
 	const onClose = () => {
 		dispatch({

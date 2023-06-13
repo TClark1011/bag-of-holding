@@ -28,7 +28,6 @@
 	},
 	"dependencies": {
 		"@chakra-ui/react": "^2.7.0",
-		"@emotion/react": "^11.11.0",
 		"@emotion/styled": "^11.11.0",
 		"@fontsource/roboto": "^4.2.2",
 		"@hookform/resolvers": "^2.9.8",
@@ -59,6 +58,8 @@
 		"zustand": "^3.7.1"
 	},
 	"devDependencies": {
+		"jotai-devtools": "^0.5.3",
+		"@emotion/react": "^11.11.1",
 		"@commitlint/cli": "^12.1.1",
 		"@commitlint/config-conventional": "^12.1.1",
 		"@playwright/test": "^1.20.1",
@@ -102,6 +103,7 @@
 		"jest-extended": "^0.11.5",
 		"lint-staged": "^13.2.2",
 		"next-pwa": "^5.6.0",
+		"next-transpile-modules": "^10.0.0",
 		"ora": "5.4.1",
 		"prettier": "^2.8.8",
 		"prisma": "4.3.1",

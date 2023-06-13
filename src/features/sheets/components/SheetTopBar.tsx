@@ -23,7 +23,8 @@ import { FC } from "react";
 const SheetTopBar: FC = () => {
 	const dispatch = useInventoryStoreDispatch();
 	const { name, characters } = useInventoryStore(
-		fromSheet(D.selectKeys(["name", "characters"]))
+		fromSheet(D.selectKeys(["name", "characters"])),
+		[]
 	);
 
 	return (

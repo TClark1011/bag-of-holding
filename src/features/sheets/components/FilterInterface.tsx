@@ -45,10 +45,12 @@ const FilterInterface: React.FC<Props> = ({ property, heading, ...props }) => {
 		flow(
 			composeSelectAllPossibleFilterValuesOnProperty(property),
 			sortNullToStart
-		)
+		),
+		[property]
 	);
 	const filter = useInventoryStore(
-		composeSelectEffectivePropertyFilter(property)
+		composeSelectEffectivePropertyFilter(property),
+		[property]
 	);
 
 	const onChange = (value: string | null) => {

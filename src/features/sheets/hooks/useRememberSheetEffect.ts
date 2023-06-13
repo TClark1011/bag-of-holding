@@ -6,7 +6,8 @@ import { useEffect } from "react";
 const useRememberSheetEffect = () => {
 	const dispatch = useRememberedSheetsDispatch();
 	const { id: sheetId, name: sheetName } = useInventoryStore(
-		flow(get("sheet"), D.selectKeys(["id", "name"]))
+		flow(get("sheet"), D.selectKeys(["id", "name"])),
+		[]
 	);
 
 	useEffect(() => {

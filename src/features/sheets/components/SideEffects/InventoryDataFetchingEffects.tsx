@@ -6,18 +6,14 @@ import {
 	useEditItemMutation,
 	useItemDeleteMutation,
 } from "$sheets/hooks";
-import {
-	fromSheet,
-	useInventoryStore,
-	useInventoryStoreDispatch,
-} from "$sheets/store";
+import { useInventoryStore, useInventoryStoreDispatch } from "$sheets/store";
 import { D, flow } from "@mobily/ts-belt";
 import { Sheet } from "@prisma/client";
 import { isAfter } from "date-fns/fp";
 import { useCallback } from "react";
 
 const useSheetUpdateIsNewerChecker = () => {
-	const localUpdatedAt = useInventoryStore(fromSheet((s) => s.updatedAt));
+	const localUpdatedAt = useInventoryStore((s) => s.sheet.updatedAt, []);
 
 	return useCallback(
 		flow(
@@ -45,7 +41,7 @@ const InventoryDataFetchingEffects = () => {
 	const deleteCharacterMutation = queries.character.delete.useMutation();
 	const updateCharacterMutation = queries.character.update.useMutation();
 
-	const sheetId = useInventoryStore(fromSheet((s) => s.id));
+	const sheetId = useInventoryStore((s) => s.sheet.id, []);
 	const deriveIfSheetUpdateIsNewer = useSheetUpdateIsNewerChecker();
 
 	// Constantly refetch the sheet

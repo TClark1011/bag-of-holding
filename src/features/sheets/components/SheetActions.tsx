@@ -58,9 +58,13 @@ const SheetActions: FC = () => {
 
 	const dispatch = useInventoryStoreDispatch();
 	const searchInputProps = useSearchInputProps();
-	const filteringIsAvailable = useInventoryStore(selectFilteringIsAvailable);
+	const filteringIsAvailable = useInventoryStore(
+		selectFilteringIsAvailable,
+		[]
+	);
 	const anyFilteringIsApplied = useInventoryStore(
-		selectAnyFilteringIsBeingDone
+		selectAnyFilteringIsBeingDone,
+		[]
 	);
 
 	const allColumnsAreVisible = useAllColumnsAreVisible();

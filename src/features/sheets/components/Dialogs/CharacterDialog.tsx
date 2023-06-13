@@ -1,4 +1,5 @@
 import {
+	InventoryStoreProps,
 	fromSheet,
 	fromUI,
 	selectCharacterBeingEdited,
@@ -41,11 +42,17 @@ const characterDialogFormSchema = characterSchema.pick({
 
 const f = createSchemaKeyHelperFunction(characterDialogFormSchema);
 
-const useCharacterDialogModalProps = () =>
-	useInventoryStore((s) => ({
-		isOpen: s.ui.characterDialog.mode !== "closed",
-		onClose: () => s.dispatch({ type: "ui.close-character-dialog" }),
-	}));
+const selectInventoryStoreIsOpen = (s: InventoryStoreProps): boolean =>
+	s.ui.characterDialog.mode !== "closed";
+
+const useCharacterDialogModalProps = () => {
+	const dispatch = useInventoryStoreDispatch();
+	const isOpen = useInventoryStore(selectInventoryStoreIsOpen, []);
+	return {
+		isOpen,
+		onClose: () => dispatch({ type: "ui.close-character-dialog" }),
+	};
+};
 
 const useCharacterDialogFieldInitialValues = (): z.infer<
 	typeof characterDialogFormSchema
@@ -57,11 +64,12 @@ const useCharacterDialogFieldInitialValues = (): z.infer<
 			name: characterBeingEdited?.name ?? "",
 			carryCapacity: characterBeingEdited?.carryCapacity ?? 0,
 		};
-	});
+	}, []);
 
 const useCharacterDialogTitle = () =>
 	useInventoryStore(
-		flow(selectCharacterBeingEdited, (s) => s?.name ?? "Create Character")
+		flow(selectCharacterBeingEdited, (s) => s?.name ?? "Create Character"),
+		[]
 	);
 
 const formResolver = zodResolver(characterDialogFormSchema);
@@ -92,8 +100,8 @@ const CharacterDialog = () => {
 
 	const { isOpen, onClose } = useCharacterDialogModalProps();
 	const header = useCharacterDialogTitle();
-	const sheetId = useInventoryStore(fromSheet(get("id")));
-	const dialogState = useInventoryStore(fromUI(get("characterDialog")));
+	const sheetId = useInventoryStore(fromSheet(get("id")), []);
+	const dialogState = useInventoryStore(fromUI(get("characterDialog")), []);
 
 	const { register, handleSubmit, formState } = useCharacterDialogForm();
 

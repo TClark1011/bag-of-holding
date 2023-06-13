@@ -10,11 +10,10 @@ import {
 	numericItemPropertySchema,
 } from "$sheets/types";
 import { itemIsCarriedByCharacterId } from "$sheets/utils";
-import { createState, withDevtools, withReducer } from "$zustand";
 import { A, D, F, pipe } from "@mobily/ts-belt";
 import { Character, Item } from "@prisma/client";
 import produce from "immer";
-import { Reducer } from "react";
+import { Reducer, useMemo } from "react";
 import { matchesSchema } from "$zod-helpers";
 import { InventoryStoreAction } from "$sheets/store/inventoryActions";
 import {
@@ -35,6 +34,8 @@ import {
 	updateLoopedProgressionToPositionOfValue,
 } from "$root/utils/loopedProgression";
 import { disappearingHashBooleanAtom } from "$jotai-history-toggle";
+import { atomWithReducer, selectAtom } from "jotai/utils";
+import { useAtomValue, useSetAtom } from "jotai";
 
 export type ItemDialogStateProps =
 	| {
@@ -395,20 +396,39 @@ const inventoryStoreReducer: Reducer<
 		}
 	});
 
-const baseInventoryStore = withReducer(
-	inventoryStoreReducer,
-	initialInventoryStoreState
+export const inventoryAtom = atomWithReducer(
+	initialInventoryStoreState,
+	inventoryStoreReducer
 );
+export const useInventoryStoreDispatch = () => useSetAtom(inventoryAtom);
 
-const useInventoryStore = pipe(
-	baseInventoryStore,
-	(s) => withDevtools(s, { name: "inventory" }),
-	(s) => createState(s)
-);
+export function useInventoryStore(): InventoryStoreProps;
+export function useInventoryStore<T>(
+	select: (state: InventoryStoreProps) => T,
+	deps: any[]
+): T;
+export function useInventoryStore<T>(
+	...args: [] | [(state: InventoryStoreProps) => T, any[]?]
+): InventoryStoreProps | T {
+	const [selector, deps = []] = args;
 
-export const useInventoryStoreDispatch = () =>
-	useInventoryStore((s) => s.dispatch);
+	// Required otherwise the selector will be re-created on every render
+	const memoisedSelector = useMemo(() => selector, deps);
 
-export const useInventoryStoreState = () => useInventoryStore((s) => s.sheet);
+	const selectorAtom = useMemo(
+		() =>
+			memoisedSelector === undefined
+				? inventoryAtom
+				: selectAtom(inventoryAtom, memoisedSelector),
+		[memoisedSelector]
+	);
+
+	const value = useAtomValue(selectorAtom);
+
+	return value;
+}
+
+export const useInventoryStoreState = () =>
+	useInventoryStore((s) => s.sheet, []);
 
 export default useInventoryStore;

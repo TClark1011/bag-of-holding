@@ -1,4 +1,5 @@
 import { testDualClientsWithNewSheet } from "$tests/fixtures/playwrightFixtures";
+import { PlaywrightSheetPage } from "$tests/utils/PlaywrightSheetPage";
 import {
 	performActionOnMultipleClients,
 	screenshot,
@@ -67,6 +68,7 @@ const checkItemVisibility = async (
 				.toString()}")`
 		)
 		.waitFor({ state: expectedState });
+
 	if (fields.category !== undefined)
 		await row
 			.locator(`td[data-column="category"]:text-is("${fields.category}")`)
@@ -75,14 +77,14 @@ const checkItemVisibility = async (
 	if (fields.carriedBy !== undefined)
 		await row
 			.locator(
-				`td[data-column="carriedByCharacterId"]:has-text("${fields.carriedBy}")`
+				`td[data-column="carriedByCharacterId"]:has-text("${fields.carriedBy.trim()}")`
 			)
 			.waitFor({ state: expectedState });
 };
 
 const firstCharacterName = `${random.word()} (1)`;
 const secondCharacterName = `${random.word()} (2)`;
-const thirdCharacterName = `${random.word()} (3)`;
+// const thirdCharacterName = `${random.word()} (3)`;
 const fourthCharacterName = `${random.word()} (4)`;
 
 const firstItem: ItemFields = {
@@ -109,13 +111,13 @@ const thirdItem: ItemFields = {
 	carriedBy: firstCharacterName,
 };
 
-const fourthItem: ItemFields = {
-	name: `D${random.word()}(i4)`,
-	value: "12.78",
-	quantity: "8",
-	weight: "0.01",
-	carriedBy: secondCharacterName,
-};
+// const fourthItem: ItemFields = {
+// 	name: `D${random.word()}(i4)`,
+// 	value: "12.78",
+// 	quantity: "8",
+// 	weight: "0.01",
+// 	carriedBy: secondCharacterName,
+// };
 
 const fifthItem: ItemFields = {
 	name: `E${random.word()}(i5)`,
@@ -125,82 +127,92 @@ const fifthItem: ItemFields = {
 	carriedBy: fourthCharacterName,
 };
 
-const editedSheetName = random.word();
-
 testDualClientsWithNewSheet.setTimeout(1000 * 100);
 
 testDualClientsWithNewSheet(
 	"Advanced Sheet Test",
 	async ({ clientA, clientB }) => {
+		const clientAController = new PlaywrightSheetPage(clientA);
+		const clientBController = new PlaywrightSheetPage(clientB);
+
 		const newSheetName = "Test Sheet";
 
-		/* #region  Change Sheet Name */
-		await clientA.click("h2 + button");
-		await clientA.locator('input[name="name"]').fill(newSheetName);
-		await clientA.locator("text=Save").click();
+		/* #region  Change Sheet Name  Client A] */
+		await clientAController.sheetOptionsButton.click();
+		await clientAController.page.locator('[name="name"]').fill(newSheetName);
+		await clientAController.page.locator("text=Save").click();
+		await clientAController.waitForDialogState("Edit Sheet Name", "hidden");
 
-		await performActionOnMultipleClients([clientA, clientB], (client) =>
-			client.waitForSelector(`h2:has-text("${newSheetName}")`)
-		);
+		await clientAController.waitForSheetTitleToBe(newSheetName);
+		await clientBController.waitForSheetTitleToBe(newSheetName);
 		/* #endregion */
 
-		/* #region  First Item */
-		await clientA.locator('[data-testid="add-item-button"]').click();
-		await fillOutItemForm(clientA, firstItem);
-		await clientA.locator("button:text('Create')").click();
+		/* #region  Create First Item [Client A] */
+		await clientAController.addItemButton.click();
+		await fillOutItemForm(clientAController.page, firstItem);
+		await clientAController.page.locator("button:text('Create')").click();
+		await clientAController.waitForDialogState("Create Item", "hidden");
+
+		await performActionOnMultipleClients(
+			[clientAController.page, clientBController.page],
+			(client) => checkItemVisibility(client, firstItem, true)
+		);
+		// /* #endregion */
+
+		// /* #region Create Second Item [Client B] */
+		await clientBController.addItemButton.click();
+		await fillOutItemForm(clientBController.page, secondItem);
+		await clientBController.page.locator("button:text('Create')").click();
 		await performActionOnMultipleClients([clientA, clientB], (client) =>
 			checkItemVisibility(client, firstItem, true)
 		);
-		/* #endregion */
+		// /* #endregion */
 
-		/* #region  Second Item */
-		await clientB.locator('[data-testid="add-item-button"]').click();
-		await fillOutItemForm(clientB, secondItem);
-		await clientB.locator("button:text('Create')").click();
-		await performActionOnMultipleClients([clientA, clientB], (client) =>
-			checkItemVisibility(client, firstItem, true)
-		);
-		/* #endregion */
-
-		/* #region  Create First Character */
-		await clientA.locator("text=Add Character").click();
-		await clientA.locator("#name").fill(firstCharacterName);
-		await clientA.locator("text=Save").click();
+		// /* #region  Create First Character [Client A] */
+		await clientAController.addCharacterButton.click();
+		await clientAController.page.locator("#name").fill(firstCharacterName);
+		await clientAController.clickSaveButton("Save");
 		await performActionOnMultipleClients([clientA, clientB], (client) =>
 			client.waitForSelector(`button:text-is("${firstCharacterName}")`)
-		);
-		/* #endregion */
+		); // wait for the button for the new character to appear
 
-		/* #region  Third item (give to first character) */
-		await clientA.locator('[data-testid="add-item-button"]').click();
-		await fillOutItemForm(clientA, thirdItem);
-		await clientA.locator("button:text('Create')").click();
+		// /* #endregion */
+
+		// /* #region  Create Third item (give to first character) [ClientA] */
+		await clientAController.addItemButton.click();
+		await fillOutItemForm(clientAController.page, thirdItem);
+		await clientAController.clickSaveButton("Create");
 		await performActionOnMultipleClients([clientA], (client) =>
 			checkItemVisibility(client, thirdItem, true)
 		);
-		/* #endregion */
+		// /* #endregion */
 
-		/* #region  Second Character */
-		await clientB.locator("text=Add Character").click();
-		await clientB.locator("#name").fill(secondCharacterName);
-		await clientB.locator("text=Save").click();
-		await performActionOnMultipleClients([clientA, clientB], (client) =>
-			client.waitForSelector(`button:text-is("${secondCharacterName}")`)
-		);
-		/* #endregion */
+		// /* #region  Second Character [Client B] */
+		await clientBController.addCharacterButton.click();
+		await clientBController.page.locator("#name").fill(secondCharacterName);
+		await clientBController.clickSaveButton("Save");
 
-		/* #region Give first item to first character */
+		await Promise.all([
+			clientBController.waitForCharacterButtonToBeVisible(secondCharacterName),
+			clientAController.waitForCharacterButtonToBeVisible(secondCharacterName),
+		]);
+		// /* #endregion */
+
+		// /* #region Give first item to first character [Client A] */
 		firstItem.carriedBy = firstCharacterName;
-		await clientA.locator(`tr:has-text("${firstItem.name}")`).click();
-		await fillOutItemForm(clientA, firstItem);
-		await clientA.locator("text=Save").click();
+		await clientAController.getItemTableRow(firstItem.name).click();
+		await clientAController.page.locator("#carriedByCharacterId").selectOption({
+			label: firstCharacterName,
+		});
+		await clientAController.clickSaveButton("Save");
+		await clientAController.waitForDialogState("Edit Item", "hidden");
+
 		await performActionOnMultipleClients([clientA, clientB], (client) =>
 			checkItemVisibility(client, firstItem, true)
 		);
+		// /* #endregion */
 
-		/* #endregion */
-
-		/* #region  Filtering */
+		// /* #region  Filtering */
 
 		// Open CarriedBy Filter Menu
 		await clientB
@@ -302,130 +314,138 @@ testDualClientsWithNewSheet(
 			hasText: fifthItem.name,
 		}); //fifth item should be last
 
-		return;
+		// ------------------------------------------------------------
+		// ------------------------------------------------------------
+		// ------------------------------------------------------------
+		// ------------------------------------------------------------
+		// ------------------------------------------------------------
+		// ------------------------------------------------------------
+		// ------------------------------------------------------------
+		// ------------------------------------------------------------
+		// ------------------------------------------------------------
 
 		/* #region  Create Fourth Item (Give to second character) */
-		await clientA.locator('[data-testid="add-item-button"]').click();
-		await fillOutItemForm(clientA, fourthItem);
-		await clientA.locator("button:text('Create')").click();
+		// await clientA.locator('[data-testid="add-item-button"]').click();
+		// await fillOutItemForm(clientA, fourthItem);
+		// await clientA.locator("button:text('Create')").click();
 
-		await performActionOnMultipleClients([clientA, clientB], (client) =>
-			checkItemVisibility(client, fourthItem, true)
-		);
-		/* #endregion */
+		// await performActionOnMultipleClients([clientA, clientB], (client) =>
+		// 	checkItemVisibility(client, fourthItem, true)
+		// );
+		// /* #endregion */
 
-		/* #region  Delete First Character(Items to second character) */
-		firstItem.carriedBy = secondCharacterName;
-		thirdItem.carriedBy = secondCharacterName;
+		// /* #region  Delete First Character(Items to second character) */
+		// firstItem.carriedBy = secondCharacterName;
+		// thirdItem.carriedBy = secondCharacterName;
 
-		await clientA.locator(`button:has-text("${firstCharacterName}")`).click();
-		await clientA.locator("text=Delete").click();
-		await clientA.locator('label:has([value="item-pass"])').click();
-		await clientA.locator('select[name="passToTarget"]').selectOption({
-			label: secondCharacterName,
-		});
-		await clientA.locator("text=Confirm").click();
+		// await clientA.locator(`button:has-text("${firstCharacterName}")`).click();
+		// await clientA.locator("text=Delete").click();
+		// await clientA.locator('label:has([value="item-pass"])').click();
+		// await clientA.locator('select[name="passToTarget"]').selectOption({
+		// 	label: secondCharacterName,
+		// });
+		// await clientA.locator("text=Confirm").click();
 
-		await performActionOnMultipleClients([clientA, clientB], async (client) => {
-			await checkItemVisibility(client, firstItem, true);
-			await checkItemVisibility(client, secondItem, true);
-			await checkItemVisibility(client, thirdItem, true);
-			await checkItemVisibility(client, fourthItem, true);
-			await client.waitForSelector(`button >> text=${firstCharacterName}`, {
-				state: "hidden",
-			});
-		});
-		/* #endregion */
+		// await performActionOnMultipleClients([clientA, clientB], async (client) => {
+		// 	await checkItemVisibility(client, firstItem, true);
+		// 	await checkItemVisibility(client, secondItem, true);
+		// 	await checkItemVisibility(client, thirdItem, true);
+		// 	await checkItemVisibility(client, fourthItem, true);
+		// 	await client.waitForSelector(`button >> text=${firstCharacterName}`, {
+		// 		state: "hidden",
+		// 	});
+		// });
+		// /* #endregion */
 
-		/* #region  Create Third Character */
-		await clientB.locator("text=Add Character").click();
-		await clientB.locator('input[name="name"]').click();
-		await clientB.locator('input[name="name"]').fill(thirdCharacterName);
-		await clientB.locator("text=Save").click();
+		// /* #region  Create Third Character */
+		// await clientB.locator("text=Add Character").click();
+		// await clientB.locator('input[name="name"]').click();
+		// await clientB.locator('input[name="name"]').fill(thirdCharacterName);
+		// await clientB.locator("text=Save").click();
 
-		await performActionOnMultipleClients([clientA, clientB], (client) =>
-			client.waitForSelector(`button >> text=${thirdCharacterName}`)
-		);
-		/* #endregion */
+		// await performActionOnMultipleClients([clientA, clientB], (client) =>
+		// 	client.waitForSelector(`button >> text=${thirdCharacterName}`)
+		// );
+		// /* #endregion */
 
-		/* #region  Delete Second Character */
-		await clientA.locator(`button >> text=${secondCharacterName}`).click();
-		await clientA.locator("text=Delete").click();
-		await clientA.locator("text=Delete From Sheet").click();
-		await clientA.locator("text=Confirm").click();
-		await performActionOnMultipleClients([clientA, clientB], (client) =>
-			client.waitForSelector(`button >> text=${secondCharacterName}`, {
-				state: "hidden",
-			})
-		);
-		/* #endregion */
+		// /* #region  Delete Second Character */
+		// await clientA.locator(`button >> text=${secondCharacterName}`).click();
+		// await clientA.locator("text=Delete").click();
+		// await clientA.locator("text=Delete From Sheet").click();
+		// await clientA.locator("text=Confirm").click();
+		// await performActionOnMultipleClients([clientA, clientB], (client) =>
+		// 	client.waitForSelector(`button >> text=${secondCharacterName}`, {
+		// 		state: "hidden",
+		// 	})
+		// );
+		// /* #endregion */
 
-		/* #region  Give Second Item to third character */
-		await clientA.locator(`tr:has-text("${secondItem.name}")`).click();
-		await clientA
-			.locator('select[name="carriedByCharacterId"]')
-			.selectOption({ label: thirdCharacterName });
-		await clientA.locator("text=Save").click();
+		// /* #region  Give Second Item to third character */
+		// await clientA.locator(`tr:has-text("${secondItem.name}")`).click();
+		// await clientA
+		// 	.locator('select[name="carriedByCharacterId"]')
+		// 	.selectOption({ label: thirdCharacterName });
+		// await clientA.locator("text=Save").click();
 
-		secondItem.carriedBy = thirdCharacterName;
-		await performActionOnMultipleClients([clientA, clientB], (client) =>
-			checkItemVisibility(client, secondItem, true)
-		);
-		/* #endregion */
+		// secondItem.carriedBy = thirdCharacterName;
+		// await performActionOnMultipleClients([clientA, clientB], (client) =>
+		// 	checkItemVisibility(client, secondItem, true)
+		// );
+		// /* #endregion */
 
-		/* #region  Delete Third Character(items = carried by nobody) */
-		await clientA.locator(`button >> text=${thirdCharacterName}`).click();
-		await clientA.locator("text=Delete").click();
-		await clientA.locator('text=/.*Set "Carried To" to "Nobody".*/').click();
-		await clientA.locator("text=Confirm").click();
+		// /* #region  Delete Third Character(items = carried by nobody) */
+		// await clientA.locator(`button >> text=${thirdCharacterName}`).click();
+		// await clientA.locator("text=Delete").click();
+		// await clientA.locator('text=/.*Set "Carried To" to "Nobody".*/').click();
+		// await clientA.locator("text=Confirm").click();
 
-		secondItem.carriedBy = "";
-		await performActionOnMultipleClients([clientA, clientB], (client) =>
-			checkItemVisibility(client, secondItem, true)
-		);
-		/* #endregion */
+		// secondItem.carriedBy = "";
+		// await performActionOnMultipleClients([clientA, clientB], (client) =>
+		// 	checkItemVisibility(client, secondItem, true)
+		// );
+		// /* #endregion */
 
-		/* #region  Change Sheet Name */
-		await clientA.locator('[aria-label="edit sheet name"]').click();
-		await clientA.locator('input[name="name"]').fill(editedSheetName);
-		await clientA.locator("text=Save").click();
-		await performActionOnMultipleClients([clientA, clientB], async (client) =>
-			client
-				.locator("h2", { hasText: editedSheetName })
-				.waitFor({ state: "visible" })
-		);
-		/* #endregion */
+		// /* #region  Change Sheet Name */
+		// await clientA.locator('[aria-label="edit sheet name"]').click();
+		// await clientA.locator('input[name="name"]').fill(editedSheetName);
+		// await clientA.locator("text=Save").click();
+		// await performActionOnMultipleClients([clientA, clientB], async (client) =>
+		// 	client
+		// 		.locator("h2", { hasText: editedSheetName })
+		// 		.waitFor({ state: "visible" })
+		// );
+		// /* #endregion */
 
-		/* #region  Create Fourth Character */
-		await clientA.locator("text=Add Character").click();
-		await clientA.locator('input[name="name"]').fill(fourthCharacterName);
-		await clientA.locator("text=Save").click();
+		// /* #region  Create Fourth Character */
+		// await clientA.locator("text=Add Character").click();
+		// await clientA.locator('input[name="name"]').fill(fourthCharacterName);
+		// await clientA.locator("text=Save").click();
 
-		await performActionOnMultipleClients([clientA, clientB], (client) =>
-			client.waitForSelector(`button >> text=${fourthCharacterName}`)
-		);
-		/* #endregion */
+		// await performActionOnMultipleClients([clientA, clientB], (client) =>
+		// 	client.waitForSelector(`button >> text=${fourthCharacterName}`)
+		// );
+		// /* #endregion */
 
-		/* #region  Create Fifth Item, give to fourth character */
-		await clientB.locator("text=Add New Item").click();
-		await fillOutItemForm(clientB, fifthItem);
-		await clientB.locator("button:text('Create')").click();
-		await performActionOnMultipleClients([clientA, clientB], (client) =>
-			checkItemVisibility(client, fifthItem, true)
-		);
-		/* #endregion */
+		// /* #region  Create Fifth Item, give to fourth character */
+		// await clientB.locator("text=Add New Item").click();
+		// await fillOutItemForm(clientB, fifthItem);
+		// await clientB.locator("button:text('Create')").click();
+		// await performActionOnMultipleClients([clientA, clientB], (client) =>
+		// 	checkItemVisibility(client, fifthItem, true)
+		// );
+		// /* #endregion */
 
-		/* #region  Delete Fourth Character (Delete Items) */
-		await clientA.locator(`button:has-text("${fourthCharacterName}")`).click();
-		await clientA.locator("text=Delete").click();
-		await clientA.locator("text=Delete From Sheet").click();
-		await clientA.locator("text=Confirm").click();
-		await performActionOnMultipleClients([clientA, clientB], async (client) => {
-			await client.waitForSelector(`button >> text=${fourthCharacterName}`, {
-				state: "hidden",
-			});
-			await checkItemVisibility(client, fifthItem, false);
-		});
+		// /* #region  Delete Fourth Character (Delete Items) */
+		// await clientA.locator(`button:has-text("${fourthCharacterName}")`).click();
+		// await clientA.locator("text=Delete").click();
+		// await clientA.locator("text=Delete From Sheet").click();
+		// await clientA.locator("text=Confirm").click();
+		// await performActionOnMultipleClients([clientA, clientB], async (client) => {
+		// 	await client.waitForSelector(`button >> text=${fourthCharacterName}`, {
+		// 		state: "hidden",
+		// 	});
+		// 	await checkItemVisibility(client, fifthItem, false);
+		// });
 		/* #endregion */
 	}
 );
