@@ -8,6 +8,7 @@ import {
 	rejectItemWithId,
 	upsert,
 } from "$root/utils";
+import { matchesSchema } from "$zod-helpers";
 
 import { A, flow } from "@mobily/ts-belt";
 import getTime from "date-fns/getTime";
@@ -25,11 +26,28 @@ const rememberedSheetSchema = z.object({
 
 export type RememberedSheet = z.infer<typeof rememberedSheetSchema>;
 
-const rememberedSheetsStateSchema = z.object({
+const baseRememberedSheetsStateSchema = z.object({
 	rememberedSheets: z.array(rememberedSheetSchema),
 });
 
-export type RememberedSheetsState = z.infer<typeof rememberedSheetsStateSchema>;
+const legacyZustandStateSchema = z.object({
+	state: baseRememberedSheetsStateSchema,
+});
+
+const isOldLegacyState = matchesSchema(legacyZustandStateSchema);
+
+const rememberedSheetsStateSchema = z.preprocess((val) => {
+	// We fix any old legacy state
+	if (isOldLegacyState(val)) {
+		return val.state;
+	}
+
+	return val;
+}, baseRememberedSheetsStateSchema);
+
+export type RememberedSheetsState = z.infer<
+	typeof baseRememberedSheetsStateSchema
+>;
 
 export type RememberedSheetAction =
 	| PayloadAction<"remember-sheet", RememberedSheet>

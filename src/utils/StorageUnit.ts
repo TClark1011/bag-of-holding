@@ -21,21 +21,6 @@ class StorageUnit<T> {
 		this.initialValue = this.schema.parse(initialValue); // Just make sure the initial value is val
 	}
 
-	getValue(): T {
-		if (typeof window === "undefined") {
-			return this.initialValue;
-		}
-		const rawRetriedValue = localStorage.getItem(this.key);
-		if (!rawRetriedValue) {
-			localStorage.setItem(this.key, SuperJSON.stringify(this.initialValue));
-			return this.initialValue;
-		}
-
-		const deserialized = SuperJSON.parse<T>(rawRetriedValue);
-
-		return this.schema.parse(deserialized);
-	}
-
 	setValue(newValue: T): void {
 		if (typeof window === "undefined") {
 			return;
@@ -45,6 +30,38 @@ class StorageUnit<T> {
 		localStorage.setItem(this.key, stringifiedNewVal);
 
 		return;
+	}
+
+	resetValue() {
+		this.setValue(this.initialValue);
+	}
+
+	getValue(): T {
+		if (typeof window === "undefined") {
+			return this.initialValue;
+		}
+		const rawRetriedValue = localStorage.getItem(this.key);
+		if (!rawRetriedValue) {
+			this.resetValue();
+			return this.initialValue;
+		}
+
+		const deserialized = SuperJSON.parse<T>(rawRetriedValue);
+
+		try {
+			return this.schema.parse(deserialized);
+		} catch (e) {
+			console.warn(
+				`Failed to validate value found in localStorage at key "${this.key}", received value: `,
+				deserialized
+			);
+
+			// If schema throws an error, we want to reset the value
+			if (typeof window !== "undefined") {
+				this.resetValue();
+			}
+			return this.initialValue;
+		}
 	}
 }
 
