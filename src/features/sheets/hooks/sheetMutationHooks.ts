@@ -3,8 +3,8 @@ import { useInventoryStoreDispatch } from "$sheets/store";
 
 /**
  * This file contains hooks that wrap the trpc mutations
- * and automatically sync the results with the zustand
- * store to keep the UI up to date
+ * and automatically sync the results with the client
+ * state to keep the UI up to date
  */
 
 export const useAddItemMutation: typeof queries.item.create.useMutation = (
