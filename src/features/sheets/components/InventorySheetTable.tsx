@@ -32,7 +32,7 @@ import {
 	TableCell,
 } from "$root/components";
 import { TableFilter } from "$sheets/components";
-import { Fn, SortingDirection } from "$root/types";
+import { SortingDirection } from "$root/types";
 import { Character, Item } from "@prisma/client";
 import { isUrl } from "$root/utils";
 import { matchesSchema } from "$zod-helpers";
@@ -174,8 +174,6 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 
 	const columnSums = useInventoryStore(selectOverallColumnSums, []);
 	const processedItems = useInventoryStore(selectVisibleItems, []);
-
-	console.log("(InventorySheetTable) processedItems: ", processedItems);
 
 	const visibleColumns = useBreakpointVisibleColumns();
 
