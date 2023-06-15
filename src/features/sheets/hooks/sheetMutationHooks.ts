@@ -91,7 +91,6 @@ export const useCharacterDeleteMutation: typeof queries.character.delete.useMuta
 		const mutation = queries.character.delete.useMutation({
 			...options,
 			onSuccess: (result, input, context) => {
-				console.log("(sheetMutationHooks) result: ", result);
 				dispatch({
 					type: "remove-character",
 					payload: input,

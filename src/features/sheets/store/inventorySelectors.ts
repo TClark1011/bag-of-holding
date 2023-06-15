@@ -159,7 +159,7 @@ export const composeSelectPropertyFilterMenuIsOpen =
 
 export const selectItemBeingEdited: InventoryStoreSelector<Item | null> = (s) =>
 	s.ui.itemDialog?.mode === "edit"
-		? s.sheet.items.find(hasId(s.ui.itemDialog.characterId)) ?? null
+		? s.sheet.items.find(hasId(s.ui.itemDialog.itemId)) ?? null
 		: null;
 
 /**

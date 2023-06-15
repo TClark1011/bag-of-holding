@@ -17,9 +17,6 @@ import { D } from "@mobily/ts-belt";
 import { AddIcon, CreateOutlineIcon, PencilIcon } from "chakra-ui-ionicons";
 import { FC } from "react";
 
-/**
- *
- */
 const SheetTopBar: FC = () => {
 	const dispatch = useInventoryStoreDispatch();
 	const { name, characters } = useInventoryStore(

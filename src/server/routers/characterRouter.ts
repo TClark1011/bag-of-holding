@@ -9,7 +9,6 @@ const characterRouter = trpc.router({
 	create: sheetRelatedProcedure
 		.input(characterSchema.omit({ id: true }))
 		.mutation(async ({ input }) => {
-			console.log("Running character creation mutation");
 			const newCharacter = await prisma.character.create({
 				data: input,
 			});

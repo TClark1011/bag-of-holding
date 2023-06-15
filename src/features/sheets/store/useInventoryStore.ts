@@ -13,9 +13,7 @@ import { itemIsCarriedByCharacterId } from "$sheets/utils";
 import { A, D, F, pipe } from "@mobily/ts-belt";
 import { Character, Item } from "@prisma/client";
 import produce from "immer";
-import { Reducer, useMemo } from "react";
 import { matchesSchema } from "$zod-helpers";
-import { InventoryStoreAction } from "$sheets/store/inventoryActions";
 import {
 	FilterableItemProperty,
 	FullSheet,
@@ -34,13 +32,16 @@ import {
 	updateLoopedProgressionToPositionOfValue,
 } from "$root/utils/loopedProgression";
 import { disappearingHashBooleanAtom } from "$jotai-history-toggle";
-import { atomWithReducer, selectAtom } from "jotai/utils";
-import { useAtomValue, useSetAtom } from "jotai";
+import { atomWithReducer } from "jotai/utils";
+import { useSetAtom } from "jotai";
+import { ImmerReducer, createReducerFunction } from "$immer-reducer";
+
+import { createSelectorHookForAtom } from "$jotai-helpers";
 
 export type ItemDialogStateProps =
 	| {
 			mode: "edit";
-			characterId: string;
+			itemId: string;
 	  }
 	| {
 			mode: "new";
@@ -172,229 +173,274 @@ const textSortingDirectionProgression =
 
 const isNumericItemProperty = matchesSchema(numericItemPropertySchema);
 
-const inventoryStoreReducer: Reducer<
-	InventoryStoreProps,
-	InventoryStoreAction
-> = (prevState, action) =>
-	produce(prevState, (draftState) => {
-		switch (action.type) {
-			case "set-sheet":
-				draftState.sheet = action.payload as FullSheet;
-				break;
-			case "set-sheet-name":
-				draftState.sheet.name = action.payload;
-				break;
-			case "add-item":
-				draftState.sheet.items.push({
-					id: Math.random().toString(),
-					...action.payload,
-				});
-				break;
-			case "remove-item":
-				draftState.sheet.items = rejectItemWithId<Item>(action.payload.itemId)(
-					draftState.sheet.items
-				);
-				break;
-			case "update-item":
-				draftState.sheet.items = updateItemWithId<Item>(
-					action.payload.itemId,
-					D.merge(action.payload.data)
-				)(draftState.sheet.items);
-				break;
-			case "remove-character":
-				draftState.sheet = handleCharacterRemoval(
-					draftState.sheet,
-					action.payload.characterId,
-					action.payload.strategy
-				);
-				break;
-			case "add-character":
-				draftState.sheet.characters.push(action.payload);
-				break;
-			case "update-character":
-				draftState.sheet.characters = updateItemWithId<Character>(
-					action.payload.characterId,
-					D.merge(action.payload.data)
-				)(draftState.sheet.characters);
-				break;
-			case "ui.open-character-edit-dialog":
-				draftState.ui.characterDialog = {
-					mode: "edit",
-					data: {
-						characterId: action.payload.characterId,
-						deleteModalIsOpen: false,
-					},
-				};
-				break;
-			case "ui.open-new-character-dialog":
-				draftState.ui.characterDialog = {
-					mode: "new-character",
-				};
-				break;
-			case "ui.close-character-dialog":
-				draftState.ui.characterDialog = {
-					mode: "closed",
-				};
-				break;
-			case "ui.handle-character-delete-button":
-				if (draftState.ui.characterDialog.mode === "edit") {
-					draftState.ui.characterDialog.data.deleteModalIsOpen = true;
-				}
-				break;
-			case "ui.close-character-delete-confirm-dialog":
-				if (draftState.ui.characterDialog.mode === "edit") {
-					draftState.ui.characterDialog.data.deleteModalIsOpen = false;
-				}
-				break;
-			case "ui.open-sheet-name-dialog":
-				draftState.ui.sheetNameDialogIsOpen = true;
-				break;
-			case "ui.close-sheet-name-dialog":
-				draftState.ui.sheetNameDialogIsOpen = false;
-				break;
-			case "ui.toggle-filter":
-				(() => {
-					const currentEffectivePropertyFilter =
-						composeSelectEffectivePropertyFilter(action.payload.property)(
-							draftState
-						);
-					const newFilteringState = toggleArrayItem(
-						currentEffectivePropertyFilter,
-						action.payload.value
-					);
+class InventoryStoreReducerClass extends ImmerReducer<InventoryStoreProps> {
+	/* #region Sheet Actions */
+	["set-sheet"](sheet: FullSheet) {
+		this.draftState.sheet = sheet;
+	}
 
-					const allPossibleFilterValuesForProperty =
-						composeSelectAllPossibleFilterValuesOnProperty(
-							action.payload.property
-						)(draftState);
+	["set-sheet-name"](name: string) {
+		this.draftState.sheet.name = name;
+	}
+	/* #endregion */
 
-					const newSortingStateMatchesAllPossibleValues =
-						newFilteringState.length ===
-						allPossibleFilterValuesForProperty.length;
+	/* #region Item Actions */
+	["add-item"](item: Item) {
+		this.draftState.sheet.items.push(item);
+	}
 
-					if (newSortingStateMatchesAllPossibleValues) {
-						draftState.ui.filters[action.payload.property] = null;
-					} else {
-						draftState.ui.filters[action.payload.property] = newFilteringState;
-					}
-				})();
-				break;
-			case "ui.invert-filter":
-				(() => {
-					const allPossibleFilterValuesForProperty =
-						composeSelectAllPossibleFilterValuesOnProperty(action.payload)(
-							draftState
-						);
+	["remove-item"]({ itemId }: { itemId: string }) {
+		this.draftState.sheet.items = rejectItemWithId<Item>(itemId)(
+			this.draftState.sheet.items
+		);
+	}
 
-					const currentEffectivePropertyFilter =
-						draftState.ui.filters[action.payload] ??
-						allPossibleFilterValuesForProperty;
+	["update-item"]({ itemId, data }: { itemId: string; data: Partial<Item> }) {
+		this.draftState.sheet.items = updateItemWithId<Item>(
+			itemId,
+			D.merge(data)
+		)(this.draftState.sheet.items);
+	}
+	/* #endregion */
 
-					const invertedFilter = arrayDiff(
-						allPossibleFilterValuesForProperty,
-						currentEffectivePropertyFilter
-					);
+	/* #region Character Actions */
+	["add-character"](character: Character) {
+		this.draftState.sheet.characters.push(character);
+	}
 
-					const newSortingStateMatchesAllPossibleValues =
-						invertedFilter.length === allPossibleFilterValuesForProperty.length;
+	["remove-character"]({
+		characterId,
+		strategy,
+	}: {
+		characterId: string;
+		strategy: CharacterRemovalStrategy;
+	}) {
+		this.draftState.sheet = handleCharacterRemoval(
+			this.draftState.sheet,
+			characterId,
+			strategy
+		);
+	}
 
-					if (newSortingStateMatchesAllPossibleValues) {
-						draftState.ui.filters[action.payload] = null;
-					} else {
-						draftState.ui.filters[action.payload] = invertedFilter;
-					}
-				})();
-				break;
-			case "ui.clear-filter":
-				draftState.ui.filters[action.payload] = [];
-				break;
-			case "ui.reset-filter":
-				draftState.ui.filters[action.payload] = null;
-				break;
-			case "ui.toggle-sort":
-				(() => {
-					const propertyTargetedForSorting = action.payload;
+	["update-character"]({
+		characterId,
+		data,
+	}: {
+		characterId: string;
+		data: Partial<Character>;
+	}) {
+		this.draftState.sheet.characters = updateItemWithId<Character>(
+			characterId,
+			D.merge(data)
+		)(this.draftState.sheet.characters);
+	}
+	/* #endregion */
 
-					const targetedPropertyIsNumeric = isNumericItemProperty(
-						propertyTargetedForSorting
-					);
+	/* #region [UI] Character Dialog Actions */
+	["ui.open-character-edit-dialog"]({ characterId }: { characterId: string }) {
+		this.draftState.ui.characterDialog = {
+			mode: "edit",
+			data: {
+				characterId,
+				deleteModalIsOpen: false,
+			},
+		};
+	}
 
-					const sortingDirectionProgression: LoopedProgression<SortingDirection | null> =
-						targetedPropertyIsNumeric
-							? numericSortingDirectionProgression
-							: textSortingDirectionProgression;
+	["ui.open-new-character-dialog"]() {
+		this.draftState.ui.characterDialog = {
+			mode: "new-character",
+		};
+	}
 
-					const targetPropertyWasAlreadyBeingSortedBy =
-						draftState.ui.sorting?.property === propertyTargetedForSorting;
+	["ui.close-character-dialog"]() {
+		this.draftState.ui.characterDialog = {
+			mode: "closed",
+		};
+	}
 
-					const currentSortingValueForTargetProperty: SortingDirection | null =
-						targetPropertyWasAlreadyBeingSortedBy
-							? draftState.ui.sorting?.direction ?? null
-							: null;
-
-					const newSortingDirection = pipe(
-						sortingDirectionProgression,
-						(p) =>
-							updateLoopedProgressionToPositionOfValue(
-								p,
-								currentSortingValueForTargetProperty
-							),
-						goNextOnLoopedProgression,
-						getLoopedProgressionValue
-					);
-
-					if (newSortingDirection === null) {
-						draftState.ui.sorting = defaultSorting;
-						// We never want to have no sorting, so we set it to the default
-						// (ascending by name) rather than go to null
-					} else {
-						draftState.ui.sorting = {
-							direction: newSortingDirection,
-							property: action.payload,
-						};
-					}
-				})();
-
-				break;
-			case "ui.open-filter-menu":
-				draftState.ui.openFilterMenu = action.payload;
-				break;
-			case "ui.close-filter-menu":
-				draftState.ui.openFilterMenu = null;
-				break;
-			case "ui.open-new-item-dialog":
-				draftState.ui.itemDialog = {
-					mode: "new",
-				};
-				break;
-			case "ui.open-item-edit-dialog":
-				draftState.ui.itemDialog = {
-					mode: "edit",
-					characterId: action.payload,
-				};
-				break;
-			case "ui.close-item-dialog":
-				draftState.ui.itemDialog = null;
-				break;
-			case "ui.set-search-value":
-				draftState.ui.searchBarValue = action.payload;
-				break;
-			case "ui.reset-all-filters":
-				draftState.ui.filters = {
-					carriedByCharacterId: null,
-					category: null,
-				};
-				break;
-			case "ui.open-welcome-dialog":
-				draftState.ui.welcomeDialogIsOpen = true;
-				break;
-			case "ui.close-welcome-dialog":
-				draftState.ui.welcomeDialogIsOpen = false;
-				break;
-			default:
-				mustBeNever(action);
+	["ui.handle-character-delete-button"]() {
+		if (this.draftState.ui.characterDialog.mode === "edit") {
+			this.draftState.ui.characterDialog.data.deleteModalIsOpen = true;
 		}
-	});
+	}
+
+	["ui.close-character-delete-confirm-dialog"]() {
+		if (this.draftState.ui.characterDialog.mode === "edit") {
+			this.draftState.ui.characterDialog.data.deleteModalIsOpen = false;
+		}
+	}
+	/* #endregion */
+
+	/* #region [UI] Sheet Name Dialog Actions */
+	["ui.open-sheet-name-dialog"]() {
+		this.draftState.ui.sheetNameDialogIsOpen = true;
+	}
+
+	["ui.close-sheet-name-dialog"]() {
+		this.draftState.ui.sheetNameDialogIsOpen = false;
+	}
+	/* #endregion */
+
+	/* #region [UI] Filter Actions */
+	["ui.toggle-filter"]({
+		property,
+		value,
+	}: {
+		property: FilterableItemProperty;
+		value: string | null;
+	}) {
+		const currentEffectivePropertyFilter = composeSelectEffectivePropertyFilter(
+			property
+		)(this.draftState);
+		const newFilteringState = toggleArrayItem(
+			currentEffectivePropertyFilter,
+			value
+		);
+
+		const allPossibleFilterValuesForProperty =
+			composeSelectAllPossibleFilterValuesOnProperty(property)(this.draftState);
+
+		const newSortingStateMatchesAllPossibleValues =
+			newFilteringState.length === allPossibleFilterValuesForProperty.length;
+
+		if (newSortingStateMatchesAllPossibleValues) {
+			this.draftState.ui.filters[property] = null;
+		} else {
+			this.draftState.ui.filters[property] = newFilteringState;
+		}
+	}
+
+	["ui.invert-filter"](property: FilterableItemProperty) {
+		const allPossibleFilterValuesForProperty =
+			composeSelectAllPossibleFilterValuesOnProperty(property)(this.draftState);
+
+		const currentEffectivePropertyFilter =
+			this.draftState.ui.filters[property] ??
+			allPossibleFilterValuesForProperty;
+
+		const invertedFilter = arrayDiff(
+			allPossibleFilterValuesForProperty,
+			currentEffectivePropertyFilter
+		);
+
+		const newSortingStateMatchesAllPossibleValues =
+			invertedFilter.length === allPossibleFilterValuesForProperty.length;
+
+		if (newSortingStateMatchesAllPossibleValues) {
+			this.draftState.ui.filters[property] = null;
+		} else {
+			this.draftState.ui.filters[property] = invertedFilter;
+		}
+	}
+
+	["ui.clear-filter"](property: FilterableItemProperty) {
+		// Unchecks all items
+		this.draftState.ui.filters[property] = [];
+	}
+
+	["ui.reset-filter"](property: FilterableItemProperty) {
+		this.draftState.ui.filters[property] = null;
+	}
+
+	["ui.reset-all-filters"]() {
+		this.draftState.ui.filters = {
+			carriedByCharacterId: null,
+			category: null,
+		};
+	}
+	/* #endregion */
+
+	/* #region [UI] Filter Menu Actions */
+	["ui.open-filter-menu"](property: FilterableItemProperty) {
+		this.draftState.ui.openFilterMenu = property;
+	}
+
+	["ui.close-filter-menu"]() {
+		this.draftState.ui.openFilterMenu = null;
+	}
+	/* #endregion */
+
+	/* #region [UI] Sorting Actions */
+	["ui.toggle-sort"](property: SortableItemProperty) {
+		const propertyTargetedForSorting = property;
+
+		const targetedPropertyIsNumeric = isNumericItemProperty(
+			propertyTargetedForSorting
+		);
+
+		const sortingDirectionProgression: LoopedProgression<SortingDirection | null> =
+			targetedPropertyIsNumeric
+				? numericSortingDirectionProgression
+				: textSortingDirectionProgression;
+
+		const targetPropertyWasAlreadyBeingSortedBy =
+			this.draftState.ui.sorting?.property === propertyTargetedForSorting;
+
+		const currentSortingValueForTargetProperty: SortingDirection | null =
+			targetPropertyWasAlreadyBeingSortedBy
+				? this.draftState.ui.sorting?.direction ?? null
+				: null;
+
+		const newSortingDirection = pipe(
+			sortingDirectionProgression,
+			(p) =>
+				updateLoopedProgressionToPositionOfValue(
+					p,
+					currentSortingValueForTargetProperty
+				),
+			goNextOnLoopedProgression,
+			getLoopedProgressionValue
+		);
+
+		if (newSortingDirection === null) {
+			this.draftState.ui.sorting = defaultSorting;
+			// We never want to have no sorting, so we set it to the default
+			// (ascending by name) rather than go to null
+		} else {
+			this.draftState.ui.sorting = {
+				direction: newSortingDirection,
+				property,
+			};
+		}
+	}
+	/* #endregion */
+
+	/* #region [UI] Item Dialog Actions */
+	["ui.open-new-item-dialog"]() {
+		this.draftState.ui.itemDialog = {
+			mode: "new",
+		};
+	}
+
+	["ui.open-item-edit-dialog"]({ itemId }: { itemId: string }) {
+		this.draftState.ui.itemDialog = {
+			mode: "edit",
+			itemId,
+		};
+	}
+
+	["ui.close-item-dialog"]() {
+		this.draftState.ui.itemDialog = null;
+	}
+	/* #endregion */
+
+	/* #region [UI] Welcome Dialog Actions */
+	["ui.open-welcome-dialog"]() {
+		this.draftState.ui.welcomeDialogIsOpen = true;
+	}
+
+	["ui.close-welcome-dialog"]() {
+		this.draftState.ui.welcomeDialogIsOpen = false;
+	}
+	/* #endregion */
+
+	["ui.set-search-value"](query: string) {
+		this.draftState.ui.searchBarValue = query;
+	}
+}
+
+const inventoryStoreReducer = createReducerFunction(InventoryStoreReducerClass);
 
 export const inventoryAtom = atomWithReducer(
 	initialInventoryStoreState,
@@ -402,31 +448,7 @@ export const inventoryAtom = atomWithReducer(
 );
 export const useInventoryStoreDispatch = () => useSetAtom(inventoryAtom);
 
-export function useInventoryStore(): InventoryStoreProps;
-export function useInventoryStore<T>(
-	select: (state: InventoryStoreProps) => T,
-	deps: any[]
-): T;
-export function useInventoryStore<T>(
-	...args: [] | [(state: InventoryStoreProps) => T, any[]?]
-): InventoryStoreProps | T {
-	const [selector, deps = []] = args;
-
-	// Required otherwise the selector will be re-created on every render
-	const memoisedSelector = useMemo(() => selector, deps);
-
-	const selectorAtom = useMemo(
-		() =>
-			memoisedSelector === undefined
-				? inventoryAtom
-				: selectAtom(inventoryAtom, memoisedSelector),
-		[memoisedSelector]
-	);
-
-	const value = useAtomValue(selectorAtom);
-
-	return value;
-}
+export const useInventoryStore = createSelectorHookForAtom(inventoryAtom);
 
 export const useInventoryStoreState = () =>
 	useInventoryStore((s) => s.sheet, []);

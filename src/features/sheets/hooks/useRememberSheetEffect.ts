@@ -13,7 +13,7 @@ const useRememberSheetEffect = () => {
 	useEffect(() => {
 		if (sheetId !== "") {
 			dispatch({
-				type: "remember-sheet",
+				type: "rememberSheet",
 				payload: {
 					id: sheetId,
 					name: sheetName,

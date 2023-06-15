@@ -102,7 +102,7 @@ const SheetPage: React.FC<SheetPageProps> = ({
 						onRowClick={(item) =>
 							dispatch({
 								type: "ui.open-item-edit-dialog",
-								payload: item?.id ?? "",
+								payload: { itemId: item?.id ?? "" },
 							})
 						}
 						mb="break"

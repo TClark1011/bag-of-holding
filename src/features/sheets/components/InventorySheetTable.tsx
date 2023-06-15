@@ -254,7 +254,9 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 						onClick={() =>
 							dispatch({
 								type: "ui.open-item-edit-dialog",
-								payload: item.id,
+								payload: {
+									itemId: item.id,
+								},
 							})
 						}
 						cursor="pointer"

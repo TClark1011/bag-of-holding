@@ -1,21 +1,15 @@
-import { PayloadAction } from "$actions";
 import { get } from "$fp";
+import { ImmerReducer, createReducerFunction } from "$immer-reducer";
+import { createSelectorHookForAtom } from "$jotai-helpers";
+
 import { Fn } from "$root/types";
-import {
-	StorageUnit,
-	matchById,
-	mustBeNever,
-	rejectItemWithId,
-	upsert,
-} from "$root/utils";
+import { StorageUnit, matchById, rejectItemWithId, upsert } from "$root/utils";
 import { matchesSchema } from "$zod-helpers";
 
 import { A, flow } from "@mobily/ts-belt";
 import getTime from "date-fns/getTime";
-import produce from "immer";
-import { getDefaultStore, useAtomValue, useSetAtom } from "jotai";
-import { atomWithReducer, selectAtom } from "jotai/utils";
-import { Reducer, useMemo } from "react";
+import { getDefaultStore, useSetAtom } from "jotai";
+import { atomWithReducer } from "jotai/utils";
 import { z } from "zod";
 
 const rememberedSheetSchema = z.object({
@@ -49,39 +43,30 @@ export type RememberedSheetsState = z.infer<
 	typeof baseRememberedSheetsStateSchema
 >;
 
-export type RememberedSheetAction =
-	| PayloadAction<"remember-sheet", RememberedSheet>
-	| PayloadAction<"remove-sheet", { sheetId: string }>;
-
 const rememberedSheetsInitialState: RememberedSheetsState = {
 	rememberedSheets: [],
 };
 
-const rememberedSheetsReducer: Reducer<
-	RememberedSheetsState,
-	RememberedSheetAction
-> = produce((draftState, action) => {
-	switch (action.type) {
-		case "remember-sheet": {
-			draftState.rememberedSheets = upsert(
-				draftState.rememberedSheets,
-				action.payload,
-				matchById
-			);
-			break;
-		}
-		case "remove-sheet": {
-			draftState.rememberedSheets = rejectItemWithId(
-				draftState.rememberedSheets,
-				action.payload.sheetId
-			);
-			break;
-		}
-		default: {
-			mustBeNever(action);
-		}
+class RememberedSheetReducerClass extends ImmerReducer<RememberedSheetsState> {
+	rememberSheet(rememberedSheet: RememberedSheet) {
+		this.draftState.rememberedSheets = upsert(
+			this.draftState.rememberedSheets,
+			rememberedSheet,
+			matchById
+		);
 	}
-});
+
+	removeSheet(sheetId: string) {
+		this.draftState.rememberedSheets = rejectItemWithId(
+			this.draftState.rememberedSheets,
+			sheetId
+		);
+	}
+}
+
+const rememberedSheetsReducer = createReducerFunction(
+	RememberedSheetReducerClass
+);
 
 const rememberedSheetsStorageController = new StorageUnit(
 	"remembered-sheets",
@@ -109,31 +94,8 @@ const sortRememberedSheetsByVisitedAt: Fn<
 const selectRememberedSheets: Fn<[RememberedSheetsState], RememberedSheet[]> =
 	flow(get("rememberedSheets"), sortRememberedSheetsByVisitedAt, A.take(4));
 
-export function useRememberedSheetsStore(): RememberedSheetsState;
-export function useRememberedSheetsStore<T>(
-	select: (state: RememberedSheetsState) => T,
-	deps: any[]
-): T;
-export function useRememberedSheetsStore<T>(
-	...args: [] | [(state: RememberedSheetsState) => T, any[]?]
-): RememberedSheetsState | T {
-	const [selector, deps = []] = args;
-
-	// Required otherwise the selector will be re-created on every render
-	const memoisedSelector = useMemo(() => selector, deps);
-
-	const selectorAtom = useMemo(
-		() =>
-			memoisedSelector === undefined
-				? rememberedSheetsAtom
-				: selectAtom(rememberedSheetsAtom, memoisedSelector),
-		[memoisedSelector]
-	);
-
-	const value = useAtomValue(selectorAtom);
-
-	return value;
-}
+export const useRememberedSheetsStore =
+	createSelectorHookForAtom(rememberedSheetsAtom);
 
 export const useRememberedSheets = () =>
 	useRememberedSheetsStore(selectRememberedSheets, []);
