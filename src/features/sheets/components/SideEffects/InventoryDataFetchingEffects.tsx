@@ -1,4 +1,3 @@
-import { expectParam } from "$fp";
 import { SHEET_REFETCH_INTERVAL_MS } from "$root/config";
 import queries from "$root/hooks/queries";
 import {
@@ -7,20 +6,21 @@ import {
 	useItemDeleteMutation,
 } from "$sheets/hooks";
 import { useInventoryStore, useInventoryStoreDispatch } from "$sheets/store";
-import { D, flow } from "@mobily/ts-belt";
+import { D, F, flow } from "@mobily/ts-belt";
 import { Sheet } from "@prisma/client";
 import { isAfter } from "date-fns/fp";
-import { useCallback } from "react";
+import { useMemo } from "react";
 
 const useSheetUpdateIsNewerChecker = () => {
 	const localUpdatedAt = useInventoryStore((s) => s.sheet.updatedAt, []);
 
-	return useCallback(
-		flow(
-			expectParam<Sheet>(),
-			D.getUnsafe("updatedAt"),
-			isAfter(localUpdatedAt)
-		),
+	return useMemo(
+		() =>
+			flow(
+				F.identity<Sheet>,
+				D.getUnsafe("updatedAt"),
+				isAfter(localUpdatedAt)
+			),
 		[localUpdatedAt]
 	);
 };

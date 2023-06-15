@@ -12,6 +12,7 @@ import { useEffect } from "react";
  * @param effect The effect to run
  */
 const useOnMountEffect = (effect: ReactEffect) => {
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	useEffect(effect, []);
 };
 

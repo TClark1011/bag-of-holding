@@ -8,6 +8,7 @@ export const useAtomWithSelector = <AtomType, Selection>(
 	selector: (atomValue: AtomType) => Selection,
 	deps: any[]
 ) => {
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	const memoisedSelector = useMemo(() => selector, deps);
 	const theSelectorAtom = useMemo(
 		() => selectAtom(theAtom, memoisedSelector),
@@ -17,10 +18,6 @@ export const useAtomWithSelector = <AtomType, Selection>(
 	return useAtomValue(theSelectorAtom);
 };
 
-// export const createSelectorHookForAtom =
-// 	<AtomType>(theAtom: Atom<AtomType>) =>
-// 	<Selection>(selector: (atomValue: AtomType) => Selection, deps: any[]) =>
-// 		useAtomWithSelector(theAtom, selector, deps);
 export const createSelectorHookForAtom = <AtomType>(
 	theAtom: Atom<AtomType>
 ) => {

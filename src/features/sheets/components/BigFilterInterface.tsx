@@ -17,7 +17,7 @@ import {
 	Text,
 	VStack,
 } from "@chakra-ui/react";
-import { A, D, G, O, flow, pipe } from "@mobily/ts-belt";
+import { A, G, O, flow, pipe } from "@mobily/ts-belt";
 import { FC } from "react";
 
 export type BigFilterInterfaceProps = StyleProps & {

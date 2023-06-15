@@ -177,7 +177,7 @@ const useHandleCharacterDeletionWithStrategyForm = () => {
 				});
 			}
 		},
-		[characterBeingEdited]
+		[characterBeingEdited, characterDeletionMutation]
 	);
 
 	return handler;
@@ -198,7 +198,7 @@ const useHandleSimpleConfirmation = () => {
 					type: "item-delete",
 				},
 			}),
-		[characterBeingEdited]
+		[characterBeingEdited, characterDeletionMutation]
 	);
 
 	return handler;
@@ -231,7 +231,12 @@ const CharacterConfirmDeleteDialog = () => {
 			A.isEmpty(itemsCarriedByEditTarget)
 				? strategySelectionForm.handleSubmit(submitSimpleConfirmation)
 				: strategySelectionForm.handleSubmit(submitStrategySelectionForm),
-		[strategySelectionForm, itemsCarriedByEditTarget]
+		[
+			strategySelectionForm,
+			itemsCarriedByEditTarget,
+			submitSimpleConfirmation,
+			submitStrategySelectionForm,
+		]
 	);
 
 	const submissionHandler = useMemo(
@@ -242,7 +247,7 @@ const CharacterConfirmDeleteDialog = () => {
 				P.then(onCloseBaseCharacterEditModal),
 				P.then(isLoadingController.off)
 			),
-		[strategySelectionForm, itemsCarriedByEditTarget]
+		[isLoadingController, onCloseBaseCharacterEditModal, submitFormData]
 	);
 
 	return (

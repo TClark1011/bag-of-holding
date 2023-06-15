@@ -9,11 +9,14 @@
 			"version": "detect"
 		}
 	},
+	"plugins": ["react", "react-hooks", "@next/next", "@typescript-eslint"],
 	"extends": [
 		"eslint:recommended",
 		"plugin:@typescript-eslint/recommended",
 		"plugin:playwright/playwright-test",
 		"plugin:react/recommended",
+		"plugin:react-hooks/recommended",
+		"plugin:@next/next/recommended",
 		"prettier"
 	],
 	"parser": "@typescript-eslint/parser",
@@ -24,14 +27,36 @@
 		"ecmaVersion": 12,
 		"sourceType": "module"
 	},
-	"plugins": ["react", "@typescript-eslint"],
 	"ignorePatterns": ["src/assets/**", "node_modules/**", "prisma/schemas/**"],
+	"overrides": [
+		{
+			// Specific rules for scripts
+			"files": ["scripts/**"],
+			"rules": {
+				"no-console": "off"
+			}
+		},
+		{
+			// Specific rules for tests
+			"files": ["tests/**"],
+			"rules": {
+				"no-console": "off"
+			}
+		}
+	],
 	"rules": {
 		// base
 		"no-warning-comments": "warn",
+		"no-console": ["error", { "allow": ["warn", "error", "debug"] }],
 		// react
 		"react/react-in-jsx-scope": "off",
 		"react/prop-types": "off",
+		"react-hooks/exhaustive-deps": [
+			"warn",
+			{
+				"additionalHooks": "(useDebouncedEffect|useEffectWithTransition)"
+			}
+		],
 		// typescript
 		"@typescript-eslint/no-explicit-any": "off",
 		"@typescript-eslint/explicit-module-boundary-types": "off",

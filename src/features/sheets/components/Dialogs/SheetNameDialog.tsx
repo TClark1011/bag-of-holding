@@ -56,7 +56,7 @@ const useSheetNameForm = () => {
 		form.reset({
 			name,
 		});
-	}, [name, isOpen]);
+	}, [name, isOpen, form]);
 
 	return form;
 };
