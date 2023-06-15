@@ -9,9 +9,10 @@ import {
 	Button,
 	IconButton,
 	Link,
-	Text,
 	Tooltip,
 	useColorModeValue,
+	VisuallyHidden,
+	Td,
 } from "@chakra-ui/react";
 import { BookOutlineIcon, FilterOutlineIcon } from "chakra-ui-ionicons";
 import { getItemTotalValue, getItemTotalWeight } from "$sheets/utils";
@@ -44,6 +45,7 @@ import { itemPropertyLabels } from "$sheets/constants";
 import { useBreakpointVisibleColumns } from "$sheets/hooks";
 import EntityData from "$sheets/components/EntityData";
 import { useRenderLogging } from "$root/hooks";
+import { FC, PropsWithChildren } from "react";
 
 const getTestId = testIdGeneratorFactory("InventoryTable");
 
@@ -56,10 +58,6 @@ export const inventoryTableTestIds = {
 	carriedByColumnHeader: getTestId("CarriedByColumnHeader"),
 	categoryColumnHeader: getTestId("CategoryColumnHeader"),
 };
-
-export interface InventorySheetTableProps extends TableProps {
-	onRowClick: (item?: Item) => void;
-}
 
 const numericProperties: ProcessableItemProperty[] = [
 	"quantity",
@@ -93,14 +91,20 @@ const determineIconSet = (property: ProcessableItemProperty) =>
 		? numericSortingIconSet
 		: defaultSortingIconSet;
 
+const multiplicationSymbol = "\u00D7";
+
+const composeTotalColumnTooltipMessage = (property: string) =>
+	`Shows the total ${property} of all the instances of the item (${property} ${multiplicationSymbol} quantity) `;
+
 /**
  * A component to be used as the column headers
  */
 const TableHeader: React.FC<
 	TableCellProps & {
 		property: ProcessableItemProperty;
+		tooltip?: string;
 	}
-> = ({ property, children, ...props }) => {
+> = ({ property, children, tooltip, ...props }) => {
 	const dispatch = useInventoryStoreDispatch();
 
 	const sorting = useInventoryStore((s) => s.ui.sorting, []);
@@ -123,6 +127,18 @@ const TableHeader: React.FC<
 		}
 	};
 
+	const ButtonWrapper: FC<PropsWithChildren> = ({ children }) => {
+		if (tooltip) {
+			return (
+				<Tooltip label={tooltip} hasArrow openDelay={500} placement="top">
+					{children}
+				</Tooltip>
+			);
+		}
+
+		return <>{children}</>;
+	};
+
 	const onPopoverOpen = () =>
 		isFilterable &&
 		dispatch({
@@ -134,10 +150,12 @@ const TableHeader: React.FC<
 
 	return (
 		<TableCell {...props} as={Th}>
-			<Button variant="ghost" onClick={onSort}>
-				<Text marginRight="group">{children}</Text>
-				{isBeingSorted && sortingIcons[sorting.direction]}
-			</Button>
+			<ButtonWrapper>
+				<Button variant="ghost" onClick={onSort}>
+					{children}
+					{isBeingSorted && sortingIcons[sorting.direction]}
+				</Button>
+			</ButtonWrapper>
 			{isFilterable && (
 				<TableFilter
 					isOpen={filterPopoverIsOpen}
@@ -163,10 +181,7 @@ const selectPossiblyUndefinedCharacterName = (
 	character: Character | undefined
 ): string | undefined => character?.name;
 
-const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
-	onRowClick,
-	...props
-}) => {
+const InventorySheetTable: React.FC<TableProps> = (props) => {
 	useRenderLogging("InventorySheetTable");
 
 	const dispatch = useInventoryStoreDispatch();
@@ -176,6 +191,15 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 	const processedItems = useInventoryStore(selectVisibleItems, []);
 
 	const visibleColumns = useBreakpointVisibleColumns();
+
+	const composeItemRowClickHandler = (item: Item) => () => {
+		dispatch({
+			type: "ui.open-item-edit-dialog",
+			payload: {
+				itemId: item.id,
+			},
+		});
+	};
 
 	return (
 		<Table
@@ -203,30 +227,20 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 					</TableHeader>
 					<TableHeader
 						property="weight"
+						// tooltip="The weight shown is the total weight of all the instances of an item."
+						tooltip={composeTotalColumnTooltipMessage("weight")}
 						data-testid={inventoryTableTestIds.weightColumnHeader}
 					>
-						<Tooltip
-							label="The weight shown is the total weight of all the instances of an item."
-							placement="top"
-							openDelay={500}
-							hasArrow
-						>
-							Weight
-						</Tooltip>
+						Weight
 					</TableHeader>
+
 					{visibleColumns >= 4 && (
 						<TableHeader
 							property="value"
 							data-testid={inventoryTableTestIds.valueColumnHeader}
+							tooltip={composeTotalColumnTooltipMessage("value")}
 						>
-							<Tooltip
-								label="The value shown is the total value of all the instances of an item."
-								placement="top"
-								openDelay={500}
-								hasArrow
-							>
-								Value
-							</Tooltip>
+							Value
 						</TableHeader>
 					)}
 					{visibleColumns >= 5 && (
@@ -245,21 +259,22 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 							Category
 						</TableHeader>
 					)}
+
+					{/* For invisible button on each row */}
+					<VisuallyHidden as={Th}></VisuallyHidden>
 				</Tr>
 			</Thead>
 			<Tbody>
 				{processedItems.map((item) => (
 					<Tr
 						key={item.id}
-						onClick={() =>
-							dispatch({
-								type: "ui.open-item-edit-dialog",
-								payload: {
-									itemId: item.id,
-								},
-							})
-						}
+						onClick={composeItemRowClickHandler(item)}
 						cursor="pointer"
+						sx={{
+							"&:hover,&:focus-within": {
+								backgroundColor: hoverBg,
+							},
+						}}
 						_hover={{ backgroundColor: hoverBg }}
 						data-testid={`item-row-${item.name}`}
 					>
@@ -304,10 +319,20 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 						{visibleColumns >= 6 && (
 							<TableCell data-column="category">{item.category}</TableCell>
 						)}
+
+						{/* Workaround to allow for accessibility and keyboard navigation
+								of the table.  */}
+						<VisuallyHidden as={Td}>
+							<Button
+								variant="unstyled"
+								onClick={composeItemRowClickHandler(item)}
+							>
+								Edit {item.name}
+							</Button>
+						</VisuallyHidden>
 					</Tr>
 				))}
 				<Tr>
-					{/* Bottom Sums Row */}
 					<TableCell colSpan={2} fontWeight="bold" textAlign="right">
 						Total
 					</TableCell>
@@ -323,6 +348,9 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 					)}
 					{visibleColumns >= 5 && <TableCell />}
 					{visibleColumns >= 6 && <TableCell />}
+
+					{/* For hidden button column */}
+					<VisuallyHidden as={Td} />
 				</Tr>
 			</Tbody>
 		</Table>

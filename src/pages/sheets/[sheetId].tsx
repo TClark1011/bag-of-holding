@@ -98,15 +98,7 @@ const SheetPage: React.FC<SheetPageProps> = ({
 				<Box as="main">
 					<SheetTopBar />
 					<SheetActions />
-					<InventorySheetTable
-						onRowClick={(item) =>
-							dispatch({
-								type: "ui.open-item-edit-dialog",
-								payload: { itemId: item?.id ?? "" },
-							})
-						}
-						mb="break"
-					/>
+					<InventorySheetTable mb="break" />
 					<CharacterTotals />
 
 					{/* Dialogs */}

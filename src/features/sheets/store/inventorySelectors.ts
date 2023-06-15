@@ -278,7 +278,11 @@ const getItemColumnSums = (items: Item[]) => {
 		sums.weight += getItemTotalWeight(item);
 	}
 
-	return sums;
+	const roundedSums = D.map(sums, (value) =>
+		new Big(value).round(2).toNumber()
+	);
+
+	return roundedSums;
 };
 
 export const selectOverallColumnSums: InventoryStoreSelector<ColumnSums> = (
