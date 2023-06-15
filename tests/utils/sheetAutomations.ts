@@ -1,4 +1,3 @@
-import { SEARCH_BAR_DELAY_MS } from "$root/config";
 import { getItemTotalValue } from "$sheets/utils";
 import { searchBar, selectWithinTable } from "$tests/utils/usefulSelectors";
 import wait from "$tests/utils/wait";
@@ -90,7 +89,7 @@ export const screenshot = async (
 	fileName: string,
 	extraOptions: Omit<PageScreenshotOptions, "path"> = {}
 ) => {
-	// No screenshots in continious integration
+	// No screenshots in CI
 	if (process.env.CI) return;
 	await client.screenshot({
 		path: `screenshots/${Date.now()}--${S.replaceAll(fileName, " ", "_")}.png`,
@@ -159,7 +158,7 @@ export const countItemRows = async (client: Page) =>
  */
 export const fillSearchBar = async (client: Page, searchTerm: string) => {
 	await client.fill(searchBar, searchTerm);
-	await wait(SEARCH_BAR_DELAY_MS + SEARCH_BAR_INTERACTION_BUFFER_MS);
+	await client.waitForTimeout(SEARCH_BAR_INTERACTION_BUFFER_MS);
 };
 
 export const clearSearchbar = async (client: Page) => {
@@ -167,9 +166,13 @@ export const clearSearchbar = async (client: Page) => {
 
 	await client.focus(searchBar);
 	for (let i = 0; i < currentSearchValue.length; i++) {
+		// Input a backspace for each character in the search bar
+		// Pretty janky, but is the only method I have found for
+		// clearing an input that works consistently across
+		// platforms.
 		await client.keyboard.press("Backspace");
 	}
-	await wait(SEARCH_BAR_DELAY_MS + SEARCH_BAR_INTERACTION_BUFFER_MS);
+	await client.waitForTimeout(SEARCH_BAR_INTERACTION_BUFFER_MS);
 };
 
 /**
@@ -183,7 +186,7 @@ export const clearSearchbar = async (client: Page) => {
 export const performActionOnMultipleClients = <T>(
 	clients: Page[],
 	callback: (p: Page, index: number) => Promise<T>
-) => Promise.all(clients.map(callback));
+): Promise<T[]> => Promise.all(clients.map(callback));
 
 /**
  * Return the name of the item in the given row

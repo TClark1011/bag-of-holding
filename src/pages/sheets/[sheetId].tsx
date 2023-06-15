@@ -2,11 +2,7 @@ import { Box } from "@chakra-ui/react";
 import { GetServerSideProps } from "next";
 import { appName } from "$root/constants";
 import { getUrlParam, getSheetLink } from "$root/utils";
-import {
-	useInventoryStore,
-	useInventoryStoreDispatch,
-	fromSheet,
-} from "$sheets/store";
+import { useInventoryStore, useInventoryStoreDispatch } from "$sheets/store";
 import {
 	WelcomeDialog,
 	FilterDialog,
@@ -18,7 +14,6 @@ import {
 import { testIdGeneratorFactory } from "$tests/utils/testUtils";
 import { View } from "$root/components";
 import { useOnMountEffect } from "$root/hooks";
-import { Sheet } from "@prisma/client";
 import { FullSheet } from "$sheets/types";
 import CharacterDialog from "$sheets/components/Dialogs/CharacterDialog";
 import SheetNameDialog from "$sheets/components/Dialogs/SheetNameDialog";
@@ -26,8 +21,21 @@ import SheetTopBar from "$sheets/components/SheetTopBar";
 import SheetActions from "$sheets/components/SheetActions";
 import CharacterTotals from "$sheets/components/CharacterTotals";
 import useRenderLogging from "$root/hooks/useRenderLogging";
-import { get } from "$fp";
 import MobileFilterDialog from "$sheets/components/Dialogs/MobileFilterDialog";
+import dynamic from "next/dynamic";
+import { inDevelopment } from "$root/config";
+
+const SheetDevTools = inDevelopment
+	? dynamic(
+			() =>
+				import(
+					"../../features/sheets/components/SideEffects/SheetDevTools"
+				).then((r) => r.default),
+			{
+				ssr: false,
+			}
+	  )
+	: () => null;
 
 const getTestId = testIdGeneratorFactory("SheetPage");
 
@@ -58,7 +66,7 @@ const SheetPage: React.FC<SheetPageProps> = ({
 
 	const dispatch = useInventoryStoreDispatch();
 
-	const name = useInventoryStore(fromSheet(get("name")));
+	const name = useInventoryStore((s) => s.sheet.name, []);
 
 	useOnMountEffect(() => {
 		dispatch({
@@ -78,6 +86,7 @@ const SheetPage: React.FC<SheetPageProps> = ({
 
 	return (
 		<>
+			<SheetDevTools />
 			<InventoryDataFetchingEffects />
 			<RememberSheetEffect />
 
@@ -93,7 +102,7 @@ const SheetPage: React.FC<SheetPageProps> = ({
 						onRowClick={(item) =>
 							dispatch({
 								type: "ui.open-item-edit-dialog",
-								payload: item?.id ?? "",
+								payload: { itemId: item?.id ?? "" },
 							})
 						}
 						mb="break"
@@ -121,7 +130,7 @@ const SheetPage: React.FC<SheetPageProps> = ({
  * @param context.params.sheetId The sheet id in the ur;
  * @returns The props for the sheet
  */
-export const getServerSideProps: GetServerSideProps<Sheet> = async (
+export const getServerSideProps: GetServerSideProps<SheetPageProps> = async (
 	context
 ) => {
 	const prisma = await import("$prisma").then((r) => r.default);

@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import prisma from "$prisma";
 import { getOldSheetCutOff } from "$root/utils";
 import { NextApiHandler } from "next";
@@ -30,7 +31,7 @@ const routeHandler: NextApiHandler = async (req, res) => {
 		})
 		.catch((err) => {
 			res.status(500).send("an error occurred while deleting old sheets");
-			throw Error(err);
+			throw err;
 		});
 };
 export default routeHandler;

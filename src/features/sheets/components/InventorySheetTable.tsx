@@ -31,9 +31,9 @@ import {
 	TextDescendingSortIcon,
 	TableCell,
 } from "$root/components";
-import { TableFilter, PartyMemberData } from "$sheets/components";
+import { TableFilter } from "$sheets/components";
 import { SortingDirection } from "$root/types";
-import { Item } from "@prisma/client";
+import { Character, Item } from "@prisma/client";
 import { isUrl } from "$root/utils";
 import { matchesSchema } from "$zod-helpers";
 import {
@@ -42,6 +42,8 @@ import {
 } from "$sheets/types";
 import { itemPropertyLabels } from "$sheets/constants";
 import { useBreakpointVisibleColumns } from "$sheets/hooks";
+import EntityData from "$sheets/components/EntityData";
+import { useRenderLogging } from "$root/hooks";
 
 const getTestId = testIdGeneratorFactory("InventoryTable");
 
@@ -101,11 +103,12 @@ const TableHeader: React.FC<
 > = ({ property, children, ...props }) => {
 	const dispatch = useInventoryStoreDispatch();
 
-	const sorting = useInventoryStore((s) => s.ui.sorting);
+	const sorting = useInventoryStore((s) => s.ui.sorting, []);
 	const filterPopoverIsOpen = useInventoryStore(
 		(state) =>
 			matchesSchema(property, filterableItemPropertySchema) &&
-			composeSelectPropertyFilterMenuIsOpen(property)(state)
+			composeSelectPropertyFilterMenuIsOpen(property)(state),
+		[property]
 	);
 	const sortingIcons = determineIconSet(property);
 	const isFilterable = matchesSchema(property, filterableItemPropertySchema);
@@ -156,27 +159,21 @@ const TableHeader: React.FC<
 	);
 };
 
-/**
- * Table that shows items in a sheet inventory
- *
- * @param props Component props
- * @param props.items The items in the inventory
- * @param props.onRowClick Callback to execute when an item row is clicked.
- * The item's fields are passed as a parameter
- * @param props.filters The currently active filters
- * @param props.onFilterChange Callback to execute when a filter is edited
- * @param props.search The active search query
- * @returns The rendered html components
- */
+const selectPossiblyUndefinedCharacterName = (
+	character: Character | undefined
+): string | undefined => character?.name;
+
 const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 	onRowClick,
 	...props
 }) => {
+	useRenderLogging("InventorySheetTable");
+
 	const dispatch = useInventoryStoreDispatch();
 	const hoverBg = useColorModeValue("gray.100", "gray.700");
 
-	const columnSums = useInventoryStore(selectOverallColumnSums);
-	const processedItems = useInventoryStore(selectVisibleItems);
+	const columnSums = useInventoryStore(selectOverallColumnSums, []);
+	const processedItems = useInventoryStore(selectVisibleItems, []);
 
 	const visibleColumns = useBreakpointVisibleColumns();
 
@@ -251,13 +248,15 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 				</Tr>
 			</Thead>
 			<Tbody>
-				{processedItems.map((item, index) => (
+				{processedItems.map((item) => (
 					<Tr
-						key={index}
+						key={item.id}
 						onClick={() =>
 							dispatch({
 								type: "ui.open-item-edit-dialog",
-								payload: item.id,
+								payload: {
+									itemId: item.id,
+								},
 							})
 						}
 						cursor="pointer"
@@ -294,9 +293,10 @@ const InventorySheetTable: React.FC<InventorySheetTableProps> = ({
 						{/* Item "carriedByCharacterId" */}
 						{visibleColumns >= 5 && (
 							<TableCell data-column="carriedByCharacterId">
-								<PartyMemberData
-									memberId={item.carriedByCharacterId ?? ""}
-									property="name"
+								<EntityData
+									entityType="characters"
+									entityId={item.carriedByCharacterId ?? ""}
+									selector={selectPossiblyUndefinedCharacterName}
 								/>
 							</TableCell>
 						)}

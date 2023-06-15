@@ -254,6 +254,7 @@ testWithExistingSheet("Advanced Operations", async ({ page, sheet }) => {
 	const numberOfCarriedItemRows = memberToFilterOut
 		? await getNumberOfItemRowsCarriedByMember(memberToFilterOut)
 		: null;
+
 	expect(numberOfCarriedItemRows).toBe(0);
 
 	// ### sort by a numeric field

@@ -1,5 +1,4 @@
 import {
-	fromSheet,
 	selectSheetName,
 	useInventoryStore,
 	useInventoryStoreDispatch,
@@ -25,7 +24,6 @@ import { sheetSchema } from "@prisma/schemas";
 import { useForm } from "$hook-form";
 import { createSchemaKeyHelperFunction } from "$root/utils";
 import { useSheetNameChangeMutation } from "$sheets/hooks";
-import { get } from "$fp";
 
 const sheetNameFormSchema = sheetSchema.pick({
 	name: true,
@@ -39,14 +37,14 @@ const useModalProps = () => {
 	const dispatch = useInventoryStoreDispatch();
 	const onClose = () => dispatch({ type: "ui.close-sheet-name-dialog" });
 
-	const isOpen = useInventoryStore((s) => s.ui.sheetNameDialogIsOpen);
+	const isOpen = useInventoryStore((s) => s.ui.sheetNameDialogIsOpen, []);
 
 	return { isOpen, onClose };
 };
 
 const useSheetNameForm = () => {
 	const { isOpen } = useModalProps();
-	const name = useInventoryStore(selectSheetName);
+	const name = useInventoryStore(selectSheetName, []);
 	const form = useForm<z.infer<typeof sheetNameFormSchema>>({
 		resolver: sheetNameFormResolver,
 		defaultValues: {
@@ -58,13 +56,13 @@ const useSheetNameForm = () => {
 		form.reset({
 			name,
 		});
-	}, [name, isOpen]);
+	}, [name, isOpen, form]);
 
 	return form;
 };
 
 const useSubmitHandler = () => {
-	const sheetId = useInventoryStore(fromSheet(get("id")));
+	const sheetId = useInventoryStore((s) => s.sheet.id, []);
 	const { onClose } = useModalProps();
 
 	const sheetRenameMutation = useSheetNameChangeMutation();

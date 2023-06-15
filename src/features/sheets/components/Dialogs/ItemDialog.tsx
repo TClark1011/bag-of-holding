@@ -47,7 +47,7 @@ import { itemSchema } from "prisma/schemas/item";
 
 const useItemModalProps = () => {
 	const dispatch = useInventoryStoreDispatch();
-	const isOpen = useInventoryStore((s) => !!s.ui.itemDialog);
+	const isOpen = useInventoryStore((s) => !!s.ui.itemDialog, []);
 	const onClose = () =>
 		dispatch({
 			type: "ui.close-item-dialog",
@@ -71,7 +71,7 @@ const selectItemFormInitialValues: InventoryStoreSelector<
 	};
 
 const useItemForm = () => {
-	const defaultValues = useInventoryStore(selectItemFormInitialValues);
+	const defaultValues = useInventoryStore(selectItemFormInitialValues, []);
 	const { isOpen } = useItemModalProps();
 	const { reset, ...form } = useForm<z.infer<typeof itemFormSchema>>({
 		resolver: itemFormResolver,
@@ -122,12 +122,13 @@ const ItemDialog: React.FC = () => {
 	const sheetId = useSheetPageId();
 	const { formState, register, handleSubmit } = useItemForm();
 	const { isOpen, onClose } = useItemModalProps();
-	const existingItemCategories = useInventoryStore(selectAllItemCategories);
-	const characters = useInventoryStore(selectCharacters);
+	const existingItemCategories = useInventoryStore(selectAllItemCategories, []);
+	const characters = useInventoryStore(selectCharacters, []);
 	const isInEditMode = useInventoryStore(
-		(s) => s.ui.itemDialog?.mode === "edit"
+		(s) => s.ui.itemDialog?.mode === "edit",
+		[]
 	);
-	const itemBeingEdited = useInventoryStore(selectItemBeingEdited);
+	const itemBeingEdited = useInventoryStore(selectItemBeingEdited, []);
 
 	const deleteConfirmationModalController = useDisclosure();
 

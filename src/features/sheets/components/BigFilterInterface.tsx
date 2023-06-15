@@ -17,7 +17,7 @@ import {
 	Text,
 	VStack,
 } from "@chakra-ui/react";
-import { A, D, G, O, flow, pipe } from "@mobily/ts-belt";
+import { A, G, O, flow, pipe } from "@mobily/ts-belt";
 import { FC } from "react";
 
 export type BigFilterInterfaceProps = StyleProps & {
@@ -41,10 +41,12 @@ const BigFilterInterface: FC<BigFilterInterfaceProps> = ({
 	const dispatch = useInventoryStoreDispatch();
 
 	const values = useInventoryStore(
-		composeSelectAllPossibleFilterValuesOnProperty(property)
+		composeSelectAllPossibleFilterValuesOnProperty(property),
+		[property]
 	);
 	const effectiveItemFilter = useInventoryStore(
-		composeSelectEffectivePropertyFilter(property)
+		composeSelectEffectivePropertyFilter(property),
+		[property]
 	);
 
 	if (hideIfEmpty && pipe(values, A.reject(G.isNull), A.isEmpty)) {

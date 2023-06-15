@@ -6,13 +6,14 @@ import { useEffect } from "react";
 const useRememberSheetEffect = () => {
 	const dispatch = useRememberedSheetsDispatch();
 	const { id: sheetId, name: sheetName } = useInventoryStore(
-		flow(get("sheet"), D.selectKeys(["id", "name"]))
+		flow(get("sheet"), D.selectKeys(["id", "name"])),
+		[]
 	);
 
 	useEffect(() => {
 		if (sheetId !== "") {
 			dispatch({
-				type: "remember-sheet",
+				type: "rememberSheet",
 				payload: {
 					id: sheetId,
 					name: sheetName,

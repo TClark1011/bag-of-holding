@@ -43,9 +43,10 @@ When making commits to this repository run `yarn commit` in your terminal and fo
 
 ## Credits
 
-- I borrowed some of [this](https://github.com/mvasin/react-div-100vh) library and copy/pasted
-  it directly into the project because I only needed some of it and wanted to cut down on dependencies.
-  It is licensed under the MIT license.
+I copy/pasted the code from some libraries into this project to reduce external dependencies. All credit goes to the original authors. I only use libraries that are MIT licensed.
+
+- [React div 100vh](https://github.com/mvasin/react-div-100vh)
+- [Immer Reducer](https://github.com/esamattis/immer-reducer)
 
 ## License
 

@@ -115,7 +115,8 @@ const useIsOpen = () =>
 	useInventoryStore(
 		(s) =>
 			s.ui.characterDialog.mode === "edit" &&
-			s.ui.characterDialog.data.deleteModalIsOpen
+			s.ui.characterDialog.data.deleteModalIsOpen,
+		[]
 	);
 
 const useOnClose = () => {
@@ -137,7 +138,7 @@ const useOnCloseBaseCharacterEditModal = () => {
 };
 
 const useItemsCarriedByEditTarget = () =>
-	useInventoryStore(selectItemsCarriedByCharacterBeingEdited);
+	useInventoryStore(selectItemsCarriedByCharacterBeingEdited, []);
 
 const useOtherCharacters = () =>
 	useInventoryStore((state) => {
@@ -145,10 +146,13 @@ const useOtherCharacters = () =>
 		const editTarget = selectCharacterBeingEdited(state);
 
 		return A.reject(characters, (c) => c.id === editTarget?.id);
-	});
+	}, []);
 
 const useHandleCharacterDeletionWithStrategyForm = () => {
-	const characterBeingEdited = useInventoryStore(selectCharacterBeingEdited);
+	const characterBeingEdited = useInventoryStore(
+		selectCharacterBeingEdited,
+		[]
+	);
 	const characterDeletionMutation = useCharacterDeleteMutation();
 
 	const handler = useCallback(
@@ -173,14 +177,17 @@ const useHandleCharacterDeletionWithStrategyForm = () => {
 				});
 			}
 		},
-		[characterBeingEdited]
+		[characterBeingEdited, characterDeletionMutation]
 	);
 
 	return handler;
 };
 
 const useHandleSimpleConfirmation = () => {
-	const characterBeingEdited = useInventoryStore(selectCharacterBeingEdited);
+	const characterBeingEdited = useInventoryStore(
+		selectCharacterBeingEdited,
+		[]
+	);
 	const characterDeletionMutation = useCharacterDeleteMutation();
 
 	const handler = useCallback(
@@ -191,7 +198,7 @@ const useHandleSimpleConfirmation = () => {
 					type: "item-delete",
 				},
 			}),
-		[characterBeingEdited]
+		[characterBeingEdited, characterDeletionMutation]
 	);
 
 	return handler;
@@ -209,7 +216,10 @@ const CharacterConfirmDeleteDialog = () => {
 
 	const itemsCarriedByEditTarget = useItemsCarriedByEditTarget();
 	const strategySelectionForm = useStrategySelectionForm();
-	const characterBeingEdited = useInventoryStore(selectCharacterBeingEdited);
+	const characterBeingEdited = useInventoryStore(
+		selectCharacterBeingEdited,
+		[]
+	);
 	const [isLoading, isLoadingController] = useBoolean();
 
 	const submitStrategySelectionForm =
@@ -221,7 +231,12 @@ const CharacterConfirmDeleteDialog = () => {
 			A.isEmpty(itemsCarriedByEditTarget)
 				? strategySelectionForm.handleSubmit(submitSimpleConfirmation)
 				: strategySelectionForm.handleSubmit(submitStrategySelectionForm),
-		[strategySelectionForm, itemsCarriedByEditTarget]
+		[
+			strategySelectionForm,
+			itemsCarriedByEditTarget,
+			submitSimpleConfirmation,
+			submitStrategySelectionForm,
+		]
 	);
 
 	const submissionHandler = useMemo(
@@ -232,7 +247,7 @@ const CharacterConfirmDeleteDialog = () => {
 				P.then(onCloseBaseCharacterEditModal),
 				P.then(isLoadingController.off)
 			),
-		[strategySelectionForm, itemsCarriedByEditTarget]
+		[isLoadingController, onCloseBaseCharacterEditModal, submitFormData]
 	);
 
 	return (

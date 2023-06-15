@@ -159,7 +159,7 @@ export const composeSelectPropertyFilterMenuIsOpen =
 
 export const selectItemBeingEdited: InventoryStoreSelector<Item | null> = (s) =>
 	s.ui.itemDialog?.mode === "edit"
-		? s.sheet.items.find(hasId(s.ui.itemDialog.characterId)) ?? null
+		? s.sheet.items.find(hasId(s.ui.itemDialog.itemId)) ?? null
 		: null;
 
 /**
@@ -256,12 +256,12 @@ const composeItemSortFunction = (
 			state.ui.sorting?.direction === "ascending" ? items : A.reverse(items)
 	);
 
-export const selectVisibleItems: InventoryStoreSelector<Item[]> = (state) =>
-	pipe(
-		state.sheet.items,
-		composeItemFilterFunction(state),
-		composeItemSortFunction(state)
-	);
+export const selectVisibleItems: InventoryStoreSelector<Item[]> = (state) => {
+	const filtration = composeItemFilterFunction(state);
+	const sorting = composeItemSortFunction(state);
+
+	return pipe(state.sheet.items, filtration, sorting);
+};
 
 export type ColumnSums = Record<NumericItemProperty, number>;
 

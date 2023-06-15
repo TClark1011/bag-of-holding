@@ -2,6 +2,7 @@
 const { withSuperjson } = require("next-superjson");
 const { flow } = require("@mobily/ts-belt");
 const withPWA = require("next-pwa");
+const withTranspileModules = require("next-transpile-modules");
 
 const injectPlugins = flow(
 	withPWA({
@@ -9,7 +10,8 @@ const injectPlugins = flow(
 		disable: process.env.NODE_ENV === "development",
 		disableDevLogs: true
 	}),
-	withSuperjson()
+	withSuperjson(),
+	withTranspileModules(["jotai-devtools"])
 );
 
 module.exports = injectPlugins({
@@ -24,7 +26,7 @@ module.exports = injectPlugins({
 						source: "/sheets/:id*",
 						destination: "/",
 						permanent: false
-					},
+					}
 			  ]
 			: [];
 	}

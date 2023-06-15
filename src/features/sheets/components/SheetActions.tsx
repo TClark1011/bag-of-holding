@@ -1,6 +1,6 @@
 import { useDisappearingHashBooleanAtom } from "$jotai-history-toggle";
-import { SEARCH_BAR_DELAY_MS } from "$root/config";
-import { useDebouncedEffect } from "$root/hooks/debounceHooks";
+
+import useEffectWithTransition from "$root/hooks/useEffectWithTransition";
 import useRenderLogging from "$root/hooks/useRenderLogging";
 import { useAllColumnsAreVisible } from "$sheets/hooks";
 import {
@@ -18,16 +18,12 @@ const useSearchInputProps = () => {
 
 	const [localValue, setLocalValue] = useState("");
 
-	useDebouncedEffect(
-		() => {
-			dispatch({
-				type: "ui.set-search-value",
-				payload: localValue,
-			});
-		},
-		[localValue],
-		SEARCH_BAR_DELAY_MS
-	);
+	useEffectWithTransition(() => {
+		dispatch({
+			type: "ui.set-search-value",
+			payload: localValue,
+		});
+	}, [dispatch, localValue]);
 
 	/**
 	 * We are using an approach where we track the value of the search
@@ -58,9 +54,13 @@ const SheetActions: FC = () => {
 
 	const dispatch = useInventoryStoreDispatch();
 	const searchInputProps = useSearchInputProps();
-	const filteringIsAvailable = useInventoryStore(selectFilteringIsAvailable);
+	const filteringIsAvailable = useInventoryStore(
+		selectFilteringIsAvailable,
+		[]
+	);
 	const anyFilteringIsApplied = useInventoryStore(
-		selectAnyFilteringIsBeingDone
+		selectAnyFilteringIsBeingDone,
+		[]
 	);
 
 	const allColumnsAreVisible = useAllColumnsAreVisible();

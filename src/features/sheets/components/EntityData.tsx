@@ -2,7 +2,7 @@ import { FullSheetEntityProperty, GetEntityByProperty } from "$sheets/types";
 import { composeSelectEntityWithId, useInventoryStore } from "$sheets/store";
 import { Box, BoxProps } from "@chakra-ui/react";
 import { flow } from "@mobily/ts-belt";
-import { FC, useMemo } from "react";
+import { FC } from "react";
 
 export type EntityDataProps<EntityName extends FullSheetEntityProperty> =
 	BoxProps & {
@@ -16,6 +16,16 @@ export type EntityDataProps<EntityName extends FullSheetEntityProperty> =
 /**
  * Display the data from an entity in the inventory, eg;
  * an Item or a Character.
+ *
+ *
+ * @param props The props
+ * @param props.selector A function that extracts data from
+ * the entity with the passed id. NOTE: It is very important
+ * that this selector is "stable", which means it either needs
+ * to be defined outside of a component, or if defined inside
+ * a component it must be memoised with either `useCallback`
+ * or `useMemo`. If you don't this then this component may not
+ * re-render when the entity it is pulling from changes.
  */
 const EntityData = <EntityName extends FullSheetEntityProperty>({
 	entityType,
@@ -23,11 +33,10 @@ const EntityData = <EntityName extends FullSheetEntityProperty>({
 	entityId,
 	...boxProps
 }: EntityDataProps<EntityName>) => {
-	const memoisedSelector = useMemo(
-		() => flow(composeSelectEntityWithId(entityId, entityType), selector),
-		[entityId, selector]
+	const data = useInventoryStore(
+		flow(composeSelectEntityWithId(entityId, entityType), selector),
+		[entityType, entityId, selector]
 	);
-	const data = useInventoryStore(memoisedSelector);
 
 	return <Box {...boxProps}>{data}</Box>;
 };
