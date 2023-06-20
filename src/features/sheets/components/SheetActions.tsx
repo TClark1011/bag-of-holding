@@ -1,15 +1,16 @@
-import { useDisappearingHashBooleanAtom } from "$jotai-history-toggle";
-
+import { useSetDisappearingHashAtom } from "$jotai-hash-disappear-atom";
 import useEffectWithTransition from "$root/hooks/useEffectWithTransition";
 import useRenderLogging from "$root/hooks/useRenderLogging";
 import { useAllColumnsAreVisible } from "$sheets/hooks";
 import {
 	filterDialogIsOpenAtom,
+	itemDialogAtom,
 	selectAnyFilteringIsBeingDone,
 	selectFilteringIsAvailable,
 	useInventoryStore,
 	useInventoryStoreDispatch,
 } from "$sheets/store";
+import { useEntityTiedDialogAtom } from "$sheets/utils";
 import { Button, Input, SimpleGrid, Stack } from "@chakra-ui/react";
 import { FC, useState } from "react";
 
@@ -65,9 +66,11 @@ const SheetActions: FC = () => {
 
 	const allColumnsAreVisible = useAllColumnsAreVisible();
 
-	const { set: setFilterDialogIsOpen } = useDisappearingHashBooleanAtom(
+	const setFilterDialogIsOpen = useSetDisappearingHashAtom(
 		filterDialogIsOpenAtom
 	);
+	const { onOpenToCreateNewEntity: openNewItemDialog } =
+		useEntityTiedDialogAtom(itemDialogAtom);
 
 	return (
 		<Stack
@@ -78,11 +81,7 @@ const SheetActions: FC = () => {
 			<Button
 				data-testid="add-item-button"
 				colorScheme="primary"
-				onClick={() =>
-					dispatch({
-						type: "ui.open-new-item-dialog",
-					})
-				}
+				onClick={openNewItemDialog}
 				flexShrink={0}
 			>
 				Add New Item

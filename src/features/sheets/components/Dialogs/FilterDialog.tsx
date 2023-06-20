@@ -12,12 +12,13 @@ import { BigFilterInterface } from "$sheets/components";
 import { filterDialogIsOpenAtom } from "$sheets/store";
 import useRenderLogging from "$root/hooks/useRenderLogging";
 import { useIsMobile } from "$root/hooks";
-import { useDisappearingHashBooleanAtom } from "$jotai-history-toggle";
+import { useDisappearingHashAtom } from "$jotai-hash-disappear-atom";
 
 const useFilterDialogModalProps = () => {
 	const isMobile = useIsMobile();
-	const { set: setFilterDialogIsOpen, isOn: filterDialogIsOpen } =
-		useDisappearingHashBooleanAtom(filterDialogIsOpenAtom);
+	const [filterDialogIsOpen, setFilterDialogIsOpen] = useDisappearingHashAtom(
+		filterDialogIsOpenAtom
+	);
 
 	return {
 		isOpen: filterDialogIsOpen && !isMobile,

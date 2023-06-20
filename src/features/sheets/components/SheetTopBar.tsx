@@ -1,9 +1,12 @@
+import { useSetDisappearingHashAtom } from "$jotai-hash-disappear-atom";
 import { ColorModeSwitch } from "$root/components";
 import {
+	characterDialogAtom,
 	fromSheet,
+	sheetNameDialogIsOpenAtom,
 	useInventoryStore,
-	useInventoryStoreDispatch,
 } from "$sheets/store";
+import { useEntityTiedDialogAtom } from "$sheets/utils";
 import {
 	Box,
 	Button,
@@ -18,11 +21,19 @@ import { AddIcon, CreateOutlineIcon, PencilIcon } from "chakra-ui-ionicons";
 import { FC } from "react";
 
 const SheetTopBar: FC = () => {
-	const dispatch = useInventoryStoreDispatch();
 	const { name, characters } = useInventoryStore(
 		fromSheet(D.selectKeys(["name", "characters"])),
 		[]
 	);
+
+	const setSheetNameDialogIsOpen = useSetDisappearingHashAtom(
+		sheetNameDialogIsOpenAtom
+	);
+
+	const {
+		onOpenToEditEntityWithId: openCharacterEditDialog,
+		onOpenToCreateNewEntity: openNewCharacterDialog,
+	} = useEntityTiedDialogAtom(characterDialogAtom);
 
 	return (
 		<Box padding={2} backgroundColor="gray.900" color="gray.50" boxShadow="lg">
@@ -38,11 +49,7 @@ const SheetTopBar: FC = () => {
 							id="options-button"
 							aria-label="edit sheet name"
 							icon={<CreateOutlineIcon boxSize={6} />}
-							onClick={() =>
-								dispatch({
-									type: "ui.open-sheet-name-dialog",
-								})
-							}
+							onClick={() => setSheetNameDialogIsOpen(true)}
 							variant="ghost"
 							isRound
 						/>
@@ -53,35 +60,26 @@ const SheetTopBar: FC = () => {
 			</Flex>
 			<Flex gap="group" wrap="wrap">
 				<LightMode>
-					{characters.map((char) => (
+					{characters.map((character) => (
 						<Button
 							size="xs"
 							color="gray.800"
 							colorScheme="gray"
-							key={char.id}
+							key={character.id}
 							leftIcon={<PencilIcon />}
 							className="character-tag" // for testing
 							onClick={() => {
-								dispatch({
-									type: "ui.open-character-edit-dialog",
-									payload: {
-										characterId: char.id,
-									},
-								});
+								openCharacterEditDialog(character.id);
 							}}
 						>
-							{char.name}
+							{character.name}
 						</Button>
 					))}
 					<Button
 						size="xs"
 						colorScheme="gray"
 						color="gray.800"
-						onClick={() =>
-							dispatch({
-								type: "ui.open-new-character-dialog",
-							})
-						}
+						onClick={openNewCharacterDialog}
 						leftIcon={<AddIcon />}
 					>
 						Add Character

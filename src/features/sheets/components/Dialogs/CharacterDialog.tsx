@@ -1,10 +1,9 @@
 import {
-	InventoryStoreProps,
+	characterBeingEditedAtom,
+	characterDeleteConfirmationDialogIsOpenAtom,
+	characterDialogAtom,
 	fromSheet,
-	fromUI,
-	selectCharacterBeingEdited,
 	useInventoryStore,
-	useInventoryStoreDispatch,
 } from "$sheets/store";
 import {
 	Button,
@@ -25,7 +24,6 @@ import {
 import { characterSchema } from "prisma/schemas/character";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { flow } from "@mobily/ts-belt";
 import CharacterConfirmDeleteDialog from "$sheets/components/Dialogs/CharacterConfirmDeleteDialog";
 import { useForm } from "$hook-form";
 import { createSchemaKeyHelperFunction } from "$root/utils";
@@ -34,6 +32,10 @@ import {
 	useCharacterUpdateMutation,
 } from "$sheets/hooks";
 import { get } from "$fp";
+import { useEntityTiedDialogAtom } from "$sheets/utils";
+import { useAtomValue } from "jotai";
+import { useDisclosureAtom } from "$jotai-helpers";
+import { useRenderLogging } from "$root/hooks";
 
 const characterDialogFormSchema = characterSchema.pick({
 	name: true,
@@ -42,40 +44,27 @@ const characterDialogFormSchema = characterSchema.pick({
 
 const f = createSchemaKeyHelperFunction(characterDialogFormSchema);
 
-const selectInventoryStoreIsOpen = (s: InventoryStoreProps): boolean =>
-	s.ui.characterDialog.mode !== "closed";
+const useCharacterDialogFieldInitialValues = (): z.infer<
+	typeof characterDialogFormSchema
+> => {
+	const characterBeingEdited = useAtomValue(characterBeingEditedAtom);
 
-const useCharacterDialogModalProps = () => {
-	const dispatch = useInventoryStoreDispatch();
-	const isOpen = useInventoryStore(selectInventoryStoreIsOpen, []);
 	return {
-		isOpen,
-		onClose: () => dispatch({ type: "ui.close-character-dialog" }),
+		name: characterBeingEdited?.name ?? "",
+		carryCapacity: characterBeingEdited?.carryCapacity ?? 0,
 	};
 };
 
-const useCharacterDialogFieldInitialValues = (): z.infer<
-	typeof characterDialogFormSchema
-> =>
-	useInventoryStore((s) => {
-		const characterBeingEdited = selectCharacterBeingEdited(s);
+const useCharacterDialogTitle = () => {
+	const characterBeingEdited = useAtomValue(characterBeingEditedAtom);
 
-		return {
-			name: characterBeingEdited?.name ?? "",
-			carryCapacity: characterBeingEdited?.carryCapacity ?? 0,
-		};
-	}, []);
-
-const useCharacterDialogTitle = () =>
-	useInventoryStore(
-		flow(selectCharacterBeingEdited, (s) => s?.name ?? "Create Character"),
-		[]
-	);
+	return characterBeingEdited?.name ?? "Create Character";
+};
 
 const formResolver = zodResolver(characterDialogFormSchema);
 
 const useCharacterDialogForm = () => {
-	const { isOpen } = useCharacterDialogModalProps();
+	const { isOpen } = useEntityTiedDialogAtom(characterDialogAtom);
 
 	const defaultValues = useCharacterDialogFieldInitialValues();
 
@@ -96,12 +85,16 @@ const useCharacterDialogForm = () => {
  * Dialog for creating/editing/deleting characters
  */
 const CharacterDialog = () => {
-	const dispatch = useInventoryStoreDispatch();
+	useRenderLogging("CharacterDialog");
 
-	const { isOpen, onClose } = useCharacterDialogModalProps();
 	const header = useCharacterDialogTitle();
 	const sheetId = useInventoryStore(fromSheet(get("id")), []);
-	const dialogState = useInventoryStore(fromUI(get("characterDialog")), []);
+	const {
+		isOpen,
+		isInEditMode,
+		onClose,
+		value: rawDialogState,
+	} = useEntityTiedDialogAtom(characterDialogAtom);
 
 	const { register, handleSubmit, formState } = useCharacterDialogForm();
 
@@ -109,20 +102,24 @@ const CharacterDialog = () => {
 	const characterUpdateMutator = useCharacterUpdateMutation();
 
 	const onSubmit = handleSubmit(async (data) => {
-		if (dialogState.mode === "new-character") {
+		if (!isInEditMode) {
 			await characterCreationMutator.mutateAsync({
 				...data,
 				sheetId,
 			});
 		}
-		if (dialogState.mode === "edit") {
+		if (isInEditMode && rawDialogState) {
 			await characterUpdateMutator.mutateAsync({
-				characterId: dialogState.data.characterId,
+				characterId: rawDialogState, // Will be character id when in edit mode
 				data,
 			});
 		}
-		dispatch({ type: "ui.close-character-dialog" });
+		onClose();
 	});
+
+	const { onOpen: openDeleteConfirmationDialog } = useDisclosureAtom(
+		characterDeleteConfirmationDialogIsOpenAtom
+	);
 
 	return (
 		<>
@@ -148,28 +145,16 @@ const CharacterDialog = () => {
 
 					<ModalFooter justifyContent="space-between">
 						<HStack>
-							<Button
-								colorScheme="gray"
-								variant="ghost"
-								onClick={() =>
-									dispatch({
-										type: "ui.close-character-dialog",
-									})
-								}
-							>
+							<Button colorScheme="gray" variant="ghost" onClick={onClose}>
 								Cancel
 							</Button>
 
 							{/* Delete Button */}
-							{dialogState.mode === "edit" && (
+							{isInEditMode && (
 								<Button
 									colorScheme="red"
 									variant="ghost"
-									onClick={() =>
-										dispatch({
-											type: "ui.handle-character-delete-button",
-										})
-									}
+									onClick={openDeleteConfirmationDialog}
 								>
 									Delete
 								</Button>

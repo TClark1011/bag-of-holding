@@ -25,10 +25,10 @@ import {
 } from "@chakra-ui/react";
 import {
 	InventoryStoreSelector,
+	itemBeingEditedAtom,
+	itemDialogAtom,
 	selectCharacters,
-	selectItemBeingEdited,
 	useInventoryStore,
-	useInventoryStoreDispatch,
 } from "$sheets/store";
 import { A, D, flow, G } from "@mobily/ts-belt";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -44,35 +44,30 @@ import {
 	useSheetPageId,
 } from "$sheets/hooks";
 import { itemSchema } from "prisma/schemas/item";
-
-const useItemModalProps = () => {
-	const dispatch = useInventoryStoreDispatch();
-	const isOpen = useInventoryStore((s) => !!s.ui.itemDialog, []);
-	const onClose = () =>
-		dispatch({
-			type: "ui.close-item-dialog",
-		});
-
-	return { isOpen, onClose };
-};
+import { useEntityTiedDialogAtom } from "$sheets/utils";
+import { useAtomValue } from "jotai";
+import { useEffect } from "react";
 
 const itemFormSchema = itemSchema.omit({ id: true, sheetId: true });
 const itemFormResolver = zodResolver(itemFormSchema);
 const f = createSchemaKeyHelperFunction(itemFormSchema);
 
-const selectItemFormInitialValues: InventoryStoreSelector<
-	z.infer<typeof itemFormSchema>
-> = (state) =>
-	selectItemBeingEdited(state) ?? {
-		name: "",
-		value: 0,
-		weight: 0,
-		quantity: 1,
-	};
+const useItemFormInitialValues = (): z.infer<typeof itemFormSchema> => {
+	const itemBeingEdited = useAtomValue(itemBeingEditedAtom);
+
+	return (
+		itemBeingEdited ?? {
+			name: "",
+			value: 0,
+			weight: 0,
+			quantity: 1,
+		}
+	);
+};
 
 const useItemForm = () => {
-	const defaultValues = useInventoryStore(selectItemFormInitialValues, []);
-	const { isOpen } = useItemModalProps();
+	const defaultValues = useItemFormInitialValues();
+	const { isOpen } = useEntityTiedDialogAtom(itemDialogAtom);
 	const { reset, ...form } = useForm<z.infer<typeof itemFormSchema>>({
 		resolver: itemFormResolver,
 		defaultValues,
@@ -121,16 +116,19 @@ const ItemDialog: React.FC = () => {
 	const deleteItemMutator = useItemDeleteMutation();
 	const sheetId = useSheetPageId();
 	const { formState, register, handleSubmit } = useItemForm();
-	const { isOpen, onClose } = useItemModalProps();
 	const existingItemCategories = useInventoryStore(selectAllItemCategories, []);
 	const characters = useInventoryStore(selectCharacters, []);
-	const isInEditMode = useInventoryStore(
-		(s) => s.ui.itemDialog?.mode === "edit",
-		[]
-	);
-	const itemBeingEdited = useInventoryStore(selectItemBeingEdited, []);
+	const { isInEditMode, isOpen, onClose } =
+		useEntityTiedDialogAtom(itemDialogAtom);
+	const itemBeingEdited = useAtomValue(itemBeingEditedAtom);
 
 	const deleteConfirmationModalController = useDisclosure();
+
+	useEffect(() => {
+		if (!isOpen && deleteConfirmationModalController.isOpen) {
+			deleteConfirmationModalController.onClose();
+		}
+	}, [isOpen, deleteConfirmationModalController]);
 
 	return (
 		<>
@@ -308,6 +306,7 @@ const ItemDialog: React.FC = () => {
 					</ModalFooter>
 				</ModalContent>
 			</Modal>
+
 			{/* Delete Confirmation Modal */}
 			<Modal {...deleteConfirmationModalController}>
 				<ModalOverlay />

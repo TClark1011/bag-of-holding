@@ -1,12 +1,14 @@
 import { expectParam, P } from "$fp";
-import { useOnMountEffect } from "$root/hooks";
+import { useDisclosureAtom } from "$jotai-helpers";
+import { useOnMountEffect, useRenderLogging } from "$root/hooks";
 import { useCharacterDeleteMutation } from "$sheets/hooks";
 import {
-	selectCharacterBeingEdited,
+	characterBeingEditedAtom,
+	characterDeleteConfirmationDialogIsOpenAtom,
+	characterDialogAtom,
+	itemsCarriedByCharacterBeingEditedAtom,
 	selectCharacters,
-	selectItemsCarriedByCharacterBeingEdited,
 	useInventoryStore,
-	useInventoryStoreDispatch,
 } from "$sheets/store";
 import {
 	characterRemovalItemDeleteStrategySchema,
@@ -14,6 +16,7 @@ import {
 	characterRemovalItemToNobodyStrategySchema,
 	CharacterRemovalStrategy,
 } from "$sheets/types";
+import { useEntityTiedDialogAtom } from "$sheets/utils";
 import {
 	Button,
 	Flex,
@@ -32,7 +35,8 @@ import {
 } from "@chakra-ui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { A, F, flow } from "@mobily/ts-belt";
-import { FC, useCallback, useMemo } from "react";
+import { useAtomValue } from "jotai";
+import { FC, useCallback, useEffect, useMemo } from "react";
 import { useForm, UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 
@@ -111,48 +115,18 @@ const StrategySelectionForm: FC<{
 };
 
 /* #region  Scoped Hooks */
-const useIsOpen = () =>
-	useInventoryStore(
-		(s) =>
-			s.ui.characterDialog.mode === "edit" &&
-			s.ui.characterDialog.data.deleteModalIsOpen,
-		[]
-	);
 
-const useOnClose = () => {
-	const dispatch = useInventoryStoreDispatch();
-	return () =>
-		dispatch({
-			type: "ui.close-character-delete-confirm-dialog",
-		});
-};
-
-const useOnCloseBaseCharacterEditModal = () => {
-	const dispatch = useInventoryStoreDispatch();
-
-	return () => {
-		dispatch({
-			type: "ui.close-character-dialog",
-		});
-	};
-};
-
-const useItemsCarriedByEditTarget = () =>
-	useInventoryStore(selectItemsCarriedByCharacterBeingEdited, []);
-
-const useOtherCharacters = () =>
-	useInventoryStore((state) => {
+const useOtherCharacters = () => {
+	const characterBeingEdited = useAtomValue(characterBeingEditedAtom);
+	return useInventoryStore((state) => {
 		const characters = selectCharacters(state);
-		const editTarget = selectCharacterBeingEdited(state);
 
-		return A.reject(characters, (c) => c.id === editTarget?.id);
+		return A.reject(characters, (c) => c.id === characterBeingEdited?.id);
 	}, []);
+};
 
 const useHandleCharacterDeletionWithStrategyForm = () => {
-	const characterBeingEdited = useInventoryStore(
-		selectCharacterBeingEdited,
-		[]
-	);
+	const characterBeingEdited = useAtomValue(characterBeingEditedAtom);
 	const characterDeletionMutation = useCharacterDeleteMutation();
 
 	const handler = useCallback(
@@ -183,11 +157,8 @@ const useHandleCharacterDeletionWithStrategyForm = () => {
 	return handler;
 };
 
-const useHandleSimpleConfirmation = () => {
-	const characterBeingEdited = useInventoryStore(
-		selectCharacterBeingEdited,
-		[]
-	);
+const useHandleConfirmationWithItemDeleteStrategy = () => {
+	const characterBeingEdited = useAtomValue(characterBeingEditedAtom);
 	const characterDeletionMutation = useCharacterDeleteMutation();
 
 	const handler = useCallback(
@@ -206,29 +177,41 @@ const useHandleSimpleConfirmation = () => {
 
 /* #endregion */
 
-/**
- *
- */
 const CharacterConfirmDeleteDialog = () => {
-	const isOpen = useIsOpen();
-	const onClose = useOnClose();
-	const onCloseBaseCharacterEditModal = useOnCloseBaseCharacterEditModal();
+	useRenderLogging("CharacterConfirmDeleteDialog");
 
-	const itemsCarriedByEditTarget = useItemsCarriedByEditTarget();
-	const strategySelectionForm = useStrategySelectionForm();
-	const characterBeingEdited = useInventoryStore(
-		selectCharacterBeingEdited,
-		[]
+	const { isOpen, onClose } = useDisclosureAtom(
+		characterDeleteConfirmationDialogIsOpenAtom
 	);
-	const [isLoading, isLoadingController] = useBoolean();
+	const {
+		onClose: closeBaseCharacterDialog,
+		isOpen: baseCharacterDialogIsOpen,
+	} = useEntityTiedDialogAtom(characterDialogAtom);
 
+	useEffect(() => {
+		if (!baseCharacterDialogIsOpen && isOpen) {
+			// Base character dialog may be closed by pressing back button, so we
+			// need to close this dialog as well
+			onClose();
+		}
+	});
+
+	const strategySelectionForm = useStrategySelectionForm();
 	const submitStrategySelectionForm =
 		useHandleCharacterDeletionWithStrategyForm();
-	const submitSimpleConfirmation = useHandleSimpleConfirmation();
+	const submitSimpleConfirmation =
+		useHandleConfirmationWithItemDeleteStrategy();
+
+	const itemsCarriedByEditTarget = useAtomValue(
+		itemsCarriedByCharacterBeingEditedAtom
+	);
+	const characterBeingEdited = useAtomValue(characterBeingEditedAtom);
+
+	const [isLoading, isLoadingController] = useBoolean();
 
 	const submitFormData = useMemo(
 		() =>
-			A.isEmpty(itemsCarriedByEditTarget)
+			A.isEmpty(itemsCarriedByEditTarget ?? [])
 				? strategySelectionForm.handleSubmit(submitSimpleConfirmation)
 				: strategySelectionForm.handleSubmit(submitStrategySelectionForm),
 		[
@@ -244,10 +227,11 @@ const CharacterConfirmDeleteDialog = () => {
 			flow(
 				F.tap(isLoadingController.on),
 				submitFormData,
-				P.then(onCloseBaseCharacterEditModal),
+				P.then(onClose),
+				P.then(closeBaseCharacterDialog),
 				P.then(isLoadingController.off)
 			),
-		[isLoadingController, onCloseBaseCharacterEditModal, submitFormData]
+		[isLoadingController, closeBaseCharacterDialog, submitFormData, onClose]
 	);
 
 	return (
@@ -261,7 +245,7 @@ const CharacterConfirmDeleteDialog = () => {
 					<Text>
 						Are you sure you want to delete this party member from the sheet?
 					</Text>
-					{A.isNotEmpty(itemsCarriedByEditTarget) && (
+					{A.isNotEmpty(itemsCarriedByEditTarget ?? []) && (
 						<>
 							<Text>What should happen to items being carried by a?</Text>
 							<StrategySelectionForm form={strategySelectionForm} />

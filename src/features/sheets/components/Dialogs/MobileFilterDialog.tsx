@@ -1,4 +1,4 @@
-import { useDisappearingHashBooleanAtom } from "$jotai-history-toggle";
+import { useDisappearingHashAtom } from "$jotai-hash-disappear-atom";
 import { useIsMobile, useRenderLogging } from "$root/hooks";
 import BigFilterInterface from "$sheets/components/BigFilterInterface";
 import { filterDialogIsOpenAtom } from "$sheets/store";
@@ -18,9 +18,7 @@ const MobileFilterDialog: FC = () => {
 
 	const isMobile = useIsMobile();
 
-	const { isOn: isOpen, set: setIsOpen } = useDisappearingHashBooleanAtom(
-		filterDialogIsOpenAtom
-	);
+	const [isOpen, setIsOpen] = useDisappearingHashAtom(filterDialogIsOpenAtom);
 	const onClose = () => setIsOpen(false);
 
 	return (
