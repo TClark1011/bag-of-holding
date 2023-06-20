@@ -1,9 +1,10 @@
+import { useSetDisappearingHashAtom } from "$jotai-hash-disappear-atom";
 import { ColorModeSwitch } from "$root/components";
 import {
 	characterDialogAtom,
 	fromSheet,
+	sheetNameDialogIsOpenAtom,
 	useInventoryStore,
-	useInventoryStoreDispatch,
 } from "$sheets/store";
 import { useEntityTiedDialogAtom } from "$sheets/utils";
 import {
@@ -20,10 +21,13 @@ import { AddIcon, CreateOutlineIcon, PencilIcon } from "chakra-ui-ionicons";
 import { FC } from "react";
 
 const SheetTopBar: FC = () => {
-	const dispatch = useInventoryStoreDispatch();
 	const { name, characters } = useInventoryStore(
 		fromSheet(D.selectKeys(["name", "characters"])),
 		[]
+	);
+
+	const setSheetNameDialogIsOpen = useSetDisappearingHashAtom(
+		sheetNameDialogIsOpenAtom
 	);
 
 	const {
@@ -45,11 +49,7 @@ const SheetTopBar: FC = () => {
 							id="options-button"
 							aria-label="edit sheet name"
 							icon={<CreateOutlineIcon boxSize={6} />}
-							onClick={() =>
-								dispatch({
-									type: "ui.open-sheet-name-dialog",
-								})
-							}
+							onClick={() => setSheetNameDialogIsOpen(true)}
 							variant="ghost"
 							isRound
 						/>

@@ -50,7 +50,6 @@ export type FiltersState = Record<
 export type InventoryStoreProps = {
 	sheet: FullSheet;
 	ui: {
-		sheetNameDialogIsOpen: boolean;
 		filters: FiltersState;
 		sorting: null | {
 			property: SortableItemProperty;
@@ -63,6 +62,7 @@ export type InventoryStoreProps = {
 };
 
 export const filterDialogIsOpenAtom = uiIsOpenAtom("filter-open");
+export const sheetNameDialogIsOpenAtom = uiIsOpenAtom("sheet-name-dialog-open");
 
 const defaultSorting: InventoryStoreProps["ui"]["sorting"] = {
 	property: "name",
@@ -78,7 +78,6 @@ const initialInventoryStoreState: InventoryStoreProps = {
 		updatedAt: new Date(),
 	},
 	ui: {
-		sheetNameDialogIsOpen: false,
 		filters: {
 			carriedByCharacterId: null,
 			category: null,
@@ -206,16 +205,6 @@ class InventoryStoreReducerClass extends ImmerReducer<InventoryStoreProps> {
 			characterId,
 			D.merge(data)
 		)(this.draftState.sheet.characters);
-	}
-	/* #endregion */
-
-	/* #region [UI] Sheet Name Dialog Actions */
-	["ui.open-sheet-name-dialog"]() {
-		this.draftState.ui.sheetNameDialogIsOpen = true;
-	}
-
-	["ui.close-sheet-name-dialog"]() {
-		this.draftState.ui.sheetNameDialogIsOpen = false;
 	}
 	/* #endregion */
 

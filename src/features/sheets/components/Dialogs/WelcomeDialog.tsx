@@ -1,5 +1,10 @@
+import { useSetDisappearingHashAtom } from "$jotai-hash-disappear-atom";
 import useRenderLogging from "$root/hooks/useRenderLogging";
-import { useInventoryStore, useInventoryStoreDispatch } from "$sheets/store";
+import {
+	sheetNameDialogIsOpenAtom,
+	useInventoryStore,
+	useInventoryStoreDispatch,
+} from "$sheets/store";
 import {
 	Button,
 	VStack,
@@ -14,14 +19,15 @@ import {
 const useWelcomeDialogModalProps = () => {
 	const dispatch = useInventoryStoreDispatch();
 	const isOpen = useInventoryStore((s) => s.ui.welcomeDialogIsOpen, []);
+	const setSheetNameDialogIsOpen = useSetDisappearingHashAtom(
+		sheetNameDialogIsOpenAtom
+	);
 
 	const onClose = () => {
 		dispatch({
 			type: "ui.close-welcome-dialog",
 		});
-		dispatch({
-			type: "ui.open-sheet-name-dialog",
-		});
+		setSheetNameDialogIsOpen(true);
 	};
 
 	return { isOpen, onClose };

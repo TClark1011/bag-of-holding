@@ -1,7 +1,7 @@
 import {
 	selectSheetName,
+	sheetNameDialogIsOpenAtom,
 	useInventoryStore,
-	useInventoryStoreDispatch,
 } from "$sheets/store";
 import {
 	Button,
@@ -24,6 +24,7 @@ import { sheetSchema } from "@prisma/schemas";
 import { useForm } from "$hook-form";
 import { createSchemaKeyHelperFunction } from "$root/utils";
 import { useSheetNameChangeMutation } from "$sheets/hooks";
+import { useDisappearingHashAtom } from "$jotai-hash-disappear-atom";
 
 const sheetNameFormSchema = sheetSchema.pick({
 	name: true,
@@ -34,10 +35,10 @@ const f = createSchemaKeyHelperFunction(sheetNameFormSchema);
 const sheetNameFormResolver = zodResolver(sheetNameFormSchema);
 
 const useModalProps = () => {
-	const dispatch = useInventoryStoreDispatch();
-	const onClose = () => dispatch({ type: "ui.close-sheet-name-dialog" });
-
-	const isOpen = useInventoryStore((s) => s.ui.sheetNameDialogIsOpen, []);
+	const [isOpen, setIsOpen] = useDisappearingHashAtom(
+		sheetNameDialogIsOpenAtom
+	);
+	const onClose = () => setIsOpen(false);
 
 	return { isOpen, onClose };
 };
