@@ -42,21 +42,6 @@ import { ImmerReducer, createReducerFunction } from "$immer-reducer";
 import { createSelectorHookForAtom } from "$jotai-helpers";
 import { uiIsOpenAtom } from "$jotai-hash-disappear-atom";
 
-export type CharacterDialogStateProps =
-	| {
-			mode: "closed";
-	  }
-	| {
-			mode: "edit";
-			data: {
-				characterId: string;
-				deleteModalIsOpen: boolean;
-			};
-	  }
-	| {
-			mode: "new-character";
-	  };
-
 export type FiltersState = Record<
 	FilterableItemProperty,
 	(string | null)[] | null
@@ -65,7 +50,6 @@ export type FiltersState = Record<
 export type InventoryStoreProps = {
 	sheet: FullSheet;
 	ui: {
-		characterDialog: CharacterDialogStateProps;
 		sheetNameDialogIsOpen: boolean;
 		filters: FiltersState;
 		sorting: null | {
@@ -94,9 +78,6 @@ const initialInventoryStoreState: InventoryStoreProps = {
 		updatedAt: new Date(),
 	},
 	ui: {
-		characterDialog: {
-			mode: "closed",
-		},
 		sheetNameDialogIsOpen: false,
 		filters: {
 			carriedByCharacterId: null,
@@ -225,42 +206,6 @@ class InventoryStoreReducerClass extends ImmerReducer<InventoryStoreProps> {
 			characterId,
 			D.merge(data)
 		)(this.draftState.sheet.characters);
-	}
-	/* #endregion */
-
-	/* #region [UI] Character Dialog Actions */
-	["ui.open-character-edit-dialog"]({ characterId }: { characterId: string }) {
-		this.draftState.ui.characterDialog = {
-			mode: "edit",
-			data: {
-				characterId,
-				deleteModalIsOpen: false,
-			},
-		};
-	}
-
-	["ui.open-new-character-dialog"]() {
-		this.draftState.ui.characterDialog = {
-			mode: "new-character",
-		};
-	}
-
-	["ui.close-character-dialog"]() {
-		this.draftState.ui.characterDialog = {
-			mode: "closed",
-		};
-	}
-
-	["ui.handle-character-delete-button"]() {
-		if (this.draftState.ui.characterDialog.mode === "edit") {
-			this.draftState.ui.characterDialog.data.deleteModalIsOpen = true;
-		}
-	}
-
-	["ui.close-character-delete-confirm-dialog"]() {
-		if (this.draftState.ui.characterDialog.mode === "edit") {
-			this.draftState.ui.characterDialog.data.deleteModalIsOpen = false;
-		}
 	}
 	/* #endregion */
 
@@ -430,7 +375,7 @@ export default useInventoryStore;
 
 export const itemDialogAtom = entityTiedDialogAtom("item");
 
-export const itemBeingEditedAtom = atom((get) => {
+export const itemBeingEditedAtom = atom<Item | undefined>((get) => {
 	const items = get(inventoryAtom).sheet.items;
 	const itemBeingEditedId = get(itemDialogAtom);
 
@@ -439,3 +384,29 @@ export const itemBeingEditedAtom = atom((get) => {
 
 	return findObjectWithId(items, itemBeingEditedId);
 });
+
+export const characterDialogAtom = entityTiedDialogAtom("character");
+export const characterDeleteConfirmationDialogIsOpenAtom = atom(false);
+
+export const characterBeingEditedAtom = atom<Character | undefined>((get) => {
+	const characters = get(inventoryAtom).sheet.characters;
+	const characterBeingEditedId = get(characterDialogAtom);
+
+	if (characterBeingEditedId === null || characterBeingEditedId === "new")
+		return undefined;
+
+	return findObjectWithId(characters, characterBeingEditedId);
+});
+export const itemsCarriedByCharacterBeingEditedAtom = atom<Item[] | undefined>(
+	(get) => {
+		const characterBeingEdited = get(characterBeingEditedAtom);
+
+		if (!characterBeingEdited) return undefined;
+
+		const items = get(inventoryAtom).sheet.items;
+
+		return items.filter(
+			(item) => item.carriedByCharacterId === characterBeingEdited.id
+		);
+	}
+);

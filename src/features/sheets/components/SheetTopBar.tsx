@@ -1,9 +1,11 @@
 import { ColorModeSwitch } from "$root/components";
 import {
+	characterDialogAtom,
 	fromSheet,
 	useInventoryStore,
 	useInventoryStoreDispatch,
 } from "$sheets/store";
+import { useEntityTiedDialogAtom } from "$sheets/utils";
 import {
 	Box,
 	Button,
@@ -23,6 +25,11 @@ const SheetTopBar: FC = () => {
 		fromSheet(D.selectKeys(["name", "characters"])),
 		[]
 	);
+
+	const {
+		onOpenToEditEntityWithId: openCharacterEditDialog,
+		onOpenToCreateNewEntity: openNewCharacterDialog,
+	} = useEntityTiedDialogAtom(characterDialogAtom);
 
 	return (
 		<Box padding={2} backgroundColor="gray.900" color="gray.50" boxShadow="lg">
@@ -53,35 +60,26 @@ const SheetTopBar: FC = () => {
 			</Flex>
 			<Flex gap="group" wrap="wrap">
 				<LightMode>
-					{characters.map((char) => (
+					{characters.map((character) => (
 						<Button
 							size="xs"
 							color="gray.800"
 							colorScheme="gray"
-							key={char.id}
+							key={character.id}
 							leftIcon={<PencilIcon />}
 							className="character-tag" // for testing
 							onClick={() => {
-								dispatch({
-									type: "ui.open-character-edit-dialog",
-									payload: {
-										characterId: char.id,
-									},
-								});
+								openCharacterEditDialog(character.id);
 							}}
 						>
-							{char.name}
+							{character.name}
 						</Button>
 					))}
 					<Button
 						size="xs"
 						colorScheme="gray"
 						color="gray.800"
-						onClick={() =>
-							dispatch({
-								type: "ui.open-new-character-dialog",
-							})
-						}
+						onClick={openNewCharacterDialog}
 						leftIcon={<AddIcon />}
 					>
 						Add Character

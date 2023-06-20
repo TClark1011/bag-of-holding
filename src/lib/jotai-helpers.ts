@@ -1,5 +1,6 @@
-import { F } from "@mobily/ts-belt";
-import { Atom, useAtomValue } from "jotai";
+import { UseDisclosureReturn } from "@chakra-ui/react";
+import { B, F } from "@mobily/ts-belt";
+import { Atom, PrimitiveAtom, useAtom, useAtomValue } from "jotai";
 import { selectAtom } from "jotai/utils";
 import { useMemo } from "react";
 
@@ -35,4 +36,17 @@ export const createSelectorHookForAtom = <AtomType>(
 	}
 
 	return useTheAtom;
+};
+
+export const useDisclosureAtom = (
+	theAtom: PrimitiveAtom<boolean>
+): Pick<UseDisclosureReturn, "isOpen" | "onClose" | "onToggle" | "onOpen"> => {
+	const [isOpen, setIsOpen] = useAtom(theAtom);
+
+	return {
+		isOpen,
+		onOpen: () => setIsOpen(true),
+		onClose: () => setIsOpen(false),
+		onToggle: () => setIsOpen(B.not),
+	};
 };

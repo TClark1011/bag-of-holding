@@ -31,5 +31,6 @@ export const useEntityTiedDialogAtom = (
 		onOpenToEditEntityWithId: (id: string) => setValue(id),
 		onOpenToCreateNewEntity: () => setValue("new"),
 		onClose: () => setValue(null),
+		value,
 	};
 };

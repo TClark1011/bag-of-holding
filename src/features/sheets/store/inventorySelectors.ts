@@ -13,10 +13,7 @@ import {
 	getUniqueValuesOf,
 	hasId,
 } from "$root/utils";
-import {
-	CharacterDialogStateProps,
-	InventoryStoreProps,
-} from "$sheets/store/useInventoryStore";
+import { InventoryStoreProps } from "$sheets/store/useInventoryStore";
 import {
 	getItemTotalValue,
 	getItemTotalWeight,
@@ -25,7 +22,6 @@ import {
 import { A, D, F, G, O, flow, pipe } from "@mobily/ts-belt";
 import { Character, Item } from "@prisma/client";
 import Big from "big.js";
-import { match } from "ts-pattern";
 import { get } from "$fp";
 import { Fn, PropertyGetters } from "$root/types";
 
@@ -74,38 +70,12 @@ export const fromUI =
 	(state) =>
 		selector(state.ui);
 
-export const selectCharacterDialogMode: InventoryStoreSelector<
-	CharacterDialogStateProps["mode"]
-> = (s) => s.ui.characterDialog.mode;
-
-export const selectCharacterBeingEdited: InventoryStoreSelector<
-	Character | null
-> = (s) => {
-	const idOfCharacterBeingEdited = match(s.ui.characterDialog)
-		.with({ mode: "edit" }, ({ data }) => data.characterId)
-		.otherwise(() => null);
-
-	if (!idOfCharacterBeingEdited) return null;
-
-	return s.sheet.characters.find(hasId(idOfCharacterBeingEdited)) ?? null;
-};
-
 export const composeSelectCharacterWithIdCarriedItems = (
 	characterId: string
 ): InventoryStoreSelector<Item[]> =>
 	fromSheet((sheet) =>
 		sheet.items.filter((item) => item.carriedByCharacterId === characterId)
 	);
-
-export const selectItemsCarriedByCharacterBeingEdited: InventoryStoreSelector<
-	Item[]
-> = (state) => {
-	const characterBeingEdited = selectCharacterBeingEdited(state);
-	const items = composeSelectCharacterWithIdCarriedItems(
-		characterBeingEdited?.id ?? ""
-	)(state);
-	return items;
-};
 
 export const selectCharacters: InventoryStoreSelector<Character[]> = fromSheet(
 	(sheet) => sheet.characters
