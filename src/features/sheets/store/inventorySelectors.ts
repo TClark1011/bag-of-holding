@@ -157,11 +157,6 @@ export const composeSelectPropertyFilterMenuIsOpen =
 	(state) =>
 		state.ui.openFilterMenu === property;
 
-export const selectItemBeingEdited: InventoryStoreSelector<Item | null> = (s) =>
-	s.ui.itemDialog?.mode === "edit"
-		? s.sheet.items.find(hasId(s.ui.itemDialog.itemId)) ?? null
-		: null;
-
 /**
  * Select all the possible values that can be applied to a
  * filterable property

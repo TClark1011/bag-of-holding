@@ -1,5 +1,6 @@
 import {
 	arrayDiff,
+	findObjectWithId,
 	mustBeNever,
 	rejectItemWithId,
 	toggleArrayItem,
@@ -9,7 +10,10 @@ import {
 	CharacterRemovalStrategy,
 	numericItemPropertySchema,
 } from "$sheets/types";
-import { itemIsCarriedByCharacterId } from "$sheets/utils";
+import {
+	entityTiedDialogAtom,
+	itemIsCarriedByCharacterId,
+} from "$sheets/utils";
 import { A, D, F, pipe } from "@mobily/ts-belt";
 import { Character, Item } from "@prisma/client";
 import produce from "immer";
@@ -31,21 +35,12 @@ import {
 	LoopedProgression,
 	updateLoopedProgressionToPositionOfValue,
 } from "$root/utils/loopedProgression";
-import { disappearingHashBooleanAtom } from "$jotai-history-toggle";
 import { atomWithReducer } from "jotai/utils";
-import { useSetAtom } from "jotai";
+import { atom, useSetAtom } from "jotai";
 import { ImmerReducer, createReducerFunction } from "$immer-reducer";
 
 import { createSelectorHookForAtom } from "$jotai-helpers";
-
-export type ItemDialogStateProps =
-	| {
-			mode: "edit";
-			itemId: string;
-	  }
-	| {
-			mode: "new";
-	  };
+import { uiIsOpenAtom } from "$jotai-hash-disappear-atom";
 
 export type CharacterDialogStateProps =
 	| {
@@ -78,14 +73,12 @@ export type InventoryStoreProps = {
 			direction: SortingDirection;
 		};
 		openFilterMenu: null | FilterableItemProperty;
-		itemDialog: ItemDialogStateProps | null;
 		searchBarValue: string;
 		welcomeDialogIsOpen: boolean;
 	};
 };
 
-export const filterDialogIsOpenAtom =
-	disappearingHashBooleanAtom("filter-open");
+export const filterDialogIsOpenAtom = uiIsOpenAtom("filter-open");
 
 const defaultSorting: InventoryStoreProps["ui"]["sorting"] = {
 	property: "name",
@@ -111,7 +104,6 @@ const initialInventoryStoreState: InventoryStoreProps = {
 		},
 		sorting: defaultSorting,
 		openFilterMenu: null,
-		itemDialog: null,
 		searchBarValue: "",
 		welcomeDialogIsOpen: false,
 	},
@@ -406,25 +398,6 @@ class InventoryStoreReducerClass extends ImmerReducer<InventoryStoreProps> {
 	}
 	/* #endregion */
 
-	/* #region [UI] Item Dialog Actions */
-	["ui.open-new-item-dialog"]() {
-		this.draftState.ui.itemDialog = {
-			mode: "new",
-		};
-	}
-
-	["ui.open-item-edit-dialog"]({ itemId }: { itemId: string }) {
-		this.draftState.ui.itemDialog = {
-			mode: "edit",
-			itemId,
-		};
-	}
-
-	["ui.close-item-dialog"]() {
-		this.draftState.ui.itemDialog = null;
-	}
-	/* #endregion */
-
 	/* #region [UI] Welcome Dialog Actions */
 	["ui.open-welcome-dialog"]() {
 		this.draftState.ui.welcomeDialogIsOpen = true;
@@ -454,3 +427,15 @@ export const useInventoryStoreState = () =>
 	useInventoryStore((s) => s.sheet, []);
 
 export default useInventoryStore;
+
+export const itemDialogAtom = entityTiedDialogAtom("item");
+
+export const itemBeingEditedAtom = atom((get) => {
+	const items = get(inventoryAtom).sheet.items;
+	const itemBeingEditedId = get(itemDialogAtom);
+
+	if (itemBeingEditedId === null || itemBeingEditedId === "new")
+		return undefined;
+
+	return findObjectWithId(items, itemBeingEditedId);
+});

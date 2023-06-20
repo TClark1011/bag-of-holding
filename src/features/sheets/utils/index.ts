@@ -5,3 +5,4 @@ export { default as searchComparison } from "./searchComparison";
 export * from "./rememberSheets";
 export * from "./deriveItemProperties";
 export * from "./inventoryItemUtils";
+export * from "./uiJotaiHelpers";

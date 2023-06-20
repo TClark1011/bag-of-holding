@@ -15,7 +15,11 @@ import {
 	Td,
 } from "@chakra-ui/react";
 import { BookOutlineIcon, FilterOutlineIcon } from "chakra-ui-ionicons";
-import { getItemTotalValue, getItemTotalWeight } from "$sheets/utils";
+import {
+	getItemTotalValue,
+	getItemTotalWeight,
+	useEntityTiedDialogAtom,
+} from "$sheets/utils";
 import { testIdGeneratorFactory } from "$tests/utils/testUtils";
 import { ProcessableItemProperty } from "$sheets/types";
 import {
@@ -24,6 +28,7 @@ import {
 	selectVisibleItems,
 	useInventoryStore,
 	useInventoryStoreDispatch,
+	itemDialogAtom,
 } from "$sheets/store";
 import {
 	NumericAscendingSortIcon,
@@ -184,7 +189,6 @@ const selectPossiblyUndefinedCharacterName = (
 const InventorySheetTable: React.FC<TableProps> = (props) => {
 	useRenderLogging("InventorySheetTable");
 
-	const dispatch = useInventoryStoreDispatch();
 	const hoverBg = useColorModeValue("gray.100", "gray.700");
 
 	const columnSums = useInventoryStore(selectOverallColumnSums, []);
@@ -192,13 +196,11 @@ const InventorySheetTable: React.FC<TableProps> = (props) => {
 
 	const visibleColumns = useBreakpointVisibleColumns();
 
+	const { onOpenToEditEntityWithId: openItemEditDialog } =
+		useEntityTiedDialogAtom(itemDialogAtom);
+
 	const composeItemRowClickHandler = (item: Item) => () => {
-		dispatch({
-			type: "ui.open-item-edit-dialog",
-			payload: {
-				itemId: item.id,
-			},
-		});
+		openItemEditDialog(item.id);
 	};
 
 	return (
