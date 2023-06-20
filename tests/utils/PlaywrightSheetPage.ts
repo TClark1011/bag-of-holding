@@ -1,5 +1,5 @@
 import { SHEET_REFETCH_INTERVAL_MS } from "$root/config";
-import { Locator, Page } from "@playwright/test";
+import { Locator, Page, expect } from "@playwright/test";
 import { Item } from "@prisma/client";
 import { LiteralUnion, SetRequired } from "type-fest";
 
@@ -8,7 +8,8 @@ type DialogTitle = LiteralUnion<
 	| "Create Item"
 	| "Edit Item"
 	| "Create Character"
-	| "Welcome!",
+	| "Welcome!"
+	| "Confirm Delete",
 	string
 >;
 
@@ -17,6 +18,8 @@ type VisibilityState = "visible" | "hidden";
 type SaveButtonText = "Save" | "Create";
 
 type ColumnLabel = "Name" | "Quantity" | "Weight" | "Carried By" | "Category";
+
+export type HistoryDirection = "forward" | "back";
 
 export class PlaywrightSheetPage {
 	readonly page: Page;
@@ -63,14 +66,16 @@ export class PlaywrightSheetPage {
 		});
 	}
 
+	getDialog(dialogTitle: DialogTitle) {
+		return this.page.getByRole("dialog", {
+			name: dialogTitle,
+		});
+	}
+
 	async waitForDialogState(dialogTitle: DialogTitle, state: VisibilityState) {
-		await this.page
-			.getByRole("dialog", {
-				name: dialogTitle,
-			})
-			.waitFor({
-				state,
-			});
+		return this.getDialog(dialogTitle).waitFor({
+			state,
+		});
 	}
 
 	async clickSaveButton(text: SaveButtonText) {
@@ -92,7 +97,30 @@ export class PlaywrightSheetPage {
 
 	getItemTableRow(itemName: string) {
 		return this.itemsTable.locator("tr", {
-			has: this.page.locator(`td[data-column="name"]:text("${itemName}")`),
+			has: this.page.locator(`td[data-column="name"]:has-text("${itemName}")`),
 		});
+	}
+
+	getTagForCharacterWithName(characterName: string) {
+		return this.page.locator("button.character-tag", {
+			hasText: characterName,
+		});
+	}
+
+	composeCharacterDeletionDialogName(characterName: string) {
+		return `Remove "${characterName}" from sheet?`;
+	}
+
+	expectToBeOnSheet() {
+		return expect(this.page.locator("#items-table")).toBeAttached();
+	}
+
+	async goHistoryDirectionAndExpectToBeOnSheet(direction: HistoryDirection) {
+		if (direction === "forward") {
+			await this.page.goForward();
+		} else {
+			await this.page.goBack();
+		}
+		await this.expectToBeOnSheet();
 	}
 }
