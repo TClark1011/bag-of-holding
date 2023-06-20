@@ -36,7 +36,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { A, F, flow } from "@mobily/ts-belt";
 import { useAtomValue } from "jotai";
-import { FC, useCallback, useMemo } from "react";
+import { FC, useCallback, useEffect, useMemo } from "react";
 import { useForm, UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 
@@ -183,8 +183,18 @@ const CharacterConfirmDeleteDialog = () => {
 	const { isOpen, onClose } = useDisclosureAtom(
 		characterDeleteConfirmationDialogIsOpenAtom
 	);
-	const { onClose: onCloseBaseCharacterEditModal } =
-		useEntityTiedDialogAtom(characterDialogAtom);
+	const {
+		onClose: closeBaseCharacterDialog,
+		isOpen: baseCharacterDialogIsOpen,
+	} = useEntityTiedDialogAtom(characterDialogAtom);
+
+	useEffect(() => {
+		if (!baseCharacterDialogIsOpen && isOpen) {
+			// Base character dialog may be closed by pressing back button, so we
+			// need to close this dialog as well
+			onClose();
+		}
+	});
 
 	const strategySelectionForm = useStrategySelectionForm();
 	const submitStrategySelectionForm =
@@ -218,15 +228,10 @@ const CharacterConfirmDeleteDialog = () => {
 				F.tap(isLoadingController.on),
 				submitFormData,
 				P.then(onClose),
-				P.then(onCloseBaseCharacterEditModal),
+				P.then(closeBaseCharacterDialog),
 				P.then(isLoadingController.off)
 			),
-		[
-			isLoadingController,
-			onCloseBaseCharacterEditModal,
-			submitFormData,
-			onClose,
-		]
+		[isLoadingController, closeBaseCharacterDialog, submitFormData, onClose]
 	);
 
 	return (

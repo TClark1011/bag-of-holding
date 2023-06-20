@@ -46,6 +46,7 @@ import {
 import { itemSchema } from "prisma/schemas/item";
 import { useEntityTiedDialogAtom } from "$sheets/utils";
 import { useAtomValue } from "jotai";
+import { useEffect } from "react";
 
 const itemFormSchema = itemSchema.omit({ id: true, sheetId: true });
 const itemFormResolver = zodResolver(itemFormSchema);
@@ -122,6 +123,12 @@ const ItemDialog: React.FC = () => {
 	const itemBeingEdited = useAtomValue(itemBeingEditedAtom);
 
 	const deleteConfirmationModalController = useDisclosure();
+
+	useEffect(() => {
+		if (!isOpen && deleteConfirmationModalController.isOpen) {
+			deleteConfirmationModalController.onClose();
+		}
+	}, [isOpen, deleteConfirmationModalController]);
 
 	return (
 		<>
@@ -299,6 +306,7 @@ const ItemDialog: React.FC = () => {
 					</ModalFooter>
 				</ModalContent>
 			</Modal>
+
 			{/* Delete Confirmation Modal */}
 			<Modal {...deleteConfirmationModalController}>
 				<ModalOverlay />
