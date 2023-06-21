@@ -11,6 +11,7 @@ import {
 } from "$sheets/store";
 import { useEntityTiedDialogAtom } from "$sheets/utils";
 import {
+	Flex,
 	IconButton,
 	Menu,
 	MenuButton,
@@ -53,16 +54,15 @@ const ItemQuickMenuItem: FC<
 
 	return (
 		<MenuItem
-			display="flex"
-			alignItems="center"
-			justifyContent="space-between"
 			color={colorScheme !== undefined ? colorSchemeColor : undefined}
 			onClick={withStoppedPropagation(onClick)}
 			{...menuItemProps}
 			isDisabled={isLoading || menuItemProps.isDisabled}
 		>
-			{children}
-			{isLoading && <MenuItemSpinner />}
+			<Flex align="center" justify="space-between">
+				{children}
+				{isLoading && <MenuItemSpinner />}
+			</Flex>
 		</MenuItem>
 	);
 };
