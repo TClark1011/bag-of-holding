@@ -8,11 +8,19 @@ type HistoryBoundBooleanAtom<T> = PrimitiveAtom<T> & {
 	shouldDisappearFromUrl: (v: T) => boolean;
 };
 
+const usedKeys = new Set<string>();
+
 export const disappearingHashAtom = <T>(
 	key: string,
 	initialValue: T,
 	shouldDisappearFromUrl: (v: T) => boolean
 ): HistoryBoundBooleanAtom<T> => {
+	if (usedKeys.has(key)) {
+		throw new Error(
+			`There is already a disappearing hash atom using the key "${key}"`
+		);
+	}
+	usedKeys.add(key);
 	const atom = atomWithHash<T>(key, initialValue);
 	return Object.assign(atom, { shouldDisappearFromUrl });
 };

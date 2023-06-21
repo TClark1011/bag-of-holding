@@ -13,7 +13,9 @@ import {
 	getUniqueValuesOf,
 	hasId,
 } from "$root/utils";
-import { InventoryStoreProps } from "$sheets/store/useInventoryStore";
+import useInventoryStore, {
+	InventoryStoreProps,
+} from "$sheets/store/useInventoryStore";
 import {
 	getItemTotalValue,
 	getItemTotalWeight,
@@ -85,6 +87,10 @@ export const selectSheetName: InventoryStoreSelector<string> = fromSheet(
 	(s) => s.name
 );
 
+export const selectItems: InventoryStoreSelector<Item[]> = fromSheet(
+	(s) => s.items
+);
+
 export const composeSelectEntityWithId = <
 	Property extends FullSheetEntityProperty
 >(
@@ -102,13 +108,19 @@ export const composeSelectPropertyFilter =
 	(state) =>
 		state.ui.filters[property];
 
+export const composeOptionalSelectItemWithId = (itemId: string) =>
+	flow(selectItems, findObjectWithId(itemId));
+
+export const useOptionalItemWithId = (itemId: string) =>
+	useInventoryStore(composeOptionalSelectItemWithId(itemId), [itemId]);
+
 export const composeSelectItemWithId = (
 	id: string
 ): InventoryStoreSelector<Item> =>
-	fromSheet((sheet) => {
-		const item = findObjectWithId(sheet.items, id);
-
-		if (!item) throw new Error(`Item with id ${id} not found`);
+	flow(composeOptionalSelectItemWithId(id), (item) => {
+		if (item === undefined) {
+			throw new Error(`No item with id "${id}"`);
+		}
 
 		return item;
 	});

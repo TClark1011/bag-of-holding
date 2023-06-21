@@ -51,6 +51,7 @@ import { useBreakpointVisibleColumns } from "$sheets/hooks";
 import EntityData from "$sheets/components/EntityData";
 import { useRenderLogging } from "$root/hooks";
 import { FC, PropsWithChildren } from "react";
+import { ItemQuickMenuButton } from "$sheets/components/ItemQuickMenu";
 
 const getTestId = testIdGeneratorFactory("InventoryTable");
 
@@ -186,6 +187,8 @@ const selectPossiblyUndefinedCharacterName = (
 	character: Character | undefined
 ): string | undefined => character?.name;
 
+const QUICK_MENU_COLUMN_WIDTH = 2;
+
 const InventorySheetTable: React.FC<TableProps> = (props) => {
 	useRenderLogging("InventorySheetTable");
 
@@ -264,6 +267,8 @@ const InventorySheetTable: React.FC<TableProps> = (props) => {
 
 					{/* For invisible button on each row */}
 					<VisuallyHidden as={Th}></VisuallyHidden>
+					{/* Quick Menu Button column */}
+					<Th w={QUICK_MENU_COLUMN_WIDTH} />
 				</Tr>
 			</Thead>
 			<Tbody>
@@ -281,7 +286,7 @@ const InventorySheetTable: React.FC<TableProps> = (props) => {
 						data-testid={`item-row-${item.name}`}
 					>
 						{/* Item Name */}
-						<TableCell textAlign="left" data-column="name">
+						<TableCell data-column="name" textAlign="left">
 							{item.referenceLink && isUrl(item.referenceLink) ? (
 								<Link
 									href={item.referenceLink}
@@ -332,8 +337,13 @@ const InventorySheetTable: React.FC<TableProps> = (props) => {
 								Edit {item.name}
 							</Button>
 						</VisuallyHidden>
+						<Td w={QUICK_MENU_COLUMN_WIDTH}>
+							<ItemQuickMenuButton item={item} />
+						</Td>
 					</Tr>
 				))}
+
+				{/* Totals Row */}
 				<Tr>
 					<TableCell colSpan={2} fontWeight="bold" textAlign="right">
 						Total
@@ -351,8 +361,10 @@ const InventorySheetTable: React.FC<TableProps> = (props) => {
 					{visibleColumns >= 5 && <TableCell />}
 					{visibleColumns >= 6 && <TableCell />}
 
-					{/* For hidden button column */}
 					<VisuallyHidden as={Td} />
+
+					{/* For hidden button column */}
+					<Td w={QUICK_MENU_COLUMN_WIDTH} />
 				</Tr>
 			</Tbody>
 		</Table>

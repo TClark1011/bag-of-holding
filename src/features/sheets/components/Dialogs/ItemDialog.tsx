@@ -139,8 +139,8 @@ const ItemDialog: React.FC = () => {
 					onSubmit={handleSubmit(async (form) => {
 						if (isInEditMode && itemBeingEdited) {
 							await editItemMutator.mutateAsync({
-								...itemBeingEdited,
-								...form,
+								itemId: itemBeingEdited.id,
+								data: form,
 							});
 						} else if (!isInEditMode) {
 							await createItemMutator.mutateAsync({
