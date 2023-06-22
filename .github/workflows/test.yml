@@ -3,8 +3,112 @@ on: pull_request
 env:
   DATABASE_URL: postgres://postgres_user:postgres_password@localhost:5432/postgres_db
 jobs:
-  placeholder:
-    name: Placeholder
+  install:
+    timeout-minutes: 60
+    name: 🪛 Install
     runs-on: ubuntu-latest
     steps:
-      - run: echo "placeholder"
+      - uses: actions/checkout@v3
+
+      - name: Install
+        uses: ./.github/composite-actions/install
+        with:
+          no-prisma-generate: true
+
+      - name: Install Playwright Dependencies
+        uses: ./.github/composite-actions/install-playwright
+
+
+  test-base:
+    name: 🧪 Test (${{ matrix.shard }}/${{ strategy.job-total }})
+    needs: install
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_DB: postgres_db
+          POSTGRES_PASSWORD: postgres_password
+          POSTGRES_PORT: 5432
+          POSTGRES_USER: postgres_user
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    strategy:
+      matrix:
+        shard: [1, 2, 3]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: ".nvmrc"
+          cache: "yarn"
+
+      - name: Cache node_modules
+        uses: ./.github/composite-actions/cache-node-modules
+
+      - name: Cache Playwright
+        uses: ./.github/composite-actions/cache-playwright
+
+      - name: Run Prisma Migrate
+        run: yarn prisma migrate dev
+
+      - name: Run Base Playwright tests
+        run: yarn test:normal --shard=${{ matrix.shard }}/${{ strategy.job-total }}
+
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report-${{ matrix.shard }}_${{ strategy.job-total }}
+          path: playwright-report
+          retention-days: 30
+    
+        
+  test-maintenance-mode:
+      name: 🧪 Test Maintenance Mode
+      needs: install
+      timeout-minutes: 20
+      runs-on: ubuntu-latest
+      services:
+        postgres:
+          image: postgres:latest
+          env:
+            POSTGRES_DB: postgres_db
+            POSTGRES_PASSWORD: postgres_password
+            POSTGRES_PORT: 5432
+            POSTGRES_USER: postgres_user
+          ports:
+            - 5432:5432
+          options: >-
+            --health-cmd pg_isready
+            --health-interval 10s
+            --health-timeout 5s
+            --health-retries 5
+      steps:
+        - uses: actions/checkout@v3
+
+        - name: Setup Node.js
+          uses: actions/setup-node@v3
+          with:
+            node-version-file: ".nvmrc"
+            cache: "yarn"
+
+        - name: Cache node_modules
+          uses: ./.github/composite-actions/cache-node-modules
+
+        - name: Cache Playwright
+          uses: ./.github/composite-actions/cache-playwright
+
+        - name: Run Prisma Migrate
+          run: yarn prisma migrate dev
+
+        - name: Run maintenance Playright tests
+          run: yarn test:maintenance-mode
+          

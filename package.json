@@ -20,10 +20,11 @@
 		"check-types": "tsc --noEmit",
 		"lint": "eslint src tests scripts",
 		"prepare": "husky install",
-		"postinstall": "prisma generate",
+		"postinstall": "test -n \"$SKIP_PRISMA_GEN\" || prisma generate",
 		"clean-deps": "yarn flush-deps && yarn",
 		"flush-deps": "npx rimraf node_modules",
 		"ci": "yarn install --freeze-lockfile",
+		"ci:no-prisma-gen": "SKIP_PRISMA_GEN=true yarn ci",
 		"gen:pwa": "ts-node scripts/generatePwaAssets.ts"
 	},
 	"dependencies": {

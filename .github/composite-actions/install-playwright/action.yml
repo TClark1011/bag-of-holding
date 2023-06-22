@@ -1,0 +1,19 @@
+name: "Install Playwright"
+description: "Installs Playwright dependencies and caches them for faster installs"
+
+outputs:
+  cache-hit:
+    description: "Whether the cache was hit or not"
+    value: ${{ steps.cache-playwright.outputs.cache-hit }}
+
+runs:
+  using: composite
+  steps:
+    - name: Cache Playwright binaries
+      id: cache-playwright
+      uses: ./.github/composite-actions/cache-playwright
+
+    - name: Install Playwright dependencies
+      if: steps.cache-playwright.outputs.cache-hit != 'true'
+      shell: bash
+      run: npx playwright install --with-deps

@@ -1,0 +1,36 @@
+name: "Install"
+description: "Sets up Node.js and runs install"
+
+inputs:
+  no-prisma-generate:
+    description: "Skip Prisma generate"
+    required: false
+    default: "false"
+
+outputs:
+  cache-hit:
+    description: "Whether the cache was hit or not"
+    value: ${{ steps.cache-node-modules.outputs.cache-hit }}
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version-file: ".nvmrc"
+        cache: "yarn"
+
+    - name: Cache node_modules
+      id: cache-node-modules
+      uses: ./.github/composite-actions/cache-node-modules
+
+    - name: Install dependencies
+      shell: bash
+      if: inputs.no-prisma-generate != 'true'
+      run: yarn ci
+
+    - name: Install dependencies (No Prisma generate)
+      if: inputs.no-prisma-generate == 'true'
+      shell: bash
+      run: yarn ci:no-prisma-gen
