@@ -1,6 +1,11 @@
 name: "Cache Node Modules"
 description: "Caches node_modules for faster installs"
 
+outputs:
+  cache-hit:
+    description: "Whether the cache was hit or not"
+    value: ${{ steps.cache-node-modules.outputs.cache-hit }}
+
 runs:
   using: composite
   steps:

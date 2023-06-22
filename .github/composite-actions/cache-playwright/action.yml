@@ -1,6 +1,11 @@
 name: Cache Playwright
 description: Caches Playwright dependencies for faster installs
 
+outputs:
+  cache-hit:
+    description: "Whether the cache was hit or not"
+    value: ${{ steps.cache-playwright.outputs.cache-hit }}
+
 runs:
   using: composite
   steps:

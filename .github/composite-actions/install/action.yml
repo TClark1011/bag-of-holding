@@ -7,6 +7,11 @@ inputs:
     required: false
     default: "false"
 
+outputs:
+  cache-hit:
+    description: "Whether the cache was hit or not"
+    value: ${{ steps.cache-node-modules.outputs.cache-hit }}
+
 runs:
   using: composite
   steps:
@@ -17,6 +22,7 @@ runs:
         cache: "yarn"
 
     - name: Cache node_modules
+      id: cache-node-modules
       uses: ./.github/composite-actions/cache-node-modules
 
     - name: Install dependencies
