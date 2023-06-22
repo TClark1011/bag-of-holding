@@ -21,3 +21,4 @@ export * from "./entityHelpers";
 export * from "./logHelpers";
 export * from "./misc";
 export * from "./arrayHelpers";
+export * from "./domHelpers";

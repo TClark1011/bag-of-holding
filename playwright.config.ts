@@ -31,7 +31,7 @@ const config = defineConfig({
 			},
 		},
 	},
-	retries: 3,
+	retries: 2,
 	reporter: isCI ? "github" : "list",
 	timeout: 180 * 1000,
 	quiet: true,

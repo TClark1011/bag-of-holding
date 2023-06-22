@@ -1,6 +1,6 @@
 import { NonEmptyArray } from "$root/types";
 import { takeRandom } from "$root/utils";
-import { Item, Character } from "@prisma/client";
+import { Item } from "@prisma/client";
 import { getItemTotalValue, searchComparison } from "$sheets/utils";
 import {
 	testDualClientsWithNewSheet,
@@ -23,7 +23,6 @@ import {
 	cssSelectorWithText,
 	openPopover,
 	selectWithinColumnHeader,
-	selectWithinTable,
 	sheetAddCharacterButton,
 	sheetCharacterTag,
 	sheetNewItemButton,
@@ -34,29 +33,13 @@ import wait from "$tests/utils/wait";
 import { A, D, F, flow, pipe, S } from "@mobily/ts-belt";
 import test, { expect } from "@playwright/test";
 import { SHEET_REFETCH_INTERVAL_MS } from "$root/config";
+import { PlaywrightSheetPage } from "$tests/utils/PlaywrightSheetPage";
+
+testDualClientsWithNewSheet.describe.configure({
+	mode: "parallel",
+});
 
 const shortRandomString = () => Math.random().toString().slice(2, 8);
-
-/**
- * Generate a test name to use for an
- * entity. Takes a passed string,
- * prefixes it with '__Test' and then
- * appends it with a 5 character long
- * random alpha-numeric string.
- *
- * @param entityType The type of entity
- * to name.
- * @returns a name for the entity.
- */
-// const testNameGenerator = (entityType: string) =>
-// 	`_T.${entityType}.${faker.random.alphaNumeric(2)}`;
-
-// const [, updatedSheetName] = A.makeWithIndex(2, () =>
-// 	testNameGenerator("Sheet")
-// );
-// const [, updatedMemberName, secondMemberName] = A.makeWithIndex(3, () =>
-// 	testNameGenerator("Member")
-// );
 
 test("Create New Sheet, Close Welcome", async ({ page }) => {
 	await page.goto("/");
@@ -162,21 +145,7 @@ testDualClientsWithNewSheet(
 );
 
 testWithExistingSheet("Advanced Operations", async ({ page, sheet }) => {
-	// ### general helpers
-	const clickColumnSortButton = (header: string) =>
-		page.click(
-			selectWithinColumnHeader(header, `button:has-text("${header}")`)
-		);
-
-	const getNameOfItemInTable = async (index: number) =>
-		pipe(
-			await page.innerText(
-				selectWithinTable(
-					`tbody >> tr:has(td[data-column="name"]) >> nth=${index} >> td[data-column="name"]`
-				)
-			),
-			S.trim
-		);
+	const sheetPage = new PlaywrightSheetPage(page);
 
 	const sortedItemNames = pipe(
 		sheet.items,
@@ -186,13 +155,18 @@ testWithExistingSheet("Advanced Operations", async ({ page, sheet }) => {
 
 	// ### sort by name
 	// Check default is sorting by name
-	expect(await getNameOfItemInTable(0)).toBe(A.head(sortedItemNames));
-	await clickColumnSortButton("Name");
+	expect(await sheetPage.getNameOfItemAtRowIndex(0)).toBe(
+		A.head(sortedItemNames)
+	);
+	await sheetPage.clickColumnSortButton("Name");
 
 	waitABit();
 
 	// Sorting should be reversed after clicking on the name column header
-	expect(await getNameOfItemInTable(0)).toBe(A.last(sortedItemNames));
+	// expect(await getNameOfItemInTable(0)).toBe(A.last(sortedItemNames));
+	expect(await sheetPage.getNameOfItemAtRowIndex(0)).toBe(
+		A.last(sortedItemNames)
+	);
 
 	// ### filter helpers
 	const itemCategories = pipe(
@@ -208,22 +182,13 @@ testWithExistingSheet("Advanced Operations", async ({ page, sheet }) => {
 		F.equals(memberToFilterOut?.id)
 	);
 
-	const getNumberOfItemRowsCarriedByMember = async ({ name }: Character) => {
-		const rows = await page.$$(
-			selectWithinTable(
-				`tbody >> tr >> td[data-column="carriedByCharacterId"]:has-text("${name}")`
-			)
-		);
-		return rows.length;
-	};
-
 	// ### filter out a single member
 
 	// First we check that the sheet is currently showing items
 	// carried by the member which we will filter out
 	expect(
 		memberToFilterOut
-			? await getNumberOfItemRowsCarriedByMember(memberToFilterOut)
+			? await sheetPage.countItemRowsCarriedByCharacter(memberToFilterOut.name)
 			: null
 	).toBeGreaterThan(0);
 
@@ -243,16 +208,16 @@ testWithExistingSheet("Advanced Operations", async ({ page, sheet }) => {
 		A.reject(itemIsCarriedByFilteredOutMember),
 		A.sortBy(D.get("name"))
 	);
-	expect(await countItemRows(page)).toBe(filteredAndSortedItems.length);
-	expect(await getNameOfItemInTable(0)).toBe(
+	expect(await sheetPage.countItemRows()).toBe(filteredAndSortedItems.length);
+	expect(await sheetPage.getNameOfItemAtRowIndex(0)).toBe(
 		A.last(filteredAndSortedItems)?.name
 	);
-	expect(await getNameOfItemInTable(-1)).toBe(
+	expect(await sheetPage.getNameOfItemAtRowIndex(-1)).toBe(
 		A.head(filteredAndSortedItems)?.name
 	);
 
 	const numberOfCarriedItemRows = memberToFilterOut
-		? await getNumberOfItemRowsCarriedByMember(memberToFilterOut)
+		? await sheetPage.countItemRowsCarriedByCharacter(memberToFilterOut.name)
 		: null;
 
 	expect(numberOfCarriedItemRows).toBe(0);
@@ -263,19 +228,27 @@ testWithExistingSheet("Advanced Operations", async ({ page, sheet }) => {
 		A.sortBy(getItemTotalValue),
 		A.reverse
 	);
-	await clickColumnSortButton("Value");
+	await sheetPage.clickColumnSortButton("Value");
 
 	waitABit();
 
-	expect(await getNameOfItemInTable(0)).toBe(A.head(itemsSortedByValue)?.name);
-	expect(await getNameOfItemInTable(-1)).toBe(A.last(itemsSortedByValue)?.name);
+	expect(await sheetPage.getNameOfItemAtRowIndex(0)).toBe(
+		A.head(itemsSortedByValue)?.name
+	);
+	expect(await sheetPage.getNameOfItemAtRowIndex(-1)).toBe(
+		A.last(itemsSortedByValue)?.name
+	);
 
-	await clickColumnSortButton("Value");
+	await sheetPage.clickColumnSortButton("Value");
 
 	waitABit();
 
-	expect(await getNameOfItemInTable(0)).toBe(A.last(itemsSortedByValue)?.name);
-	expect(await getNameOfItemInTable(-1)).toBe(A.head(itemsSortedByValue)?.name);
+	expect(await sheetPage.getNameOfItemAtRowIndex(0)).toBe(
+		A.last(itemsSortedByValue)?.name
+	);
+	expect(await sheetPage.getNameOfItemAtRowIndex(-1)).toBe(
+		A.head(itemsSortedByValue)?.name
+	);
 
 	// ### filter out a category
 	// open the "Carried By" filter menu
@@ -299,7 +272,7 @@ testWithExistingSheet("Advanced Operations", async ({ page, sheet }) => {
 		itemBelongsToFilteredOutCategory
 	);
 
-	expect(await countItemRows(page)).toBe(itemsWithCategoryFilter.length);
+	expect(await sheetPage.countItemRows()).toBe(itemsWithCategoryFilter.length);
 
 	// ### Search
 	const itemNames = itemsWithCategoryFilter.map(
@@ -319,18 +292,21 @@ testWithExistingSheet("Advanced Operations", async ({ page, sheet }) => {
 	// Type search query
 	await fillSearchBar(page, searchQuery);
 
-	expect(await countItemRows(page)).toBe(
+	expect(await sheetPage.countItemRows()).toBe(
 		itemNamesThatContainSearchQuery.length
 	);
 
 	// Reset the search
 	await clearSearchbar(page);
-	expect(await countItemRows(page)).toBe(itemsWithCategoryFilter.length);
+
+	waitABit();
+
+	expect(await sheetPage.countItemRows()).toBe(itemsWithCategoryFilter.length);
 
 	// ### Reset all filters
 	await page.click("text=Reset Filters");
 	waitABit();
-	expect(await countItemRows(page)).toBe(sheet.items.length);
+	expect(await sheetPage.countItemRows()).toBe(sheet.items.length);
 });
 
 // testWithNewSheet(

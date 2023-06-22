@@ -14,7 +14,7 @@ import {
 	entityTiedDialogAtom,
 	itemIsCarriedByCharacterId,
 } from "$sheets/utils";
-import { A, D, F, pipe } from "@mobily/ts-belt";
+import { A, D, F, G, pipe } from "@mobily/ts-belt";
 import { Character, Item } from "@prisma/client";
 import produce from "immer";
 import { matchesSchema } from "$zod-helpers";
@@ -26,6 +26,8 @@ import {
 import {
 	composeSelectEffectivePropertyFilter,
 	composeSelectAllPossibleFilterValuesOnProperty,
+	composeSelectItemWithId,
+	composeOptionalSelectItemWithId,
 } from "$sheets/store/inventorySelectors";
 import { SortingDirection } from "$root/types";
 import {
@@ -40,7 +42,11 @@ import { atom, useSetAtom } from "jotai";
 import { ImmerReducer, createReducerFunction } from "$immer-reducer";
 
 import { createSelectorHookForAtom } from "$jotai-helpers";
-import { uiIsOpenAtom } from "$jotai-hash-disappear-atom";
+import {
+	disappearingHashAtom,
+	uiIsOpenAtom,
+	useDisappearingHashAtom,
+} from "$jotai-hash-disappear-atom";
 
 export type FiltersState = Record<
 	FilterableItemProperty,
@@ -60,9 +66,6 @@ export type InventoryStoreProps = {
 		welcomeDialogIsOpen: boolean;
 	};
 };
-
-export const filterDialogIsOpenAtom = uiIsOpenAtom("filter-open");
-export const sheetNameDialogIsOpenAtom = uiIsOpenAtom("sheet-name-dialog-open");
 
 const defaultSorting: InventoryStoreProps["ui"]["sorting"] = {
 	property: "name",
@@ -374,6 +377,9 @@ export const itemBeingEditedAtom = atom<Item | undefined>((get) => {
 	return findObjectWithId(items, itemBeingEditedId);
 });
 
+export const filterDialogIsOpenAtom = uiIsOpenAtom("filter-open");
+export const sheetNameDialogIsOpenAtom = uiIsOpenAtom("sheet-name-dialog-open");
+
 export const characterDialogAtom = entityTiedDialogAtom("character");
 export const characterDeleteConfirmationDialogIsOpenAtom = atom(false);
 
@@ -399,3 +405,24 @@ export const itemsCarriedByCharacterBeingEditedAtom = atom<Item[] | undefined>(
 		);
 	}
 );
+
+export const standaloneItemDeleteConfirmDialogAtom = disappearingHashAtom<
+	null | string
+>("item-delete", null, G.isNull); // null = closed, string = item id
+
+export const standaloneItemGiveToDialogAtom = disappearingHashAtom<
+	null | string
+>("item-give", null, G.isNull); // null = closed, string = item id
+
+export const useNullableIdTargetingDialogAtom = (
+	theAtom: typeof standaloneItemDeleteConfirmDialogAtom
+) => {
+	const [targetId, setTargetId] = useDisappearingHashAtom(theAtom);
+
+	return {
+		isOpen: targetId !== null,
+		onClose: () => setTargetId(null),
+		targetId,
+		open: (itemId: string) => setTargetId(itemId),
+	};
+};

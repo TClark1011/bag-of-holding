@@ -10,6 +10,8 @@ import {
 	ItemDialog,
 	InventoryDataFetchingEffects,
 	RememberSheetEffect,
+	StandaloneDeleteItemConfirmationDialog,
+	StandaloneItemGiveToDialog,
 } from "$sheets/components";
 import { testIdGeneratorFactory } from "$tests/utils/testUtils";
 import { View } from "$root/components";
@@ -108,6 +110,8 @@ const SheetPage: React.FC<SheetPageProps> = ({
 					<WelcomeDialog />
 					<CharacterDialog />
 					<SheetNameDialog />
+					<StandaloneDeleteItemConfirmationDialog />
+					<StandaloneItemGiveToDialog />
 				</Box>
 			</View>
 		</>

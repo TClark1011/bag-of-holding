@@ -15,13 +15,18 @@ const itemRouter = trpc.router({
 			return item;
 		}),
 	update: sheetRelatedProcedure
-		.input(itemSchema)
+		.input(
+			z.object({
+				itemId: z.string(),
+				data: itemSchema.omit({ id: true }).partial(),
+			})
+		)
 		.mutation(async ({ input }) => {
 			const item = await prisma.item.update({
 				where: {
-					id: input.id,
+					id: input.itemId,
 				},
-				data: input,
+				data: input.data,
 			});
 
 			return item;

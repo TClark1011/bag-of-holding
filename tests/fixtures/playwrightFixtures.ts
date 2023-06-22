@@ -4,6 +4,7 @@ import { SHEET_REFETCH_INTERVAL_MS } from "$root/config";
 import { FullSheet } from "$sheets/types";
 import { generateRandomInventorySheet } from "$tests/utils/randomGenerators";
 import { test, Page } from "@playwright/test";
+import { Sheet } from "@prisma/client";
 
 type ClientName = `client${"A" | "B"}`;
 
@@ -11,20 +12,29 @@ type ClientFields = Record<ClientName, Page> & {
 	waitForRefetch: () => Promise<void>;
 };
 
-export const testWithNewlyCreatedSheet = test.extend({
-	page: async ({ page }, use) => {
-		const { name } = generateRandomInventorySheet();
+export const testWithNewlyCreatedSheet = test
+	.extend<{
+		sheet: Sheet;
+	}>({
+		sheet: async ({}, use) => {
+			const { name } = generateRandomInventorySheet();
 
-		const createdSheet = await prisma.sheet.create({
-			data: {
-				name,
-			},
-		});
+			const createdSheet = await prisma.sheet.create({
+				data: {
+					name,
+				},
+			});
 
-		await page.goto(`sheets/${createdSheet.id}`);
-		await use(page);
-	},
-});
+			use(createdSheet);
+		},
+	})
+	.extend({
+		page: async ({ page, sheet }, use) => {
+			await page.goto(`/sheets/${sheet.id}`);
+
+			await use(page);
+		},
+	});
 
 export const testWithNewSheetNoWelcomeDialog = testWithNewlyCreatedSheet.extend(
 	{
