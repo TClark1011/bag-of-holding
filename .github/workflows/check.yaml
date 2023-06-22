@@ -1,16 +1,14 @@
-name: check
+name: Check Code
 on: pull_request
 jobs:
   check-code:
+    name: 🔍 Check Code
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: "18"
-      - name: Install dependencies
-        run: yarn ci
-      - name: Run lint
+      - name: Install
+        uses: ./.github/composite-actions/install
+      - name: Lint
         run: yarn eslint scripts src tests
-      - name: Run type check
+      - name: Type Check
         run: yarn check-types
