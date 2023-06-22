@@ -79,6 +79,9 @@ jobs:
             ~/.cache/ms-playwright
           key: playwright-${{ hashFiles('yarn.lock') }}
 
+      - name: Run Prisma Migrate
+        run: yarn prisma migrate dev
+
       - name: Run Base Playwright tests
         run: yarn test:normal --shard=${{ matrix.shard }}/${{ strategy.job-total }}
 
