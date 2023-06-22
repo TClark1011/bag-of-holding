@@ -1,0 +1,13 @@
+name: Cache Playwright
+description: Caches Playwright dependencies for faster installs
+
+runs:
+  using: composite
+  steps:
+    - name: Cache Playwright binaries
+      uses: actions/cache@v3
+      id: cache-playwright
+      with:
+        path: |
+          ~/.cache/ms-playwright
+        key: playwright-${{ hashFiles('yarn.lock') }}

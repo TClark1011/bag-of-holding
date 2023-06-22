@@ -1,6 +1,12 @@
 name: "Install"
 description: "Sets up Node.js and runs install"
 
+inputs:
+  no-prisma-generate:
+    description: "Skip Prisma generate"
+    required: false
+    default: "false"
+
 runs:
   using: composite
   steps:
@@ -9,8 +15,16 @@ runs:
       with:
         node-version-file: ".nvmrc"
         cache: "yarn"
+
     - name: Cache node_modules
       uses: ./.github/composite-actions/cache-node-modules
+
     - name: Install dependencies
       shell: bash
+      if: inputs.no-prisma-generate != 'true'
       run: yarn ci
+
+    - name: Install dependencies (No Prisma generate)
+      if: inputs.no-prisma-generate == 'true'
+      shell: bash
+      run: yarn ci:no-prisma-gen

@@ -9,33 +9,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: "18"
-      - name: Cache node_modules
-        uses: actions/cache@v3
-        id: cache-node-modules
-        with:
-          path: |
-            node_modules
-          key: modules-${{ hashFiles('yarn.lock') }}
 
-      - name: Cache Playwright binaries
-        uses: actions/cache@v3
-        id: cache-playwright
+      - name: Install
+        uses: ./.github/composite-actions/install
         with:
-          path: |
-            ~/.cache/ms-playwright
-          key: playwright-${{ hashFiles('yarn.lock') }}
+          no-prisma-generate: true
 
-      - name: Install dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: yarn ci
+      - name: Install Playwright Dependencies
+        uses: ./.github/composite-actions/install-playwright
 
-      - name: Install Playwright Browsers
-        if: steps.cache-playwright.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps
-  test:
+
+  test-base:
     name: 🧪 Test (${{ matrix.shard }}/${{ strategy.job-total }})
     needs: install
     timeout-minutes: 20
@@ -56,28 +40,22 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     strategy:
-      fail-fast: false
       matrix:
         shard: [1, 2, 3]
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          node-version: "18"
+          node-version-file: ".nvmrc"
+          cache: "yarn"
 
       - name: Cache node_modules
-        uses: actions/cache@v3
-        with:
-          path: |
-            node_modules
-          key: modules-${{ hashFiles('yarn.lock') }}
+        uses: ./github/composite-actions/cache-node-modules
 
       - name: Cache Playwright
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cache/ms-playwright
-          key: playwright-${{ hashFiles('yarn.lock') }}
+        uses: ./github/composite-actions/cache-playwright
 
       - name: Run Prisma Migrate
         run: yarn prisma migrate dev
@@ -91,3 +69,28 @@ jobs:
           name: playwright-report-${{ matrix.shard }}_${{ strategy.job-total }}
           path: playwright-report
           retention-days: 30
+    
+        
+  test-maintenance-mode:
+      name: 🧪 Test Maintenance Mode
+      needs: install
+      timeout-minutes: 20
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v3
+
+        - name: Setup Node.js
+          uses: actions/setup-node@v3
+          with:
+            node-version-file: ".nvmrc"
+            cache: "yarn"
+
+        - name: Cache node_modules
+          uses: ./github/composite-actions/cache-node-modules
+
+        - name: Cache Playwright
+          uses: ./github/composite-actions/cache-playwright
+
+        - name: Run maintenance Playright tests
+          run: yarn test:maintenance-mode
+          
