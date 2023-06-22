@@ -1,0 +1,13 @@
+name: "Cache Node Modules"
+description: "Caches node_modules for faster installs"
+
+runs:
+  using: composite
+  steps:
+    - name: Cache node_modules
+      uses: actions/cache@v3
+      id: cache-node-modules
+      with:
+        path: |
+          node_modules
+        key: modules-${{ hashFiles('yarn.lock') }}
