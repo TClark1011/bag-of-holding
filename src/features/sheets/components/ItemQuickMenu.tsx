@@ -125,7 +125,7 @@ export const ItemQuickMenuButton: FC<ItemQuickMenuButtonProps> = ({
 				onClick={(e) => e.stopPropagation()}
 				{...menuButtonProps}
 			/>
-			<MenuList>
+			<MenuList title="Item Quick Menu" data-for-item={item.name}>
 				<ItemQuickMenuItem
 					colorScheme="red"
 					onClick={() => openItemDeleteConfirmation(item.id)}

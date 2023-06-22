@@ -1,9 +1,7 @@
 import { useRenderLogging } from "$root/hooks";
 import { useItemDeleteMutation } from "$sheets/hooks";
 import {
-	composeOptionalSelectItemWithId,
 	standaloneItemDeleteConfirmDialogAtom,
-	useInventoryStore,
 	useNullableIdTargetingDialogAtom,
 	useOptionalItemWithId,
 } from "$sheets/store";
@@ -52,7 +50,6 @@ const StandaloneDeleteItemConfirmationDialog: FC = () => {
 						}
 						colorScheme="red"
 						isLoading={deleteItemMutation.isLoading}
-						loadingText="Deleting..."
 					>
 						Delete
 					</Button>

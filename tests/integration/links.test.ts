@@ -1,31 +1,51 @@
 import { appGitLink, appSubredditLink } from "$root/constants";
-import { test, expect } from "@playwright/test";
+import { test } from "@playwright/test";
 
-const trimQueryFromUrl = (url: string) => {
-	const urlWithoutQuery = url.split("?")[0];
-	return urlWithoutQuery;
+test.describe.configure({
+	mode: "parallel",
+});
+
+test.beforeEach(async ({ page }) => {
+	await page.goto("/");
+});
+
+type LinkListing = {
+	title: string;
+	linkId: string;
+	expectedUrl: string;
 };
 
-test("Links", async ({ page, baseURL }) => {
-	await page.goto("/");
+const linkListings: LinkListing[] = [
+	{
+		title: "Contact",
+		linkId: "#contact-link",
+		expectedUrl: "/contact",
+	},
+	{
+		title: "Info",
+		linkId: "#info-link",
+		expectedUrl: "/info",
+	},
+	{
+		title: "Home",
+		linkId: "#home-link",
+		expectedUrl: "/",
+	},
+	{
+		title: "GitHub",
+		linkId: "#git-link",
+		expectedUrl: appGitLink,
+	},
+	{
+		title: "Reddit",
+		linkId: "#reddit-link",
+		expectedUrl: appSubredditLink,
+	},
+];
 
-	await page.click("#contact-link");
-	expect(trimQueryFromUrl(page.url())).toBe(`${baseURL}/contact`);
-
-	await page.click("#info-link");
-	expect(trimQueryFromUrl(page.url())).toBe(`${baseURL}/info`);
-
-	await page.click("#home-link");
-	expect(trimQueryFromUrl(page.url())).toBe(`${baseURL}/`);
-
-	// External Links
-
-	await page.click("#git-link");
-	expect(trimQueryFromUrl(page.url())).toBe(appGitLink);
-
-	await page.goto("/");
-	// Manually return to the home page
-
-	await page.click("#reddit-link");
-	expect(trimQueryFromUrl(page.url())).toBe(appSubredditLink);
-});
+linkListings.forEach(({ title, linkId, expectedUrl }) =>
+	test(title, async ({ page }) => {
+		await page.click(linkId);
+		await page.waitForURL(expectedUrl);
+	})
+);

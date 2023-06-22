@@ -1,5 +1,8 @@
 import { testDualClientsWithNewSheet } from "$tests/fixtures/playwrightFixtures";
-import { PlaywrightSheetPage } from "$tests/utils/PlaywrightSheetPage";
+import {
+	ItemFormFields,
+	PlaywrightSheetPage,
+} from "$tests/utils/PlaywrightSheetPage";
 import {
 	performActionOnMultipleClients,
 	screenshot,
@@ -8,37 +11,9 @@ import { Page } from "@playwright/test";
 import Big from "big.js";
 import { random } from "faker";
 
-type ItemFields = {
-	name: string;
-	value?: string;
-	weight?: string;
-	quantity?: string;
-	category?: string;
-	carriedBy?: string;
-	description?: string;
-	referenceLink?: string;
-};
-
-const fillOutItemForm = async (client: Page, fields: Partial<ItemFields>) => {
-	if (fields.name) await client.locator("#name").fill(fields.name);
-	if (fields.description)
-		await client.locator("#description").fill(fields.description);
-	if (fields.quantity) await client.locator("#quantity").fill(fields.quantity);
-	if (fields.weight) await client.locator("#weight").fill(fields.weight);
-	if (fields.value) await client.locator("#value").fill(fields.value);
-	if (fields.referenceLink)
-		await client.locator("#referenceLink").fill(fields.referenceLink);
-	if (fields.category !== undefined)
-		await client.locator("#category").fill(fields.category);
-	if (fields.carriedBy !== undefined)
-		await client
-			.locator("#carriedByCharacterId")
-			.selectOption({ label: fields.carriedBy });
-};
-
 const checkItemVisibility = async (
 	client: Page,
-	fields: ItemFields,
+	fields: ItemFormFields,
 	shouldBeVisible: boolean
 ) => {
 	const expectedState = shouldBeVisible ? "visible" : "hidden";
@@ -87,31 +62,31 @@ const secondCharacterName = `${random.word()} (2)`;
 // const thirdCharacterName = `${random.word()} (3)`;
 const fourthCharacterName = `${random.word()} (4)`;
 
-const firstItem: ItemFields = {
+const firstItem: ItemFormFields = {
 	name: `A${random.word()}(i1)`,
-	value: "0.25",
-	weight: "0.7",
+	value: 0.25,
+	weight: 0.7,
 	category: "cat 1",
-	quantity: "1",
+	quantity: 1,
 };
 
-const secondItem: ItemFields = {
+const secondItem: ItemFormFields = {
 	name: `B${random.word()}(i2)`,
-	value: "0",
-	weight: "0.5",
-	quantity: "3",
+	value: 0,
+	weight: 0.5,
+	quantity: 3,
 	category: "cat 2",
 };
 
-const thirdItem: ItemFields = {
+const thirdItem: ItemFormFields = {
 	name: `C${random.word()}(i3)`,
-	value: "4",
-	quantity: "6",
-	weight: "0",
+	value: 4,
+	quantity: 6,
+	weight: 0,
 	carriedBy: firstCharacterName,
 };
 
-// const fourthItem: ItemFields = {
+// const fourthItem: ItemFormFields = {
 // 	name: `D${random.word()}(i4)`,
 // 	value: "12.78",
 // 	quantity: "8",
@@ -119,11 +94,11 @@ const thirdItem: ItemFields = {
 // 	carriedBy: secondCharacterName,
 // };
 
-const fifthItem: ItemFields = {
+const fifthItem: ItemFormFields = {
 	name: `E${random.word()}(i5)`,
-	value: "0",
-	quantity: "1",
-	weight: "0",
+	value: 0,
+	quantity: 1,
+	weight: 0,
 	carriedBy: fourthCharacterName,
 };
 
@@ -148,10 +123,7 @@ testDualClientsWithNewSheet(
 		/* #endregion */
 
 		/* #region  Create First Item [Client A] */
-		await clientAController.addItemButton.click();
-		await fillOutItemForm(clientAController.page, firstItem);
-		await clientAController.page.locator("button:text('Create')").click();
-		await clientAController.waitForDialogState("Create Item", "hidden");
+		await clientAController.createItem(firstItem);
 
 		await performActionOnMultipleClients(
 			[clientAController.page, clientBController.page],
@@ -160,18 +132,14 @@ testDualClientsWithNewSheet(
 		// /* #endregion */
 
 		// /* #region Create Second Item [Client B] */
-		await clientBController.addItemButton.click();
-		await fillOutItemForm(clientBController.page, secondItem);
-		await clientBController.page.locator("button:text('Create')").click();
+		await clientBController.createItem(secondItem);
 		await performActionOnMultipleClients([clientA, clientB], (client) =>
 			checkItemVisibility(client, firstItem, true)
 		);
 		// /* #endregion */
 
 		// /* #region  Create First Character [Client A] */
-		await clientAController.addCharacterButton.click();
-		await clientAController.page.locator("#name").fill(firstCharacterName);
-		await clientAController.clickSaveButton("Save");
+		await clientAController.createCharacter(firstCharacterName);
 		await performActionOnMultipleClients([clientA, clientB], (client) =>
 			client.waitForSelector(`button:text-is("${firstCharacterName}")`)
 		); // wait for the button for the new character to appear
@@ -179,9 +147,7 @@ testDualClientsWithNewSheet(
 		// /* #endregion */
 
 		// /* #region  Create Third item (give to first character) [ClientA] */
-		await clientAController.addItemButton.click();
-		await fillOutItemForm(clientAController.page, thirdItem);
-		await clientAController.clickSaveButton("Create");
+		await clientAController.createItem(thirdItem);
 		await performActionOnMultipleClients([clientA], (client) =>
 			checkItemVisibility(client, thirdItem, true)
 		);
