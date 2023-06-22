@@ -5,10 +5,12 @@ jobs:
     name: 🔍 Check Code
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Install
         uses: ./.github/composite-actions/install
+
       - name: Lint
         run: yarn eslint scripts src tests
+
       - name: Type Check
         run: yarn check-types

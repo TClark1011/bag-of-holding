@@ -4,11 +4,10 @@ description: "Installs Playwright dependencies and caches them for faster instal
 runs:
   using: composite
   steps:
-    - name: Cache Playwright dependencies
-      uses: actions/cache@v3
-      id: cache-playwright
-    - name: ./.github/composite-actions/cache-playwright
+    - name: Cache Playwright binaries
+      uses: ./.github/composite-actions/cache-playwright
 
+    - name: Install Playwright dependencies
       if: steps.cache-playwright.outputs.cache-hit != 'true'
       shell: bash
       run: npx playwright install --with-deps
