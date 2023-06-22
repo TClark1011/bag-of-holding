@@ -5,6 +5,7 @@ runs:
   using: composite
   steps:
     - name: Cache Playwright binaries
+      id: cache-playwright
       uses: ./.github/composite-actions/cache-playwright
 
     - name: Install Playwright dependencies

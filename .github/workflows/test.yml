@@ -76,6 +76,21 @@ jobs:
       needs: install
       timeout-minutes: 20
       runs-on: ubuntu-latest
+      services:
+        postgres:
+          image: postgres:latest
+          env:
+            POSTGRES_DB: postgres_db
+            POSTGRES_PASSWORD: postgres_password
+            POSTGRES_PORT: 5432
+            POSTGRES_USER: postgres_user
+          ports:
+            - 5432:5432
+          options: >-
+            --health-cmd pg_isready
+            --health-interval 10s
+            --health-timeout 5s
+            --health-retries 5
       steps:
         - uses: actions/checkout@v3
 
@@ -90,6 +105,9 @@ jobs:
 
         - name: Cache Playwright
           uses: ./.github/composite-actions/cache-playwright
+
+        - name: Run Prisma Migrate
+          run: yarn prisma migrate dev
 
         - name: Run maintenance Playright tests
           run: yarn test:maintenance-mode
