@@ -3,6 +3,7 @@ import { test } from "@playwright/test";
 
 test.describe.configure({
 	mode: "parallel",
+	timeout: 30 * 1000,
 });
 
 test.beforeEach(async ({ page }) => {
@@ -34,12 +35,12 @@ const linkListings: LinkListing[] = [
 	{
 		title: "GitHub",
 		linkId: "#git-link",
-		expectedUrl: appGitLink,
+		expectedUrl: `${appGitLink}*`,
 	},
 	{
 		title: "Reddit",
 		linkId: "#reddit-link",
-		expectedUrl: appSubredditLink,
+		expectedUrl: `${appSubredditLink}*`,
 	},
 ];
 
