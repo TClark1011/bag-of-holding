@@ -52,10 +52,10 @@ jobs:
           cache: "yarn"
 
       - name: Cache node_modules
-        uses: ./github/composite-actions/cache-node-modules
+        uses: ./.github/composite-actions/cache-node-modules
 
       - name: Cache Playwright
-        uses: ./github/composite-actions/cache-playwright
+        uses: ./.github/composite-actions/cache-playwright
 
       - name: Run Prisma Migrate
         run: yarn prisma migrate dev
@@ -86,10 +86,10 @@ jobs:
             cache: "yarn"
 
         - name: Cache node_modules
-          uses: ./github/composite-actions/cache-node-modules
+          uses: ./.github/composite-actions/cache-node-modules
 
         - name: Cache Playwright
-          uses: ./github/composite-actions/cache-playwright
+          uses: ./.github/composite-actions/cache-playwright
 
         - name: Run maintenance Playright tests
           run: yarn test:maintenance-mode
