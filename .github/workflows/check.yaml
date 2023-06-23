@@ -6,6 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
       - name: Install
         uses: ./.github/composite-actions/install
 
@@ -14,3 +15,6 @@ jobs:
 
       - name: Type Check
         run: yarn check-types
+
+      - name: Check for Circular Imports
+        run: yarn check-circular-deps
