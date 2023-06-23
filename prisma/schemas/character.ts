@@ -5,5 +5,6 @@ export const characterSchema = z.object({
 	id: z.string(),
 	name: z.string().and(imports.nameField),
 	carryCapacity: z.number(),
+	money: z.number(),
 	sheetId: z.string(),
 });

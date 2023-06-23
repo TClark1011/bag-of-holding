@@ -26,13 +26,16 @@ model Sheet {
   name       String /// @zod.and(imports.nameField)
   characters Character[]
   items      Item[]
+  partyMoney Float       @default(0)
 }
 
 model Character {
   id            String @id @default(cuid())
   name          String /// @zod.and(imports.nameField)
   carryCapacity Float  @default(0)
-  carriedItems  Item[]
+  money         Float  @default(0)
+
+  carriedItems Item[]
 
   sheet   Sheet  @relation(fields: [sheetId], references: [id], onDelete: Cascade)
   sheetId String

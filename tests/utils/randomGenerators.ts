@@ -60,6 +60,9 @@ export const generateRandomPartyMember: RandomEntityGenerator<Character> = (
 	name: faker.name.firstName(),
 	carryCapacity: faker.datatype.number(),
 	sheetId: "",
+	money: Math.random() > 0.5 ? faker.datatype.number(1000) : 0,
+	// 50% chance to have money, if they do, it's a random amount
+	// between 0 and 1000
 	...fields,
 });
 
@@ -96,5 +99,6 @@ export const generateRandomInventorySheet = ({
 		characters,
 		name: faker.commerce.productName(),
 		updatedAt: new Date(),
+		partyMoney: faker.datatype.number(10000),
 	};
 };
