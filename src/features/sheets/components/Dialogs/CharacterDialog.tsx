@@ -19,13 +19,18 @@ import {
 	ModalFooter,
 	ModalHeader,
 	ModalOverlay,
+	NumberDecrementStepper,
+	NumberIncrementStepper,
+	NumberInput,
+	NumberInputField,
+	NumberInputStepper,
 	useUpdateEffect,
 } from "@chakra-ui/react";
 import { characterSchema } from "prisma/schemas/character";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import CharacterConfirmDeleteDialog from "$sheets/components/Dialogs/CharacterConfirmDeleteDialog";
-import { useForm } from "$hook-form";
+import { Controller, useForm } from "$hook-form";
 import { createSchemaKeyHelperFunction } from "$root/utils";
 import {
 	useCharacterCreateMutation,
@@ -39,7 +44,7 @@ import { useRenderLogging } from "$root/hooks";
 
 const characterDialogFormSchema = characterSchema.pick({
 	name: true,
-	carryCapacity: true,
+	money: true,
 });
 
 const f = createSchemaKeyHelperFunction(characterDialogFormSchema);
@@ -51,7 +56,7 @@ const useCharacterDialogFieldInitialValues = (): z.infer<
 
 	return {
 		name: characterBeingEdited?.name ?? "",
-		carryCapacity: characterBeingEdited?.carryCapacity ?? 0,
+		money: characterBeingEdited?.money ?? 0,
 	};
 };
 
@@ -74,8 +79,10 @@ const useCharacterDialogForm = () => {
 	});
 
 	useUpdateEffect(() => {
-		// Whenever the modal is opened, set form values to the default values
-		reset(defaultValues);
+		if (isOpen) {
+			// Whenever the modal is opened, set form values to the default values
+			reset(defaultValues);
+		}
 	}, [isOpen]);
 
 	return { reset, ...form };
@@ -96,7 +103,8 @@ const CharacterDialog = () => {
 		value: rawDialogState,
 	} = useEntityTiedDialogAtom(characterDialogAtom);
 
-	const { register, handleSubmit, formState } = useCharacterDialogForm();
+	const { register, handleSubmit, formState, control } =
+		useCharacterDialogForm();
 
 	const characterCreationMutator = useCharacterCreateMutation();
 	const characterUpdateMutator = useCharacterUpdateMutation();
@@ -104,8 +112,8 @@ const CharacterDialog = () => {
 	const onSubmit = handleSubmit(async (data) => {
 		if (!isInEditMode) {
 			await characterCreationMutator.mutateAsync({
-				...data,
 				sheetId,
+				...data,
 			});
 		}
 		if (isInEditMode && rawDialogState) {
@@ -123,7 +131,7 @@ const CharacterDialog = () => {
 
 	return (
 		<>
-			<Modal isOpen={isOpen} onClose={onClose}>
+			<Modal isOpen={isOpen} onClose={onClose} size="xs">
 				<ModalOverlay />
 				<ModalContent
 					as="form"
@@ -134,9 +142,37 @@ const CharacterDialog = () => {
 					<ModalCloseButton />
 
 					<ModalBody>
-						<FormControl isInvalid={!!formState.errors.name}>
+						<FormControl isInvalid={!!formState.errors.name} mb="group">
 							<FormLabel htmlFor={f("name")}>Name</FormLabel>
 							<Input id={f("name")} {...register("name")} />
+							<FormErrorMessage>
+								{formState.errors.name && formState.errors.name.message}
+							</FormErrorMessage>
+						</FormControl>
+
+						<FormControl isInvalid={!!formState.errors.money}>
+							<FormLabel htmlFor={f("money")}>Money</FormLabel>
+							<Controller
+								name="money"
+								control={control}
+								render={({ field: { ref, onChange, ...restField } }) => (
+									<NumberInput
+										{...(restField as any)}
+										onChange={(e) => onChange(Number(e))}
+										min={0}
+									>
+										<NumberInputField
+											id="money"
+											ref={ref}
+											name={restField.name}
+										/>
+										<NumberInputStepper>
+											<NumberIncrementStepper />
+											<NumberDecrementStepper />
+										</NumberInputStepper>
+									</NumberInput>
+								)}
+							></Controller>
 							<FormErrorMessage>
 								{formState.errors.name && formState.errors.name.message}
 							</FormErrorMessage>
