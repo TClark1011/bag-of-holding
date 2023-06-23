@@ -1,4 +1,22 @@
-const semanticTokens = {
+import { DeepPartial } from "@chakra-ui/react";
+
+/**
+ * Add to this as needed.
+ */
+type SemanticTokensListing = DeepPartial<{
+	colors: Record<
+		string,
+		Record<
+			string,
+			{
+				default: string;
+				_dark: string;
+			}
+		>
+	>;
+}>;
+
+const semanticTokens: SemanticTokensListing = {
 	colors: {
 		shade: {
 			"50": {

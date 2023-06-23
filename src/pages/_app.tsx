@@ -1,6 +1,6 @@
 import { ChakraProvider, ColorModeScript } from "@chakra-ui/react";
 import React from "react";
-import { IN_DEV, IN_PREVIEW, theme } from "$root/config";
+import { IN_DEV, IN_PREVIEW } from "$root/config";
 import Head from "next/head";
 import { appName } from "$root/constants";
 import { Meta } from "$root/components";
@@ -17,6 +17,8 @@ import queries from "$root/hooks/queries";
 
 import { Analytics } from "@vercel/analytics/react";
 import { match } from "ts-pattern";
+import { GlobalLoader } from "$global-loader";
+import theme from "$root/theme/theme";
 
 /**
  * Generate a selector to add a background color
@@ -86,6 +88,7 @@ const MyApp = ({ Component, pageProps }: AppProps): React.ReactElement => {
 				`}
 			/>
 			<Component {...pageProps} />
+			<GlobalLoader />
 			<Analytics
 				debug={IN_DEV || IN_PREVIEW}
 				beforeSend={({ url, ...event }) => {

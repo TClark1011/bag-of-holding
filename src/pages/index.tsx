@@ -1,4 +1,4 @@
-import { Center, Container, Divider, Flex } from "@chakra-ui/react";
+import { Button, Center, Container, Divider, Flex } from "@chakra-ui/react";
 import { testIdGeneratorFactory } from "$tests/utils/testUtils";
 import {
 	infoPageUrl,
@@ -16,11 +16,14 @@ import {
 	GetStartedButton,
 } from "$root/components";
 import { getSheetLink } from "$root/utils";
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import useRenderLogging from "$root/hooks/useRenderLogging";
 import { useRememberedSheets } from "$sheets/store";
 import { useNextHydrationMatchWorkaround } from "$root/hooks";
 import { MAINTENANCE_MODE } from "$root/config";
+import { useRouter } from "next/router";
+import { useMutation } from "@tanstack/react-query";
+import { useGlobalLoading } from "$global-loader";
 
 const getTestId = testIdGeneratorFactory("Home");
 
@@ -42,6 +45,15 @@ const Home: FC = () => {
 		storedRememberedSheets,
 		[]
 	);
+
+	const { push, prefetch } = useRouter();
+	const routerPushMutation = useMutation(push);
+	useGlobalLoading(routerPushMutation.isLoading, "Loading sheet...");
+
+	useEffect(() => {
+		// We prefetch the remembered sheets manually
+		rememberedSheets.forEach((sheet) => prefetch(getSheetLink(sheet.id)));
+	}, [rememberedSheets, prefetch]);
 
 	return (
 		<View url={appDomain}>
@@ -85,8 +97,10 @@ const Home: FC = () => {
 							</H3>
 							<Center flexWrap="wrap" w={[400, 400, 600]} gap="group">
 								{rememberedSheets.map((sheet) => (
-									<ButtonLink
-										href={getSheetLink(sheet.id)}
+									<Button
+										onClick={() =>
+											routerPushMutation.mutate(getSheetLink(sheet.id))
+										}
 										variant="outline"
 										key={sheet.id}
 										w={64}
@@ -95,7 +109,7 @@ const Home: FC = () => {
 										size="sm"
 									>
 										{sheet.name}
-									</ButtonLink>
+									</Button>
 								))}
 							</Center>
 						</>
