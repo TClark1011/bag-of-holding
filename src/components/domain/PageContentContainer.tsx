@@ -1,4 +1,4 @@
-import { Box } from "@chakra-ui/react";
+import { Container } from "@chakra-ui/react";
 import React, { PropsWithChildren } from "react";
 
 /**
@@ -6,7 +6,7 @@ import React, { PropsWithChildren } from "react";
  * and apply consistent horizontal padding
  */
 const PageContentContainer: React.FC<PropsWithChildren> = ({ children }) => (
-	<Box paddingX={[0, 16, 32, 64, 96]}>{children}</Box>
+	<Container centerContent>{children}</Container>
 );
 
 export default PageContentContainer;

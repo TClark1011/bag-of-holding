@@ -22,7 +22,7 @@ const View: React.FC<ViewProps> = ({
 	showTopNav = true,
 	showHomeLink = true,
 	minFullHeight = true,
-	accountForTopNav = showTopNav,
+	accountForTopNav = showTopNav, // adds padding to top of content to account for top nav
 	children,
 	...metaProps
 }) => {

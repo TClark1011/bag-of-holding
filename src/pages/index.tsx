@@ -1,4 +1,4 @@
-import { Box, Center, Divider, VStack } from "@chakra-ui/react";
+import { Center, Container, Divider, Flex } from "@chakra-ui/react";
 import { testIdGeneratorFactory } from "$tests/utils/testUtils";
 import {
 	infoPageUrl,
@@ -44,65 +44,63 @@ const Home: FC = () => {
 	);
 
 	return (
-		<View accountForTopNav={false} url={appDomain}>
-			<Center width="full" height="100%" padding="break">
-				<Box>
-					<VStack spacing="break" marginBottom="break">
-						<Center>
-							{/* Big Icon */}
-							<BagOfHoldingIcon
-								fill="white"
-								boxSize={[40, 44, 52]}
-								data-testid={homePageTestIds.logo}
-							/>
-						</Center>
-
-						{/* Main Title */}
-						<H1 textAlign="center">{appDisplayTitle}</H1>
+		<View url={appDomain}>
+			<Center w="100vw" h="full">
+				<Flex direction="column" alignItems="center" w="full">
+					{/* Big Icon */}
+					<BagOfHoldingIcon
+						fill="white"
+						boxSize={[36, 40, 44, 52]}
+						data-testid={homePageTestIds.logo}
+						mb="break"
+					/>
+					{/* Main Title */}
+					<Container centerContent maxW="lg">
+						<H1 textAlign="center" mb="group" fontSize={["3xl", "4xl"]}>
+							{appDisplayTitle}
+						</H1>
 						{/* Slogan */}
-						<H2 textAlign="center">{appSlogan}</H2>
-
-						{/* Actions */}
-						<Center>
-							<VStack spacing="break">
-								{/* Get Started Button creates a new sheet */}
-								<GetStartedButton />
-
-								{/* Link to info page */}
-								<ButtonLink
-									href={infoPageUrl}
-									variant="ghost"
-									size="xs"
-									data-testid={homePageTestIds.infoLink}
-								>
-									What is this?
-								</ButtonLink>
-
-								{/* Display Remembered Sheets */}
-								{!MAINTENANCE_MODE && rememberedSheets.length > 0 && (
-									<>
-										<Divider />
-										<H3 fontSize="md">Recently Visited Sheets</H3>
-										<Center flexWrap="wrap" w={[400, 400, 600]} gap="group">
-											{rememberedSheets.map((sheet) => (
-												<ButtonLink
-													href={getSheetLink(sheet.id)}
-													variant="outline"
-													key={sheet.id}
-													w={64}
-													justifySelf="center"
-													data-testid="remembered-sheet-link"
-												>
-													{sheet.name}
-												</ButtonLink>
-											))}
-										</Center>
-									</>
-								)}
-							</VStack>
-						</Center>
-					</VStack>
-				</Box>
+						<H2 textAlign="center" mb="break" fontSize={["2xl", "3xl"]}>
+							{appSlogan}
+						</H2>
+					</Container>
+					{/* Actions */}
+					{/* Get Started Button creates a new sheet */}
+					<GetStartedButton mb="group" />
+					{/* Link to info page */}
+					<ButtonLink
+						href={infoPageUrl}
+						variant="ghost"
+						size="xs"
+						data-testid={homePageTestIds.infoLink}
+					>
+						What is this?
+					</ButtonLink>
+					{/* Display Remembered Sheets */}
+					{!MAINTENANCE_MODE && rememberedSheets.length > 0 && (
+						<>
+							<Divider my="break" w="100vw" maxW="xl" />
+							<H3 fontSize="md" mb="group">
+								Recently Visited Sheets
+							</H3>
+							<Center flexWrap="wrap" w={[400, 400, 600]} gap="group">
+								{rememberedSheets.map((sheet) => (
+									<ButtonLink
+										href={getSheetLink(sheet.id)}
+										variant="outline"
+										key={sheet.id}
+										w={64}
+										justifySelf="center"
+										data-testid="remembered-sheet-link"
+										size="sm"
+									>
+										{sheet.name}
+									</ButtonLink>
+								))}
+							</Center>
+						</>
+					)}
+				</Flex>
 			</Center>
 		</View>
 	);
