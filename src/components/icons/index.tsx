@@ -1,11 +1,8 @@
-import { blockProdBuild } from "$root/utils";
 import { createIcon } from "@chakra-ui/react";
 
 export { default as BagOfHoldingIcon } from "./BagOfHoldingIcon";
 
 export * from "./SortingIcons";
-
-blockProdBuild("BUY THIS ICON: https://thenounproject.com/icon/coin-5152310/");
 
 export const CoinIcon = createIcon({
 	displayName: "CoinIcon",

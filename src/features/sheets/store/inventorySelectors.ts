@@ -6,6 +6,7 @@ import {
 	SortableItemProperty,
 	FullSheet,
 	FILTERABLE_ITEM_PROPERTIES,
+	InventoryStoreProps,
 } from "$sheets/types";
 import {
 	coerceDudStringToNull,
@@ -13,9 +14,6 @@ import {
 	getUniqueValuesOf,
 	hasId,
 } from "$root/utils";
-import useInventoryStore, {
-	InventoryStoreProps,
-} from "$sheets/store/useInventoryStore";
 import {
 	getItemTotalValue,
 	getItemTotalWeight,
@@ -114,9 +112,6 @@ export const composeSelectPropertyFilter =
 
 export const composeOptionalSelectItemWithId = (itemId: string) =>
 	flow(selectItems, findObjectWithId(itemId));
-
-export const useOptionalItemWithId = (itemId: string) =>
-	useInventoryStore(composeOptionalSelectItemWithId(itemId), [itemId]);
 
 export const composeSelectItemWithId = (
 	id: string

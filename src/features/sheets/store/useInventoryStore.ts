@@ -8,6 +8,7 @@ import {
 } from "$root/utils";
 import {
 	CharacterRemovalStrategy,
+	InventoryStoreProps,
 	numericItemPropertySchema,
 } from "$sheets/types";
 import {
@@ -23,10 +24,6 @@ import {
 	FullSheet,
 	SortableItemProperty,
 } from "$sheets/types";
-import {
-	composeSelectEffectivePropertyFilter,
-	composeSelectAllPossibleFilterValuesOnProperty,
-} from "$sheets/store/inventorySelectors";
 import { SortingDirection } from "$root/types";
 import {
 	createLoopedProgression,
@@ -45,25 +42,11 @@ import {
 	uiIsOpenAtom,
 	useDisappearingHashAtom,
 } from "$jotai-hash-disappear-atom";
-
-export type FiltersState = Record<
-	FilterableItemProperty,
-	(string | null)[] | null
->;
-
-export type InventoryStoreProps = {
-	sheet: FullSheet;
-	ui: {
-		filters: FiltersState;
-		sorting: null | {
-			property: SortableItemProperty;
-			direction: SortingDirection;
-		};
-		openFilterMenu: null | FilterableItemProperty;
-		searchBarValue: string;
-		welcomeDialogIsOpen: boolean;
-	};
-};
+import {
+	composeOptionalSelectItemWithId,
+	composeSelectAllPossibleFilterValuesOnProperty,
+	composeSelectEffectivePropertyFilter,
+} from "$sheets/store/inventorySelectors";
 
 const defaultSorting: InventoryStoreProps["ui"]["sorting"] = {
 	property: "name",
@@ -383,6 +366,9 @@ export const useInventoryStore = createSelectorHookForAtom(inventoryAtom);
 
 export const useInventoryStoreState = () =>
 	useInventoryStore((s) => s.sheet, []);
+
+export const useOptionalItemWithId = (itemId: string) =>
+	useInventoryStore(composeOptionalSelectItemWithId(itemId), [itemId]);
 
 export default useInventoryStore;
 
