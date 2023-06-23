@@ -3,6 +3,7 @@ import { guardedIfElse } from "$root/utils/fpHelpers";
 import { D, F, G } from "@mobily/ts-belt";
 import { z } from "zod";
 import type { ValueOf } from "type-fest";
+import type { Path } from "react-hook-form";
 
 /**
  * Create a function that can be used to ensure type safety
@@ -17,7 +18,7 @@ export const createSchemaKeyHelperFunction =
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		schema: Schema // This is just here to get type inference
 	) =>
-	<SpecificKey extends keyof z.infer<Schema>>(key: SpecificKey) =>
+	<SpecificKey extends Path<z.infer<Schema>>>(key: SpecificKey) =>
 		key;
 
 /**

@@ -1,17 +1,28 @@
 import { useSetDisappearingHashAtom } from "$jotai-hash-disappear-atom";
+import { CoinIcon } from "$root/components";
 import useEffectWithTransition from "$root/hooks/useEffectWithTransition";
 import useRenderLogging from "$root/hooks/useRenderLogging";
+import addCommasToNumber from "$root/utils/addCommasToNumber";
 import { useAllColumnsAreVisible } from "$sheets/hooks";
 import {
 	filterDialogIsOpenAtom,
 	itemDialogAtom,
+	moneyDialogIsOpenAtom,
 	selectAnyFilteringIsBeingDone,
 	selectFilteringIsAvailable,
+	selectPartyMoney,
 	useInventoryStore,
 	useInventoryStoreDispatch,
 } from "$sheets/store";
 import { useEntityTiedDialogAtom } from "$sheets/utils";
-import { Button, Input, SimpleGrid, Stack } from "@chakra-ui/react";
+import {
+	Button,
+	Flex,
+	IconButton,
+	Input,
+	SimpleGrid,
+	Stack,
+} from "@chakra-ui/react";
 import { FC, useState } from "react";
 
 const useSearchInputProps = () => {
@@ -69,8 +80,14 @@ const SheetActions: FC = () => {
 	const setFilterDialogIsOpen = useSetDisappearingHashAtom(
 		filterDialogIsOpenAtom
 	);
+	const setMoneyDialogIsOpen = useSetDisappearingHashAtom(
+		moneyDialogIsOpenAtom
+	);
 	const { onOpenToCreateNewEntity: openNewItemDialog } =
 		useEntityTiedDialogAtom(itemDialogAtom);
+
+	const partyMoney = useInventoryStore(selectPartyMoney, []);
+	const partyHasNoMoney = partyMoney === 0;
 
 	return (
 		<Stack
@@ -78,14 +95,41 @@ const SheetActions: FC = () => {
 			padding="group"
 			direction={["column-reverse", "column-reverse", "row"]}
 		>
-			<Button
-				data-testid="add-item-button"
-				colorScheme="primary"
-				onClick={openNewItemDialog}
-				flexShrink={0}
-			>
-				Add New Item
-			</Button>
+			{!partyHasNoMoney && (
+				<Button
+					variant="outline"
+					flexGrow={0}
+					leftIcon={<CoinIcon />}
+					onClick={() => setMoneyDialogIsOpen(true)}
+					flexShrink={0}
+				>
+					{addCommasToNumber(partyMoney)}
+				</Button>
+			)}
+			<Flex flexShrink={0}>
+				{/* If someone isn't using the money functionality, the large
+				    money display just showing "0" might get annoying, so if 
+						the party has no money, we just show this little icon
+						button instead. */}
+				{partyHasNoMoney && (
+					<IconButton
+						onClick={() => setMoneyDialogIsOpen(true)}
+						icon={<CoinIcon />}
+						variant="outline"
+						aria-label="manage money"
+						mr="group"
+					/>
+				)}
+				<Button
+					data-testid="add-item-button"
+					onClick={openNewItemDialog}
+					colorScheme="primary"
+					flexGrow={1}
+				>
+					Add New Item
+				</Button>
+			</Flex>
+
 			{/* Search Bar */}
 			<Input
 				flexGrow={1}

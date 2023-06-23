@@ -141,3 +141,21 @@ export const useSheetNameChangeMutation: typeof queries.sheet.setName.useMutatio
 
 		return mutation;
 	};
+
+export const useMoneyUpdateMutation: typeof queries.sheet.updateMoney.useMutation =
+	(options) => {
+		const dispatch = useInventoryStoreDispatch();
+		const mutation = queries.sheet.updateMoney.useMutation({
+			...options,
+			onSuccess: (result, ...remainingParams) => {
+				dispatch({
+					type: "money-change",
+					payload: result,
+				});
+
+				return options?.onSuccess?.(result, ...remainingParams);
+			},
+		});
+
+		return mutation;
+	};

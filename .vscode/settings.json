@@ -56,5 +56,8 @@
 	"typescript.tsdk": "node_modules/typescript/lib",
 	"javascript.preferences.importModuleSpecifier": "non-relative",
 	"typescript.preferences.importModuleSpecifier": "non-relative",
-	"prisma.fileWatcher": true
+	"prisma.fileWatcher": true,
+	"[svg]": {
+		"editor.defaultFormatter": "jock.svg"
+	}
 }

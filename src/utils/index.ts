@@ -16,6 +16,7 @@ export { default as mustBeNever } from "./mustBeNever";
 export { default as upsert } from "./upsert";
 export { default as simpleEquality } from "./simpleEquality";
 export { default as StorageUnit } from "./StorageUnit";
+export * from "./addCommasToNumber";
 
 export * from "./entityHelpers";
 export * from "./logHelpers";

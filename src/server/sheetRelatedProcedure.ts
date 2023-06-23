@@ -5,6 +5,10 @@ import { characterSchema } from "prisma/schemas/character";
 import { itemSchema } from "prisma/schemas/item";
 import { z } from "zod";
 
+const mutationIsRelatedToSheet = matchesSchema(
+	z.object({ data: itemSchema.or(characterSchema) })
+);
+
 const sheetUpdateMiddleware = trpc.middleware(async ({ next, type }) => {
 	// We use middleware so that whenever an entity that is related to a sheet
 	// is changed, we update the sheet's updatedAt field.
@@ -13,14 +17,14 @@ const sheetUpdateMiddleware = trpc.middleware(async ({ next, type }) => {
 	// state
 	const endResult = await next();
 
-	if (type !== "mutation" || !endResult.ok) return endResult;
-
-	const sheetId: string | null = matchesSchema(
-		endResult,
-		z.object({ data: itemSchema.or(characterSchema) })
+	if (
+		type !== "mutation" ||
+		!endResult.ok ||
+		!mutationIsRelatedToSheet(endResult)
 	)
-		? endResult.data.sheetId
-		: null;
+		return endResult;
+
+	const sheetId = endResult.data.sheetId;
 
 	if (sheetId) {
 		await prisma.sheet.update({

@@ -33,7 +33,7 @@ model Character {
   id            String @id @default(cuid())
   name          String /// @zod.and(imports.nameField)
   carryCapacity Float  @default(0)
-  money         Float  @default(0)
+  money         Float  @default(0) /// @zod.min(0)
 
   carriedItems Item[]
 

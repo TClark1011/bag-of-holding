@@ -1,5 +1,4 @@
 import {
-	Button,
 	ButtonProps,
 	IconButton,
 	IconButtonProps,
@@ -7,7 +6,6 @@ import {
 	LightMode,
 	useColorMode,
 	useColorModeValue,
-	ColorMode,
 } from "@chakra-ui/react";
 import { SunnyOutlineIcon, MoonOutlineIcon } from "chakra-ui-ionicons";
 
@@ -22,18 +20,12 @@ interface ColorModeSwitchProps extends LimitedButtonProps {
 	useDarkModeColors?: boolean;
 }
 
-const colorModeLabels: Record<ColorMode, string> = {
-	dark: "Dark",
-	light: "Light",
-};
-
 const ColorModeSwitch: React.FC<ColorModeSwitchProps> = ({
-	iconOnly = false,
 	useLightModeColors,
 	useDarkModeColors,
 	...props
 }) => {
-	const { colorMode, toggleColorMode } = useColorMode();
+	const { toggleColorMode } = useColorMode();
 	const SwitchIcon = useColorModeValue(SunnyOutlineIcon, MoonOutlineIcon);
 	const oppositeColorMode = useColorModeValue("dark", "light");
 
@@ -48,18 +40,8 @@ const ColorModeSwitch: React.FC<ColorModeSwitchProps> = ({
 
 	const iconElement = <SwitchIcon boxSize="icon" />;
 
-	const switchElement = iconOnly ? (
+	const switchElement = (
 		<IconButton isRound {...commonProps} {...props} icon={iconElement} />
-	) : (
-		<Button
-			{...commonProps}
-			width={32}
-			{...props}
-			leftIcon={iconElement}
-			id="color-switch"
-		>
-			{colorModeLabels[colorMode]} Mode
-		</Button>
 	);
 
 	if (useDarkModeColors) {

@@ -79,6 +79,10 @@ export const composeSelectCharacterWithIdCarriedItems = (
 		sheet.items.filter((item) => item.carriedByCharacterId === characterId)
 	);
 
+export const selectPartyMoney: InventoryStoreSelector<number> = fromSheet(
+	get("partyMoney")
+);
+
 export const selectCharacters: InventoryStoreSelector<Character[]> = fromSheet(
 	(sheet) => sheet.characters
 );

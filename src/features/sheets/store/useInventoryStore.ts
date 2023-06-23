@@ -26,8 +26,6 @@ import {
 import {
 	composeSelectEffectivePropertyFilter,
 	composeSelectAllPossibleFilterValuesOnProperty,
-	composeSelectItemWithId,
-	composeOptionalSelectItemWithId,
 } from "$sheets/store/inventorySelectors";
 import { SortingDirection } from "$root/types";
 import {
@@ -79,6 +77,7 @@ const initialInventoryStoreState: InventoryStoreProps = {
 		items: [],
 		name: "",
 		updatedAt: new Date(),
+		partyMoney: 0,
 	},
 	ui: {
 		filters: {
@@ -157,6 +156,27 @@ class InventoryStoreReducerClass extends ImmerReducer<InventoryStoreProps> {
 	["set-sheet-name"](name: string) {
 		this.draftState.sheet.name = name;
 	}
+
+	["money-change"]({
+		newPartyMoney,
+		newCharacterMoney,
+	}: {
+		newPartyMoney?: number;
+		newCharacterMoney?: Record<string, number>;
+	}) {
+		if (newPartyMoney !== undefined) {
+			this.draftState.sheet.partyMoney = newPartyMoney;
+		}
+
+		if (newCharacterMoney !== undefined) {
+			D.mapWithKey(newCharacterMoney, (characterId, newMoney) => {
+				this.draftState.sheet.characters = updateItemWithId<Character>(
+					characterId,
+					D.set("money", newMoney)
+				)(this.draftState.sheet.characters);
+			});
+		}
+	}
 	/* #endregion */
 
 	/* #region Item Actions */
@@ -209,6 +229,7 @@ class InventoryStoreReducerClass extends ImmerReducer<InventoryStoreProps> {
 			D.merge(data)
 		)(this.draftState.sheet.characters);
 	}
+
 	/* #endregion */
 
 	/* #region [UI] Filter Actions */
@@ -379,6 +400,7 @@ export const itemBeingEditedAtom = atom<Item | undefined>((get) => {
 
 export const filterDialogIsOpenAtom = uiIsOpenAtom("filter-open");
 export const sheetNameDialogIsOpenAtom = uiIsOpenAtom("sheet-name-dialog-open");
+export const moneyDialogIsOpenAtom = uiIsOpenAtom("money-dialog-open");
 
 export const characterDialogAtom = entityTiedDialogAtom("character");
 export const characterDeleteConfirmationDialogIsOpenAtom = atom(false);

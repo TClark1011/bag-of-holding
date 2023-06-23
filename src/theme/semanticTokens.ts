@@ -1,23 +1,29 @@
 import { DeepPartial } from "@chakra-ui/react";
 
+type PrimitiveSemanticColorValue =
+	| string
+	| {
+			default: string;
+			_dark: string;
+	  };
+
+type Dictionary<T> = Record<string, T>;
+
+type DictionaryOrType<T> = T | Dictionary<T>;
+
 /**
  * Add to this as needed.
  */
 type SemanticTokensListing = DeepPartial<{
-	colors: Record<
-		string,
-		Record<
-			string,
-			{
-				default: string;
-				_dark: string;
-			}
-		>
-	>;
+	colors: Dictionary<DictionaryOrType<PrimitiveSemanticColorValue>>;
 }>;
 
 const semanticTokens: SemanticTokensListing = {
 	colors: {
+		border: {
+			default: "gray.200",
+			_dark: "whiteAlpha.300",
+		},
 		shade: {
 			"50": {
 				default: "blackAlpha.50",

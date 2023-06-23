@@ -7,7 +7,11 @@ import { z } from "zod";
 
 const characterRouter = trpc.router({
 	create: sheetRelatedProcedure
-		.input(characterSchema.omit({ id: true }))
+		.input(
+			characterSchema
+				.pick({ name: true, sheetId: true })
+				.and(characterSchema.pick({ money: true }).partial())
+		)
 		.mutation(async ({ input }) => {
 			const newCharacter = await prisma.character.create({
 				data: input,

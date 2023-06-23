@@ -12,6 +12,7 @@ import {
 	RememberSheetEffect,
 	StandaloneDeleteItemConfirmationDialog,
 	StandaloneItemGiveToDialog,
+	MoneyDialog,
 } from "$sheets/components";
 import { testIdGeneratorFactory } from "$tests/utils/testUtils";
 import { View } from "$root/components";
@@ -104,6 +105,7 @@ const SheetPage: React.FC<SheetPageProps> = ({
 					<CharacterTotals />
 
 					{/* Dialogs */}
+					<MoneyDialog />
 					<ItemDialog />
 					<FilterDialog />
 					<MobileFilterDialog />

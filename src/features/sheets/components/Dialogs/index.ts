@@ -3,5 +3,6 @@ export { default as ItemDialog } from "./ItemDialog";
 export { default as WelcomeDialog } from "./WelcomeDialog";
 export { default as StandaloneDeleteItemConfirmationDialog } from "./StandaloneDeleteItemConfirmationDialog";
 export { default as StandaloneItemGiveToDialog } from "./StandaloneItemGiveToDialog";
+export { default as MoneyDialog } from "./MoneyDialog";
 
 export * from "./ItemDialog";
