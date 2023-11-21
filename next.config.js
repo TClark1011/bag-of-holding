@@ -4,6 +4,17 @@ const { flow } = require("@mobily/ts-belt");
 const withPWA = require("next-pwa");
 const withTranspileModules = require("next-transpile-modules");
 
+const shouldAnalyzeBundle = process.env.ANALYZE_BUNDLE === "true";
+
+const getBundleAnalyzerPlugin = () => {
+	// Required since we install the bundle analyzer as a dev dependency
+	const withBundleAnalyzer = require("@next/bundle-analyzer");
+
+	return withBundleAnalyzer({
+		enabled: true
+	});
+}
+
 const injectPlugins = flow(
 	withPWA({
 		dest: "public",
@@ -11,7 +22,8 @@ const injectPlugins = flow(
 		disableDevLogs: true
 	}),
 	withSuperjson(),
-	withTranspileModules(["jotai-devtools"])
+	withTranspileModules(["jotai-devtools"]),
+	...(shouldAnalyzeBundle ? [getBundleAnalyzerPlugin()] : [])
 );
 
 module.exports = injectPlugins({
