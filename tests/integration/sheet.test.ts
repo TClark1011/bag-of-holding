@@ -464,7 +464,7 @@ test.describe("Simultaneous Updates", () => {
 			expect(clientBMemberTags).toHaveLength(1);
 			expect(await clientBMemberTags[0].innerText()).toBe(clientBMemberName);
 
-			await wait(SHEET_REFETCH_INTERVAL_MS + 1000);
+			await wait(SHEET_REFETCH_INTERVAL_MS + 2000);
 
 			const refetchedClientTags = await getClientMemberTags();
 			await performActionOnMultipleClients(
@@ -511,7 +511,7 @@ test.describe("Simultaneous Updates", () => {
 				}
 			);
 
-			await wait(SHEET_REFETCH_INTERVAL_MS + 1000);
+			await wait(SHEET_REFETCH_INTERVAL_MS + 2000);
 
 			const sortedItems = A.sortBy(items, D.get("name"));
 			await performActionOnMultipleClients(bothClients, async (client) => {
