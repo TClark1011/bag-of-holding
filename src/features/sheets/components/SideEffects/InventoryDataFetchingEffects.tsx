@@ -6,24 +6,7 @@ import {
 	useItemDeleteMutation,
 } from "$sheets/hooks";
 import { useInventoryStore, useInventoryStoreDispatch } from "$sheets/store";
-import { D, F, flow } from "@mobily/ts-belt";
-import { Sheet } from "@prisma/client";
-import { isAfter } from "date-fns/fp";
 import { useMemo } from "react";
-
-const useSheetUpdateIsNewerChecker = () => {
-	const localUpdatedAt = useInventoryStore((s) => s.sheet.updatedAt, []);
-
-	return useMemo(
-		() =>
-			flow(
-				F.identity<Sheet>,
-				D.getUnsafe("updatedAt"),
-				isAfter(localUpdatedAt)
-			),
-		[localUpdatedAt]
-	);
-};
 
 /**
  * Keep refetching the sheet, load fetched data into
@@ -41,21 +24,21 @@ const InventoryDataFetchingEffects = () => {
 	const deleteCharacterMutation = queries.character.delete.useMutation();
 	const updateCharacterMutation = queries.character.update.useMutation();
 
+	const sheetUpdatedAt = useInventoryStore((s) => s.sheet.updatedAt, []);
 	const sheetId = useInventoryStore((s) => s.sheet.id, []);
-	const deriveIfSheetUpdateIsNewer = useSheetUpdateIsNewerChecker();
 
-	// Constantly refetch the sheet
-	queries.sheet.getFull.useQuery(sheetId, {
-		onSuccess: (data) => {
-			if (data && deriveIfSheetUpdateIsNewer(data)) {
-				// Update state if the sheet has changed
-				dispatch({
-					type: "set-sheet",
-					payload: data,
-				});
-			}
-		},
-		enabled: ![
+	const sheetMutationIsInProgress = useMemo(
+		() =>
+			[
+				createItemMutation,
+				removeItemMutation,
+				updateItemMutation,
+				setSheetNameMutation,
+				addCharacterMutation,
+				deleteCharacterMutation,
+				updateCharacterMutation,
+			].some((mutation) => mutation.isLoading),
+		[
 			createItemMutation,
 			removeItemMutation,
 			updateItemMutation,
@@ -63,9 +46,33 @@ const InventoryDataFetchingEffects = () => {
 			addCharacterMutation,
 			deleteCharacterMutation,
 			updateCharacterMutation,
-		].some((mutation) => mutation.isLoading), //do not refetch while mutations are in progress
+		]
+	);
+
+	const { data: sheetIsOutOfDate = false } =
+		queries.sheet.updateExists.useQuery(
+			{
+				sheetId,
+				updatedAt: sheetUpdatedAt,
+			},
+			{
+				refetchInterval: SHEET_REFETCH_INTERVAL_MS,
+				enabled: !sheetMutationIsInProgress,
+			}
+		);
+
+	// Refetch the sheet if it is out of date and send it
+	// to state management
+	queries.sheet.getFull.useQuery(sheetId, {
+		onSuccess: (data) => {
+			// Update state if the sheet has changed
+			dispatch({
+				type: "set-sheet",
+				payload: data,
+			});
+		},
+		enabled: sheetIsOutOfDate && !sheetMutationIsInProgress, //do not refetch while mutations are in progress
 		refetchInterval: SHEET_REFETCH_INTERVAL_MS,
-		refetchIntervalInBackground: true,
 	});
 
 	return null;

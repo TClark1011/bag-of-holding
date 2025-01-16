@@ -9,7 +9,7 @@ const sheetUpdateMiddleware = trpc.middleware(async ({ next, type }) => {
 	// We use middleware so that whenever an entity that is related to a sheet
 	// is changed, we update the sheet's updatedAt field.
 	// This is so on the frontend we can very quickly check if fetched data is
-	// new by comparing its `updatedAt` field to the what is stored in client
+	// new by comparing its `updatedAt` field to what is stored in client
 	// state
 	const endResult = await next();
 
