@@ -120,5 +120,8 @@
 		"typescript": "^5.1.3",
 		"wait-on": "^6.0.1",
 		"zod-prisma": "^0.5.4"
+	},
+	"overrides": {
+		"tar-fs": "^2.1.3"
 	}
 }
