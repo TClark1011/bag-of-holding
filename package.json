@@ -39,7 +39,7 @@
 		"@trpc/client": "^10.28.2",
 		"@trpc/next": "^10.28.2",
 		"@trpc/react-query": "^10.28.2",
-		"@trpc/server": "^10.28.2",
+		"@trpc/server": "^10.45.3",
 		"@vercel/analytics": "^1.0.1",
 		"big.js": "^6.1.1",
 		"chakra-ui-ionicons": "^0.3.3",
